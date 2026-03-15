@@ -251,6 +251,30 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
   .nav-tab{padding:5px 10px;font-size:11px}.rhero,.rbody{padding:1.1rem}
   .rc-words{gap:5px}
 }
+
+/* ── Progress / Stats ── */
+.stats-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.stats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.stats-title{font-family:'Instrument Serif',serif;font-size:18px;color:var(--text)}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.stat-box{background:var(--card2);border-radius:var(--r-sm);padding:12px;text-align:center;border:1px solid var(--border)}
+.stat-num{font-family:'Instrument Serif',serif;font-size:28px;color:var(--text);line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:11px;color:var(--text3);font-weight:500}
+.stat-box.green .stat-num{color:var(--green)}
+.stat-box.coral .stat-num{color:var(--coral)}
+.stat-box.blue .stat-num{color:var(--blue)}
+.chart-wrap{height:80px;display:flex;align-items:flex-end;gap:4px;padding:4px 0}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;background:var(--lime);transition:height .4s cubic-bezier(.4,0,.2,1);min-height:3px}
+.chart-bar.today{background:var(--coral)}
+.chart-day{font-size:9px;color:var(--text3)}
+.due-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;background:rgba(255,92,58,.1);border:1px solid rgba(255,92,58,.25);color:var(--coral);font-size:12px;font-weight:600;margin-bottom:1rem}
+/* SR card indicator */
+.sr-info{display:flex;align-items:center;gap:6px;margin-top:6px}
+.sr-interval{font-size:11px;color:var(--text3)}
+.sr-due{font-size:11px;font-weight:600}
+.sr-due.due-now{color:var(--coral)}
+.sr-due.due-later{color:var(--green)}
 </style>
 </head>
 <body>
@@ -390,6 +414,22 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       </div>
       <div class="dc-words" id="dc-words"><div class="dc-loading">در حال بارگذاری...</div></div>
     </div>
+
+    <!-- Stats / Progress card -->
+    <div class="stats-card" id="stats-card" style="display:none">
+      <div class="stats-header">
+        <div class="stats-title">پیشرفت تو</div>
+        <span id="due-badge" class="due-badge" style="display:none">⏰ <span id="due-count">0</span> لغت برای مرور</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num" id="st-total">0</div><div class="stat-lbl">کل لغات</div></div>
+        <div class="stat-box green"><div class="stat-num" id="st-learned">0</div><div class="stat-lbl">یاد گرفتم</div></div>
+        <div class="stat-box coral"><div class="stat-num" id="st-due">0</div><div class="stat-lbl">نیاز به مرور</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase">۷ روز اخیر</div>
+      <div class="chart-wrap" id="week-chart"></div>
+    </div>
+
   </div>
 
   <!-- ══ FLASHCARDS ══ -->
@@ -449,14 +489,14 @@ function setSdot(s){document.getElementById('sdot').className='sdot'+(s==='ok'?'
 async function loadWords(){
   try{
     const data=await sb('/rest/v1/words?user_id=eq.'+USER_ID+'&order=created_at.asc');
-    words=data.map(r=>({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',score:r.score||0,seen:r.seen||0}));
-    cnt();renderRecent();
+    words=data.map(r=>({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',score:r.score||0,seen:r.seen||0,interval:r.interval||1,easiness:r.easiness||2.5,next_review:r.next_review||new Date().toISOString(),reviewed_at:r.reviewed_at||null}));
+    cnt();renderRecent();updateStats();
   }catch(e){setSdot('');console.error(e);}
 }
 async function addWordDB(w){
-  try{const r=await sb('/rest/v1/words',{method:'POST',prefer:'return=representation',body:JSON.stringify({user_id:USER_ID,de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0})});if(r&&r[0])w.id=r[0].id;}catch(e){console.error(e);}
+  try{const r=await sb('/rest/v1/words',{method:'POST',prefer:'return=representation',body:JSON.stringify({user_id:USER_ID,de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()})});if(r&&r[0])w.id=r[0].id;}catch(e){console.error(e);}
 }
-async function updWordDB(w){if(!w.id)return;try{await sb('/rest/v1/words?id=eq.'+w.id,{method:'PATCH',body:JSON.stringify({score:w.score,seen:w.seen})});}catch(e){console.error(e);}}
+async function updWordDB(w){if(!w.id)return;try{await sb('/rest/v1/words?id=eq.'+w.id,{method:'PATCH',body:JSON.stringify({score:w.score,seen:w.seen,interval:w.interval||1,easiness:w.easiness||2.5,next_review:w.next_review,reviewed_at:w.reviewed_at})});}catch(e){console.error(e);}}
 async function delWordDB(id){if(!id)return;try{await sb('/rest/v1/words?id=eq.'+id,{method:'DELETE'});}catch(e){console.error(e);}}
 async function clearDB(){try{await sb('/rest/v1/words?user_id=eq.'+USER_ID,{method:'DELETE'});}catch(e){console.error(e);}}
 
@@ -483,6 +523,7 @@ function initApp(){
   if(code){try{document.getElementById('sync-inp').value=code;}catch(e){}document.getElementById('db-text').textContent='کد: '+code+' ✓';}
   loadWords();
   loadDaily(false);
+  updateStats();
   window.addEventListener('scroll',()=>document.getElementById('topnav').classList.toggle('scrolled',window.scrollY>10));
 }
 function hideOb(){const o=document.getElementById('ob');o.classList.add('hide');setTimeout(()=>o.style.display='none',400);}
@@ -721,7 +762,12 @@ function initDeck(){
   const e=document.getElementById('fc-empty'),d=document.getElementById('fc-done'),u=document.getElementById('fc-ui');
   if(!words.length){e.style.display='block';u.style.display='none';d.style.display='none';return;}
   e.style.display='none';d.style.display='none';u.style.display='block';
-  deck=[...words].sort((a,b)=>a.score-b.score);idx=0;showCard();
+  // SR: due first, then by next_review date
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
+  const notDue=words.filter(w=>new Date(w.next_review||0)>now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
+  deck=[...due,...notDue];
+  idx=0;showCard();
 }
 function showCard(){
   if(idx>=deck.length){document.getElementById('fc-ui').style.display='none';document.getElementById('fc-done').style.display='block';return;}
@@ -732,13 +778,78 @@ function showCard(){
   document.getElementById('cbody').classList.remove('flipped');
   flipped=false;
   document.getElementById('prog').style.width=Math.round(idx/deck.length*100)+'%';
-  document.getElementById('fc-cnt').textContent=(idx+1)+' / '+deck.length;
+  const total=deck.length,dueNow=deck.filter(w=>new Date(w.next_review||0)<=new Date()).length;
+  document.getElementById('fc-cnt').textContent=(idx+1)+' / '+total+(dueNow>0?' ('+dueNow+' سررسید)':'');
 }
 function flip(){flipped=!flipped;document.getElementById('cbody').classList.toggle('flipped',flipped);}
 async function rate(k){
   const w=deck[idx],o=words.find(x=>x.de===w.de);
-  if(o){o.score+=k?1:-1;o.seen++;await updWordDB(o);}
+  if(o){
+    // SM-2 algorithm
+    const q=k?5:1; // quality: 5=perfect, 1=wrong
+    o.easiness=Math.max(1.3,o.easiness+(0.1-(5-q)*(0.08+(5-q)*0.02)));
+    if(!k){
+      o.interval=1;
+    } else if(o.seen===0){
+      o.interval=1;
+    } else if(o.seen===1){
+      o.interval=6;
+    } else {
+      o.interval=Math.round(o.interval*o.easiness);
+    }
+    o.interval=Math.max(1,o.interval);
+    const next=new Date();
+    next.setDate(next.getDate()+o.interval);
+    o.next_review=next.toISOString();
+    o.reviewed_at=new Date().toISOString();
+    o.score+=k?1:-1;
+    o.seen++;
+    // save to localStorage for chart
+    saveReviewLog();
+    await updWordDB(o);
+    updateStats();
+  }
   idx++;showCard();
+}
+
+function saveReviewLog(){
+  const today=new Date().toDateString();
+  const log=JSON.parse(localStorage.getItem('ws_review_log')||'{}');
+  log[today]=(log[today]||0)+1;
+  // keep only last 30 days
+  const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
+  const trimmed={};keys.forEach(k=>trimmed[k]=log[k]);
+  localStorage.setItem('ws_review_log',JSON.stringify(trimmed));
+}
+
+function updateStats(){
+  if(!words.length){document.getElementById('stats-card').style.display='none';return;}
+  document.getElementById('stats-card').style.display='block';
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now);
+  const learned=words.filter(w=>w.seen>0&&w.interval>3);
+  document.getElementById('st-total').textContent=words.length;
+  document.getElementById('st-learned').textContent=learned.length;
+  document.getElementById('st-due').textContent=due.length;
+  if(due.length>0){
+    document.getElementById('due-badge').style.display='inline-flex';
+    document.getElementById('due-count').textContent=due.length;
+  } else {
+    document.getElementById('due-badge').style.display='none';
+  }
+  // 7-day chart
+  const log=JSON.parse(localStorage.getItem('ws_review_log')||'{}');
+  const days=[];
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d);}
+  const max=Math.max(1,...days.map(d=>log[d.toDateString()]||0));
+  const dayNames=['ش','ی','د','س','چ','پ','ج'];
+  document.getElementById('week-chart').innerHTML=days.map((d,i)=>{
+    const count=log[d.toDateString()]||0;
+    const h=Math.max(4,Math.round((count/max)*70));
+    const isToday=i===6;
+    const dn=dayNames[d.getDay()];
+    return `<div class="chart-bar-wrap"><div class="chart-bar${isToday?' today':''}" style="height:${h}px" title="${count} مرور"></div><div class="chart-day">${isToday?'امروز':dn}</div></div>`;
+  }).join('');
 }
 
 // ── List ──
