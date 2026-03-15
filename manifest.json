@@ -1,28 +1,12 @@
 {
-  "name": "Wortschatz — دستیار لغت آلمانی",
+  "name": "Wortschatz",
   "short_name": "Wortschatz",
-  "description": "دستیار هوشمند یادگیری لغت آلمانی با فلش‌کارت",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#09090c",
-  "theme_color": "#09090c",
-  "orientation": "portrait-primary",
-  "lang": "fa",
-  "dir": "rtl",
+  "background_color": "#f0f0ea",
+  "theme_color": "#f0f0ea",
   "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": ["education", "utilities"],
-  "screenshots": []
+    {"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
 }
