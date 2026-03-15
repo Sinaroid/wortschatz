@@ -665,8 +665,10 @@ function updateStreak(){
     if(openStreak>365)break;
   }
   const s=Math.max(streak,openStreak);
-  document.getElementById('streak-num').textContent=s;
-  document.getElementById('streak-bar').classList.toggle('hot',s>=3);
+  const sn=document.getElementById('streak-num');
+  const sb=document.getElementById('streak-bar');
+  if(sn)sn.textContent=s;
+  if(sb)sb.classList.toggle('hot',s>=3);
 }
 
 // ── Swipe on flashcard ──
@@ -1192,6 +1194,8 @@ document.addEventListener('keydown',e=>{
 
 initApp();
 </script>
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');</script>
+<script>if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}</script>
 </body>
 </html>
