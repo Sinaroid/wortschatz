@@ -858,33 +858,31 @@ async function doSearch(){
 }
 
 async function searchWord(q){
-  // Auto-correct German typed with English keyboard (e.g. "ae"→"ä", "oe"→"ö" etc.)
+  // Check cache first
+  const cacheKey='wc_'+q.trim().toLowerCase();
+  const cached=localStorage.getItem(cacheKey);
+  if(cached){
+    try{
+      cur=JSON.parse(cached);
+      renderResult(cur);
+      return;
+    }catch(e){localStorage.removeItem(cacheKey);}
+  }
+
   const prompt=`کاربر این لغت رو وارد کرده: "${q}"
 ممکنه با کیبورد انگلیسی تایپ شده باشه. ابتدا املا رو تصحیح کن (مثلاً ae→ä، oe→ö، ue→ü، ss→ß اگه لازمه).
 اگه فارسی است، معادل آلمانی پیدا کن.
-اطلاعات کامل رو در JSON خالص (بدون backtick) برگردان:
-{
-  "word": "لغت آلمانی بدون حرف تعریف (تصحیح‌شده)",
-  "corrected_from": "اگه تصحیح شد اینجا بنویس وگرنه خالی",
-  "article": "der/die/das یا خالی برای فعل/صفت",
-  "plural": "جمع اگر اسم است",
-  "preposition": "حرف اضافه‌ای که با این لغت میاد مثلاً auf+Akk یا an+Dat — اگه نداره خالی",
-  "type": "Nomen/Verb/Adjektiv/Adverb/Redewendung",
-  "level": "A1/A2/B1/B2/C1/C2",
-  "meaning_fa": "معنی فارسی دقیق و کامل",
-  "meaning_en": "precise English meaning",
-  "synonyms": ["مترادف۱ آلمانی", "مترادف۲ آلمانی"],
-  "antonyms": ["متضاد۱ آلمانی"],
-  "examples": [
-    {"de": "جمله اول — طبیعی و کاربردی", "fa": "ترجمه فارسی"},
-    {"de": "جمله دوم — در موقعیت متفاوت", "fa": "ترجمه فارسی"}
-  ],
-  "related": ["کلمه مرتبط۱", "کلمه مرتبط۲", "کلمه مرتبط۳"],
-  "grammar_tip": "نکته گرامری مهم و کاربردی به فارسی — مثلاً صرف فعل، حالت دستوری، استثناء"
-}
+JSON خالص (بدون backtick):
+{"word":"لغت بدون حرف تعریف","corrected_from":"اگه تصحیح شد","article":"der/die/das یا خالی","plural":"جمع","preposition":"حرف اضافه مثلاً auf+Akk یا خالی","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق","meaning_en":"English meaning","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"examples":[{"de":"جمله کاربردی","fa":"ترجمه"},{"de":"جمله در موقعیت دیگر","fa":"ترجمه"}],"related":["مرتبط۱","مرتبط۲","مرتبط۳"],"grammar_tip":"نکته گرامری مهم به فارسی"}
 فقط JSON.`;
-  const raw=(await ai(prompt,1200)).replace(/```json|```/g,'').trim();
+  const raw=(await ai(prompt,800)).replace(/```json|```/g,'').trim();
   cur=JSON.parse(raw);
+  // Save to cache (max 100 items)
+  try{
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
+    if(keys.length>100){localStorage.removeItem(keys[0]);}
+    localStorage.setItem(cacheKey,JSON.stringify(cur));
+  }catch(e){}
   renderResult(cur);
 }
 
@@ -961,11 +959,13 @@ function renderPhrase(d){
 
 async function addPhraseWord(i,de,fa,note){
   if(words.find(w=>w.de===de))return;
-  const w={de,fa,ex:note,score:0,seen:0};
+  const w={de,fa,ex:note,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
   words.unshift(w);cnt();
-  await addWordDB(w);
+  // Optimistic UI
   const btn=document.getElementById('padd-'+i);
   if(btn){btn.textContent='✓ اضافه شد';btn.classList.add('added');btn.disabled=true;}
+  // Sync in background
+  addWordDB(w).catch(e=>console.error('sync error',e));
 }
 
 function jumpWord(w){document.getElementById('s-inp').value=w;doSearch();}
@@ -973,16 +973,17 @@ function jumpWord(w){document.getElementById('s-inp').value=w;doSearch();}
 async function addCard(){
   if(!cur)return;
   const key=(cur.article&&cur.article!=='—'?cur.article+' ':'')+cur.word;
-  // duplicate check - case insensitive
   if(words.find(w=>w.de.toLowerCase()===key.toLowerCase())){
     const btn=document.getElementById('add-btn');
     btn.innerHTML='<span>⚠</span> قبلاً اضافه شده';btn.disabled=true;return;
   }
-  const w={de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0};
+  // Optimistic UI - add immediately
+  const w={de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
   words.unshift(w);cnt();
-  await addWordDB(w);
   const btn=document.getElementById('add-btn');
   btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;
+  // Sync in background
+  addWordDB(w).catch(e=>console.error('sync error',e));
 }
 
 
@@ -1006,7 +1007,7 @@ async function loadDaily(forceRefresh){
 ${knownWords?`کاربر اینا رو قبلاً یاد گرفته، تکرار نکن: ${knownWords}`:''}
 JSON خالص: [{"de":"لغت با حرف تعریف اگر اسم است","fa":"معنی فارسی","level":"B1/B2/C1/C2","example_de":"یه جمله کوتاه کاربردی"}]
 فقط JSON.`;
-    const raw=(await ai(prompt,600)).replace(/```json|```/g,'').trim();
+    const raw=(await ai(prompt,500)).replace(/```json|```/g,'').trim();
     dailyWords=JSON.parse(raw);
     localStorage.setItem('ws_daily',JSON.stringify({timestamp:Date.now(),words:dailyWords}));
     renderDaily();
@@ -1175,8 +1176,9 @@ function renderList(){
   }).join('');
 }
 async function del(i){
-  const w=words[i];words.splice(i,1);cnt();renderList();
-  await delWordDB(w.id);
+  const w=words[i];
+  words.splice(i,1);cnt();renderList(); // optimistic
+  delWordDB(w.id).catch(e=>console.error('delete sync error',e));
 }
 async function clearAll(){
   if(!confirm('همه لغات پاک بشن؟'))return;
@@ -1186,6 +1188,11 @@ async function clearAll(){
 }
 
 // ── Keyboard ──
+let searchDebounce=null;
+document.getElementById('s-inp').addEventListener('input',()=>{
+  clearTimeout(searchDebounce);
+  // no auto-search, just visual feedback
+});
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&document.getElementById('tab-home').classList.contains('active'))doSearch();
   if(e.key===' '&&document.getElementById('tab-cards').classList.contains('active')){e.preventDefault();flip();}
