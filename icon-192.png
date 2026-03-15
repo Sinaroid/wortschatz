@@ -1,0 +1,60 @@
+# 🚀 راهنمای Deploy روی Vercel
+
+## ساختار فایل‌ها
+```
+wortschatz/
+├── index.html       ← اپ اصلی
+├── manifest.json    ← PWA manifest
+├── sw.js            ← Service Worker (آفلاین)
+├── icon-192.png     ← آیکون اپ
+├── icon-512.png     ← آیکون اپ
+├── vercel.json      ← تنظیمات Vercel
+└── api/
+    └── index.js     ← Proxy برای API
+```
+
+---
+
+## مرحله ۱ — GitHub
+1. یه اکانت GitHub بساز (اگه نداری): https://github.com
+2. یه repo جدید بساز — اسمش مثلاً `wortschatz`
+3. همه فایل‌ها رو آپلود کن (drag & drop توی GitHub)
+
+## مرحله ۲ — Vercel
+1. برو به https://vercel.com
+2. با همون اکانت GitHub وارد شو
+3. روی **"Add New Project"** کلیک کن
+4. repo ات رو انتخاب کن
+5. روی **Deploy** کلیک کن — تمومه!
+
+Vercel یه آدرس مثل `wortschatz.vercel.app` بهت میده.
+
+---
+
+## نصب روی موبایل (PWA)
+
+### آیفون (Safari):
+1. آدرس سایت رو باز کن
+2. دکمه Share (□↑) رو بزن
+3. **"Add to Home Screen"** رو انتخاب کن
+4. اسم رو تأیید کن
+
+### اندروید (Chrome):
+1. آدرس سایت رو باز کن
+2. منوی سه نقطه رو بزن
+3. **"Add to Home Screen"** رو انتخاب کن
+
+---
+
+## هزینه‌ها
+| چیز | هزینه |
+|-----|-------|
+| Vercel hosting | **رایگان** |
+| GitHub | **رایگان** |
+| API (Haiku) | ~$0.10 هر ۱۰۰۰ جستجو |
+
+---
+
+## نکته امنیتی
+API key فقط روی مرورگر خودت ذخیره میشه (localStorage).
+هیچ‌کس دیگه‌ای بهش دسترسی نداره.

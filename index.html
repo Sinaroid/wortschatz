@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wortschatz — دستیار لغت آلمانی</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#09090c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wortschatz">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #09090c;
+  --s1:        #111116;
+  --s2:        #18181f;
+  --s3:        #202028;
+  --border:    rgba(255,255,255,0.06);
+  --border2:   rgba(255,255,255,0.11);
+  --border3:   rgba(255,255,255,0.18);
+  --text:      #edeaf4;
+  --text2:     #8b879e;
+  --text3:     #4a4759;
+  --gold:      #d4a853;
+  --gold2:     #f0c878;
+  --green:     #52d68a;
+  --red:       #f06b6b;
+  --blue:      #6eb3f5;
+  --pink:      #e07db3;
+  --purple:    #a78bfa;
+  --r:         16px;
+  --r-sm:      10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
+
+.shell{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{
+  width:256px;flex-shrink:0;background:var(--s1);
+  border-left:1px solid var(--border);padding:1.75rem 1rem;
+  display:flex;flex-direction:column;gap:4px;
+  position:fixed;right:0;top:0;bottom:0;overflow-y:auto;
+}
+.logo-mark{display:flex;align-items:center;gap:10px;margin-bottom:2rem;padding:0 6px}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#d4a853,#b8832a);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text strong{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--text);display:block;line-height:1.2}
+.logo-text span{font-size:11px;color:var(--text3);font-weight:300}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:var(--r-sm);border:1px solid transparent;
+  background:transparent;color:var(--text2);
+  font-family:'Vazirmatn',sans-serif;font-size:14px;
+  cursor:pointer;text-align:right;transition:all 0.2s;width:100%;
+}
+.nav-item:hover{background:var(--s2);color:var(--text)}
+.nav-item.active{background:var(--s2);color:var(--gold);border-color:var(--border2)}
+.ni-icon{font-size:15px;width:20px;text-align:center}
+.ni-badge{margin-right:auto;background:var(--s3);border:1px solid var(--border2);color:var(--text3);font-size:10px;padding:1px 8px;border-radius:20px;font-family:'JetBrains Mono',monospace}
+.nav-item.active .ni-badge{color:var(--gold);border-color:rgba(212,168,83,0.3)}
+.nav-div{height:1px;background:var(--border);margin:8px 0}
+.sidebar-foot{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)}
+.api-row-status{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-sm);background:var(--s2);border:1px solid var(--border)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background 0.3s}
+.dot.ok{background:var(--green);box-shadow:0 0 6px rgba(82,214,138,0.4)}
+.dot.err{background:var(--red)}
+.api-row-status span{font-size:12px;color:var(--text3)}
+
+/* Main */
+.main{margin-right:256px;flex:1;padding:2.5rem 2rem;max-width:800px}
+
+/* API Banner */
+.api-banner{background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;align-items:flex-start;gap:12px}
+.api-banner-icon{font-size:20px;margin-top:2px;flex-shrink:0}
+.api-banner-body{flex:1}
+.api-banner-body h4{font-size:13px;font-weight:500;color:var(--gold);margin-bottom:4px}
+.api-banner-body p{font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:10px}
+.api-banner-body a{color:var(--gold);text-decoration:none}
+.api-inp-row{display:flex;gap:8px}
+.api-inp{flex:1;padding:9px 12px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--s3);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;direction:ltr;letter-spacing:0.5px}
+.api-inp:focus{outline:none;border-color:var(--gold)}
+.api-inp::placeholder{color:var(--text3);font-family:'Vazirmatn',sans-serif;letter-spacing:0}
+
+/* Buttons */
+.btn{padding:9px 18px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--s2);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;cursor:pointer;transition:all 0.18s;white-space:nowrap}
+.btn:hover{border-color:var(--border3)}
+.btn-gold{background:var(--gold);color:#1a0f00;border-color:var(--gold);font-weight:600}
+.btn-gold:hover{background:var(--gold2);border-color:var(--gold2)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn:disabled{opacity:0.35;cursor:default}
+
+/* Tabs */
+.tab-pane{display:none}
+.tab-pane.active{display:block;animation:fadeUp 0.25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Page header */
+.page-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:600;color:var(--text);line-height:1.2;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:1.75rem}
+
+/* Search */
+.search-wrap{display:flex;gap:10px;margin-bottom:1.25rem;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);padding:6px 6px 6px 12px;transition:border-color 0.2s}
+.search-wrap:focus-within{border-color:var(--gold)}
+.search-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:15px;outline:none;padding:6px 0}
+.search-inp::placeholder{color:var(--text3)}
+.search-btn{padding:10px 22px;border-radius:var(--r-sm);background:var(--gold);color:#1a0f00;border:none;font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.18s}
+.search-btn:hover{background:var(--gold2)}
+.search-btn:disabled{opacity:0.5;cursor:default}
+
+.loading-row{display:none;align-items:center;gap:8px;font-size:13px;color:var(--text3);padding:0.5rem 0}
+.loading-row.show{display:flex}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1)}}
+.err-line{font-size:13px;color:var(--red);min-height:20px;padding:2px 0}
+
+/* Result */
+.result-card{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;display:none;margin-top:1rem}
+.result-hero{padding:1.75rem 1.75rem 1.25rem;border-bottom:1px solid var(--border);background:var(--s2);position:relative}
+.result-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to left,transparent,var(--gold),transparent)}
+.art-pill{display:inline-flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.art-der{background:rgba(110,179,245,0.12);color:var(--blue);border:1px solid rgba(110,179,245,0.25)}
+.art-die{background:rgba(224,125,179,0.12);color:var(--pink);border:1px solid rgba(224,125,179,0.25)}
+.art-das{background:rgba(167,139,250,0.12);color:var(--purple);border:1px solid rgba(167,139,250,0.25)}
+.art-verb{background:rgba(82,214,138,0.1);color:var(--green);border:1px solid rgba(82,214,138,0.2)}
+.art-other{background:var(--s3);color:var(--text2);border:1px solid var(--border2)}
+.hero-word{font-family:'Playfair Display',serif;font-size:44px;font-weight:600;color:var(--text);direction:ltr;line-height:1.1;margin-bottom:6px}
+.hero-plural{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text3);margin-bottom:12px;direction:ltr}
+.pill-row{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:var(--s3);color:var(--text2)}
+.pill-gold{color:var(--gold);border-color:rgba(212,168,83,0.25);background:rgba(212,168,83,0.08)}
+
+.result-body{padding:1.5rem 1.75rem}
+.sec-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;margin-top:1.5rem;display:flex;align-items:center;gap:8px}
+.sec-label:first-child{margin-top:0}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.meaning-fa{font-size:22px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.4}
+.meaning-en{font-size:13px;color:var(--text3);font-style:italic}
+.ex-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:8px;position:relative;overflow:hidden}
+.ex-card::before{content:'';position:absolute;right:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--gold),rgba(212,168,83,0.15))}
+.ex-de{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--text);direction:ltr;text-align:left;margin-bottom:6px;line-height:1.5}
+.ex-fa{font-size:13px;color:var(--text2);line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13px;padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:var(--s2);color:var(--text2);cursor:pointer;transition:all 0.15s;font-family:'JetBrains Mono',monospace;direction:ltr}
+.chip:hover{border-color:var(--gold);color:var(--gold)}
+.tip-box{background:rgba(212,168,83,0.05);border:1px solid rgba(212,168,83,0.18);border-radius:var(--r-sm);padding:12px 16px 12px 38px;font-size:13px;color:var(--text2);line-height:1.7;position:relative}
+.tip-box::before{content:'💡';position:absolute;top:12px;left:14px;font-size:14px}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:1.5rem;padding:14px;border-radius:var(--r-sm);border:1px solid rgba(82,214,138,0.25);background:rgba(82,214,138,0.07);color:var(--green);font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.add-btn:hover{background:rgba(82,214,138,0.13);border-color:rgba(82,214,138,0.4)}
+.add-btn:disabled{opacity:0.35;cursor:default}
+
+/* Flashcards */
+.fc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.fc-counter{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text3)}
+.prog-wrap{height:3px;background:var(--s3);border-radius:3px;margin-bottom:2rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--gold);border-radius:3px;transition:width 0.5s ease}
+.card-scene{perspective:1200px;height:270px;cursor:pointer;margin-bottom:1.25rem;user-select:none}
+.card-body{position:relative;width:100%;height:100%;transition:transform 0.55s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+.card-body.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--r);border:1px solid var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:2rem}
+.card-front{background:var(--s1);background-image:radial-gradient(ellipse at 30% 20%,rgba(212,168,83,0.05) 0%,transparent 60%)}
+.card-front::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to left,transparent,var(--gold),transparent);border-radius:var(--r) var(--r) 0 0}
+.card-back{background:var(--s2);transform:rotateY(180deg)}
+.card-hint{font-size:11px;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase}
+.card-word{font-family:'Playfair Display',serif;font-size:40px;font-weight:600;color:var(--text);text-align:center;direction:ltr;line-height:1.2}
+.card-meaning{font-size:26px;font-weight:500;color:var(--text);text-align:center}
+.card-sentence{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:var(--text3);text-align:center;direction:ltr;max-width:360px;line-height:1.6}
+.card-actions{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:1rem}
+.act-btn{padding:11px 28px;border-radius:var(--r-sm);border:1px solid;font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:500;cursor:pointer;background:transparent;transition:all 0.18s}
+.act-bad{color:var(--red);border-color:rgba(240,107,107,0.3)}
+.act-bad:hover{background:rgba(240,107,107,0.08)}
+.act-good{color:var(--green);border-color:rgba(82,214,138,0.3)}
+.act-good:hover{background:rgba(82,214,138,0.08)}
+.act-flip{padding:11px 20px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--s2);color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:14px;cursor:pointer;transition:all 0.18s}
+.act-flip:hover{color:var(--text);border-color:var(--border3)}
+.empty-box{text-align:center;padding:4rem 1rem;color:var(--text3)}
+.empty-box .e-icon{font-size:48px;margin-bottom:1rem;display:block}
+.empty-box p{font-size:14px;line-height:1.8}
+
+/* List */
+.list-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.word-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--s1);margin-bottom:6px;transition:border-color 0.15s,background 0.15s}
+.word-row:hover{background:var(--s2);border-color:var(--border2)}
+.wr-de{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);flex:1.2;direction:ltr}
+.wr-fa{font-size:13px;color:var(--text2);flex:1;text-align:right}
+.wr-score{font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 9px;border-radius:20px}
+.sc-pos{background:rgba(82,214,138,0.1);color:var(--green)}
+.sc-neg{background:rgba(240,107,107,0.1);color:var(--red)}
+.sc-neu{background:var(--s3);color:var(--text3)}
+.del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px;border-radius:4px;transition:all 0.15s;line-height:1}
+.del-btn:hover{color:var(--red);background:rgba(240,107,107,0.1)}
+
+@media(max-width:680px){
+  .sidebar{width:64px;padding:1rem 0.5rem}
+  .logo-text,.nav-item span:not(.ni-icon),.ni-badge,.sidebar-foot{display:none}
+  .nav-item{justify-content:center;padding:12px}
+  .main{margin-right:64px;padding:1.5rem 1rem}
+  .hero-word{font-size:32px}
+  .card-word{font-size:30px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="sidebar">
+  <div class="logo-mark">
+    <div class="logo-icon">📖</div>
+    <div class="logo-text">
+      <strong>Wortschatz</strong>
+      <span>دستیار لغت آلمانی</span>
+    </div>
+  </div>
+  <button class="nav-item active" id="nav-search" onclick="go('search')">
+    <span class="ni-icon">🔍</span><span>جستجوی لغت</span>
+  </button>
+  <button class="nav-item" id="nav-cards" onclick="go('cards')">
+    <span class="ni-icon">🃏</span><span>فلش‌کارت</span>
+    <span class="ni-badge" id="nav-count">0</span>
+  </button>
+  <button class="nav-item" id="nav-list" onclick="go('list')">
+    <span class="ni-icon">📋</span><span>لیست لغات</span>
+  </button>
+  <div class="nav-div"></div>
+  <div class="sidebar-foot">
+    <div class="api-row-status">
+      <div class="dot" id="dot"></div>
+      <span id="dot-text">API وارد نشده</span>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="api-banner" id="api-banner">
+    <span class="api-banner-icon">🔑</span>
+    <div class="api-banner-body">
+      <h4>API Key آنتروپیک</h4>
+      <p>برای جستجوی هوشمند، کلید رو وارد کن. از <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> می‌گیری. فقط یه بار لازمه — روی مرورگرت ذخیره میشه.</p>
+      <div class="api-inp-row">
+        <input class="api-inp" id="key-inp" type="password" placeholder="sk-ant-api03-..." />
+        <button class="btn btn-gold btn-sm" onclick="saveKey()">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="tab-pane active" id="tab-search">
+    <div class="page-title">جستجوی لغت</div>
+    <div class="page-sub">لغت، عبارت یا جمله آلمانی / فارسی وارد کن</div>
+    <div class="search-wrap">
+      <input class="search-inp" id="search-inp" placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار  یا  auf jeden Fall..." />
+      <button class="search-btn" id="search-btn" onclick="doSearch()">جستجو ←</button>
+    </div>
+    <div class="loading-row" id="loading-row"><div class="pulse"></div><span id="loading-txt">در حال جستجو...</span></div>
+    <div class="err-line" id="err-line"></div>
+
+    <div class="result-card" id="result-card">
+      <div class="result-hero">
+        <div id="r-art"></div>
+        <div class="hero-word" id="r-word"></div>
+        <div class="hero-plural" id="r-plural"></div>
+        <div class="pill-row" id="r-pills"></div>
+      </div>
+      <div class="result-body">
+        <div class="sec-label">معنی</div>
+        <div class="meaning-fa" id="r-fa"></div>
+        <div class="meaning-en" id="r-en"></div>
+        <div class="sec-label">جمله‌های نمونه</div>
+        <div id="r-exs"></div>
+        <div class="sec-label" id="rel-lbl" style="display:none">کلمات مرتبط</div>
+        <div class="chips" id="r-chips"></div>
+        <div class="sec-label" id="tip-lbl" style="display:none">نکته گرامری</div>
+        <div class="tip-box" id="r-tip" style="display:none"></div>
+        <button class="add-btn" id="add-btn" onclick="addCard()">
+          <span>＋</span> افزودن به فلش‌کارت‌ها
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div class="tab-pane" id="tab-cards">
+    <div class="fc-header">
+      <div class="page-title">فلش‌کارت</div>
+      <span class="fc-counter" id="fc-counter"></span>
+    </div>
+    <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="empty-box" id="fc-empty" style="display:none"><span class="e-icon">📭</span><p>هنوز لغتی اضافه نکردی!<br>لغت جستجو کن و اضافه کن.</p></div>
+    <div class="empty-box" id="fc-done" style="display:none"><span class="e-icon">🎉</span><p>دور تموم شد! آفرین.</p><br><button class="btn btn-gold" onclick="initDeck()">دوباره شروع</button></div>
+    <div id="fc-ui" style="display:none">
+      <div class="card-scene" onclick="flip()">
+        <div class="card-body" id="card-body">
+          <div class="card-face card-front">
+            <span class="card-hint">برای دیدن معنی کلیک کن</span>
+            <span class="card-word" id="fc-word"></span>
+          </div>
+          <div class="card-face card-back">
+            <span class="card-meaning" id="fc-meaning"></span>
+            <span class="card-sentence" id="fc-sentence"></span>
+          </div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="act-btn act-bad" onclick="rate(false)">✗ بلد نبودم</button>
+        <button class="act-flip" onclick="flip()">برگردون</button>
+        <button class="act-btn act-good" onclick="rate(true)">✓ بلد بودم</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="tab-pane" id="tab-list">
+    <div class="list-top">
+      <div class="page-title">لیست لغات</div>
+      <button class="btn btn-sm" style="color:var(--red);border-color:rgba(240,107,107,0.25)" onclick="clearAll()">پاک کردن همه</button>
+    </div>
+    <div id="word-list"></div>
+  </div>
+</main>
+</div>
+
+<script>
+let apiKey = localStorage.getItem('ws_key') || '';
+let words  = JSON.parse(localStorage.getItem('ws_words') || '[]');
+let cur=null, deck=[], idx=0, flipped=false;
+
+if(apiKey){ document.getElementById('key-inp').value=apiKey; setDot(true); document.getElementById('api-banner').style.borderColor='rgba(82,214,138,0.2)'; }
+cnt();
+
+function saveKey(){
+  const k=document.getElementById('key-inp').value.trim();
+  if(!k)return;
+  apiKey=k; localStorage.setItem('ws_key',k);
+  setDot(true); document.getElementById('api-banner').style.borderColor='rgba(82,214,138,0.2)';
+}
+function setDot(ok){
+  document.getElementById('dot').className='dot '+(ok?'ok':'err');
+  document.getElementById('dot-text').textContent=ok?'API متصل':'خطا در API';
+}
+function go(t){
+  ['search','cards','list'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.toggle('active',id===t);
+    document.getElementById('nav-'+id).classList.toggle('active',id===t);
+  });
+  if(t==='cards')initDeck();
+  if(t==='list')renderList();
+}
+function cnt(){ document.getElementById('nav-count').textContent=words.length; }
+function save(){ localStorage.setItem('ws_words',JSON.stringify(words)); cnt(); }
+
+async function doSearch(){
+  const q=document.getElementById('search-inp').value.trim();
+  if(!q)return;
+  if(!apiKey){ document.getElementById('err-line').textContent='⚠ اول API key رو وارد و ذخیره کن!'; return; }
+  document.getElementById('loading-row').classList.add('show');
+  document.getElementById('err-line').textContent='';
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('search-btn').disabled=true;
+
+  const prompt=`ورودی کاربر: "${q}"
+اطلاعات کامل این لغت/عبارت آلمانی را در قالب JSON خالص (بدون backtick یا توضیح) برگردان. اگر فارسی است معادل آلمانی پیدا کن.
+{"word":"کلمه بدون حرف تعریف","article":"der/die/das یا خالی","plural":"جمع اگر اسم","type":"Nomen/Verb/Adjektiv/Redewendung/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی","meaning_en":"English meaning","examples":[{"de":"جمله","fa":"ترجمه"},{"de":"جمله","fa":"ترجمه"},{"de":"جمله","fa":"ترجمه"}],"related":["کلمه","کلمه","کلمه"],"grammar_tip":"نکته گرامری به فارسی"}
+فقط JSON.`;
+
+  try{
+    const res=await fetch('/api',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey:apiKey,model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok){setDot(false);throw new Error('HTTP '+res.status);}
+    const data=await res.json();
+    const raw=data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    cur=JSON.parse(raw);
+    render(cur); setDot(true);
+  }catch(e){ document.getElementById('err-line').textContent='✗ خطا: '+e.message; }
+  document.getElementById('loading-row').classList.remove('show');
+  document.getElementById('search-btn').disabled=false;
+}
+
+function render(d){
+  const artEl=document.getElementById('r-art');
+  if(d.article){
+    const cls=d.article==='der'?'art-der':d.article==='die'?'art-die':d.article==='das'?'art-das':d.type==='Verb'?'art-verb':'art-other';
+    artEl.innerHTML=`<span class="art-pill ${cls}">${d.article||d.type}</span>`;
+  } else if(d.type==='Verb'){
+    artEl.innerHTML=`<span class="art-pill art-verb">Verb</span>`;
+  } else artEl.innerHTML='';
+
+  document.getElementById('r-word').textContent=d.word;
+  document.getElementById('r-plural').textContent=d.plural?'Pl: '+d.plural:'';
+  document.getElementById('r-fa').textContent=d.meaning_fa;
+  document.getElementById('r-en').textContent=d.meaning_en;
+
+  const pills=document.getElementById('r-pills');
+  pills.innerHTML='';
+  if(d.level) pills.innerHTML+=`<span class="pill pill-gold">${d.level}</span>`;
+  if(d.type&&d.type!=='Verb') pills.innerHTML+=`<span class="pill">${d.type}</span>`;
+
+  document.getElementById('r-exs').innerHTML=(d.examples||[]).map(e=>`
+    <div class="ex-card"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`).join('');
+
+  const chips=document.getElementById('r-chips');
+  const relLbl=document.getElementById('rel-lbl');
+  if(d.related&&d.related.length){
+    relLbl.style.display='flex';
+    chips.innerHTML=d.related.map(r=>`<span class="chip" onclick="jump('${r}')">${r}</span>`).join('');
+  }else{relLbl.style.display='none';chips.innerHTML='';}
+
+  const tipEl=document.getElementById('r-tip');
+  const tipLbl=document.getElementById('tip-lbl');
+  if(d.grammar_tip){tipLbl.style.display='flex';tipEl.style.display='block';tipEl.textContent=d.grammar_tip;}
+  else{tipLbl.style.display='none';tipEl.style.display='none';}
+
+  const key=(d.article?d.article+' ':'')+d.word;
+  const exists=words.find(w=>w.de===key);
+  const btn=document.getElementById('add-btn');
+  btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<span>＋</span> افزودن به فلش‌کارت‌ها';
+  btn.disabled=!!exists;
+  document.getElementById('result-card').style.display='block';
+}
+
+function jump(w){ document.getElementById('search-inp').value=w; doSearch(); }
+
+function addCard(){
+  if(!cur)return;
+  const key=(cur.article?cur.article+' ':'')+cur.word;
+  if(words.find(w=>w.de===key))return;
+  words.push({de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0});
+  save();
+  const btn=document.getElementById('add-btn');
+  btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true;
+}
+
+function initDeck(){
+  const e=document.getElementById('fc-empty'),d=document.getElementById('fc-done'),u=document.getElementById('fc-ui');
+  if(!words.length){e.style.display='block';u.style.display='none';d.style.display='none';return;}
+  e.style.display='none';d.style.display='none';u.style.display='block';
+  deck=[...words].sort((a,b)=>a.score-b.score); idx=0; showCard();
+}
+function showCard(){
+  if(idx>=deck.length){document.getElementById('fc-ui').style.display='none';document.getElementById('fc-done').style.display='block';return;}
+  const w=deck[idx];
+  document.getElementById('fc-word').textContent=w.de;
+  document.getElementById('fc-meaning').textContent=w.fa;
+  document.getElementById('fc-sentence').textContent=w.ex||'';
+  document.getElementById('card-body').classList.remove('flipped');
+  flipped=false;
+  document.getElementById('prog-fill').style.width=Math.round(idx/deck.length*100)+'%';
+  document.getElementById('fc-counter').textContent=(idx+1)+' / '+deck.length;
+}
+function flip(){flipped=!flipped;document.getElementById('card-body').classList.toggle('flipped',flipped);}
+function rate(k){
+  const w=deck[idx],o=words.find(x=>x.de===w.de);
+  if(o){o.score+=k?1:-1;o.seen++;}
+  save();idx++;showCard();
+}
+
+function renderList(){
+  const el=document.getElementById('word-list');
+  if(!words.length){el.innerHTML='<div class="empty-box"><span class="e-icon">📭</span><p>لیست خالیه!</p></div>';return;}
+  el.innerHTML=words.map((w,i)=>`
+    <div class="word-row">
+      <span class="wr-de">${w.de}</span>
+      <span class="wr-fa">${w.fa}</span>
+      <span class="wr-score ${w.score>0?'sc-pos':w.score<0?'sc-neg':'sc-neu'}">${w.score>0?'+':''}${w.score}</span>
+      <button class="del-btn" onclick="del(${i})">✕</button>
+    </div>`).join('');
+}
+function del(i){words.splice(i,1);save();renderList();}
+function clearAll(){if(!confirm('همه لغات پاک بشن؟'))return;words=[];save();renderList();}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('tab-search').classList.contains('active'))doSearch();
+  if(e.key===' '&&document.getElementById('tab-cards').classList.contains('active')){e.preventDefault();flip();}
+});
+</script>
+<script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/sw.js").then(()=>console.log("SW registered"));
+}
+</script>
+</body>
+</html>
