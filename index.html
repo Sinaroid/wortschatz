@@ -799,9 +799,33 @@ a { color: var(--accent); text-decoration: none; }
   .result-banner, .result-body { padding: var(--s4) var(--s5); }
   .phrase-banner, .phrase-body { padding: var(--s4) var(--s5); }
 }
+
+/* ── Offline banner ── */
+.offline-bar {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0;
+  background: var(--ink); color: var(--paper);
+  font-size: 12px; font-weight: 500;
+  padding: 8px var(--s4);
+  text-align: center; z-index: 300;
+  animation: slideDown .3s var(--ease);
+}
+.offline-bar.show { display: block; }
+@keyframes slideDown { from { transform:translateY(-100%) } to { transform:none } }
+body.offline .topbar { top: 33px; }
+body.offline .search-go { opacity: .5; }
+.offline-msg {
+  background: var(--paper2); border: 1px solid var(--paper3);
+  border-radius: var(--r-sm); padding: 10px var(--s4);
+  font-size: 13px; color: var(--ink3); text-align: center;
+  margin-bottom: var(--s4);
+}
 </style>
 </head>
 <body>
+
+<!-- Offline bar -->
+<div class="offline-bar" id="offline-bar">📡 آفلاین هستی — لغاتت قابل مرور هستن ولی جستجو کار نمی‌کنه</div>
 
 <!-- Gate (Onboarding) -->
 <div id="gate">
@@ -1120,9 +1144,21 @@ function setSyncDot(s){
 }
 
 async function dbLoad(){
+  // Load from local cache first for instant display
+  const localCache = localStorage.getItem('ws_words_cache');
+  if(localCache){
+    try{
+      words = JSON.parse(localCache);
+      updateBadges(); updateStats();
+    }catch(e){}
+  }
+  // Then sync with Supabase if online
+  if(!navigator.onLine){ setSyncDot(''); return; }
   try{
     const rows = await sbReq(`/rest/v1/words?user_id=eq.${UID}&order=created_at.asc`);
     words = rows.map(r=>({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',score:r.score||0,seen:r.seen||0,interval:r.interval||1,easiness:r.easiness||2.5,next_review:r.next_review||new Date().toISOString(),reviewed_at:r.reviewed_at||null}));
+    // Save to local cache
+    localStorage.setItem('ws_words_cache', JSON.stringify(words));
     updateBadges(); updateStats();
   }catch(e){ setSyncDot(''); console.error(e); }
 }
@@ -1309,6 +1345,7 @@ function detectMode(q){
 async function doSearch(){
   const q=document.getElementById('s-inp').value.trim();
   if(!q) return;
+  if(!navigator.onLine){ setStatus('📡 آفلاین هستی — جستجو ممکن نیست','err'); return; }
   if(!apiKey){ setStatus('⚠ اول API key از تنظیمات وارد کن','err'); return; }
 
   const btn=document.getElementById('s-go');
@@ -1439,9 +1476,10 @@ async function addWord(){
   if(words.find(w=>w.de.toLowerCase()===key.toLowerCase())) return;
   const w={de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
   words.unshift(w); updateBadges(); updateStats();
+  localStorage.setItem('ws_words_cache', JSON.stringify(words));
   const btn=document.getElementById('add-btn');
   btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.classList.add('added');
-  dbAdd(w).catch(console.error);
+  if(navigator.onLine) dbAdd(w).catch(console.error);
 }
 
 /* ═══════════════════════════════════════
@@ -1452,6 +1490,7 @@ async function loadDaily(force){
   if(!force&&cached){
     try{ const c=JSON.parse(cached); if(Date.now()-c.ts<86400000){ renderDaily(c.words); return; } }catch(e){}
   }
+  if(!navigator.onLine){ document.getElementById('daily-list').innerHTML='<div class="offline-msg">📡 آفلاین — پیشنهاد روزانه نیاز به اینترنت داره</div>'; return; }
   if(!apiKey){ document.getElementById('daily-list').innerHTML='<div class="daily-loading">API key لازمه</div>'; return; }
   document.getElementById('daily-list').innerHTML='<div class="daily-loading">در حال بارگذاری...</div>';
   try{
@@ -1557,7 +1596,9 @@ async function rate(k){
     const next=new Date(); next.setDate(next.getDate()+o.interval);
     o.next_review=next.toISOString(); o.reviewed_at=new Date().toISOString();
     o.score+=k?1:-1; o.seen++;
-    logReview(); dbUpdate(o).catch(console.error);
+    logReview();
+    localStorage.setItem('ws_words_cache', JSON.stringify(words));
+    if(navigator.onLine) dbUpdate(o).catch(console.error);
     updateStats();
   }
   deckIdx++; showCard();
@@ -1656,7 +1697,8 @@ function renderList(){
 
 async function delWord(i){
   const w=words[i]; words.splice(i,1); updateBadges(); renderList(); updateStats();
-  dbDelete(w.id).catch(console.error);
+  localStorage.setItem('ws_words_cache', JSON.stringify(words));
+  if(navigator.onLine) dbDelete(w.id).catch(console.error);
 }
 async function clearAll(){
   if(!confirm('همه لغات پاک بشن؟')) return;
@@ -1698,7 +1740,19 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){ document.getElementById('drawer').classList.remove('show'); document.getElementById('edit-modal').classList.remove('show'); }
 });
 
+/* ═══════════════════════════════════════
+   OFFLINE HANDLING
+═══════════════════════════════════════ */
+function updateOnlineStatus(){
+  const offline = !navigator.onLine;
+  document.getElementById('offline-bar').classList.toggle('show', offline);
+  document.body.classList.toggle('offline', offline);
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
 // start
+updateOnlineStatus();
 init();
 </script>
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});</script>
