@@ -580,14 +580,14 @@ a { color: var(--accent); text-decoration: none; }
 }
 .daily-items { display: flex; flex-direction: column; gap: var(--s2); }
 .daily-item {
-  display: flex; align-items: center; gap: var(--s3);
-  padding: 10px var(--s4); border-radius: var(--r-sm);
+  display: flex; align-items: center; gap: var(--s4);
+  padding: 12px var(--s4); border-radius: var(--r-sm);
   border: 1px solid var(--paper3); background: var(--paper);
   cursor: pointer; transition: all .15s var(--ease);
 }
 .daily-item:hover { border-color: var(--accent); background: var(--acc-light); }
-.di-de { font-family: var(--serif); font-size: 16px; color: var(--ink); flex: 1; direction: ltr; }
-.di-fa { font-size: 13px; color: var(--ink2); }
+.di-de { font-family: var(--serif); font-size: 16px; color: var(--ink); flex: 1.2; direction: ltr; }
+.di-fa { font-size: 13px; color: var(--ink2); flex: 1; text-align: right; }
 .di-lvl {
   font-size: 10px; font-weight: 700; padding: 2px 7px;
   border-radius: 20px; color: var(--accent);
@@ -1169,11 +1169,13 @@ async function ai(prompt, tokens=800){
    INIT
 ═══════════════════════════════════════ */
 function init(){
-  // dark mode
-  if(localStorage.getItem('ws_dark')==='1'){
+  // dark mode — default icon is moon, only change if dark
+  const isDark = localStorage.getItem('ws_dark')==='1';
+  if(isDark){
     document.body.classList.add('dark');
-    setThemeIcon(true);
+    setThemeIcon(true); // show sun icon
   }
+  // if light mode, keep default moon icon in HTML
   // api key
   if(!apiKey){
     document.getElementById('gate').classList.add('show');
@@ -1251,8 +1253,12 @@ function toggleDark(){
   localStorage.setItem('ws_dark',dark?'1':'0');
   setThemeIcon(dark);
 }
-function setThemeIcon(dark){
-  document.getElementById('theme-icon').innerHTML = dark
+function setThemeIcon(isDark){
+  // isDark=true → show sun (to switch back to light)
+  // isDark=false → show moon (to switch to dark)
+  const icon = document.getElementById('theme-icon');
+  if(!icon) return;
+  icon.innerHTML = isDark
     ? '<circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M10.5 10.5L12 12M3 12l1.5-1.5M10.5 4.5L12 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
     : '<path d="M14 9.5A6.5 6.5 0 117 2a5 5 0 007 7.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
 }
