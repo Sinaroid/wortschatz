@@ -349,17 +349,36 @@ a { color: var(--accent); text-decoration: none; }
 .hero-sub { font-size: 14px; color: var(--ink3); line-height: 1.6; }
 
 /* Streak chip */
-.streak-chip {
-  display: inline-flex; align-items: center; gap: var(--s2);
-  padding: var(--s2) var(--s4);
-  border: 1px solid var(--paper3);
-  border-radius: 40px; background: var(--paper2);
-  margin-bottom: var(--s5);
-  font-size: 13px; color: var(--ink2);
+.streak-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--s3); margin-bottom: var(--s5);
   animation: slideUp .4s .1s var(--bounce) both;
 }
-.streak-chip .sf { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); }
-.streak-chip.fire .sf { color: var(--accent); }
+.streak-num-row {
+  display: flex; align-items: baseline; gap: var(--s2);
+}
+.streak-big {
+  font-family: var(--serif); font-size: 48px; font-weight: 700;
+  color: var(--ink); line-height: 1; letter-spacing: -2px;
+  transition: color .3s;
+}
+.streak-wrap.fire .streak-big { color: var(--accent); }
+.streak-lbl { font-size: 13px; color: var(--ink3); }
+.streak-days {
+  display: flex; gap: 6px; align-items: flex-end;
+}
+.sd {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.sd-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--paper3); transition: all .3s var(--ease);
+}
+.sd-dot.done { background: var(--accent); box-shadow: 0 0 0 2px var(--acc-light); }
+.sd-dot.today { background: var(--accent); box-shadow: 0 0 0 3px var(--acc-glow); transform: scale(1.2); }
+.sd-dot.missed { background: var(--paper3); }
+.sd-label { font-size: 9px; color: var(--ink4); font-weight: 500; }
+.sd-label.today-lbl { color: var(--accent); font-weight: 700; }
 
 /* ═══════════════════════════════════════
    SEARCH
@@ -820,6 +839,59 @@ body.offline .search-go { opacity: .5; }
   font-size: 13px; color: var(--ink3); text-align: center;
   margin-bottom: var(--s4);
 }
+
+/* ── Evening reminder ── */
+.reminder-card {
+  background: var(--ink);
+  border-radius: var(--r-lg);
+  padding: var(--s5) var(--s6);
+  margin-bottom: var(--s4);
+  display: none;
+  animation: slideUp .4s var(--bounce);
+  position: relative; overflow: hidden;
+}
+.reminder-card.show { display: block; }
+.reminder-card::before {
+  content: '';
+  position: absolute; top: -30px; right: -20px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: rgba(255,255,255,.04);
+}
+.reminder-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: var(--s3);
+}
+.reminder-title {
+  font-family: var(--serif); font-size: 18px; font-weight: 700;
+  color: #fff; line-height: 1.3;
+}
+.reminder-sub { font-size: 13px; color: rgba(255,255,255,.55); margin-top: var(--s1); }
+.reminder-close {
+  background: rgba(255,255,255,.1); border: none; color: rgba(255,255,255,.6);
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; transition: background .15s;
+}
+.reminder-close:hover { background: rgba(255,255,255,.2); }
+.reminder-words {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--s4);
+}
+.rw-chip {
+  padding: 4px 12px; border-radius: 20px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.15);
+  font-size: 13px; color: #fff; font-family: var(--serif);
+  cursor: pointer; transition: background .15s;
+}
+.rw-chip:hover { background: rgba(255,255,255,.2); }
+.reminder-btn {
+  width: 100%; padding: 11px;
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,.15); color: #fff;
+  border: 1px solid rgba(255,255,255,.2);
+  font-family: var(--sans); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .18s;
+}
+.reminder-btn:hover { background: rgba(255,255,255,.25); }
 </style>
 </head>
 <body>
@@ -936,10 +1008,12 @@ body.offline .search-go { opacity: .5; }
   <!-- ══ HOME ══ -->
   <div class="pane on" id="pane-home">
     <div class="hero">
-      <div class="streak-chip" id="streak-chip">
-        <span>🔥</span>
-        <span class="sf" id="streak-n">0</span>
-        <span>روز متوالی</span>
+      <div class="streak-wrap" id="streak-wrap">
+        <div class="streak-num-row">
+          <span class="streak-big" id="streak-n">0</span>
+          <span class="streak-lbl">روز متوالی</span>
+        </div>
+        <div class="streak-days" id="streak-days"></div>
       </div>
       <h1 class="hero-title">لغت آلمانی<br>یاد بگیر</h1>
       <p class="hero-sub">لغت، جمله یا اصطلاح فارسی / آلمانی</p>
@@ -989,6 +1063,20 @@ body.offline .search-go { opacity: .5; }
         <div class="phrase-tr" id="ph-tr"></div>
       </div>
       <div class="phrase-body" id="ph-body"></div>
+    </div>
+
+
+    <!-- Evening reminder -->
+    <div class="reminder-card" id="reminder-card">
+      <div class="reminder-head">
+        <div>
+          <div class="reminder-title" id="reminder-title">وقت مرور شبانه! 🌙</div>
+          <div class="reminder-sub" id="reminder-sub"></div>
+        </div>
+        <button class="reminder-close" onclick="dismissReminder()">✕</button>
+      </div>
+      <div class="reminder-words" id="reminder-words"></div>
+      <button class="reminder-btn" onclick="startReview()">شروع مرور ←</button>
     </div>
 
     <!-- Daily -->
@@ -1226,7 +1314,7 @@ function init(){
     document.getElementById('db-status').textContent='کد: '+code+' ✓';
   }
   // load
-  dbLoad();
+  dbLoad().then(()=>setTimeout(checkReminder,2000));
   loadDaily(false);
   updateStreak();
   // scroll border
@@ -1321,14 +1409,41 @@ function updateBadges(){
 ═══════════════════════════════════════ */
 function updateStreak(){
   const today=new Date().toDateString();
-  const log=JSON.parse(localStorage.getItem('ws_open_log')||'{}');
-  if(!log[today]){ log[today]=1; localStorage.setItem('ws_open_log',JSON.stringify(log)); }
+  // log review days (separate from open log)
+  const rlog=JSON.parse(localStorage.getItem('ws_review_log')||'{}');
+  // log open days
+  const olog=JSON.parse(localStorage.getItem('ws_open_log')||'{}');
+  if(!olog[today]){ olog[today]=1; localStorage.setItem('ws_open_log',JSON.stringify(olog)); }
+  // combine: day counts if opened OR reviewed
+  const allLog={};
+  Object.keys(olog).forEach(k=>allLog[k]=1);
+  Object.keys(rlog).forEach(k=>allLog[k]=1);
+  // count consecutive streak
   let s=0; const d=new Date();
-  while(log[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
+  while(allLog[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
+  // update number
   const el=document.getElementById('streak-n');
-  const chip=document.getElementById('streak-chip');
+  const wrap=document.getElementById('streak-wrap');
   if(el) el.textContent=s;
-  if(chip) chip.classList.toggle('fire',s>=3);
+  if(wrap) wrap.classList.toggle('fire',s>=3);
+  // render 7-day dots
+  const daysEl=document.getElementById('streak-days');
+  if(!daysEl) return;
+  const dayNames=['ش','ی','د','س','چ','پ','ج'];
+  let dots='';
+  for(let i=6;i>=0;i--){
+    const day=new Date(); day.setDate(day.getDate()-i);
+    const key=day.toDateString();
+    const isToday=i===0;
+    const done=!!allLog[key];
+    const cls=isToday?'today':done?'done':'missed';
+    const lbl=isToday?'امروز':dayNames[day.getDay()];
+    dots+=`<div class="sd">
+      <div class="sd-dot ${cls}"></div>
+      <div class="sd-label${isToday?' today-lbl':''}">${lbl}</div>
+    </div>`;
+  }
+  daysEl.innerHTML=dots;
 }
 
 /* ═══════════════════════════════════════
@@ -1739,6 +1854,59 @@ document.addEventListener('keydown',e=>{
   if(e.key===' '&&document.getElementById('pane-cards').classList.contains('on')){ e.preventDefault(); flipCard(); }
   if(e.key==='Escape'){ document.getElementById('drawer').classList.remove('show'); document.getElementById('edit-modal').classList.remove('show'); }
 });
+
+/* ═══════════════════════════════════════
+   EVENING REVIEW REMINDER
+═══════════════════════════════════════ */
+function checkReminder(){
+  const card=document.getElementById('reminder-card');
+  if(!card||!words.length) return;
+
+  const now=new Date();
+  const hour=now.getHours();
+  const today=now.toDateString();
+  const dismissed=localStorage.getItem('ws_reminder_dismissed');
+
+  // show between 20:00-23:59 and not dismissed today
+  if(hour<20||dismissed===today) return;
+
+  // find words added today
+  const todayWords=words.filter(w=>{
+    if(!w.reviewed_at) return false;
+    return new Date(w.reviewed_at).toDateString()===today||
+           (w.seen===0&&new Date(w.next_review).toDateString()===today);
+  });
+
+  // find due words
+  const dueWords=words.filter(w=>new Date(w.next_review||0)<=now);
+
+  const targets=[...new Set([...dueWords,...todayWords])].slice(0,6);
+  if(!targets.length) return;
+
+  // set content
+  const isDue=dueWords.length>0;
+  document.getElementById('reminder-title').textContent=
+    isDue?`${dueWords.length} لغت منتظر مروره! 📚`:'وقت مرور شبانه! 🌙';
+  document.getElementById('reminder-sub').textContent=
+    isDue?'این لغت‌ها سررسید مرورشونه':'لغات امروزت رو مرور کن تا بهتر یاد بگیری';
+  document.getElementById('reminder-words').innerHTML=
+    targets.map(w=>`<span class="rw-chip" onclick="quickSearch('${w.de.replace(/'/g,"\'")}')">${w.de}</span>`).join('');
+
+  card.classList.add('show');
+}
+
+function dismissReminder(){
+  localStorage.setItem('ws_reminder_dismissed',new Date().toDateString());
+  document.getElementById('reminder-card').classList.remove('show');
+}
+
+function startReview(){
+  dismissReminder();
+  reviewDue();
+}
+
+// Check every minute if it's evening
+setInterval(checkReminder, 60000);
 
 /* ═══════════════════════════════════════
    OFFLINE HANDLING
