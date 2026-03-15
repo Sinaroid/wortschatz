@@ -271,6 +271,60 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 .edit-inp.ltr{direction:ltr;font-family:'Instrument Serif',serif}
 .edit-warn{font-size:12px;color:var(--coral);min-height:16px;margin-bottom:8px}
 .edit-actions{display:flex;gap:8px}
+
+/* ── Dark mode ── */
+body.dark{
+  --bg:#0f0f11;--card:#1a1a1f;--card2:#222228;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --text:#edeaf4;--text2:#8b879e;--text3:#4a4759;
+  --lime:#c8f135;--lime-dark:#3a5500;
+  --coral:#ff6b4a;--coral-light:rgba(255,107,74,.1);
+  --blue-light:rgba(59,130,246,.1);
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.4),0 1px 4px rgba(0,0,0,.3);
+}
+body.dark .ob-card,body.dark .sp,body.dark .edit-modal{background:var(--card)}
+body.dark .sbox,body.dark .rcard,body.dark .daily-card,body.dark .stats-card{background:var(--card)}
+body.dark .card-front{background:var(--card)}
+body.dark .f-inp,body.dark .set-inp,body.dark .edit-inp{background:var(--card2);border-color:var(--border2);color:var(--text)}
+
+/* ── Dark toggle btn ── */
+.dark-btn{width:32px;height:32px;border-radius:9px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .18s}
+.dark-btn:hover{background:var(--card2)}
+
+/* ── Streak ── */
+.streak-bar{display:flex;align-items:center;justify-content:center;gap:8px;padding:.6rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:40px;margin-bottom:1rem;box-shadow:var(--shadow);width:fit-content;margin-left:auto;margin-right:auto}
+.streak-fire{font-size:18px}
+.streak-num{font-family:'Instrument Serif',serif;font-size:20px;color:var(--text);line-height:1}
+.streak-lbl{font-size:12px;color:var(--text2)}
+.streak-bar.hot .streak-num{color:var(--coral)}
+
+/* ── Quiz mode ── */
+.quiz-wrap{display:flex;flex-direction:column;gap:10px}
+.quiz-question{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:2rem;text-align:center;box-shadow:var(--shadow);margin-bottom:.5rem;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.quiz-q-hint{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.quiz-q-word{font-family:'Instrument Serif',serif;font-size:42px;color:var(--text);direction:ltr;line-height:1.1}
+.quiz-q-sub{font-size:13px;color:var(--text2);font-style:italic}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quiz-opt{padding:14px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;text-align:center;line-height:1.4}
+.quiz-opt:hover:not(:disabled){border-color:var(--text);transform:translateY(-1px);box-shadow:var(--shadow)}
+.quiz-opt.correct{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green);font-weight:600}
+.quiz-opt.wrong{background:rgba(255,77,77,.1);border-color:var(--red);color:var(--red)}
+.quiz-opt:disabled{cursor:default;transform:none}
+.quiz-next{width:100%;padding:13px;border-radius:var(--r-sm);background:var(--text);color:#fff;border:none;font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .18s;margin-top:4px;display:none}
+.quiz-next:hover{background:#333}
+.quiz-next.show{display:block}
+.quiz-result{text-align:center;padding:3rem 1rem}
+.quiz-score{font-family:'Instrument Serif',serif;font-size:56px;color:var(--text);line-height:1;margin-bottom:.5rem}
+.quiz-score-lbl{font-size:14px;color:var(--text2);margin-bottom:1.5rem}
+.quiz-progress{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.quiz-prog-txt{font-size:13px;color:var(--text2)}
+.quiz-prog-bar{height:3px;background:var(--border2);border-radius:3px;flex:1;margin:0 10px;overflow:hidden}
+.quiz-prog-fill{height:100%;background:var(--lime);border-radius:3px;transition:width .4s ease}
+
+/* ── Swipe on flashcard ── */
+.scene{touch-action:pan-y}
+.swipe-hint{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);padding:0 4px;margin-bottom:.5rem}
 </style>
 </head>
 <body>
@@ -324,10 +378,12 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
     <div class="nav-tabs">
       <button class="nav-tab active" id="nav-home" onclick="go('home')">خانه<span class="tbadge"></span></button>
       <button class="nav-tab" id="nav-cards" onclick="go('cards')">فلش‌کارت<span class="tbadge"></span></button>
+      <button class="nav-tab" id="nav-quiz" onclick="go('quiz')">کوییز<span class="tbadge"></span></button>
       <button class="nav-tab" id="nav-list" onclick="go('list')">لیست<span class="tbadge"></span></button>
     </div>
     <div class="nav-right">
       <div class="sdot" id="sdot"></div>
+      <div class="dark-btn" id="dark-btn" onclick="toggleDark()">🌙</div>
       <div class="nav-set" onclick="openSov()">⚙️</div>
     </div>
   </nav>
@@ -417,6 +473,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       <span class="fc-cnt" id="fc-cnt"></span>
     </div>
     <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="swipe-hint"><span>← بلد نبودم</span><span>بلد بودم →</span></div>
     <div class="ebox" id="fc-empty" style="display:none"><span class="ei">📭</span><p>هنوز لغتی اضافه نکردی!</p></div>
     <div class="ebox" id="fc-done" style="display:none"><span class="ei">🎉</span><p>دور تموم شد! آفرین.</p><br><button class="btn btn-lime" onclick="initDeck()">دوباره</button></div>
     <div id="fc-ui" style="display:none">
@@ -431,6 +488,38 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
         <button class="act-flip" onclick="flip()">برگردون</button>
         <button class="act-btn act-good" onclick="rate(true)">✓ بلد بودم</button>
       </div>
+    </div>
+  </div>
+
+
+  <!-- ══ QUIZ ══ -->
+  <div class="tab-pane" id="tab-quiz">
+    <div class="fc-top">
+      <div class="fc-title">کوییز</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="fc-cnt" id="quiz-cnt"></span>
+        <button class="btn btn-sm btn-lime" onclick="startQuiz()">شروع دوباره</button>
+      </div>
+    </div>
+    <div class="ebox" id="quiz-empty" style="display:none"><span class="ei">📭</span><p>حداقل ۴ لغت لازمه برای کوییز!</p></div>
+    <div id="quiz-ui" style="display:none">
+      <div class="quiz-progress">
+        <span class="quiz-prog-txt" id="qprog-txt"></span>
+        <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="qprog-fill" style="width:0%"></div></div>
+        <span class="quiz-prog-txt" id="qscore-txt">امتیاز: 0</span>
+      </div>
+      <div class="quiz-question">
+        <span class="quiz-q-hint">معنی این لغت چیه؟</span>
+        <span class="quiz-q-word" id="q-word"></span>
+        <span class="quiz-q-sub" id="q-sub"></span>
+      </div>
+      <div class="quiz-options" id="q-opts"></div>
+      <button class="quiz-next" id="q-next" onclick="nextQuestion()">بعدی ←</button>
+    </div>
+    <div class="quiz-result" id="quiz-result" style="display:none">
+      <div class="quiz-score" id="qr-score"></div>
+      <div class="quiz-score-lbl" id="qr-lbl"></div>
+      <button class="btn btn-lime" onclick="startQuiz()" style="margin-top:1rem">دوباره بازی کن</button>
     </div>
   </div>
 
@@ -532,13 +621,157 @@ function goReviewDue(){
   },300);
 }
 
+// ── Dark mode ──
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  const isDark=document.body.classList.contains('dark');
+  localStorage.setItem('ws_dark',isDark?'1':'0');
+  document.getElementById('dark-btn').textContent=isDark?'☀️':'🌙';
+}
+function initDark(){
+  if(localStorage.getItem('ws_dark')==='1'){
+    document.body.classList.add('dark');
+    document.getElementById('dark-btn').textContent='☀️';
+  }
+}
+
+// ── Streak ──
+function updateStreak(){
+  const today=new Date().toDateString();
+  const log=JSON.parse(localStorage.getItem('ws_review_log')||'{}');
+  // count consecutive days
+  let streak=0;
+  const d=new Date();
+  while(true){
+    if(log[d.toDateString()]){streak++;d.setDate(d.getDate()-1);}
+    else break;
+    if(streak>365)break;
+  }
+  // also count today if we opened the app
+  const lastOpen=localStorage.getItem('ws_last_open');
+  if(lastOpen!==today){
+    localStorage.setItem('ws_last_open',today);
+    const openLog=JSON.parse(localStorage.getItem('ws_open_log')||'{}');
+    openLog[today]=1;
+    localStorage.setItem('ws_open_log',JSON.stringify(openLog));
+  }
+  // streak from open log
+  const openLog=JSON.parse(localStorage.getItem('ws_open_log')||'{}');
+  let openStreak=0;
+  const d2=new Date();
+  while(true){
+    if(openLog[d2.toDateString()]){openStreak++;d2.setDate(d2.getDate()-1);}
+    else break;
+    if(openStreak>365)break;
+  }
+  const s=Math.max(streak,openStreak);
+  document.getElementById('streak-num').textContent=s;
+  document.getElementById('streak-bar').classList.toggle('hot',s>=3);
+}
+
+// ── Swipe on flashcard ──
+function initSwipe(){
+  const scene=document.querySelector('.scene');
+  if(!scene)return;
+  let startX=0,startY=0;
+  scene.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY;},{passive:true});
+  scene.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-startX;
+    const dy=Math.abs(e.changedTouches[0].clientY-startY);
+    if(Math.abs(dx)>50&&dy<60){
+      if(!flipped)flip();
+      else{setTimeout(()=>rate(dx>0),200);}
+    }
+  },{passive:true});
+}
+
+// ── Quiz ──
+let quizDeck=[],quizIdx=0,quizScore=0;
+
+function startQuiz(){
+  if(words.length<4){
+    document.getElementById('quiz-empty').style.display='block';
+    document.getElementById('quiz-ui').style.display='none';
+    document.getElementById('quiz-result').style.display='none';
+    return;
+  }
+  document.getElementById('quiz-empty').style.display='none';
+  document.getElementById('quiz-result').style.display='none';
+  document.getElementById('quiz-ui').style.display='block';
+  // shuffle and pick up to 10
+  quizDeck=[...words].sort(()=>Math.random()-.5).slice(0,Math.min(10,words.length));
+  quizIdx=0;quizScore=0;
+  showQuestion();
+}
+
+function showQuestion(){
+  if(quizIdx>=quizDeck.length){showQuizResult();return;}
+  const w=quizDeck[quizIdx];
+  document.getElementById('q-word').textContent=w.de;
+  document.getElementById('q-sub').textContent=w.ex?'«'+w.ex+'»':'';
+  document.getElementById('qprog-txt').textContent=(quizIdx+1)+' / '+quizDeck.length;
+  document.getElementById('qprog-fill').style.width=Math.round(quizIdx/quizDeck.length*100)+'%';
+  document.getElementById('qscore-txt').textContent='امتیاز: '+quizScore;
+  document.getElementById('q-next').classList.remove('show');
+
+  // Build 4 options: 1 correct + 3 random wrong
+  const correct=w.fa;
+  const wrongs=words.filter(x=>x.de!==w.de).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.fa);
+  const opts=[correct,...wrongs].sort(()=>Math.random()-.5);
+
+  document.getElementById('q-opts').innerHTML=opts.map((o,i)=>`
+    <button class="quiz-opt" onclick="answerQuiz(${i},'${o.replace(/'/g,"\'")}','${correct.replace(/'/g,"\'")}')">
+      ${o}
+    </button>`).join('');
+  document.getElementById('quiz-cnt').textContent=quizIdx+1+' / '+quizDeck.length;
+}
+
+function answerQuiz(i,chosen,correct){
+  const opts=document.querySelectorAll('.quiz-opt');
+  opts.forEach(o=>o.disabled=true);
+  const isCorrect=chosen===correct;
+  opts[i].classList.add(isCorrect?'correct':'wrong');
+  // highlight correct answer
+  if(!isCorrect){
+    opts.forEach(o=>{if(o.textContent.trim()===correct)o.classList.add('correct');});
+  }
+  if(isCorrect)quizScore++;
+  document.getElementById('qscore-txt').textContent='امتیاز: '+quizScore;
+  document.getElementById('q-next').classList.add('show');
+}
+
+function nextQuestion(){
+  quizIdx++;
+  showQuestion();
+}
+
+function showQuizResult(){
+  document.getElementById('quiz-ui').style.display='none';
+  document.getElementById('quiz-result').style.display='block';
+  const total=quizDeck.length;
+  const pct=Math.round(quizScore/total*100);
+  document.getElementById('qr-score').textContent=quizScore+'/'+total;
+  let msg='';
+  if(pct===100)msg='عالی! 🏆 همه رو بلد بودی!';
+  else if(pct>=80)msg='آفرین! 💪 خیلی خوب بود';
+  else if(pct>=60)msg='بد نبود! 📚 یه بار دیگه تمرین کن';
+  else msg='نگران نباش! 🔄 ادامه بده یاد می‌گیری';
+  document.getElementById('qr-lbl').textContent=msg;
+  saveReviewLog();
+  updateStats();
+  updateStreak();
+}
+
 function initApp(){
+  initDark();
+  updateStreak();
   if(apiKey){hideOb();try{document.getElementById('set-inp').value=apiKey;}catch(e){}setDot(true);}
   const code=localStorage.getItem('ws_sync_code');
   if(code){try{document.getElementById('sync-inp').value=code;}catch(e){}document.getElementById('db-text').textContent='کد: '+code+' ✓';}
   loadWords();
   loadDaily(false);
   updateStats();
+  initSwipe();
   window.addEventListener('scroll',()=>document.getElementById('topnav').classList.toggle('scrolled',window.scrollY>10));
 }
 function hideOb(){const o=document.getElementById('ob');o.classList.add('hide');setTimeout(()=>o.style.display='none',400);}
@@ -570,15 +803,16 @@ function setSyncCode(){
 }
 function setDot(ok){document.getElementById('dot').className='dot '+(ok?'ok':'err');document.getElementById('dot-text').textContent=ok?'API متصل ✓':'خطا';}
 function go(t){
-  ['home','cards','list'].forEach(id=>{
+  ['home','cards','quiz','list'].forEach(id=>{
     document.getElementById('tab-'+id).classList.toggle('active',id===t);
     document.getElementById('nav-'+id).classList.toggle('active',id===t);
   });
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='cards')initDeck();
+  if(t==='quiz')startQuiz();
   if(t==='list')renderList();
 }
-function cnt(){['cards','list'].forEach(id=>document.getElementById('nav-'+id).classList.toggle('hi',words.length>0));}
+function cnt(){['cards','quiz','list'].forEach(id=>document.getElementById('nav-'+id).classList.toggle('hi',words.length>0));}
 
 
 
@@ -878,6 +1112,7 @@ function saveReviewLog(){
   const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
   const trimmed={};keys.forEach(k=>trimmed[k]=log[k]);
   localStorage.setItem('ws_review_log',JSON.stringify(trimmed));
+  updateStreak();
 }
 
 function updateStats(){
