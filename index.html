@@ -17,30 +17,32 @@
   --border:#e4e4dc;--border2:#d0d0c8;
   --text:#1a1a18;--text2:#6b6b62;--text3:#aaaaa0;
   --lime:#c8f135;--lime2:#d8ff45;--lime-dark:#3a5500;
-  --red:#ff4d4d;--green:#22c55e;--blue:#3b82f6;
-  --r:20px;--r-sm:12px;
+  --coral:#ff5c3a;--coral2:#ff7a5c;--coral-light:#fff0ed;
+  --blue:#3b82f6;--blue-light:#eff6ff;
+  --red:#ff4d4d;--green:#22c55e;
+  --r:20px;--r-sm:12px;--r-xs:8px;
   --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
-  --shadow-lg:0 4px 24px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
-/* Onboarding */
-#ob{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100}
+/* ── Onboarding ── */
+#ob{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem}
 #ob.hide{animation:fadeOut .4s ease forwards;pointer-events:none}
 @keyframes fadeOut{to{opacity:0}}
-.ob-card{background:var(--card);border-radius:var(--r);padding:2.5rem 2rem;width:100%;max-width:440px;box-shadow:var(--shadow-lg);border:1px solid var(--border);animation:up .5s cubic-bezier(.4,0,.2,1)}
+.ob-card{background:var(--card);border-radius:var(--r);padding:2.5rem 2rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg);border:1px solid var(--border);animation:up .5s cubic-bezier(.4,0,.2,1)}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 .ob-logo{display:flex;align-items:center;gap:10px;margin-bottom:2rem}
-.ob-icon{width:44px;height:44px;border-radius:14px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:22px}
-.ob-brand{font-family:'Instrument Serif',serif;font-size:20px;color:var(--text)}
+.ob-icon{width:44px;height:44px;border-radius:14px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ob-brand{font-family:'Instrument Serif',serif;font-size:20px;color:var(--text);line-height:1.2}
 .ob-brand small{font-family:'Vazirmatn',sans-serif;font-size:12px;color:var(--text3);display:block;font-weight:400}
 .ob-h{font-size:20px;font-weight:600;margin-bottom:6px}
 .ob-p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:1.5rem}
 .ob-p a{color:var(--text);font-weight:500}
-.f-inp{width:100%;padding:12px 16px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card2);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;direction:ltr;letter-spacing:.3px;margin-bottom:10px;transition:border-color .2s}
-.f-inp:focus{outline:none;border-color:var(--text)}
+.f-inp{width:100%;padding:12px 16px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card2);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;direction:ltr;letter-spacing:.3px;margin-bottom:10px;transition:border-color .2s;outline:none}
+.f-inp:focus{border-color:var(--text)}
 .f-inp::placeholder{color:var(--text3);font-family:'Vazirmatn',sans-serif;letter-spacing:0}
 .ob-btn{width:100%;padding:13px;border-radius:var(--r-sm);background:var(--text);color:#fff;border:none;font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .18s}
 .ob-btn:hover{background:#333}
@@ -48,152 +50,212 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 .ob-skip{text-align:center;margin-top:12px;font-size:12px;color:var(--text3)}
 .ob-skip a{color:var(--text2);cursor:pointer;text-decoration:underline}
 
-/* Settings */
+/* ── Settings ── */
 .sov{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:50;display:none;align-items:flex-end;justify-content:center}
 .sov.open{display:flex}
 .sp{background:var(--card);border-radius:var(--r) var(--r) 0 0;padding:1.5rem;width:100%;max-width:720px;animation:up .3s cubic-bezier(.4,0,.2,1);border-top:1px solid var(--border)}
 .sp-handle{width:40px;height:4px;border-radius:4px;background:var(--border2);margin:0 auto 1.25rem}
 .sp-title{font-size:16px;font-weight:600;margin-bottom:1.25rem}
-.sp-lbl{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
-.sp-row{display:flex;gap:8px;margin-bottom:1rem}
-.status-box{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--r-sm);background:var(--card2);border:1px solid var(--border);margin-bottom:1rem}
+.sp-lbl{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500;margin-top:.75rem}
+.sp-row{display:flex;gap:8px}
+.sbox-status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--r-sm);background:var(--card2);border:1px solid var(--border);margin-top:8px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:all .3s}
 .dot.ok{background:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.15)}
 .dot.err{background:var(--red)}
 .dot.sync{background:var(--blue);animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
-.status-box span{font-size:13px;color:var(--text2)}
+.sbox-status span{font-size:13px;color:var(--text2)}
 
-/* Shell */
-.shell{min-height:100vh;display:flex;flex-direction:column;max-width:720px;margin:0 auto;padding:0 1rem}
+/* ── Layout ── */
+.shell{min-height:100vh;display:flex;flex-direction:column;max-width:680px;margin:0 auto;padding:0 1rem}
 
-/* Nav */
-.topnav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid transparent;transition:border-color .2s}
+/* ── Topnav ── */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 0;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid transparent;transition:border-color .2s}
 .topnav.scrolled{border-color:var(--border)}
 .nav-logo{display:flex;align-items:center;gap:8px}
-.nav-logo-icon{width:32px;height:32px;border-radius:10px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:16px}
-.nav-logo-text{font-family:'Instrument Serif',serif;font-size:18px;color:var(--text)}
-.nav-tabs{display:flex;gap:4px;background:var(--card);border-radius:40px;padding:4px;border:1px solid var(--border);box-shadow:var(--shadow)}
-.nav-tab{padding:7px 16px;border-radius:40px;border:none;background:transparent;color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap;position:relative}
+.nav-logo-icon{width:30px;height:30px;border-radius:9px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:15px}
+.nav-logo-text{font-family:'Instrument Serif',serif;font-size:17px;color:var(--text)}
+.nav-tabs{display:flex;gap:3px;background:var(--card);border-radius:40px;padding:3px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.nav-tab{padding:6px 14px;border-radius:40px;border:none;background:transparent;color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap;position:relative}
 .nav-tab.active{background:var(--text);color:#fff}
-.tbadge{position:absolute;top:4px;left:6px;width:6px;height:6px;border-radius:50%;background:var(--lime);display:none}
+.tbadge{position:absolute;top:3px;left:5px;width:5px;height:5px;border-radius:50%;background:var(--lime);display:none}
 .nav-tab.hi .tbadge{display:block}
-.nav-right{display:flex;align-items:center;gap:8px}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--text3);transition:all .3s}
+.nav-right{display:flex;align-items:center;gap:6px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:all .3s}
 .sdot.ok{background:var(--green)}
 .sdot.sync{background:var(--blue);animation:blink 1s infinite}
-.nav-set{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-size:16px}
+.nav-set{width:32px;height:32px;border-radius:9px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-size:14px}
 .nav-set:hover{background:var(--card2)}
 
-/* Btns */
-.btn{padding:10px 20px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;cursor:pointer;transition:all .18s;white-space:nowrap}
+/* ── Btns ── */
+.btn{padding:9px 18px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;cursor:pointer;transition:all .18s;white-space:nowrap}
 .btn:hover{background:var(--card2)}
 .btn-dark{background:var(--text);color:#fff;border-color:var(--text)}
 .btn-dark:hover{background:#333}
 .btn-lime{background:var(--lime);color:var(--lime-dark);border-color:var(--lime);font-weight:600}
 .btn-lime:hover{background:var(--lime2)}
-.btn-sm{padding:7px 14px;font-size:13px}
+.btn-coral{background:var(--coral);color:#fff;border-color:var(--coral);font-weight:600}
+.btn-coral:hover{background:var(--coral2)}
+.btn-sm{padding:6px 12px;font-size:12px}
 .btn:disabled{opacity:.4;cursor:default}
 
-/* Tabs */
-.tab-pane{display:none;padding:1.5rem 0 4rem;animation:fadeUp .3s ease}
+/* ── Tabs ── */
+.tab-pane{display:none;padding:1rem 0 5rem;animation:fadeUp .3s ease}
 .tab-pane.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* Search */
-.s-hero{text-align:center;padding:2rem 0 1.75rem}
-.s-hero h1{font-family:'Instrument Serif',serif;font-size:36px;color:var(--text);line-height:1.2;margin-bottom:6px}
-.s-hero p{font-size:14px;color:var(--text2)}
-.sbox{display:flex;gap:10px;background:var(--card);border:1.5px solid var(--border);border-radius:40px;padding:6px 6px 6px 20px;margin-bottom:1.5rem;box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s}
+/* ══════════ HOME TAB ══════════ */
+.home-hero{padding:1.5rem 0 1.25rem;text-align:center}
+.home-hero h1{font-family:'Instrument Serif',serif;font-size:34px;color:var(--text);line-height:1.2;margin-bottom:5px}
+.home-hero p{font-size:13px;color:var(--text2)}
+
+/* Search box */
+.sbox{display:flex;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:40px;padding:5px 5px 5px 18px;margin-bottom:1.25rem;box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s}
 .sbox:focus-within{border-color:var(--border2);box-shadow:var(--shadow-lg)}
-.s-inp{flex:1;border:none;background:transparent;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:15px;outline:none;padding:6px 0}
+.s-inp{flex:1;border:none;background:transparent;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:15px;outline:none;padding:5px 0;min-width:0}
 .s-inp::placeholder{color:var(--text3)}
-.s-btn{padding:10px 22px;border-radius:30px;background:var(--text);color:#fff;border:none;font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .18s}
+.s-btn{padding:9px 20px;border-radius:30px;background:var(--text);color:#fff;border:none;font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;flex-shrink:0}
 .s-btn:hover{background:#333;transform:scale(1.02)}
 .s-btn:disabled{opacity:.5;cursor:default;transform:none}
-.loading-row{display:none;align-items:center;justify-content:center;gap:10px;padding:1rem;font-size:13px;color:var(--text2)}
-.loading-row.show{display:flex}
-.spinner{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);border-top-color:var(--text);animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.err-line{font-size:13px;color:var(--red);text-align:center;min-height:20px;padding:2px 0}
 
-/* Result */
-.rcard{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:none;box-shadow:var(--shadow);animation:up .35s cubic-bezier(.4,0,.2,1)}
-.rhero{padding:2rem 2rem 1.5rem;background:var(--lime)}
-.art-pill{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;letter-spacing:.5px;background:rgba(0,0,0,.1);color:var(--lime-dark)}
-.rword{font-family:'Instrument Serif',serif;font-size:48px;color:var(--lime-dark);line-height:1.1;margin-bottom:4px;direction:ltr}
-.rplural{font-size:13px;color:rgba(58,85,0,.6);direction:ltr;margin-bottom:12px}
-.pill-row{display:flex;gap:6px;flex-wrap:wrap}
-.pill{font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(0,0,0,.1);color:var(--lime-dark);font-weight:600;letter-spacing:.3px}
-.rbody{padding:1.5rem 2rem}
-.slbl{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;margin-top:1.25rem}
+/* Search mode toggle */
+.mode-row{display:flex;gap:6px;margin-bottom:1.25rem}
+.mode-btn{flex:1;padding:8px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:12px;cursor:pointer;transition:all .18s;text-align:center}
+.mode-btn.active{border-color:var(--text);background:var(--text);color:#fff}
+
+.loading-row{display:none;align-items:center;justify-content:center;gap:10px;padding:.75rem;font-size:13px;color:var(--text2)}
+.loading-row.show{display:flex}
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid var(--border2);border-top-color:var(--text);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err-line{font-size:13px;color:var(--red);text-align:center;min-height:18px}
+
+/* Result card */
+.rcard{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:none;box-shadow:var(--shadow);animation:up .35s cubic-bezier(.4,0,.2,1);margin-bottom:1.25rem}
+.rhero{padding:1.75rem 1.75rem 1.25rem;background:var(--lime)}
+.art-pill{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-bottom:8px;letter-spacing:.5px;background:rgba(0,0,0,.1);color:var(--lime-dark)}
+.rword{font-family:'Instrument Serif',serif;font-size:44px;color:var(--lime-dark);line-height:1.1;margin-bottom:3px;direction:ltr}
+.rplural{font-size:12px;color:rgba(58,85,0,.6);direction:ltr;margin-bottom:10px}
+.pill-row{display:flex;gap:5px;flex-wrap:wrap}
+.pill{font-size:11px;padding:2px 9px;border-radius:20px;background:rgba(0,0,0,.1);color:var(--lime-dark);font-weight:600}
+.rbody{padding:1.25rem 1.75rem}
+.slbl{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;margin-top:1rem}
 .slbl:first-child{margin-top:0}
-.mfa{font-size:24px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3}
+.mfa{font-size:22px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.3}
 .men{font-size:13px;color:var(--text2);font-style:italic}
-.ex-card{background:var(--card2);border-radius:var(--r-sm);padding:14px 16px;margin-bottom:8px;border:1px solid var(--border);transition:border-color .15s}
-.ex-card:hover{border-color:var(--border2)}
-.ex-de{font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:var(--text);direction:ltr;text-align:left;margin-bottom:6px;line-height:1.5}
-.ex-fa{font-size:13px;color:var(--text2);line-height:1.6}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:13px;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border2);background:var(--card);color:var(--text2);cursor:pointer;transition:all .15s;direction:ltr}
+.ex-card{background:var(--card2);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:7px;border:1px solid var(--border)}
+.ex-de{font-family:'Instrument Serif',serif;font-style:italic;font-size:15px;color:var(--text);direction:ltr;text-align:left;margin-bottom:5px;line-height:1.5}
+.ex-fa{font-size:13px;color:var(--text2);line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid var(--border2);background:var(--card);color:var(--text2);cursor:pointer;transition:all .15s;direction:ltr}
 .chip:hover{border-color:var(--text);color:var(--text)}
-.tip-box{background:rgba(200,241,53,.12);border:1px solid rgba(200,241,53,.4);border-radius:var(--r-sm);padding:12px 16px 12px 36px;font-size:13px;color:var(--text2);line-height:1.7;position:relative}
-.tip-box::before{content:'💡';position:absolute;top:12px;left:12px;font-size:14px}
-.add-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:1.5rem;padding:14px;border-radius:var(--r-sm);border:1.5px solid var(--lime);background:var(--lime);color:var(--lime-dark);font-family:'Vazirmatn',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
-.add-btn:hover{background:var(--lime2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(200,241,53,.4)}
+.tip-box{background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.35);border-radius:var(--r-sm);padding:10px 14px 10px 34px;font-size:13px;color:var(--text2);line-height:1.7;position:relative}
+.tip-box::before{content:'💡';position:absolute;top:10px;left:10px;font-size:13px}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:1.25rem;padding:13px;border-radius:var(--r-sm);border:1.5px solid var(--lime);background:var(--lime);color:var(--lime-dark);font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.add-btn:hover{background:var(--lime2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(200,241,53,.35)}
 .add-btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
 
-/* Flashcards */
+/* ── Phrase analysis result ── */
+.phrase-result{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:none;box-shadow:var(--shadow);animation:up .35s cubic-bezier(.4,0,.2,1);margin-bottom:1.25rem}
+.phrase-hero{padding:1.25rem 1.5rem;background:linear-gradient(135deg,#1a1a18,#2d2d28)}
+.phrase-orig{font-family:'Instrument Serif',serif;font-style:italic;font-size:18px;color:#fff;direction:ltr;text-align:left;line-height:1.5;margin-bottom:6px}
+.phrase-trans{font-size:13px;color:rgba(255,255,255,.6)}
+.phrase-body{padding:1.25rem 1.5rem}
+.pword-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.pword-item:last-child{border-bottom:none}
+.pword-de{font-family:'Instrument Serif',serif;font-size:16px;color:var(--text);direction:ltr;min-width:120px}
+.pword-info{flex:1}
+.pword-fa{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+.pword-note{font-size:12px;color:var(--text2)}
+.pword-add{padding:4px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.pword-add:hover{border-color:var(--green);color:var(--green)}
+.pword-add.added{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.08)}
+
+/* ── Recent words card (coral) ── */
+.recent-card{background:var(--coral);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:1rem;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.recent-card::before{content:'';position:absolute;top:-20px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08)}
+.recent-card::after{content:'';position:absolute;bottom:-30px;right:-10px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.06)}
+.rc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;position:relative;z-index:1}
+.rc-title{font-family:'Instrument Serif',serif;font-size:18px;color:#fff}
+.rc-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+.rc-make-btn{padding:6px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-family:'Vazirmatn',sans-serif;font-size:11px;cursor:pointer;transition:all .18s;backdrop-filter:blur(4px)}
+.rc-make-btn:hover{background:rgba(255,255,255,.25)}
+.rc-words{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem;position:relative;z-index:1}
+.rc-word{padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;font-size:12px;cursor:pointer;transition:all .15s;border:1px solid rgba(255,255,255,.15)}
+.rc-word:hover{background:rgba(255,255,255,.3)}
+.rc-word.sel{background:#fff;color:var(--coral);font-weight:600}
+.rc-sentence{background:rgba(0,0,0,.15);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:#fff;line-height:1.7;display:none;position:relative;z-index:1;animation:fadeUp .3s ease}
+.rc-sentence.show{display:block}
+.rc-sentence-loading{display:none;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.7);position:relative;z-index:1}
+.rc-sentence-loading.show{display:flex}
+.spinner-white{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .7s linear infinite}
+
+/* ── Daily suggestions card (blue) ── */
+.daily-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.dc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.dc-title{font-family:'Instrument Serif',serif;font-size:18px;color:var(--text)}
+.dc-badge{font-size:10px;padding:3px 9px;border-radius:20px;background:var(--blue-light);color:var(--blue);font-weight:600;border:1px solid rgba(59,130,246,.2)}
+.dc-words{display:flex;flex-direction:column;gap:8px}
+.dc-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card2);cursor:pointer;transition:all .15s}
+.dc-item:hover{border-color:var(--border2);background:var(--card)}
+.dc-de{font-family:'Instrument Serif',serif;font-size:16px;color:var(--text);direction:ltr;flex:1}
+.dc-fa{font-size:13px;color:var(--text2)}
+.dc-level{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(59,130,246,.1);color:var(--blue);font-weight:600}
+.dc-refresh{padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s;font-family:'Vazirmatn',sans-serif}
+.dc-refresh:hover{background:var(--card2)}
+.dc-loading{text-align:center;padding:1rem;font-size:13px;color:var(--text3)}
+
+/* ── Flashcards ── */
 .fc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.fc-title{font-family:'Instrument Serif',serif;font-size:28px;color:var(--text)}
-.fc-cnt{font-size:13px;color:var(--text2);background:var(--card);border:1px solid var(--border);padding:4px 12px;border-radius:20px}
-.prog-wrap{height:4px;background:var(--border2);border-radius:4px;margin-bottom:2rem;overflow:hidden}
-.prog-fill{height:100%;background:var(--lime);border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.scene{perspective:1200px;height:280px;cursor:pointer;margin-bottom:1.25rem;user-select:none}
+.fc-title{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text)}
+.fc-cnt{font-size:12px;color:var(--text2);background:var(--card);border:1px solid var(--border);padding:4px 10px;border-radius:20px}
+.prog-wrap{height:3px;background:var(--border2);border-radius:3px;margin-bottom:1.75rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--lime);border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.scene{perspective:1200px;height:260px;cursor:pointer;margin-bottom:1rem;user-select:none}
 .cbody{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
 .cbody.flipped{transform:rotateY(180deg)}
-.cface{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--r);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:2rem;box-shadow:var(--shadow)}
+.cface{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--r);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:1.75rem;box-shadow:var(--shadow)}
 .cfront{background:var(--card)}
 .cback{background:var(--lime);transform:rotateY(180deg);border-color:var(--lime)}
-.chint{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
-.cword{font-family:'Instrument Serif',serif;font-size:44px;color:var(--text);text-align:center;direction:ltr;line-height:1.1}
-.cmean{font-size:28px;font-weight:700;color:var(--lime-dark);text-align:center}
-.csent{font-family:'Instrument Serif',serif;font-style:italic;font-size:14px;color:rgba(58,85,0,.65);text-align:center;direction:ltr;max-width:360px;line-height:1.6}
-.cactions{display:flex;gap:10px;justify-content:center;margin-bottom:1rem}
-.act-btn{padding:12px 30px;border-radius:var(--r-sm);border:1.5px solid;font-family:'Vazirmatn',sans-serif;font-size:14px;font-weight:600;cursor:pointer;background:var(--card);transition:all .18s}
+.chint{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+.cword{font-family:'Instrument Serif',serif;font-size:40px;color:var(--text);text-align:center;direction:ltr;line-height:1.1}
+.cmean{font-size:26px;font-weight:700;color:var(--lime-dark);text-align:center}
+.csent{font-family:'Instrument Serif',serif;font-style:italic;font-size:13px;color:rgba(58,85,0,.65);text-align:center;direction:ltr;max-width:340px;line-height:1.6}
+.cactions{display:flex;gap:8px;justify-content:center;margin-bottom:1rem}
+.act-btn{padding:11px 26px;border-radius:var(--r-sm);border:1.5px solid;font-family:'Vazirmatn',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:var(--card);transition:all .18s}
 .act-bad{color:var(--red);border-color:rgba(255,77,77,.3)}
 .act-bad:hover{background:rgba(255,77,77,.07);transform:translateY(-1px)}
 .act-good{color:var(--green);border-color:rgba(34,197,94,.3)}
 .act-good:hover{background:rgba(34,197,94,.07);transform:translateY(-1px)}
-.act-flip{padding:12px 20px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card);color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:14px;cursor:pointer;transition:all .18s}
+.act-flip{padding:11px 18px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card);color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:13px;cursor:pointer;transition:all .18s}
 .act-flip:hover{background:var(--card2)}
-.ebox{text-align:center;padding:4rem 1rem;color:var(--text3)}
-.ebox .ei{font-size:52px;margin-bottom:1rem;display:block}
+.ebox{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.ebox .ei{font-size:48px;margin-bottom:1rem;display:block}
 .ebox p{font-size:14px;line-height:1.8;color:var(--text2)}
-.ebox .btn{margin-top:1rem}
 
-/* List */
-.list-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.list-title{font-family:'Instrument Serif',serif;font-size:28px;color:var(--text)}
-.wrow{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card);margin-bottom:8px;transition:all .15s;box-shadow:var(--shadow)}
+/* ── List ── */
+.list-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.list-title{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text)}
+.wrow{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--card);margin-bottom:7px;transition:all .15s;box-shadow:var(--shadow)}
 .wrow:hover{border-color:var(--border2);transform:translateX(-2px)}
-.wde{font-family:'Instrument Serif',serif;font-size:17px;color:var(--text);flex:1.2;direction:ltr}
-.wfa{font-size:13px;color:var(--text2);flex:1;text-align:right}
-.wscore{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+.wde{font-family:'Instrument Serif',serif;font-size:16px;color:var(--text);flex:1.2;direction:ltr}
+.wfa{font-size:12px;color:var(--text2);flex:1;text-align:right}
+.wscore{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
 .sc-pos{background:rgba(34,197,94,.1);color:var(--green)}
 .sc-neg{background:rgba(255,77,77,.1);color:var(--red)}
 .sc-neu{background:var(--card2);color:var(--text3);border:1px solid var(--border)}
-.del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:6px;transition:all .15s;line-height:1}
+.del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px;border-radius:5px;transition:all .15s;line-height:1}
 .del-btn:hover{color:var(--red);background:rgba(255,77,77,.08)}
 
 @media(max-width:600px){
-  .s-hero h1{font-size:28px}.rword{font-size:36px}.cword{font-size:34px}.cmean{font-size:22px}
-  .nav-tab{padding:6px 12px;font-size:12px}.rhero,.rbody{padding:1.25rem}
+  .home-hero h1{font-size:28px}.rword{font-size:36px}.cword{font-size:32px}.cmean{font-size:21px}
+  .nav-tab{padding:5px 10px;font-size:11px}.rhero,.rbody{padding:1.1rem}
+  .rc-words{gap:5px}
 }
 </style>
 </head>
 <body>
 
+<!-- Onboarding -->
 <div id="ob">
   <div class="ob-card">
     <div class="ob-logo">
@@ -209,6 +271,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
   </div>
 </div>
 
+<!-- Settings -->
 <div class="sov" id="sov" onclick="closeSov(event)">
   <div class="sp">
     <div class="sp-handle"></div>
@@ -218,19 +281,20 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       <input class="f-inp" id="set-inp" type="password" placeholder="sk-ant-api03-..." style="margin:0;flex:1" />
       <button class="btn btn-dark btn-sm" onclick="setKeySave()">ذخیره</button>
     </div>
-    <div class="status-box"><div class="dot" id="dot"></div><span id="dot-text">وارد نشده</span></div>
+    <div class="sbox-status"><div class="dot" id="dot"></div><span id="dot-text">وارد نشده</span></div>
     <div class="sp-lbl">کد همگام‌سازی — روی همه دستگاه‌هات یکی باشه</div>
     <div class="sp-row">
       <input class="f-inp" id="sync-inp" type="text" placeholder="مثلاً: sina123" style="margin:0;flex:1;direction:ltr" />
       <button class="btn btn-dark btn-sm" onclick="setSyncCode()">ذخیره</button>
     </div>
-    <div class="status-box"><div class="dot ok" id="db-dot"></div><span id="db-text">Supabase متصل</span></div>
-    <div style="padding-top:1rem;border-top:1px solid var(--border)">
+    <div class="sbox-status"><div class="dot ok" id="db-dot"></div><span id="db-text">Supabase متصل</span></div>
+    <div style="padding-top:1rem;border-top:1px solid var(--border);margin-top:.75rem">
       <button class="btn btn-sm" style="color:var(--red);border-color:rgba(255,77,77,.3);width:100%" onclick="clearAll()">پاک کردن همه لغات</button>
     </div>
   </div>
 </div>
 
+<!-- App -->
 <div class="shell">
   <nav class="topnav" id="topnav">
     <div class="nav-logo">
@@ -238,7 +302,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       <div class="nav-logo-text">Wortschatz</div>
     </div>
     <div class="nav-tabs">
-      <button class="nav-tab active" id="nav-search" onclick="go('search')">جستجو<span class="tbadge"></span></button>
+      <button class="nav-tab active" id="nav-home" onclick="go('home')">خانه<span class="tbadge"></span></button>
       <button class="nav-tab" id="nav-cards" onclick="go('cards')">فلش‌کارت<span class="tbadge"></span></button>
       <button class="nav-tab" id="nav-list" onclick="go('list')">لیست<span class="tbadge"></span></button>
     </div>
@@ -248,17 +312,27 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
     </div>
   </nav>
 
-  <div class="tab-pane active" id="tab-search">
-    <div class="s-hero">
+  <!-- ══ HOME ══ -->
+  <div class="tab-pane active" id="tab-home">
+    <div class="home-hero">
       <h1>لغت آلمانی<br>یاد بگیر</h1>
-      <p>لغت، عبارت یا جمله فارسی / آلمانی وارد کن</p>
+      <p>لغت، جمله یا اصطلاح فارسی / آلمانی وارد کن</p>
     </div>
+
+    <!-- Mode toggle -->
+    <div class="mode-row">
+      <button class="mode-btn active" id="mode-word" onclick="setMode('word')">🔤 جستجوی لغت</button>
+      <button class="mode-btn" id="mode-phrase" onclick="setMode('phrase')">🎬 تحلیل جمله / اصطلاح</button>
+    </div>
+
     <div class="sbox">
-      <input class="s-inp" id="s-inp" placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..." />
+      <input class="s-inp" id="s-inp" placeholder="مثلاً: Kündigungsfrist  یا  «auf jeden Fall»..." />
       <button class="s-btn" id="s-btn" onclick="doSearch()">جستجو ←</button>
     </div>
-    <div class="loading-row" id="lrow"><div class="spinner"></div><span>در حال جستجو...</span></div>
+    <div class="loading-row" id="lrow"><div class="spinner"></div><span id="ltext">در حال جستجو...</span></div>
     <div class="err-line" id="eline"></div>
+
+    <!-- Word result -->
     <div class="rcard" id="rcard">
       <div class="rhero">
         <div id="r-art"></div>
@@ -279,8 +353,46 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
         <button class="add-btn" id="add-btn" onclick="addCard()"><span>＋</span> افزودن به فلش‌کارت‌ها</button>
       </div>
     </div>
+
+    <!-- Phrase result -->
+    <div class="phrase-result" id="phrase-result">
+      <div class="phrase-hero">
+        <div class="phrase-orig" id="ph-orig"></div>
+        <div class="phrase-trans" id="ph-trans"></div>
+      </div>
+      <div class="phrase-body" id="ph-body"></div>
+    </div>
+
+    <!-- Recent words (coral card) -->
+    <div class="recent-card" id="recent-card" style="display:none">
+      <div class="rc-header">
+        <div>
+          <div class="rc-title">لغات اخیر</div>
+          <div class="rc-sub">کلیک کن تا جمله بسازه</div>
+        </div>
+        <button class="rc-make-btn" id="rc-make-btn" onclick="makeSentence()">ساخت جمله ←</button>
+      </div>
+      <div class="rc-words" id="rc-words"></div>
+      <div class="rc-sentence-loading" id="rc-load"><div class="spinner-white"></div><span>در حال ساخت جمله...</span></div>
+      <div class="rc-sentence" id="rc-sentence"></div>
+    </div>
+
+    <!-- Daily suggestions (blue card) -->
+    <div class="daily-card" id="daily-card">
+      <div class="dc-header">
+        <div>
+          <div class="dc-title">پیشنهاد امروز</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="dc-badge" id="dc-badge">C1</span>
+          <button class="dc-refresh" onclick="loadDaily(true)">🔄 تازه</button>
+        </div>
+      </div>
+      <div class="dc-words" id="dc-words"><div class="dc-loading">در حال بارگذاری...</div></div>
+    </div>
   </div>
 
+  <!-- ══ FLASHCARDS ══ -->
   <div class="tab-pane" id="tab-cards">
     <div class="fc-top">
       <div class="fc-title">فلش‌کارت</div>
@@ -288,11 +400,11 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
     </div>
     <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
     <div class="ebox" id="fc-empty" style="display:none"><span class="ei">📭</span><p>هنوز لغتی اضافه نکردی!</p></div>
-    <div class="ebox" id="fc-done" style="display:none"><span class="ei">🎉</span><p>دور تموم شد!</p><button class="btn btn-lime" onclick="initDeck()">دوباره</button></div>
+    <div class="ebox" id="fc-done" style="display:none"><span class="ei">🎉</span><p>دور تموم شد! آفرین.</p><br><button class="btn btn-lime" onclick="initDeck()">دوباره</button></div>
     <div id="fc-ui" style="display:none">
       <div class="scene" onclick="flip()">
         <div class="cbody" id="cbody">
-          <div class="cface cfront"><span class="chint">کلیک کن</span><span class="cword" id="fc-word"></span></div>
+          <div class="cface cfront"><span class="chint">کلیک برای معنی</span><span class="cword" id="fc-word"></span></div>
           <div class="cface cback"><span class="cmean" id="fc-mean"></span><span class="csent" id="fc-sent"></span></div>
         </div>
       </div>
@@ -304,6 +416,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
     </div>
   </div>
 
+  <!-- ══ LIST ══ -->
   <div class="tab-pane" id="tab-list">
     <div class="list-top"><div class="list-title">لیست لغات</div></div>
     <div id="wlist"></div>
@@ -311,27 +424,18 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 </div>
 
 <script>
+// ── Supabase ──
 const SB_URL='https://ekogfglcsftpwmithxbi.supabase.co';
 const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 
 function uid(){
-  const code = localStorage.getItem('ws_sync_code');
-  if(code) return 'sync_'+code;
+  const code=localStorage.getItem('ws_sync_code');
+  if(code)return 'sync_'+code;
   let id=localStorage.getItem('ws_uid');
   if(!id){id='u_'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('ws_uid',id);}
   return id;
 }
 let USER_ID=uid();
-
-function setSyncCode(){
-  const code=document.getElementById('sync-inp').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
-  if(!code){alert('یه کد وارد کن (فقط حروف انگلیسی و عدد)');return;}
-  localStorage.setItem('ws_sync_code',code);
-  USER_ID='sync_'+code;
-  document.getElementById('db-text').textContent='کد: '+code+' ✓ — در حال بارگذاری...';
-  loadWords();
-  document.getElementById('sov').classList.remove('open');
-}
 
 async function sb(path,opts={}){
   setSdot('sync');
@@ -340,71 +444,48 @@ async function sb(path,opts={}){
   setSdot('ok');
   return t?JSON.parse(t):[];
 }
-
-function setSdot(s){
-  const d=document.getElementById('sdot');
-  d.className='sdot'+(s==='ok'?' ok':s==='sync'?' sync':'');
-}
+function setSdot(s){document.getElementById('sdot').className='sdot'+(s==='ok'?' ok':s==='sync'?' sync':'');}
 
 async function loadWords(){
   try{
     const data=await sb('/rest/v1/words?user_id=eq.'+USER_ID+'&order=created_at.asc');
     words=data.map(r=>({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',score:r.score||0,seen:r.seen||0}));
-    cnt();
+    cnt();renderRecent();
   }catch(e){setSdot('');console.error(e);}
 }
-
 async function addWordDB(w){
-  try{
-    const r=await sb('/rest/v1/words',{method:'POST',prefer:'return=representation',
-      body:JSON.stringify({user_id:USER_ID,de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0})});
-    if(r&&r[0])w.id=r[0].id;
-  }catch(e){console.error(e);}
+  try{const r=await sb('/rest/v1/words',{method:'POST',prefer:'return=representation',body:JSON.stringify({user_id:USER_ID,de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0})});if(r&&r[0])w.id=r[0].id;}catch(e){console.error(e);}
 }
+async function updWordDB(w){if(!w.id)return;try{await sb('/rest/v1/words?id=eq.'+w.id,{method:'PATCH',body:JSON.stringify({score:w.score,seen:w.seen})});}catch(e){console.error(e);}}
+async function delWordDB(id){if(!id)return;try{await sb('/rest/v1/words?id=eq.'+id,{method:'DELETE'});}catch(e){console.error(e);}}
+async function clearDB(){try{await sb('/rest/v1/words?user_id=eq.'+USER_ID,{method:'DELETE'});}catch(e){console.error(e);}}
 
-async function updWordDB(w){
-  if(!w.id)return;
-  try{await sb('/rest/v1/words?id=eq.'+w.id,{method:'PATCH',body:JSON.stringify({score:w.score,seen:w.seen})});}
-  catch(e){console.error(e);}
-}
-
-async function delWordDB(id){
-  if(!id)return;
-  try{await sb('/rest/v1/words?id=eq.'+id,{method:'DELETE'});}
-  catch(e){console.error(e);}
-}
-
-async function clearDB(){
-  try{await sb('/rest/v1/words?user_id=eq.'+USER_ID,{method:'DELETE'});}
-  catch(e){console.error(e);}
-}
-
+// ── State ──
 let apiKey=localStorage.getItem('ws_key')||'';
 let words=[],cur=null,deck=[],idx=0,flipped=false;
+let searchMode='word';
+let selectedRecent=[];
+let dailyWords=[];
 
+// ── AI call ──
+async function ai(prompt,maxTokens=1000){
+  const res=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({apiKey,model:'claude-haiku-4-5-20251001',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const data=await res.json();
+  return data.content.map(b=>b.text||'').join('').trim();
+}
+
+// ── Init ──
 function initApp(){
-  if(apiKey){
-    hideOb();
-    try{document.getElementById('set-inp').value=apiKey;}catch(e){}
-    setDot(true);
-  }
+  if(apiKey){hideOb();try{document.getElementById('set-inp').value=apiKey;}catch(e){}setDot(true);}
   const code=localStorage.getItem('ws_sync_code');
-  if(code){
-    try{document.getElementById('sync-inp').value=code;}catch(e){}
-    document.getElementById('db-text').textContent='کد: '+code+' ✓ — همگام‌سازی فعال';
-  }
+  if(code){try{document.getElementById('sync-inp').value=code;}catch(e){}document.getElementById('db-text').textContent='کد: '+code+' ✓';}
   loadWords();
-  window.addEventListener('scroll',()=>{
-    document.getElementById('topnav').classList.toggle('scrolled',window.scrollY>10);
-  });
+  loadDaily(false);
+  window.addEventListener('scroll',()=>document.getElementById('topnav').classList.toggle('scrolled',window.scrollY>10));
 }
-
-function hideOb(){
-  const o=document.getElementById('ob');
-  o.classList.add('hide');
-  setTimeout(()=>o.style.display='none',400);
-}
-
+function hideOb(){const o=document.getElementById('ob');o.classList.add('hide');setTimeout(()=>o.style.display='none',400);}
 function obSave(){
   const k=document.getElementById('ob-inp').value.trim();
   if(!k){document.getElementById('ob-err').textContent='لطفاً API key وارد کن';return;}
@@ -414,23 +495,26 @@ function obSave(){
   setDot(true);hideOb();
 }
 function obSkip(){hideOb();}
-
 function openSov(){document.getElementById('sov').classList.add('open');}
 function closeSov(e){if(e.target===document.getElementById('sov'))document.getElementById('sov').classList.remove('open');}
 function setKeySave(){
   const k=document.getElementById('set-inp').value.trim();
   if(!k)return;
-  apiKey=k;localStorage.setItem('ws_key',k);
-  setDot(true);
+  apiKey=k;localStorage.setItem('ws_key',k);setDot(true);
   document.getElementById('sov').classList.remove('open');
 }
-function setDot(ok){
-  document.getElementById('dot').className='dot '+(ok?'ok':'err');
-  document.getElementById('dot-text').textContent=ok?'API آنتروپیک متصل ✓':'خطا';
+function setSyncCode(){
+  const code=document.getElementById('sync-inp').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  if(!code){alert('یه کد وارد کن (حروف انگلیسی/عدد)');return;}
+  localStorage.setItem('ws_sync_code',code);
+  USER_ID='sync_'+code;
+  document.getElementById('db-text').textContent='کد: '+code+' ✓ — در حال بارگذاری...';
+  loadWords();
+  document.getElementById('sov').classList.remove('open');
 }
-
+function setDot(ok){document.getElementById('dot').className='dot '+(ok?'ok':'err');document.getElementById('dot-text').textContent=ok?'API متصل ✓':'خطا';}
 function go(t){
-  ['search','cards','list'].forEach(id=>{
+  ['home','cards','list'].forEach(id=>{
     document.getElementById('tab-'+id).classList.toggle('active',id===t);
     document.getElementById('nav-'+id).classList.toggle('active',id===t);
   });
@@ -438,32 +522,53 @@ function go(t){
   if(t==='cards')initDeck();
   if(t==='list')renderList();
 }
-function cnt(){
-  ['cards','list'].forEach(id=>document.getElementById('nav-'+id).classList.toggle('hi',words.length>0));
+function cnt(){['cards','list'].forEach(id=>document.getElementById('nav-'+id).classList.toggle('hi',words.length>0));}
+
+// ── Search mode ──
+function setMode(m){
+  searchMode=m;
+  document.getElementById('mode-word').classList.toggle('active',m==='word');
+  document.getElementById('mode-phrase').classList.toggle('active',m==='phrase');
+  document.getElementById('s-inp').placeholder=m==='word'?'مثلاً: Kündigungsfrist  یا  قرارداد کار...':'یه جمله یا اصطلاح آلمانی وارد کن...';
+  document.getElementById('rcard').style.display='none';
+  document.getElementById('phrase-result').style.display='none';
 }
 
+// ── Search ──
 async function doSearch(){
   const q=document.getElementById('s-inp').value.trim();
   if(!q)return;
-  if(!apiKey){document.getElementById('eline').textContent='⚠ اول API key از تنظیمات ⚙️ وارد کن';return;}
+  if(!apiKey){document.getElementById('eline').textContent='⚠ اول API key از ⚙️ وارد کن';return;}
   document.getElementById('lrow').classList.add('show');
   document.getElementById('eline').textContent='';
   document.getElementById('rcard').style.display='none';
+  document.getElementById('phrase-result').style.display='none';
   document.getElementById('s-btn').disabled=true;
 
-  const prompt=`ورودی: "${q}"\nJSON خالص بده (بدون backtick):\n{"word":"بدون حرف تعریف","article":"der/die/das یا خالی","plural":"جمع","type":"Nomen/Verb/Adjektiv/Redewendung","level":"A1-C2","meaning_fa":"فارسی","meaning_en":"English","examples":[{"de":"","fa":""},{"de":"","fa":""},{"de":"","fa":""}],"related":["","",""],"grammar_tip":"نکته فارسی"}`;
-
   try{
-    const res=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({apiKey,model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const data=await res.json();
-    const raw=data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
-    cur=JSON.parse(raw);
-    renderResult(cur);
+    if(searchMode==='word') await searchWord(q);
+    else await searchPhrase(q);
   }catch(e){document.getElementById('eline').textContent='✗ خطا: '+e.message;}
   document.getElementById('lrow').classList.remove('show');
   document.getElementById('s-btn').disabled=false;
+}
+
+async function searchWord(q){
+  const prompt=`ورودی: "${q}"\nJSON خالص (بدون backtick):\n{"word":"بدون حرف تعریف","article":"der/die/das یا خالی","plural":"جمع","type":"Nomen/Verb/Adjektiv/Redewendung","level":"A1-C2","meaning_fa":"فارسی","meaning_en":"English","examples":[{"de":"","fa":""},{"de":"","fa":""},{"de":"","fa":""}],"related":["","",""],"grammar_tip":"نکته فارسی"}`;
+  const raw=(await ai(prompt)).replace(/```json|```/g,'').trim();
+  cur=JSON.parse(raw);
+  renderResult(cur);
+}
+
+async function searchPhrase(q){
+  document.getElementById('ltext').textContent='در حال تحلیل جمله...';
+  const prompt=`جمله یا اصطلاح آلمانی: "${q}"
+JSON خالص (بدون backtick):
+{"original":"${q}","translation_fa":"ترجمه کامل فارسی","words":[{"de":"کلمه یا عبارت مهم","fa":"معنی","note":"نکته گرامری یا کاربردی کوتاه","type":"Nomen/Verb/Adj/Phrase"}]}
+حداکثر ۶ کلمه/عبارت مهم بیار. فقط JSON.`;
+  const raw=(await ai(prompt)).replace(/```json|```/g,'').trim();
+  const data=JSON.parse(raw);
+  renderPhrase(data);
 }
 
 function renderResult(d){
@@ -481,7 +586,7 @@ function renderResult(d){
   if(d.type&&d.type!=='Verb')pe.innerHTML+=`<span class="pill">${d.type}</span>`;
   document.getElementById('r-exs').innerHTML=(d.examples||[]).map(e=>`<div class="ex-card"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`).join('');
   const ce=document.getElementById('r-chips'),rl=document.getElementById('rel-lbl');
-  if(d.related&&d.related.length){rl.style.display='block';ce.innerHTML=d.related.map(r=>`<span class="chip" onclick="jump('${r}')">${r}</span>`).join('');}
+  if(d.related&&d.related.length){rl.style.display='block';ce.innerHTML=d.related.map(r=>`<span class="chip" onclick="jumpWord('${r}')">${r}</span>`).join('');}
   else{rl.style.display='none';ce.innerHTML='';}
   const te=document.getElementById('r-tip'),tl=document.getElementById('tip-lbl');
   if(d.grammar_tip){tl.style.display='block';te.style.display='block';te.textContent=d.grammar_tip;}
@@ -495,19 +600,123 @@ function renderResult(d){
   document.getElementById('rcard').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function jump(w){document.getElementById('s-inp').value=w;doSearch();}
+function renderPhrase(d){
+  document.getElementById('ph-orig').textContent=d.original;
+  document.getElementById('ph-trans').textContent=d.translation_fa;
+  document.getElementById('ph-body').innerHTML=(d.words||[]).map((w,i)=>`
+    <div class="pword-item">
+      <div class="pword-de">${w.de}</div>
+      <div class="pword-info">
+        <div class="pword-fa">${w.fa}</div>
+        <div class="pword-note">${w.note||''}</div>
+      </div>
+      <button class="pword-add" id="padd-${i}" onclick="addPhraseWord(${i},'${w.de.replace(/'/g,"\\'")}','${w.fa.replace(/'/g,"\\'")}','${(w.note||'').replace(/'/g,"\\'")}')">+ اضافه</button>
+    </div>`).join('');
+  document.getElementById('phrase-result').style.display='block';
+  document.getElementById('phrase-result').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+async function addPhraseWord(i,de,fa,note){
+  if(words.find(w=>w.de===de))return;
+  const w={de,fa,ex:note,score:0,seen:0};
+  words.unshift(w);cnt();renderRecent();
+  await addWordDB(w);
+  const btn=document.getElementById('padd-'+i);
+  if(btn){btn.textContent='✓ اضافه شد';btn.classList.add('added');btn.disabled=true;}
+}
+
+function jumpWord(w){setMode('word');document.getElementById('s-inp').value=w;doSearch();}
 
 async function addCard(){
   if(!cur)return;
   const key=(cur.article&&cur.article!=='—'?cur.article+' ':'')+cur.word;
   if(words.find(w=>w.de===key))return;
   const w={de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0};
-  words.unshift(w);cnt();
+  words.unshift(w);cnt();renderRecent();
   await addWordDB(w);
   const btn=document.getElementById('add-btn');
   btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;
 }
 
+// ── Recent words ──
+function renderRecent(){
+  const recent=words.slice(0,8);
+  const card=document.getElementById('recent-card');
+  if(!recent.length){card.style.display='none';return;}
+  card.style.display='block';
+  selectedRecent=[];
+  document.getElementById('rc-sentence').className='rc-sentence';
+  document.getElementById('rc-sentence').textContent='';
+  document.getElementById('rc-words').innerHTML=recent.map((w,i)=>
+    `<span class="rc-word" onclick="toggleRecent(${i},'${w.de.replace(/'/g,"\\'")}')">${w.de}</span>`
+  ).join('');
+}
+
+function toggleRecent(i,de){
+  const el=document.getElementById('rc-words').children[i];
+  const idx2=selectedRecent.indexOf(de);
+  if(idx2>-1){selectedRecent.splice(idx2,1);el.classList.remove('sel');}
+  else{selectedRecent.push(de);el.classList.add('sel');}
+}
+
+async function makeSentence(){
+  const sel=selectedRecent.length>0?selectedRecent:words.slice(0,3).map(w=>w.de);
+  if(!sel.length)return;
+  if(!apiKey){alert('API key لازمه');return;}
+  document.getElementById('rc-load').classList.add('show');
+  document.getElementById('rc-sentence').className='rc-sentence';
+  try{
+    const prompt=`با این لغات آلمانی یک جمله طبیعی و کاربردی بساز: ${sel.join(', ')}\nفقط یک جمله آلمانی بنویس، بعد در پرانتز ترجمه فارسی بده. مثال: Ich habe die Bewerbung abgeschickt. (درخواست کارم رو فرستادم.)`;
+    const result=await ai(prompt,200);
+    document.getElementById('rc-sentence').textContent=result;
+    document.getElementById('rc-sentence').classList.add('show');
+  }catch(e){document.getElementById('rc-sentence').textContent='خطا در ساخت جمله';}
+  document.getElementById('rc-load').classList.remove('show');
+}
+
+// ── Daily suggestions ──
+async function loadDaily(forceRefresh){
+  const today=new Date().toDateString();
+  const cached=localStorage.getItem('ws_daily');
+  if(!forceRefresh&&cached){
+    try{
+      const c=JSON.parse(cached);
+      if(c.date===today){dailyWords=c.words;renderDaily();return;}
+    }catch(e){}
+  }
+  if(!apiKey){document.getElementById('dc-words').innerHTML='<div class="dc-loading">API key لازمه</div>';return;}
+  document.getElementById('dc-words').innerHTML='<div class="dc-loading">در حال بارگذاری پیشنهادات...</div>';
+  try{
+    const knownWords=words.map(w=>w.de).slice(0,20).join(', ');
+    const prompt=`۵ لغت آلمانی سطح C1 پیشنهاد بده که برای محیط کار و دانشگاه کاربردی باشن.
+${knownWords?`کاربر اینا رو قبلاً یاد گرفته، تکرار نکن: ${knownWords}`:''}
+JSON خالص: [{"de":"لغت با حرف تعریف","fa":"معنی فارسی","level":"C1","example_de":"یه جمله کوتاه"}]
+فقط JSON.`;
+    const raw=(await ai(prompt,600)).replace(/```json|```/g,'').trim();
+    dailyWords=JSON.parse(raw);
+    localStorage.setItem('ws_daily',JSON.stringify({date:today,words:dailyWords}));
+    renderDaily();
+  }catch(e){document.getElementById('dc-words').innerHTML='<div class="dc-loading">خطا در بارگذاری</div>';}
+}
+
+function renderDaily(){
+  if(!dailyWords.length)return;
+  document.getElementById('dc-words').innerHTML=dailyWords.map((w,i)=>`
+    <div class="dc-item" onclick="searchDailyWord('${w.de.replace(/'/g,"\\'")}')">
+      <div class="dc-de">${w.de}</div>
+      <div class="dc-fa">${w.fa}</div>
+      <span class="dc-level">${w.level||'C1'}</span>
+    </div>`).join('');
+}
+
+function searchDailyWord(de){
+  setMode('word');
+  document.getElementById('s-inp').value=de;
+  window.scrollTo({top:0,behavior:'smooth'});
+  doSearch();
+}
+
+// ── Flashcards ──
 function initDeck(){
   const e=document.getElementById('fc-empty'),d=document.getElementById('fc-done'),u=document.getElementById('fc-ui');
   if(!words.length){e.style.display='block';u.style.display='none';d.style.display='none';return;}
@@ -532,6 +741,7 @@ async function rate(k){
   idx++;showCard();
 }
 
+// ── List ──
 function renderList(){
   const el=document.getElementById('wlist');
   if(!words.length){el.innerHTML='<div class="ebox"><span class="ei">📭</span><p>لیست خالیه!</p></div>';return;}
@@ -544,26 +754,25 @@ function renderList(){
     </div>`).join('');
 }
 async function del(i){
-  const w=words[i];words.splice(i,1);cnt();renderList();
+  const w=words[i];words.splice(i,1);cnt();renderList();renderRecent();
   await delWordDB(w.id);
 }
 async function clearAll(){
   if(!confirm('همه لغات پاک بشن؟'))return;
-  words=[];cnt();renderList();
+  words=[];cnt();renderList();renderRecent();
   document.getElementById('sov').classList.remove('open');
   await clearDB();
 }
 
+// ── Keyboard ──
 document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&document.getElementById('tab-search').classList.contains('active'))doSearch();
+  if(e.key==='Enter'&&document.getElementById('tab-home').classList.contains('active'))doSearch();
   if(e.key===' '&&document.getElementById('tab-cards').classList.contains('active')){e.preventDefault();flip();}
   if(e.key==='Escape')document.getElementById('sov').classList.remove('open');
 });
 
 initApp();
 </script>
-<script>
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
-</script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');</script>
 </body>
 </html>
