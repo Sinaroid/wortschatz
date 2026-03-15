@@ -119,9 +119,9 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 .s-btn:disabled{opacity:.5;cursor:default;transform:none}
 
 /* Search mode toggle */
-.mode-row{display:flex;gap:6px;margin-bottom:1.25rem}
-.mode-btn{flex:1;padding:8px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-family:'Vazirmatn',sans-serif;font-size:12px;cursor:pointer;transition:all .18s;text-align:center}
-.mode-btn.active{border-color:var(--text);background:var(--text);color:#fff}
+
+
+
 
 .loading-row{display:none;align-items:center;justify-content:center;gap:10px;padding:.75rem;font-size:13px;color:var(--text2)}
 .loading-row.show{display:flex}
@@ -170,23 +170,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 .pword-add:hover{border-color:var(--green);color:var(--green)}
 .pword-add.added{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.08)}
 
-/* ── Recent words card (coral) ── */
-.recent-card{background:var(--coral);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:1rem;position:relative;overflow:hidden;box-shadow:var(--shadow)}
-.recent-card::before{content:'';position:absolute;top:-20px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08)}
-.recent-card::after{content:'';position:absolute;bottom:-30px;right:-10px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.06)}
-.rc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;position:relative;z-index:1}
-.rc-title{font-family:'Instrument Serif',serif;font-size:18px;color:#fff}
-.rc-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
-.rc-make-btn{padding:6px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-family:'Vazirmatn',sans-serif;font-size:11px;cursor:pointer;transition:all .18s;backdrop-filter:blur(4px)}
-.rc-make-btn:hover{background:rgba(255,255,255,.25)}
-.rc-words{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem;position:relative;z-index:1}
-.rc-word{padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;font-size:12px;cursor:pointer;transition:all .15s;border:1px solid rgba(255,255,255,.15)}
-.rc-word:hover{background:rgba(255,255,255,.3)}
-.rc-word.sel{background:#fff;color:var(--coral);font-weight:600}
-.rc-sentence{background:rgba(0,0,0,.15);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;color:#fff;line-height:1.7;display:none;position:relative;z-index:1;animation:fadeUp .3s ease}
-.rc-sentence.show{display:block}
-.rc-sentence-loading{display:none;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.7);position:relative;z-index:1}
-.rc-sentence-loading.show{display:flex}
+
 .spinner-white{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .7s linear infinite}
 
 /* ── Daily suggestions card (blue) ── */
@@ -249,8 +233,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 @media(max-width:600px){
   .home-hero h1{font-size:28px}.rword{font-size:36px}.cword{font-size:32px}.cmean{font-size:21px}
   .nav-tab{padding:5px 10px;font-size:11px}.rhero,.rbody{padding:1.1rem}
-  .rc-words{gap:5px}
-}
+  }
 
 /* ── Progress / Stats ── */
 .stats-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
@@ -342,13 +325,6 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       <h1>لغت آلمانی<br>یاد بگیر</h1>
       <p>لغت، جمله یا اصطلاح فارسی / آلمانی وارد کن</p>
     </div>
-
-    <!-- Mode toggle -->
-    <div class="mode-row">
-      <button class="mode-btn active" id="mode-word" onclick="setMode('word')">🔤 جستجوی لغت</button>
-      <button class="mode-btn" id="mode-phrase" onclick="setMode('phrase')">🎬 تحلیل جمله / اصطلاح</button>
-    </div>
-
     <div class="sbox">
       <input class="s-inp" id="s-inp" placeholder="مثلاً: Kündigungsfrist  یا  «auf jeden Fall»..." />
       <button class="s-btn" id="s-btn" onclick="doSearch()">جستجو ←</button>
@@ -385,20 +361,6 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
         <div class="phrase-trans" id="ph-trans"></div>
       </div>
       <div class="phrase-body" id="ph-body"></div>
-    </div>
-
-    <!-- Recent words (coral card) -->
-    <div class="recent-card" id="recent-card" style="display:none">
-      <div class="rc-header">
-        <div>
-          <div class="rc-title">لغات اخیر</div>
-          <div class="rc-sub">کلیک کن تا جمله بسازه</div>
-        </div>
-        <button class="rc-make-btn" id="rc-make-btn" onclick="makeSentence()">ساخت جمله ←</button>
-      </div>
-      <div class="rc-words" id="rc-words"></div>
-      <div class="rc-sentence-loading" id="rc-load"><div class="spinner-white"></div><span>در حال ساخت جمله...</span></div>
-      <div class="rc-sentence" id="rc-sentence"></div>
     </div>
 
     <!-- Daily suggestions (blue card) -->
@@ -490,7 +452,7 @@ async function loadWords(){
   try{
     const data=await sb('/rest/v1/words?user_id=eq.'+USER_ID+'&order=created_at.asc');
     words=data.map(r=>({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',score:r.score||0,seen:r.seen||0,interval:r.interval||1,easiness:r.easiness||2.5,next_review:r.next_review||new Date().toISOString(),reviewed_at:r.reviewed_at||null}));
-    cnt();renderRecent();updateStats();
+    cnt();updateStats();
   }catch(e){setSdot('');console.error(e);}
 }
 async function addWordDB(w){
@@ -503,8 +465,6 @@ async function clearDB(){try{await sb('/rest/v1/words?user_id=eq.'+USER_ID,{meth
 // ── State ──
 let apiKey=localStorage.getItem('ws_key')||'';
 let words=[],cur=null,deck=[],idx=0,flipped=false;
-let searchMode='word';
-let selectedRecent=[];
 let dailyWords=[];
 
 // ── AI call ──
@@ -585,17 +545,20 @@ function go(t){
 }
 function cnt(){['cards','list'].forEach(id=>document.getElementById('nav-'+id).classList.toggle('hi',words.length>0));}
 
-// ── Search mode ──
-function setMode(m){
-  searchMode=m;
-  document.getElementById('mode-word').classList.toggle('active',m==='word');
-  document.getElementById('mode-phrase').classList.toggle('active',m==='phrase');
-  document.getElementById('s-inp').placeholder=m==='word'?'مثلاً: Kündigungsfrist  یا  قرارداد کار...':'یه جمله یا اصطلاح آلمانی وارد کن...';
-  document.getElementById('rcard').style.display='none';
-  document.getElementById('phrase-result').style.display='none';
-}
+
 
 // ── Search ──
+function detectMode(q){
+  // If more than 3 words, or contains space + verb patterns → phrase
+  const words=q.trim().split(/\s+/);
+  if(words.length>=3) return 'phrase';
+  // Common phrase indicators
+  if(/[,،.!?]/.test(q)) return 'phrase';
+  // If it looks like a sentence starter
+  if(/^(ich|du|er|sie|es|wir|ihr|man|das|die|der|ein|eine|in|auf|mit|bei|zum|zur|wenn|weil|obwohl|dass)\s/i.test(q)) return 'phrase';
+  return 'word';
+}
+
 async function doSearch(){
   const q=document.getElementById('s-inp').value.trim();
   if(!q)return;
@@ -606,8 +569,9 @@ async function doSearch(){
   document.getElementById('phrase-result').style.display='none';
   document.getElementById('s-btn').disabled=true;
 
+  const mode=detectMode(q);
   try{
-    if(searchMode==='word') await searchWord(q);
+    if(mode==='word') await searchWord(q);
     else await searchPhrase(q);
   }catch(e){document.getElementById('eline').textContent='✗ خطا: '+e.message;}
   document.getElementById('lrow').classList.remove('show');
@@ -680,60 +644,26 @@ function renderPhrase(d){
 async function addPhraseWord(i,de,fa,note){
   if(words.find(w=>w.de===de))return;
   const w={de,fa,ex:note,score:0,seen:0};
-  words.unshift(w);cnt();renderRecent();
+  words.unshift(w);cnt();
   await addWordDB(w);
   const btn=document.getElementById('padd-'+i);
   if(btn){btn.textContent='✓ اضافه شد';btn.classList.add('added');btn.disabled=true;}
 }
 
-function jumpWord(w){setMode('word');document.getElementById('s-inp').value=w;doSearch();}
+function jumpWord(w){document.getElementById('s-inp').value=w;doSearch();}
 
 async function addCard(){
   if(!cur)return;
   const key=(cur.article&&cur.article!=='—'?cur.article+' ':'')+cur.word;
   if(words.find(w=>w.de===key))return;
   const w={de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0};
-  words.unshift(w);cnt();renderRecent();
+  words.unshift(w);cnt();
   await addWordDB(w);
   const btn=document.getElementById('add-btn');
   btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;
 }
 
-// ── Recent words ──
-function renderRecent(){
-  const recent=words.slice(0,8);
-  const card=document.getElementById('recent-card');
-  if(!recent.length){card.style.display='none';return;}
-  card.style.display='block';
-  selectedRecent=[];
-  document.getElementById('rc-sentence').className='rc-sentence';
-  document.getElementById('rc-sentence').textContent='';
-  document.getElementById('rc-words').innerHTML=recent.map((w,i)=>
-    `<span class="rc-word" onclick="toggleRecent(${i},'${w.de.replace(/'/g,"\\'")}')">${w.de}</span>`
-  ).join('');
-}
 
-function toggleRecent(i,de){
-  const el=document.getElementById('rc-words').children[i];
-  const idx2=selectedRecent.indexOf(de);
-  if(idx2>-1){selectedRecent.splice(idx2,1);el.classList.remove('sel');}
-  else{selectedRecent.push(de);el.classList.add('sel');}
-}
-
-async function makeSentence(){
-  const sel=selectedRecent.length>0?selectedRecent:words.slice(0,3).map(w=>w.de);
-  if(!sel.length)return;
-  if(!apiKey){alert('API key لازمه');return;}
-  document.getElementById('rc-load').classList.add('show');
-  document.getElementById('rc-sentence').className='rc-sentence';
-  try{
-    const prompt=`با این لغات آلمانی یک جمله طبیعی و کاربردی بساز: ${sel.join(', ')}\nفقط یک جمله آلمانی بنویس، بعد در پرانتز ترجمه فارسی بده. مثال: Ich habe die Bewerbung abgeschickt. (درخواست کارم رو فرستادم.)`;
-    const result=await ai(prompt,200);
-    document.getElementById('rc-sentence').textContent=result;
-    document.getElementById('rc-sentence').classList.add('show');
-  }catch(e){document.getElementById('rc-sentence').textContent='خطا در ساخت جمله';}
-  document.getElementById('rc-load').classList.remove('show');
-}
 
 // ── Daily suggestions ──
 async function loadDaily(forceRefresh){
@@ -772,7 +702,6 @@ function renderDaily(){
 }
 
 function searchDailyWord(de){
-  setMode('word');
   document.getElementById('s-inp').value=de;
   window.scrollTo({top:0,behavior:'smooth'});
   doSearch();
@@ -886,12 +815,12 @@ function renderList(){
     </div>`).join('');
 }
 async function del(i){
-  const w=words[i];words.splice(i,1);cnt();renderList();renderRecent();
+  const w=words[i];words.splice(i,1);cnt();renderList();
   await delWordDB(w.id);
 }
 async function clearAll(){
   if(!confirm('همه لغات پاک بشن؟'))return;
-  words=[];cnt();renderList();renderRecent();
+  words=[];cnt();renderList();
   document.getElementById('sov').classList.remove('open');
   await clearDB();
 }
