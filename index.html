@@ -228,6 +228,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 .sc-neg{background:rgba(255,77,77,.1);color:var(--red)}
 .sc-neu{background:var(--card2);color:var(--text3);border:1px solid var(--border)}
 .del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px;border-radius:5px;transition:all .15s;line-height:1}
+.dup-row{border-color:rgba(255,92,58,.25)!important;background:rgba(255,92,58,.03)!important}
 .del-btn:hover{color:var(--red);background:rgba(255,77,77,.08)}
 
 @media(max-width:600px){
@@ -258,6 +259,18 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
 .sr-due{font-size:11px;font-weight:600}
 .sr-due.due-now{color:var(--coral)}
 .sr-due.due-later{color:var(--green)}
+
+/* ── Edit modal ── */
+.edit-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:60;display:none;align-items:center;justify-content:center;padding:1rem}
+.edit-overlay.open{display:flex}
+.edit-modal{background:var(--card);border-radius:var(--r);padding:1.5rem;width:100%;max-width:420px;box-shadow:var(--shadow-lg);animation:up .25s cubic-bezier(.4,0,.2,1)}
+.edit-title{font-size:16px;font-weight:600;margin-bottom:1.25rem}
+.edit-lbl{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.edit-inp{width:100%;padding:10px 14px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--card2);color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:14px;margin-bottom:1rem;outline:none;transition:border-color .2s}
+.edit-inp:focus{border-color:var(--text)}
+.edit-inp.ltr{direction:ltr;font-family:'Instrument Serif',serif}
+.edit-warn{font-size:12px;color:var(--coral);min-height:16px;margin-bottom:8px}
+.edit-actions{display:flex;gap:8px}
 </style>
 </head>
 <body>
@@ -341,9 +354,12 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
         <div class="pill-row" id="r-pills"></div>
       </div>
       <div class="rbody">
+        <div id="r-corrected" style="display:none;font-size:12px;color:var(--coral);margin-bottom:8px;padding:5px 10px;background:rgba(255,92,58,.08);border-radius:var(--r-xs)"></div>
         <div class="slbl">معنی</div>
         <div class="mfa" id="r-fa"></div>
         <div class="men" id="r-en"></div>
+        <div class="slbl" id="syn-lbl" style="display:none">مترادف / متضاد</div>
+        <div class="chips" id="r-syn" style="display:none"></div>
         <div class="slbl">جمله‌های نمونه</div>
         <div id="r-exs"></div>
         <div class="slbl" id="rel-lbl" style="display:none">کلمات مرتبط</div>
@@ -423,6 +439,25 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
     <div class="list-top"><div class="list-title">لیست لغات</div></div>
     <div id="wlist"></div>
   </div>
+
+<!-- Edit modal -->
+<div class="edit-overlay" id="edit-overlay" onclick="closeEdit(event)">
+  <div class="edit-modal">
+    <div class="edit-title">ویرایش لغت</div>
+    <div class="edit-lbl">آلمانی</div>
+    <input class="edit-inp ltr" id="edit-de" type="text" />
+    <div class="edit-lbl">فارسی</div>
+    <input class="edit-inp" id="edit-fa" type="text" />
+    <div class="edit-lbl">جمله نمونه (اختیاری)</div>
+    <input class="edit-inp ltr" id="edit-ex" type="text" />
+    <div class="edit-warn" id="edit-warn"></div>
+    <div class="edit-actions">
+      <button class="btn btn-dark" style="flex:1" onclick="saveEdit()">ذخیره</button>
+      <button class="btn" onclick="closeEdit()">انصراف</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -579,8 +614,32 @@ async function doSearch(){
 }
 
 async function searchWord(q){
-  const prompt=`ورودی: "${q}"\nJSON خالص (بدون backtick):\n{"word":"بدون حرف تعریف","article":"der/die/das یا خالی","plural":"جمع","type":"Nomen/Verb/Adjektiv/Redewendung","level":"A1-C2","meaning_fa":"فارسی","meaning_en":"English","examples":[{"de":"","fa":""},{"de":"","fa":""},{"de":"","fa":""}],"related":["","",""],"grammar_tip":"نکته فارسی"}`;
-  const raw=(await ai(prompt)).replace(/```json|```/g,'').trim();
+  // Auto-correct German typed with English keyboard (e.g. "ae"→"ä", "oe"→"ö" etc.)
+  const prompt=`کاربر این لغت رو وارد کرده: "${q}"
+ممکنه با کیبورد انگلیسی تایپ شده باشه. ابتدا املا رو تصحیح کن (مثلاً ae→ä، oe→ö، ue→ü، ss→ß اگه لازمه).
+اگه فارسی است، معادل آلمانی پیدا کن.
+اطلاعات کامل رو در JSON خالص (بدون backtick) برگردان:
+{
+  "word": "لغت آلمانی بدون حرف تعریف (تصحیح‌شده)",
+  "corrected_from": "اگه تصحیح شد اینجا بنویس وگرنه خالی",
+  "article": "der/die/das یا خالی برای فعل/صفت",
+  "plural": "جمع اگر اسم است",
+  "preposition": "حرف اضافه‌ای که با این لغت میاد مثلاً auf+Akk یا an+Dat — اگه نداره خالی",
+  "type": "Nomen/Verb/Adjektiv/Adverb/Redewendung",
+  "level": "A1/A2/B1/B2/C1/C2",
+  "meaning_fa": "معنی فارسی دقیق و کامل",
+  "meaning_en": "precise English meaning",
+  "synonyms": ["مترادف۱ آلمانی", "مترادف۲ آلمانی"],
+  "antonyms": ["متضاد۱ آلمانی"],
+  "examples": [
+    {"de": "جمله اول — طبیعی و کاربردی", "fa": "ترجمه فارسی"},
+    {"de": "جمله دوم — در موقعیت متفاوت", "fa": "ترجمه فارسی"}
+  ],
+  "related": ["کلمه مرتبط۱", "کلمه مرتبط۲", "کلمه مرتبط۳"],
+  "grammar_tip": "نکته گرامری مهم و کاربردی به فارسی — مثلاً صرف فعل، حالت دستوری، استثناء"
+}
+فقط JSON.`;
+  const raw=(await ai(prompt,1200)).replace(/```json|```/g,'').trim();
   cur=JSON.parse(raw);
   renderResult(cur);
 }
@@ -602,13 +661,28 @@ function renderResult(d){
   else if(d.type==='Verb')ae.innerHTML=`<span class="art-pill">Verb</span>`;
   else ae.innerHTML='';
   document.getElementById('r-word').textContent=d.word;
-  document.getElementById('r-plural').textContent=d.plural?'Pl: '+d.plural:'';
+  // Show correction notice + preposition
+  let meta='';
+  if(d.plural) meta+='Pl: '+d.plural;
+  if(d.preposition) meta+=(meta?' · ':'')+d.preposition;
+  document.getElementById('r-plural').textContent=meta;
+  // Correction notice
+  const corrEl=document.getElementById('r-corrected');
+  if(d.corrected_from&&d.corrected_from.trim()){
+    corrEl.textContent='✎ تصحیح از: '+d.corrected_from;corrEl.style.display='block';
+  } else {corrEl.style.display='none';}
   document.getElementById('r-fa').textContent=d.meaning_fa;
   document.getElementById('r-en').textContent=d.meaning_en;
   const pe=document.getElementById('r-pills');
   pe.innerHTML='';
   if(d.level)pe.innerHTML+=`<span class="pill">${d.level}</span>`;
-  if(d.type&&d.type!=='Verb')pe.innerHTML+=`<span class="pill">${d.type}</span>`;
+  if(d.type)pe.innerHTML+=`<span class="pill">${d.type}</span>`;
+  // Synonyms + antonyms
+  const synEl=document.getElementById('r-syn'),synLbl=document.getElementById('syn-lbl');
+  const synArr=[...(d.synonyms||[]).map(s=>`<span class="chip" onclick="jumpWord('${s}')">${s}</span>`),
+                ...(d.antonyms||[]).map(a=>`<span class="chip" style="border-color:rgba(255,77,77,.3);color:var(--red)" onclick="jumpWord('${a}')">${a} ↔</span>`)];
+  if(synArr.length){synLbl.style.display='block';synEl.innerHTML=synArr.join('');synEl.style.display='flex';}
+  else{synLbl.style.display='none';synEl.style.display='none';}
   document.getElementById('r-exs').innerHTML=(d.examples||[]).map(e=>`<div class="ex-card"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`).join('');
   const ce=document.getElementById('r-chips'),rl=document.getElementById('rel-lbl');
   if(d.related&&d.related.length){rl.style.display='block';ce.innerHTML=d.related.map(r=>`<span class="chip" onclick="jumpWord('${r}')">${r}</span>`).join('');}
@@ -655,7 +729,11 @@ function jumpWord(w){document.getElementById('s-inp').value=w;doSearch();}
 async function addCard(){
   if(!cur)return;
   const key=(cur.article&&cur.article!=='—'?cur.article+' ':'')+cur.word;
-  if(words.find(w=>w.de===key))return;
+  // duplicate check - case insensitive
+  if(words.find(w=>w.de.toLowerCase()===key.toLowerCase())){
+    const btn=document.getElementById('add-btn');
+    btn.innerHTML='<span>⚠</span> قبلاً اضافه شده';btn.disabled=true;return;
+  }
   const w={de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0};
   words.unshift(w);cnt();
   await addWordDB(w);
@@ -705,6 +783,36 @@ function searchDailyWord(de){
   document.getElementById('s-inp').value=de;
   window.scrollTo({top:0,behavior:'smooth'});
   doSearch();
+}
+
+// ── Edit word ──
+let editIdx=-1;
+function openEdit(i){
+  editIdx=i;
+  const w=words[i];
+  document.getElementById('edit-de').value=w.de;
+  document.getElementById('edit-fa').value=w.fa;
+  document.getElementById('edit-ex').value=w.ex||'';
+  document.getElementById('edit-warn').textContent='';
+  document.getElementById('edit-overlay').classList.add('open');
+}
+function closeEdit(e){
+  if(!e||e.target===document.getElementById('edit-overlay'))
+    document.getElementById('edit-overlay').classList.remove('open');
+}
+async function saveEdit(){
+  const de=document.getElementById('edit-de').value.trim();
+  const fa=document.getElementById('edit-fa').value.trim();
+  const ex=document.getElementById('edit-ex').value.trim();
+  if(!de||!fa){document.getElementById('edit-warn').textContent='آلمانی و فارسی رو پر کن';return;}
+  // duplicate check
+  const dup=words.find((w,i)=>i!==editIdx&&w.de.toLowerCase()===de.toLowerCase());
+  if(dup){document.getElementById('edit-warn').textContent='این لغت قبلاً توی لیست هست!';return;}
+  const w=words[editIdx];
+  w.de=de;w.fa=fa;w.ex=ex;
+  await updWordDB(w);
+  document.getElementById('edit-overlay').classList.remove('open');
+  renderList();
 }
 
 // ── Flashcards ──
@@ -806,13 +914,20 @@ function updateStats(){
 function renderList(){
   const el=document.getElementById('wlist');
   if(!words.length){el.innerHTML='<div class="ebox"><span class="ei">📭</span><p>لیست خالیه!</p></div>';return;}
-  el.innerHTML=words.map((w,i)=>`
-    <div class="wrow">
+  // find duplicates
+  const deCount={};
+  words.forEach(w=>deCount[w.de.toLowerCase()]=(deCount[w.de.toLowerCase()]||0)+1);
+  el.innerHTML=words.map((w,i)=>{
+    const isDup=deCount[w.de.toLowerCase()]>1;
+    return `<div class="wrow${isDup?' dup-row':''}">
+      ${isDup?'<span title="تکراری!" style="color:var(--coral);font-size:14px;flex-shrink:0">⚠</span>':''}
       <span class="wde">${w.de}</span>
       <span class="wfa">${w.fa}</span>
       <span class="wscore ${w.score>0?'sc-pos':w.score<0?'sc-neg':'sc-neu'}">${w.score>0?'+':''}${w.score}</span>
+      <button class="del-btn" title="ویرایش" onclick="openEdit(${i})" style="color:var(--text3);font-size:13px">✎</button>
       <button class="del-btn" onclick="del(${i})">✕</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 async function del(i){
   const w=words[i];words.splice(i,1);cnt();renderList();
