@@ -373,10 +373,7 @@ a { color: var(--accent); text-decoration: none; }
 /* ═══════════════════════════════════════
    SEARCH
 ═══════════════════════════════════════ */
-.search-wrap {
-  position: relative; margin-bottom: var(--s4);
-  animation: slideUp .4s .15s var(--ease) both;
-}
+/* search-wrap moved to autocomplete section */
 .search-field {
   width: 100%; padding: 14px var(--s5) 14px 56px;
   border-radius: var(--r-xl);
@@ -939,6 +936,56 @@ body.offline .search-go { opacity: .5; }
   cursor: pointer; transition: all .18s;
 }
 .reminder-btn:hover { background: rgba(255,255,255,.25); }
+
+/* ── Autocomplete ── */
+.search-wrap { position: relative; margin-bottom: var(--s4); animation: slideUp .4s .15s var(--ease) both; }
+.ac-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: var(--paper);
+  border: 1px solid var(--paper3);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-lg);
+  z-index: 20; overflow: hidden;
+  display: none;
+  animation: slideUp .2s var(--bounce);
+}
+.ac-dropdown.show { display: block; }
+.ac-item {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: 10px var(--s4);
+  cursor: pointer; transition: background .12s;
+  border-bottom: 1px solid var(--paper3);
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item.selected { background: var(--acc-light); }
+.ac-icon { color: var(--ink4); font-size: 12px; flex-shrink: 0; }
+.ac-word { font-family: var(--serif); font-size: 15px; color: var(--ink); flex: 1; direction: ltr; }
+.ac-word mark { background: none; color: var(--accent); font-weight: 700; }
+.ac-fa { font-size: 12px; color: var(--ink3); }
+.ac-tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; background: var(--acc-light); color: var(--accent); font-weight: 600; flex-shrink: 0; }
+.ac-tag.cached { background: var(--paper2); color: var(--ink3); }
+
+/* ── List search ── */
+.list-search-wrap {
+  position: relative; margin-bottom: var(--s4);
+}
+.list-search {
+  width: 100%; padding: 10px var(--s4) 10px 40px;
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--paper3);
+  background: var(--paper2);
+  color: var(--ink); font-family: var(--sans); font-size: 14px;
+  outline: none; transition: all .2s var(--ease);
+  direction: rtl;
+}
+.list-search:focus { border-color: var(--accent); background: var(--paper); box-shadow: 0 0 0 3px var(--acc-glow); }
+.list-search::placeholder { color: var(--ink4); }
+.list-search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--ink4); pointer-events: none;
+}
+.list-empty-search { text-align: center; padding: var(--s8); color: var(--ink4); font-size: 14px; }
+.highlight { color: var(--accent); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -1060,7 +1107,11 @@ body.offline .search-go { opacity: .5; }
     </div>
 
     <div class="search-wrap">
-      <input class="search-field" id="s-inp" placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..." />
+      <input class="search-field" id="s-inp" placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
+        oninput="onSearchInput()"
+        onkeydown="onSearchKeydown(event)"
+        autocomplete="off" />
+      <div class="ac-dropdown" id="ac-drop"></div>
       <button class="search-go" id="s-go" onclick="doSearch()">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M10 3L14 8L10 13M14 8H2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1252,6 +1303,13 @@ body.offline .search-go { opacity: .5; }
   <div class="pane" id="pane-list">
     <div class="list-head">
       <div class="list-title">لیست لغات</div>
+    </div>
+    <div class="list-search-wrap">
+      <svg class="list-search-icon" width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input class="list-search" id="list-q" placeholder="جستجو در لغات..." oninput="renderList()" />
     </div>
     <div id="word-list"></div>
   </div>
@@ -1536,6 +1594,8 @@ async function doSearch(){
     if(detectMode(q)==='word') await searchWord(q);
     else await searchPhrase(q);
     setStatus('','');
+    document.getElementById('s-inp').value='';
+    closeAC();
   }catch(e){ setStatus('✗ خطا: '+e.message,'err'); }
 
   btn.disabled=false; btn.classList.remove('loading');
@@ -1858,12 +1918,28 @@ function endQuiz(){
 function renderList(){
   const el=document.getElementById('word-list');
   if(!words.length){ el.innerHTML='<div class="empty"><span class="empty-icon">📭</span><h3>لیست خالیه</h3><p>لغت جستجو کن و اضافه کن</p></div>'; return; }
+
+  const q=(document.getElementById('list-q')?.value||'').trim().toLowerCase();
+  const filtered = q ? words.filter((w,i)=>{
+    const origIdx=i;
+    return w.de.toLowerCase().includes(q)||w.fa.includes(q)||(w.ex||'').toLowerCase().includes(q);
+  }) : words;
+
+  if(!filtered.length){ el.innerHTML=`<div class="list-empty-search">«${q}» پیدا نشد</div>`; return; }
+
   const cnt={}; words.forEach(w=>cnt[w.de.toLowerCase()]=(cnt[w.de.toLowerCase()]||0)+1);
-  el.innerHTML=words.map((w,i)=>`
-    <div class="word-item${cnt[w.de.toLowerCase()]>1?' dup':''}">
+
+  function hl(text, q){
+    if(!q) return text;
+    return text.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<span class="highlight">$1</span>');
+  }
+
+  el.innerHTML=filtered.map(w=>{
+    const i=words.indexOf(w);
+    return `<div class="word-item${cnt[w.de.toLowerCase()]>1?' dup':''}">
       ${cnt[w.de.toLowerCase()]>1?'<span title="تکراری" style="color:var(--warn);font-size:13px;flex-shrink:0">⚠</span>':''}
-      <span class="wi-de">${w.de}</span>
-      <span class="wi-fa">${w.fa}</span>
+      <span class="wi-de">${hl(w.de,q)}</span>
+      <span class="wi-fa">${hl(w.fa,q)}</span>
       <span class="wi-score ${w.score>0?'wi-pos':w.score<0?'wi-neg':'wi-neu'}">${w.score>0?'+':''}${w.score}</span>
       <button class="btn btn-icon btn-ghost btn-sm" onclick="openEdit(${i})" title="ویرایش">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2l2 2-7 7H2V9L9 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
@@ -1871,7 +1947,8 @@ function renderList(){
       <button class="btn btn-icon btn-ghost btn-sm" onclick="delWord(${i})" title="حذف">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3h9M5 3V2h3v1M4 3v7a1 1 0 001 1h3a1 1 0 001-1V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function delWord(i){
@@ -1909,6 +1986,98 @@ async function saveEdit(){
   document.getElementById('edit-modal').classList.remove('show');
   renderList();
 }
+
+/* ═══════════════════════════════════════
+   AUTOCOMPLETE
+═══════════════════════════════════════ */
+let acIdx = -1;
+
+function getACSuggestions(q){
+  if(!q||q.length<2) return [];
+  const ql = q.toLowerCase();
+  const results = [];
+
+  // 1. From saved words (highest priority)
+  words.forEach(w=>{
+    if(w.de.toLowerCase().startsWith(ql)||w.de.toLowerCase().includes(ql)){
+      results.push({de:w.de, fa:w.fa, type:'saved'});
+    }
+  });
+
+  // 2. From search cache
+  const cacheKeys = Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
+  cacheKeys.forEach(k=>{
+    try{
+      const d = JSON.parse(localStorage.getItem(k));
+      if(!d||!d.word) return;
+      const full = (d.article&&d.article!=='—'?d.article+' ':'')+d.word;
+      if(words.find(w=>w.de===full)) return; // already in saved
+      if(full.toLowerCase().startsWith(ql)||full.toLowerCase().includes(ql)||
+         d.meaning_fa?.includes(q)){
+        results.push({de:full, fa:d.meaning_fa, type:'cached'});
+      }
+    }catch(e){}
+  });
+
+  // dedupe and limit
+  const seen = new Set();
+  return results.filter(r=>{ if(seen.has(r.de)){return false;} seen.add(r.de); return true; }).slice(0,6);
+}
+
+function onSearchInput(){
+  const q = document.getElementById('s-inp').value.trim();
+  acIdx = -1;
+  if(!q||q.length<2){ closeAC(); return; }
+  const sugs = getACSuggestions(q);
+  if(!sugs.length){ closeAC(); return; }
+
+  const drop = document.getElementById('ac-drop');
+  drop.innerHTML = sugs.map((s,i)=>{
+    const hl = s.de.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')', 'gi'), '<mark>$1</mark>');
+    return `<div class="ac-item" data-idx="${i}" onmousedown="pickAC('${s.de.replace(/'/g,"\'")}')">
+      <svg class="ac-icon" width="13" height="13" viewBox="0 0 13 13" fill="none">
+        ${s.type==='saved'
+          ? '<path d="M6.5 1L8 4.5H12L9 7l1 4-3.5-2L3 11l1-4-3-2.5H5L6.5 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>'
+          : '<circle cx="5.5" cy="5.5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M9 9l2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>'}
+      </svg>
+      <span class="ac-word">${hl}</span>
+      <span class="ac-fa">${s.fa||''}</span>
+      <span class="ac-tag ${s.type==='cached'?'cached':''}">${s.type==='saved'?'ذخیره':'قبلی'}</span>
+    </div>`;
+  }).join('');
+  drop.classList.add('show');
+}
+
+function onSearchKeydown(e){
+  const drop = document.getElementById('ac-drop');
+  const items = drop.querySelectorAll('.ac-item');
+  if(!items.length) return;
+  if(e.key==='ArrowDown'){ e.preventDefault(); acIdx=Math.min(acIdx+1,items.length-1); highlightAC(items); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); acIdx=Math.max(acIdx-1,-1); highlightAC(items); }
+  else if(e.key==='Escape'){ closeAC(); }
+  else if(e.key==='Tab'&&drop.classList.contains('show')){ e.preventDefault(); if(acIdx>=0) items[acIdx]?.dispatchEvent(new MouseEvent('mousedown')); else items[0]?.dispatchEvent(new MouseEvent('mousedown')); }
+}
+
+function highlightAC(items){
+  items.forEach((item,i)=>item.classList.toggle('selected',i===acIdx));
+  if(acIdx>=0) document.getElementById('s-inp').value=items[acIdx].querySelector('.ac-word').textContent;
+}
+
+function pickAC(de){
+  document.getElementById('s-inp').value=de;
+  closeAC();
+  doSearch();
+}
+
+function closeAC(){
+  document.getElementById('ac-drop').classList.remove('show');
+  acIdx=-1;
+}
+
+// close on outside click
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.search-wrap')) closeAC();
+});
 
 /* ═══════════════════════════════════════
    KEYBOARD
