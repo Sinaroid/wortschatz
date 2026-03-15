@@ -408,7 +408,7 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
           <div class="dc-title">پیشنهاد امروز</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span class="dc-badge" id="dc-badge">C1</span>
+          <span class="dc-badge" id="dc-badge">B1–C2</span>
           <button class="dc-refresh" onclick="loadDaily(true)">🔄 تازه</button>
         </div>
       </div>
@@ -419,12 +419,12 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
     <div class="stats-card" id="stats-card" style="display:none">
       <div class="stats-header">
         <div class="stats-title">پیشرفت تو</div>
-        <span id="due-badge" class="due-badge" style="display:none">⏰ <span id="due-count">0</span> لغت برای مرور</span>
+        <span id="due-badge" class="due-badge" style="display:none;cursor:pointer" onclick="goReviewDue()">⏰ <span id="due-count">0</span> لغت برای مرور ←</span>
       </div>
       <div class="stats-grid">
         <div class="stat-box"><div class="stat-num" id="st-total">0</div><div class="stat-lbl">کل لغات</div></div>
         <div class="stat-box green"><div class="stat-num" id="st-learned">0</div><div class="stat-lbl">یاد گرفتم</div></div>
-        <div class="stat-box coral"><div class="stat-num" id="st-due">0</div><div class="stat-lbl">نیاز به مرور</div></div>
+        <div class="stat-box coral" style="cursor:pointer" onclick="goReviewDue()" title="کلیک برای مرور"><div class="stat-num" id="st-due">0</div><div class="stat-lbl">نیاز به مرور ←</div></div>
       </div>
       <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase">۷ روز اخیر</div>
       <div class="chart-wrap" id="week-chart"></div>
@@ -517,6 +517,26 @@ async function ai(prompt,maxTokens=1000){
 }
 
 // ── Init ──
+function goReviewDue(){
+  // Filter deck to only due words
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now);
+  if(!due.length){alert('هیچ لغتی برای مرور نداری! 🎉');return;}
+  // Go to flashcards tab with due-only deck
+  go('cards');
+  setTimeout(()=>{
+    document.getElementById('fc-empty').style.display='none';
+    document.getElementById('fc-done').style.display='none';
+    document.getElementById('fc-ui').style.display='block';
+    deck=due.sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
+    idx=0;flipped=false;
+    showCard();
+    // Show banner
+    const cnt=document.getElementById('fc-cnt');
+    cnt.textContent='مرور سررسید: ۱ / '+due.length;
+  },300);
+}
+
 function initApp(){
   if(apiKey){hideOb();try{document.getElementById('set-inp').value=apiKey;}catch(e){}setDot(true);}
   const code=localStorage.getItem('ws_sync_code');
@@ -717,25 +737,26 @@ async function makeSentence(){
 
 // ── Daily suggestions ──
 async function loadDaily(forceRefresh){
-  const today=new Date().toDateString();
+  const now24=Date.now();
   const cached=localStorage.getItem('ws_daily');
   if(!forceRefresh&&cached){
     try{
       const c=JSON.parse(cached);
-      if(c.date===today){dailyWords=c.words;renderDaily();return;}
+      const age=now24-(c.timestamp||0);
+      if(age<86400000){dailyWords=c.words;renderDaily();return;} // 24h
     }catch(e){}
   }
   if(!apiKey){document.getElementById('dc-words').innerHTML='<div class="dc-loading">API key لازمه</div>';return;}
   document.getElementById('dc-words').innerHTML='<div class="dc-loading">در حال بارگذاری پیشنهادات...</div>';
   try{
     const knownWords=words.map(w=>w.de).slice(0,20).join(', ');
-    const prompt=`۵ لغت آلمانی سطح C1 پیشنهاد بده که برای محیط کار و دانشگاه کاربردی باشن.
+    const prompt=`۵ لغت آلمانی پیشنهاد بده — سطح B1 تا C2 — که برای محیط کار و دانشگاه در آلمان کاربردی باشن. ترکیبی از سطوح باشه (B1، B2، C1، C2).
 ${knownWords?`کاربر اینا رو قبلاً یاد گرفته، تکرار نکن: ${knownWords}`:''}
-JSON خالص: [{"de":"لغت با حرف تعریف","fa":"معنی فارسی","level":"C1","example_de":"یه جمله کوتاه"}]
+JSON خالص: [{"de":"لغت با حرف تعریف اگر اسم است","fa":"معنی فارسی","level":"B1/B2/C1/C2","example_de":"یه جمله کوتاه کاربردی"}]
 فقط JSON.`;
     const raw=(await ai(prompt,600)).replace(/```json|```/g,'').trim();
     dailyWords=JSON.parse(raw);
-    localStorage.setItem('ws_daily',JSON.stringify({date:today,words:dailyWords}));
+    localStorage.setItem('ws_daily',JSON.stringify({timestamp:Date.now(),words:dailyWords}));
     renderDaily();
   }catch(e){document.getElementById('dc-words').innerHTML='<div class="dc-loading">خطا در بارگذاری</div>';}
 }
