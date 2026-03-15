@@ -219,8 +219,12 @@ body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);m
       <button class="btn btn-dark btn-sm" onclick="setKeySave()">ذخیره</button>
     </div>
     <div class="status-box"><div class="dot" id="dot"></div><span id="dot-text">وارد نشده</span></div>
-    <div class="sp-lbl">دیتابیس</div>
-    <div class="status-box"><div class="dot ok" id="db-dot"></div><span id="db-text">Supabase متصل — لغات روی همه دستگاه‌هات</span></div>
+    <div class="sp-lbl">کد همگام‌سازی — روی همه دستگاه‌هات یکی باشه</div>
+    <div class="sp-row">
+      <input class="f-inp" id="sync-inp" type="text" placeholder="مثلاً: sina123" style="margin:0;flex:1;direction:ltr" />
+      <button class="btn btn-dark btn-sm" onclick="setSyncCode()">ذخیره</button>
+    </div>
+    <div class="status-box"><div class="dot ok" id="db-dot"></div><span id="db-text">Supabase متصل</span></div>
     <div style="padding-top:1rem;border-top:1px solid var(--border)">
       <button class="btn btn-sm" style="color:var(--red);border-color:rgba(255,77,77,.3);width:100%" onclick="clearAll()">پاک کردن همه لغات</button>
     </div>
@@ -311,11 +315,23 @@ const SB_URL='https://ekogfglcsftpwmithxbi.supabase.co';
 const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 
 function uid(){
+  const code = localStorage.getItem('ws_sync_code');
+  if(code) return 'sync_'+code;
   let id=localStorage.getItem('ws_uid');
   if(!id){id='u_'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('ws_uid',id);}
   return id;
 }
-const USER_ID=uid();
+let USER_ID=uid();
+
+function setSyncCode(){
+  const code=document.getElementById('sync-inp').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  if(!code){alert('یه کد وارد کن (فقط حروف انگلیسی و عدد)');return;}
+  localStorage.setItem('ws_sync_code',code);
+  USER_ID='sync_'+code;
+  document.getElementById('db-text').textContent='کد: '+code+' ✓ — در حال بارگذاری...';
+  loadWords();
+  document.getElementById('sov').classList.remove('open');
+}
 
 async function sb(path,opts={}){
   setSdot('sync');
@@ -371,6 +387,11 @@ function initApp(){
     hideOb();
     try{document.getElementById('set-inp').value=apiKey;}catch(e){}
     setDot(true);
+  }
+  const code=localStorage.getItem('ws_sync_code');
+  if(code){
+    try{document.getElementById('sync-inp').value=code;}catch(e){}
+    document.getElementById('db-text').textContent='کد: '+code+' ✓ — همگام‌سازی فعال';
   }
   loadWords();
   window.addEventListener('scroll',()=>{
