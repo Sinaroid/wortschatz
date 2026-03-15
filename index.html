@@ -330,7 +330,7 @@ body.dark .f-inp,body.dark .set-inp,body.dark .edit-inp{background:var(--card2);
 <body>
 
 <!-- Onboarding -->
-<div id="ob">
+<div id="ob" style="display:none">
   <div class="ob-card">
     <div class="ob-logo">
       <div class="ob-icon">📖</div>
@@ -765,7 +765,15 @@ function showQuizResult(){
 function initApp(){
   initDark();
   updateStreak();
-  if(apiKey){hideOb();try{document.getElementById('set-inp').value=apiKey;}catch(e){}setDot(true);}
+  if(apiKey){
+    // already hidden via style, just update settings
+    try{document.getElementById('set-inp').value=apiKey;}catch(e){}
+    setDot(true);
+  } else {
+    // show onboarding
+    const o=document.getElementById('ob');
+    if(o) o.style.display='flex';
+  }
   const code=localStorage.getItem('ws_sync_code');
   if(code){try{document.getElementById('sync-inp').value=code;}catch(e){}document.getElementById('db-text').textContent='کد: '+code+' ✓';}
   loadWords();
