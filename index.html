@@ -986,12 +986,69 @@ body.offline .search-go { opacity: .5; }
 }
 .list-empty-search { text-align: center; padding: var(--s8); color: var(--ink4); font-size: 14px; }
 .highlight { color: var(--accent); font-weight: 700; }
+
+/* ── Focus mode ── */
+.focus-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(6px);
+  z-index: 5;
+  display: none; opacity: 0;
+  transition: opacity .3s var(--ease);
+  pointer-events: none;
+}
+.focus-overlay.show { display: block; opacity: 1; pointer-events: auto; }
+
+.focus-exit {
+  position: fixed; top: var(--s4); right: var(--s4);
+  z-index: 30;
+  display: none; gap: var(--s2); align-items: center;
+}
+.focus-exit.show { display: flex; animation: slideUp .3s var(--bounce); }
+.focus-exit-btn {
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--paper3);
+  border-radius: 40px; padding: 8px var(--s4);
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .18s;
+  box-shadow: var(--sh-md);
+}
+.focus-exit-btn:hover { background: var(--paper2); }
+.focus-exit-btn.danger { color: var(--danger); border-color: rgba(232,57,42,.25); }
+.focus-exit-btn.danger:hover { background: rgba(232,57,42,.05); }
+
+/* pane-cards in focus mode */
+body.fc-focus .pane { display: none !important; }
+body.fc-focus #pane-cards { display: block !important; position: relative; z-index: 20; }
+body.fc-focus .topbar { z-index: 1; filter: blur(2px); pointer-events: none; }
+
+/* Again button in card actions */
+.act.again {
+  color: var(--warn); border-color: rgba(245,158,11,.3);
+  font-size: 11px; padding: 11px 14px;
+}
+.act.again:hover { background: rgba(245,158,11,.07); }
+.again-badge {
+  position: absolute; top: -8px; right: -8px;
+  background: var(--warn); color: #fff;
+  font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 20px;
+  display: none;
+}
+.card-actions { position: relative; }
 </style>
 </head>
 <body>
 
 <!-- Offline bar -->
 <div class="offline-bar" id="offline-bar">📡 آفلاین هستی — لغاتت قابل مرور هستن ولی جستجو کار نمی‌کنه</div>
+
+<!-- Focus mode overlay -->
+<div class="focus-overlay" id="focus-overlay" onclick="tryExitFocus()"></div>
+<div class="focus-exit" id="focus-exit">
+  <button class="focus-exit-btn" onclick="repeatCard()">🔁 دوباره</button>
+  <button class="focus-exit-btn danger" onclick="tryExitFocus()">✕ خروج</button>
+</div>
 
 <!-- Gate (Onboarding) -->
 <div id="gate">
@@ -1224,7 +1281,9 @@ body.offline .search-go { opacity: .5; }
   <div class="pane" id="pane-cards">
     <div class="fc-head">
       <div class="fc-title">فلش‌کارت</div>
-      <span class="fc-counter" id="fc-cnt"></span>
+      <div style="display:flex;align-items:center;gap:var(--s2)">
+        <span class="fc-counter" id="fc-cnt"></span>
+      </div>
     </div>
     <div class="fc-progress"><div class="fc-bar" id="fc-bar" style="width:0%"></div></div>
     <div class="swipe-hint"><span>← بلد نبودم</span><span>بلد بودم →</span></div>
@@ -1260,6 +1319,10 @@ body.offline .search-go { opacity: .5; }
         <button class="act bad" onclick="rate(false)">✗ بلد نبودم</button>
         <button class="act mid" onclick="flipCard()">برگردون</button>
         <button class="act good" onclick="rate(true)">✓ بلد بودم</button>
+        <button class="act again" id="again-btn" onclick="repeatCard()" title="دوباره بپرس">
+          🔁
+          <span class="again-badge" id="again-badge"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -1507,14 +1570,70 @@ function setThemeIcon(isDark){
    NAV
 ═══════════════════════════════════════ */
 function go(t){
+  // exit focus mode if leaving cards
+  if(t!=='cards' && document.body.classList.contains('fc-focus')){
+    exitFocus();
+  }
   ['home','cards','quiz','list'].forEach(id=>{
     document.getElementById('pane-'+id).classList.toggle('on',id===t);
     document.getElementById('np-'+id).classList.toggle('on',id===t);
   });
   window.scrollTo({top:0,behavior:'smooth'});
-  if(t==='cards') initDeck();
+  if(t==='cards'){ initDeck(); enterFocus(); }
   if(t==='quiz')  startQuiz();
   if(t==='list')  renderList();
+}
+
+function enterFocus(){
+  document.body.classList.add('fc-focus');
+  document.getElementById('focus-overlay').classList.add('show');
+  document.getElementById('focus-exit').classList.add('show');
+}
+
+function exitFocus(){
+  document.body.classList.remove('fc-focus');
+  document.getElementById('focus-overlay').classList.remove('show');
+  document.getElementById('focus-exit').classList.remove('show');
+}
+
+function tryExitFocus(){
+  // if deck is active, ask user
+  if(document.getElementById('fc-ui').style.display!=='none'){
+    showExitConfirm();
+  } else {
+    exitFocus();
+    go('home');
+  }
+}
+
+function showExitConfirm(){
+  // show inline confirm in fc-done area
+  const done = document.getElementById('fc-done');
+  document.getElementById('fc-ui').style.display='none';
+  done.style.display='block';
+  done.innerHTML=`
+    <span class="empty-icon">🤔</span>
+    <h3>می‌خوای بری؟</h3>
+    <p>یادگیری نصفه میمونه — مطمئنی؟</p>
+    <br>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="resumeDeck()">ادامه میدم 💪</button>
+      <button class="btn btn-danger" onclick="confirmExit()">بله، خروج</button>
+    </div>`;
+}
+
+function resumeDeck(){
+  const done=document.getElementById('fc-done');
+  done.style.display='none';
+  done.innerHTML=`<span class="empty-icon">🎉</span><h3>دور تموم شد!</h3><p>آفرین، همه رو مرور کردی</p><br><button class="btn btn-primary" onclick="initDeck()">دوباره شروع</button>`;
+  document.getElementById('fc-ui').style.display='block';
+}
+
+function confirmExit(){
+  const done=document.getElementById('fc-done');
+  done.innerHTML=`<span class="empty-icon">🎉</span><h3>دور تموم شد!</h3><p>آفرین، همه رو مرور کردی</p><br><button class="btn btn-primary" onclick="initDeck()">دوباره شروع</button>`;
+  exitFocus();
+  go('home');
 }
 function updateBadges(){
   ['cards','quiz','list'].forEach(id=>document.getElementById('np-'+id).classList.toggle('has-data',words.length>0));
@@ -1782,7 +1901,7 @@ function updateStats(){
 }
 
 function reviewDue(){
-  go('cards');
+  go('cards'); // this calls enterFocus() too
   setTimeout(()=>{
     const now=new Date();
     const due=words.filter(w=>new Date(w.next_review||0)<=now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
