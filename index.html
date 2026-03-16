@@ -987,68 +987,177 @@ body.offline .search-go { opacity: .5; }
 .list-empty-search { text-align: center; padding: var(--s8); color: var(--ink4); font-size: 14px; }
 .highlight { color: var(--accent); font-weight: 700; }
 
-/* ── Focus mode ── */
-.focus-overlay {
+
+
+/* ══════════════════════════════════════
+   FULLSCREEN FLASHCARD SESSION
+══════════════════════════════════════ */
+.fc-session {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.5);
-  backdrop-filter: blur(6px);
-  z-index: 5;
-  display: none; opacity: 0;
-  transition: opacity .3s var(--ease);
-  pointer-events: none;
+  background: var(--paper);
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  transition: background .3s;
 }
-.focus-overlay.show { display: block; opacity: 1; pointer-events: auto; }
+.fc-session.open { display: flex; animation: fadeIn .25s var(--ease); }
 
-.focus-exit {
-  position: fixed; top: var(--s4); right: var(--s4);
-  z-index: 30;
-  display: none; gap: var(--s2); align-items: center;
+/* Session topbar */
+.fcs-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--s4) var(--s5);
+  border-bottom: 1px solid var(--paper3);
+  flex-shrink: 0;
 }
-.focus-exit.show { display: flex; animation: slideUp .3s var(--bounce); }
-.focus-exit-btn {
-  background: var(--paper); color: var(--ink);
-  border: 1px solid var(--paper3);
-  border-radius: 40px; padding: 8px var(--s4);
-  font-family: var(--sans); font-size: 13px; font-weight: 500;
+.fcs-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid var(--paper3); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .18s; color: var(--ink2);
+  font-size: 16px;
+}
+.fcs-close:hover { background: var(--paper2); border-color: var(--paper3); }
+.fcs-info { text-align: center; }
+.fcs-counter { font-size: 13px; font-weight: 600; color: var(--ink); }
+.fcs-sub { font-size: 11px; color: var(--ink4); margin-top: 1px; }
+.fcs-repeat-btn {
+  display: flex; align-items: center; gap: var(--s1);
+  padding: 7px 14px; border-radius: 40px;
+  border: 1.5px solid var(--paper3); background: transparent;
+  color: var(--ink3); font-family: var(--sans); font-size: 12px;
   cursor: pointer; transition: all .18s;
-  box-shadow: var(--sh-md);
 }
-.focus-exit-btn:hover { background: var(--paper2); }
-.focus-exit-btn.danger { color: var(--danger); border-color: rgba(232,57,42,.25); }
-.focus-exit-btn.danger:hover { background: rgba(232,57,42,.05); }
-
-/* pane-cards in focus mode */
-body.fc-focus .pane { display: none !important; }
-body.fc-focus #pane-cards { display: block !important; position: relative; z-index: 20; }
-body.fc-focus .topbar { z-index: 1; filter: blur(2px); pointer-events: none; }
-
-/* Again button in card actions */
-.act.again {
-  color: var(--warn); border-color: rgba(245,158,11,.3);
-  font-size: 11px; padding: 11px 14px;
-}
-.act.again:hover { background: rgba(245,158,11,.07); }
-.again-badge {
-  position: absolute; top: -8px; right: -8px;
+.fcs-repeat-btn:hover { border-color: var(--warn); color: var(--warn); background: rgba(245,158,11,.05); }
+.fcs-repeat-btn .rbadge {
   background: var(--warn); color: #fff;
   font-size: 9px; font-weight: 700;
-  padding: 2px 6px; border-radius: 20px;
+  padding: 1px 5px; border-radius: 20px;
   display: none;
 }
-.card-actions { position: relative; }
+.fcs-repeat-btn .rbadge.show { display: inline-block; }
+
+/* Progress bar */
+.fcs-progress { height: 3px; background: var(--paper3); flex-shrink: 0; }
+.fcs-bar { height: 100%; background: var(--accent); transition: width .4s var(--ease); }
+
+/* Card area */
+.fcs-body {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: var(--s5) var(--s5) var(--s4);
+  max-width: 600px; margin: 0 auto; width: 100%;
+}
+
+/* Card */
+.fcs-scene { perspective: 1200px; width: 100%; max-width: 480px; cursor: pointer; user-select: none; }
+.fcs-inner { position: relative; transition: transform .5s var(--ease); transform-style: preserve-3d; }
+.fcs-inner.flip { transform: rotateY(180deg); }
+.fcs-face {
+  backface-visibility: hidden;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--paper3);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: var(--s10) var(--s8);
+  box-shadow: var(--sh-md);
+  min-height: 220px;
+  gap: var(--s3);
+}
+.fcs-front { background: var(--paper2); }
+.fcs-back { background: var(--accent); transform: rotateY(180deg); border-color: var(--accent); }
+.fcs-hint { font-size: 10px; color: var(--ink4); letter-spacing: 1px; text-transform: uppercase; }
+.fcs-back .fcs-hint { color: rgba(255,255,255,.5); }
+.fcs-word { font-family: var(--serif); font-size: clamp(36px,8vw,52px); font-weight: 700; color: var(--ink); direction: ltr; line-height: 1.1; letter-spacing: -1px; text-align: center; }
+.fcs-mean { font-size: clamp(22px,5vw,30px); font-weight: 600; color: #fff; text-align: center; }
+.fcs-sent { font-family: var(--serif); font-style: italic; font-size: 14px; color: rgba(255,255,255,.7); text-align: center; direction: ltr; max-width: 340px; line-height: 1.6; }
+.fcs-tap { font-size: 12px; color: var(--ink4); margin-top: var(--s3); display: flex; align-items: center; gap: var(--s1); }
+
+/* Actions */
+.fcs-actions {
+  display: flex; gap: var(--s3); width: 100%;
+  max-width: 480px; flex-shrink: 0;
+}
+.fcs-act {
+  flex: 1; padding: 14px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--paper3);
+  background: var(--paper2);
+  font-family: var(--sans); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .2s var(--ease);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.fcs-act:active { transform: scale(.97); }
+.fcs-act-icon { font-size: 20px; }
+.fcs-act-lbl { font-size: 11px; color: var(--ink3); font-weight: 400; }
+.fcs-act.bad:hover { border-color: var(--danger); background: rgba(232,57,42,.05); }
+.fcs-act.bad:hover .fcs-act-icon { transform: scale(1.2); }
+.fcs-act.good:hover { border-color: var(--success); background: rgba(26,138,74,.05); }
+.fcs-act.good:hover .fcs-act-icon { transform: scale(1.2); }
+.fcs-act .fcs-act-icon { transition: transform .2s var(--bounce); }
+.fcs-flip {
+  width: 48px; height: 48px; align-self: center; flex: none;
+  border-radius: 50%; border: 1.5px solid var(--paper3);
+  background: var(--paper); padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer; transition: all .18s;
+  color: var(--ink3);
+  align-self: center;
+}
+.fcs-flip:hover { background: var(--paper2); color: var(--ink); }
+
+/* Swipe hint */
+.fcs-swipe {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--ink4);
+  width: 100%; max-width: 480px;
+  padding: var(--s2) 0;
+  flex-shrink: 0;
+}
+
+/* Summary screen */
+.fcs-summary {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: var(--s8) var(--s5); text-align: center;
+  gap: var(--s5);
+}
+.fcs-summary-icon { font-size: 56px; }
+.fcs-summary-title { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--ink); }
+.fcs-summary-sub { font-size: 14px; color: var(--ink2); line-height: 1.7; }
+.fcs-summary-stats {
+  display: flex; gap: var(--s3);
+  background: var(--paper2); border: 1px solid var(--paper3);
+  border-radius: var(--r-lg); padding: var(--s5);
+  width: 100%; max-width: 320px;
+}
+.fss { flex: 1; text-align: center; }
+.fss-num { font-family: var(--serif); font-size: 32px; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.fss-num.g { color: var(--success); }
+.fss-num.b { color: var(--danger); }
+.fss-lbl { font-size: 11px; color: var(--ink3); }
+.fcs-summary-btns { display: flex; gap: var(--s2); flex-wrap: wrap; justify-content: center; }
+
+/* Confirm exit */
+.fcs-confirm {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: var(--s8) var(--s5); text-align: center; gap: var(--s4);
+}
+.fcs-confirm-title { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--ink); }
+.fcs-confirm-sub { font-size: 14px; color: var(--ink2); line-height: 1.7; }
+.fcs-confirm-btns { display: flex; gap: var(--s2); }
+
+@media(max-width:480px){
+  .fcs-face { padding: var(--s8) var(--s5); min-height: 180px; }
+  .fcs-actions { gap: var(--s2); }
+  .fcs-act { padding: 12px var(--s3); }
+}
 </style>
 </head>
 <body>
 
 <!-- Offline bar -->
 <div class="offline-bar" id="offline-bar">📡 آفلاین هستی — لغاتت قابل مرور هستن ولی جستجو کار نمی‌کنه</div>
-
-<!-- Focus mode overlay -->
-<div class="focus-overlay" id="focus-overlay" onclick="tryExitFocus()"></div>
-<div class="focus-exit" id="focus-exit">
-  <button class="focus-exit-btn" onclick="repeatCard()">🔁 دوباره</button>
-  <button class="focus-exit-btn danger" onclick="tryExitFocus()">✕ خروج</button>
-</div>
 
 <!-- Gate (Onboarding) -->
 <div id="gate">
@@ -1136,7 +1245,7 @@ body.fc-focus .topbar { z-index: 1; filter: blur(2px); pointer-events: none; }
     </a>
     <nav class="nav-pills">
       <button class="nav-pill on" id="np-home" onclick="go('home')">خانه<span class="dot"></span></button>
-      <button class="nav-pill" id="np-cards" onclick="go('cards')">کارت<span class="dot"></span></button>
+      <button class="nav-pill" id="np-cards" onclick="openSession()">کارت<span class="dot"></span></button>
       <button class="nav-pill" id="np-quiz" onclick="go('quiz')">کوییز<span class="dot"></span></button>
       <button class="nav-pill" id="np-list" onclick="go('list')">لیست<span class="dot"></span></button>
     </nav>
@@ -1379,6 +1488,100 @@ body.fc-focus .topbar { z-index: 1; filter: blur(2px); pointer-events: none; }
 
 </div><!-- .app -->
 
+<!-- ══ FULLSCREEN FLASHCARD SESSION ══ -->
+<div class="fc-session" id="fc-session">
+  <!-- Top bar -->
+  <div class="fcs-top">
+    <button class="fcs-close" onclick="fcsClose()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="fcs-info">
+      <div class="fcs-counter" id="fcs-cnt">۱ / ۱</div>
+      <div class="fcs-sub" id="fcs-sub"></div>
+    </div>
+    <button class="fcs-repeat-btn" onclick="fcsRepeat()" id="fcs-rep-btn">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <path d="M10 2H5a3 3 0 000 6h1M3 11H8a3 3 0 000-6H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      دوباره
+      <span class="rbadge" id="rep-badge"></span>
+    </button>
+  </div>
+
+  <!-- Progress -->
+  <div class="fcs-progress"><div class="fcs-bar" id="fcs-bar" style="width:0%"></div></div>
+
+  <!-- Card area -->
+  <div class="fcs-body" id="fcs-body">
+    <div class="fcs-scene" onclick="fcsFlip()" id="fcs-scene">
+      <div class="fcs-inner" id="fcs-inner">
+        <div class="fcs-face fcs-front">
+          <span class="fcs-hint">برای دیدن معنی کلیک کن</span>
+          <span class="fcs-word" id="fcs-word"></span>
+          <div class="fcs-tap">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            ضربه بزن
+          </div>
+        </div>
+        <div class="fcs-face fcs-back">
+          <span class="fcs-hint">معنی</span>
+          <span class="fcs-mean" id="fcs-mean"></span>
+          <span class="fcs-sent" id="fcs-sent"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fcs-swipe" id="fcs-swipe-hint">
+      <span>← بلد نبودم</span>
+      <span>بلد بودم →</span>
+    </div>
+
+    <div class="fcs-actions" id="fcs-actions">
+      <button class="fcs-act bad" onclick="fcsRate(false)">
+        <span class="fcs-act-icon">✗</span>
+        <span>بلد نبودم</span>
+        <span class="fcs-act-lbl">فردا دوباره</span>
+      </button>
+      <button class="fcs-flip" onclick="fcsFlip()">↺</button>
+      <button class="fcs-act good" onclick="fcsRate(true)">
+        <span class="fcs-act-icon">✓</span>
+        <span>بلد بودم</span>
+        <span class="fcs-act-lbl" id="fcs-interval-lbl"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary screen -->
+  <div class="fcs-summary" id="fcs-summary" style="display:none">
+    <div class="fcs-summary-icon">🎉</div>
+    <div class="fcs-summary-title">دور تموم شد!</div>
+    <div class="fcs-summary-sub" id="fcs-sum-sub"></div>
+    <div class="fcs-summary-stats">
+      <div class="fss"><div class="fss-num g" id="fss-good">0</div><div class="fss-lbl">بلد بودم</div></div>
+      <div class="fss"><div class="fss-num b" id="fss-bad">0</div><div class="fss-lbl">بلد نبودم</div></div>
+      <div class="fss"><div class="fss-num" id="fss-total">0</div><div class="fss-lbl">کل کارت</div></div>
+    </div>
+    <div class="fcs-summary-btns">
+      <button class="btn btn-primary" onclick="fcsRestart()">دوباره شروع</button>
+      <button class="btn" onclick="fcsClose(true)">بستن</button>
+    </div>
+  </div>
+
+  <!-- Confirm exit -->
+  <div class="fcs-confirm" id="fcs-confirm" style="display:none">
+    <div style="font-size:48px">🤔</div>
+    <div class="fcs-confirm-title">می‌خوای بری؟</div>
+    <div class="fcs-confirm-sub">یادگیری نصفه میمونه<br>مطمئنی؟</div>
+    <div class="fcs-confirm-btns">
+      <button class="btn btn-primary" onclick="fcsResume()">ادامه میدم 💪</button>
+      <button class="btn btn-danger" onclick="fcsClose(true)">بله، خروج</button>
+    </div>
+  </div>
+</div>
+
+
 <script>
 /* ═══════════════════════════════════════
    SUPABASE
@@ -1570,347 +1773,18 @@ function setThemeIcon(isDark){
    NAV
 ═══════════════════════════════════════ */
 function go(t){
-  // exit focus mode if leaving cards
-  if(t!=='cards' && document.body.classList.contains('fc-focus')){
-    exitFocus();
-  }
   ['home','cards','quiz','list'].forEach(id=>{
     document.getElementById('pane-'+id).classList.toggle('on',id===t);
     document.getElementById('np-'+id).classList.toggle('on',id===t);
   });
   window.scrollTo({top:0,behavior:'smooth'});
-  if(t==='cards'){ initDeck(); enterFocus(); }
+  if(t==='cards') initDeck();
   if(t==='quiz')  startQuiz();
   if(t==='list')  renderList();
 }
 
-function enterFocus(){
-  document.body.classList.add('fc-focus');
-  document.getElementById('focus-overlay').classList.add('show');
-  document.getElementById('focus-exit').classList.add('show');
-}
-
-function exitFocus(){
-  document.body.classList.remove('fc-focus');
-  document.getElementById('focus-overlay').classList.remove('show');
-  document.getElementById('focus-exit').classList.remove('show');
-}
-
-function tryExitFocus(){
-  // if deck is active, ask user
-  if(document.getElementById('fc-ui').style.display!=='none'){
-    showExitConfirm();
-  } else {
-    exitFocus();
-    go('home');
-  }
-}
-
-function showExitConfirm(){
-  // show inline confirm in fc-done area
-  const done = document.getElementById('fc-done');
-  document.getElementById('fc-ui').style.display='none';
-  done.style.display='block';
-  done.innerHTML=`
-    <span class="empty-icon">🤔</span>
-    <h3>می‌خوای بری؟</h3>
-    <p>یادگیری نصفه میمونه — مطمئنی؟</p>
-    <br>
-    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-      <button class="btn btn-primary" onclick="resumeDeck()">ادامه میدم 💪</button>
-      <button class="btn btn-danger" onclick="confirmExit()">بله، خروج</button>
-    </div>`;
-}
-
-function resumeDeck(){
-  const done=document.getElementById('fc-done');
-  done.style.display='none';
-  done.innerHTML=`<span class="empty-icon">🎉</span><h3>دور تموم شد!</h3><p>آفرین، همه رو مرور کردی</p><br><button class="btn btn-primary" onclick="initDeck()">دوباره شروع</button>`;
-  document.getElementById('fc-ui').style.display='block';
-}
-
-function confirmExit(){
-  const done=document.getElementById('fc-done');
-  done.innerHTML=`<span class="empty-icon">🎉</span><h3>دور تموم شد!</h3><p>آفرین، همه رو مرور کردی</p><br><button class="btn btn-primary" onclick="initDeck()">دوباره شروع</button>`;
-  exitFocus();
-  go('home');
-}
-function updateBadges(){
-  ['cards','quiz','list'].forEach(id=>document.getElementById('np-'+id).classList.toggle('has-data',words.length>0));
-}
-
-/* ═══════════════════════════════════════
-   STREAK
-═══════════════════════════════════════ */
-function updateStreak(){
-  const today=new Date().toDateString();
-  // log review days (separate from open log)
-  const rlog=JSON.parse(localStorage.getItem('ws_review_log')||'{}');
-  // log open days
-  const olog=JSON.parse(localStorage.getItem('ws_open_log')||'{}');
-  if(!olog[today]){ olog[today]=1; localStorage.setItem('ws_open_log',JSON.stringify(olog)); }
-  // combine: day counts if opened OR reviewed
-  const allLog={};
-  Object.keys(olog).forEach(k=>allLog[k]=1);
-  Object.keys(rlog).forEach(k=>allLog[k]=1);
-  // count consecutive streak
-  let s=0; const d=new Date();
-  while(allLog[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
-  // update number
-  const el=document.getElementById('streak-n');
-  const wrap=document.getElementById('streak-wrap');
-  if(el) el.textContent=s;
-  if(wrap) wrap.classList.toggle('fire',s>=3);
-  // also update streak-inside fire class
-  const inside=document.querySelector('.streak-inside');
-  if(inside) inside.classList.toggle('fire',s>=3);
-  // render 7-day dots
-  const daysEl=document.getElementById('streak-days');
-  if(!daysEl) return;
-  // JS getDay(): 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
-  // Persian names indexed by JS day number:
-  const dayNames=['ی','د','س','چ','پ','ج','ش'];
-  let dots='';
-  for(let i=6;i>=0;i--){
-    const day=new Date(); day.setDate(day.getDate()-i);
-    const key=day.toDateString();
-    const isToday=i===0;
-    const done=!!allLog[key];
-    const cls=isToday?'today':done?'done':'missed';
-    const lbl=isToday?'امروز':dayNames[day.getDay()];
-    dots+=`<div class="sd">
-      <div class="sd-dot ${cls}"></div>
-      <div class="sd-label${isToday?' today-lbl':''}">${lbl}</div>
-    </div>`;
-  }
-  daysEl.innerHTML=dots;
-}
-
-/* ═══════════════════════════════════════
-   SEARCH
-═══════════════════════════════════════ */
-function detectMode(q){
-  const ws=q.trim().split(/\s+/);
-  if(ws.length>=3) return 'phrase';
-  if(/[,،.!?]/.test(q)) return 'phrase';
-  if(/^(ich|du|er|sie|es|wir|ihr|man|das|die|der|ein|eine|in|auf|mit|bei|zum|zur|wenn|weil|obwohl|dass)\s/i.test(q)) return 'phrase';
-  return 'word';
-}
-
-async function doSearch(){
-  const q=document.getElementById('s-inp').value.trim();
-  if(!q) return;
-  if(!navigator.onLine){ setStatus('📡 آفلاین هستی — جستجو ممکن نیست','err'); return; }
-  if(!apiKey){ setStatus('⚠ اول API key از تنظیمات وارد کن','err'); return; }
-
-  const btn=document.getElementById('s-go');
-  btn.disabled=true; btn.classList.add('loading');
-  setStatus('در حال جستجو...','info');
-  document.getElementById('result').style.display='none';
-  document.getElementById('phrase-result').style.display='none';
-
-  try{
-    if(detectMode(q)==='word') await searchWord(q);
-    else await searchPhrase(q);
-    setStatus('','');
-    document.getElementById('s-inp').value='';
-    closeAC();
-  }catch(e){ setStatus('✗ خطا: '+e.message,'err'); }
-
-  btn.disabled=false; btn.classList.remove('loading');
-}
-
-function setStatus(msg,cls){
-  const el=document.getElementById('s-status');
-  el.textContent=msg; el.className='status-bar'+(cls?' '+cls:'');
-}
-
-async function searchWord(q){
-  const ck='wc_'+q.toLowerCase();
-  const cached=localStorage.getItem(ck);
-  if(cached){ try{ cur=JSON.parse(cached); renderWord(cur); return; }catch(e){ localStorage.removeItem(ck); } }
-
-  const p=`لغت وارد شده: "${q}"
-ممکنه با کیبورد انگلیسی تایپ شده — اگه لازمه تصحیح کن (ae→ä, oe→ö, ue→ü).
-اگه فارسیه، معادل آلمانی پیدا کن.
-JSON خالص بدون backtick:
-{"word":"لغت بدون حرف تعریف","corrected_from":"اگه تصحیح شد وگرنه خالی","article":"der/die/das یا خالی","plural":"جمع اگر اسم","preposition":"حرف اضافه مثلاً auf+Akk یا خالی","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق","meaning_en":"English meaning","synonyms":["م۱","م۲"],"antonyms":["ض۱"],"examples":[{"de":"جمله کاربردی","fa":"ترجمه"},{"de":"جمله موقعیت دیگر","fa":"ترجمه"}],"related":["م۱","م۲","م۳"],"grammar_tip":"نکته گرامری مهم به فارسی"}
-فقط JSON.`;
-  const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
-  cur=JSON.parse(raw);
-  try{
-    const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
-    if(keys.length>100) localStorage.removeItem(keys[0]);
-    localStorage.setItem(ck,JSON.stringify(cur));
-  }catch(e){}
-  renderWord(cur);
-}
-
-function renderWord(d){
-  // correction
-  const fix=document.getElementById('r-fix');
-  if(d.corrected_from&&d.corrected_from.trim()){
-    fix.textContent='تصحیح از: '+d.corrected_from; fix.style.display='inline-block';
-  } else fix.style.display='none';
-  // article & word
-  document.getElementById('r-art').textContent=d.article&&d.article!=='—'?d.article:d.type||'';
-  document.getElementById('r-word').textContent=d.word;
-  // meta
-  let meta=[]; if(d.plural)meta.push('Pl: '+d.plural); if(d.preposition)meta.push(d.preposition);
-  document.getElementById('r-meta').textContent=meta.join(' · ');
-  // tags
-  const tags=document.getElementById('r-tags'); tags.innerHTML='';
-  if(d.level) tags.innerHTML+=`<span class="r-tag">${d.level}</span>`;
-  if(d.type) tags.innerHTML+=`<span class="r-tag">${d.type}</span>`;
-  // meaning
-  document.getElementById('r-fa').textContent=d.meaning_fa;
-  document.getElementById('r-en').textContent=d.meaning_en;
-  // synonyms / antonyms
-  const synRow=document.getElementById('r-syn'), synHead=document.getElementById('syn-head');
-  const synArr=[...(d.synonyms||[]).map(s=>`<span class="chip" onclick="quickSearch('${s}')">${s}</span>`),
-                ...(d.antonyms||[]).map(a=>`<span class="chip antonym" onclick="quickSearch('${a}')">${a} ↔</span>`)];
-  if(synArr.length){ synHead.style.display='flex'; synRow.innerHTML=synArr.join(''); synRow.style.display='flex'; }
-  else { synHead.style.display='none'; synRow.style.display='none'; }
-  // examples
-  document.getElementById('r-exs').innerHTML=(d.examples||[]).map(e=>`<div class="example"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`).join('');
-  // related
-  const relRow=document.getElementById('r-rel'), relHead=document.getElementById('rel-head');
-  if(d.related&&d.related.length){ relHead.style.display='flex'; relRow.innerHTML=d.related.map(r=>`<span class="chip" onclick="quickSearch('${r}')">${r}</span>`).join(''); }
-  else { relHead.style.display='none'; relRow.innerHTML=''; }
-  // tip
-  const tipEl=document.getElementById('r-tip'), tipHead=document.getElementById('tip-head');
-  if(d.grammar_tip){ tipHead.style.display='flex'; tipEl.style.display='block'; tipEl.textContent=d.grammar_tip; }
-  else { tipHead.style.display='none'; tipEl.style.display='none'; }
-  // add btn
-  const key=(d.article&&d.article!=='—'?d.article+' ':'')+d.word;
-  const exists=words.find(w=>w.de.toLowerCase()===key.toLowerCase());
-  const btn=document.getElementById('add-btn');
-  btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به فلش‌کارت‌ها';
-  btn.disabled=!!exists;
-  btn.className='add-word-btn'+(exists?' added':'');
-  document.getElementById('result').style.display='block';
-  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-function quickSearch(w){ document.getElementById('s-inp').value=w; doSearch(); }
-
-async function searchPhrase(q){
-  setStatus('در حال تحلیل جمله...','info');
-  const p=`جمله/اصطلاح آلمانی: "${q}"
-JSON خالص:
-{"original":"${q}","translation_fa":"ترجمه فارسی","words":[{"de":"کلمه/عبارت مهم","fa":"معنی","note":"نکته کوتاه","type":"Nomen/Verb/Adj/Phrase"}]}
-حداکثر ۶ مورد. فقط JSON.`;
-  const raw=(await ai(p,500)).replace(/```json|```/g,'').trim();
-  const data=JSON.parse(raw);
-  renderPhrase(data);
-}
-
-function renderPhrase(d){
-  document.getElementById('ph-orig').textContent=d.original;
-  document.getElementById('ph-tr').textContent=d.translation_fa;
-  document.getElementById('ph-body').innerHTML=(d.words||[]).map((w,i)=>`
-    <div class="pw-row">
-      <div class="pw-de">${w.de}</div>
-      <div class="pw-info"><div class="pw-fa">${w.fa}</div><div class="pw-note">${w.note||''}</div></div>
-      <button class="pw-add" id="pa-${i}" onclick="addPhraseW(${i},'${w.de.replace(/'/g,"\\'")}','${w.fa.replace(/'/g,"\\'")}','${(w.note||'').replace(/'/g,"\\'")}')">+ اضافه</button>
-    </div>`).join('');
-  document.getElementById('phrase-result').style.display='block';
-  document.getElementById('phrase-result').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-async function addPhraseW(i,de,fa,note){
-  if(words.find(w=>w.de===de)) return;
-  const w={de,fa,ex:note,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
-  words.unshift(w); updateBadges();
-  const btn=document.getElementById('pa-'+i);
-  if(btn){ btn.textContent='✓ اضافه شد'; btn.classList.add('done'); btn.disabled=true; }
-  dbAdd(w).catch(console.error);
-}
-
-async function addWord(){
-  if(!cur) return;
-  const key=(cur.article&&cur.article!=='—'?cur.article+' ':'')+cur.word;
-  if(words.find(w=>w.de.toLowerCase()===key.toLowerCase())) return;
-  const w={de:key,fa:cur.meaning_fa,ex:cur.examples?.[0]?.de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
-  words.unshift(w); updateBadges(); updateStats();
-  localStorage.setItem('ws_words_cache', JSON.stringify(words));
-  const btn=document.getElementById('add-btn');
-  btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.classList.add('added');
-  if(navigator.onLine) dbAdd(w).catch(console.error);
-}
-
-/* ═══════════════════════════════════════
-   DAILY
-═══════════════════════════════════════ */
-async function loadDaily(force){
-  const cached=localStorage.getItem('ws_daily');
-  if(!force&&cached){
-    try{ const c=JSON.parse(cached); if(Date.now()-c.ts<86400000){ renderDaily(c.words); return; } }catch(e){}
-  }
-  if(!navigator.onLine){ document.getElementById('daily-list').innerHTML='<div class="offline-msg">📡 آفلاین — پیشنهاد روزانه نیاز به اینترنت داره</div>'; return; }
-  if(!apiKey){ document.getElementById('daily-list').innerHTML='<div class="daily-loading">API key لازمه</div>'; return; }
-  document.getElementById('daily-list').innerHTML='<div class="daily-loading">در حال بارگذاری...</div>';
-  try{
-    const known=words.slice(0,20).map(w=>w.de).join(', ');
-    const p=`۵ لغت آلمانی B1-C2 برای کار/دانشگاه پیشنهاد بده.${known?` تکرار نکن: ${known}`:''}
-JSON خالص: [{"de":"لغت با حرف تعریف","fa":"معنی فارسی","level":"B1/B2/C1/C2","ex":"جمله کوتاه"}]
-فقط JSON.`;
-    const raw=(await ai(p,500)).replace(/```json|```/g,'').trim();
-    const ws=JSON.parse(raw);
-    localStorage.setItem('ws_daily',JSON.stringify({ts:Date.now(),words:ws}));
-    renderDaily(ws);
-  }catch(e){ document.getElementById('daily-list').innerHTML='<div class="daily-loading">خطا در بارگذاری</div>'; }
-}
-
-function renderDaily(ws){
-  document.getElementById('daily-list').innerHTML=ws.map(w=>`
-    <div class="daily-item" onclick="quickSearch('${w.de.replace(/'/g,"\\'")}')">
-      <div class="di-de">${w.de}</div>
-      <div class="di-fa">${w.fa}</div>
-      <span class="di-lvl">${w.level||'B2'}</span>
-    </div>`).join('');
-}
-
-/* ═══════════════════════════════════════
-   STATS
-═══════════════════════════════════════ */
-function updateStats(){
-  const statsEl=document.getElementById('stats');
-  if(!words.length){ statsEl.style.display='none'; return; }
-  statsEl.style.display='block';
-  const now=new Date();
-  const due=words.filter(w=>new Date(w.next_review||0)<=now);
-  const learned=words.filter(w=>w.seen>0&&w.interval>3);
-  document.getElementById('sn-total').textContent=words.length;
-  document.getElementById('sn-learned').textContent=learned.length;
-  document.getElementById('sn-due').textContent=due.length;
-  const pill=document.getElementById('due-pill');
-  if(due.length){ pill.style.display='inline-flex'; document.getElementById('due-n').textContent=due.length; }
-  else pill.style.display='none';
-  // chart
-  const log=JSON.parse(localStorage.getItem('ws_review_log')||'{}');
-  const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
-  const mx=Math.max(1,...days.map(d=>log[d.toDateString()]||0));
-  // JS getDay(): 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
-  const dn=['ی','د','س','چ','پ','ج','ش'];
-  document.getElementById('week-chart').innerHTML=days.map((d,i)=>{
-    const c=log[d.toDateString()]||0;
-    const h=Math.max(4,Math.round(c/mx*56));
-    return `<div class="bar-wrap"><div class="bar${c>0?' has':''}${i===6?' today':''}" style="height:${h}px"></div><div class="bar-day">${i===6?'امروز':dn[d.getDay()]}</div></div>`;
-  }).join('');
-}
-
 function reviewDue(){
-  go('cards'); // this calls enterFocus() too
-  setTimeout(()=>{
-    const now=new Date();
-    const due=words.filter(w=>new Date(w.next_review||0)<=now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
-    if(!due.length) return;
-    document.getElementById('fc-empty').style.display='none';
-    document.getElementById('fc-done').style.display='none';
-    document.getElementById('fc-ui').style.display='block';
-    deck=due; deckIdx=0; flipped=false; showCard();
-  },300);
+  openSession();
 }
 
 /* ═══════════════════════════════════════
@@ -2199,12 +2073,160 @@ document.addEventListener('click', e=>{
 });
 
 /* ═══════════════════════════════════════
+   FLASHCARD SESSION (fullscreen)
+═══════════════════════════════════════ */
+let fcsDeck=[], fcsIdx=0, fcsFlipped=false;
+let fcsGood=0, fcsBad=0, fcsRepeatCount=0;
+
+function openSession(){
+  // Build deck: due first, then others
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now)
+    .sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
+  const rest=words.filter(w=>new Date(w.next_review||0)>now)
+    .sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
+  fcsDeck=[...due,...rest];
+  if(!fcsDeck.length){ alert('هنوز لغتی اضافه نکردی!'); return; }
+  fcsIdx=0; fcsGood=0; fcsBad=0; fcsRepeatCount=0; fcsFlipped=false;
+  // show session
+  document.getElementById('fc-session').classList.add('open');
+  document.body.style.overflow='hidden';
+  showFcsCard();
+  initFcsSwipe();
+}
+
+function fcsClose(force){
+  if(!force && fcsIdx<fcsDeck.length && document.getElementById('fcs-body').style.display!=='none'){
+    // show confirm
+    document.getElementById('fcs-body').style.display='none';
+    document.getElementById('fcs-summary').style.display='none';
+    document.getElementById('fcs-confirm').style.display='flex';
+    return;
+  }
+  document.getElementById('fc-session').classList.remove('open');
+  document.body.style.overflow='';
+  updateStats();
+}
+
+function fcsResume(){
+  document.getElementById('fcs-confirm').style.display='none';
+  document.getElementById('fcs-body').style.display='flex';
+}
+
+function fcsRestart(){
+  fcsIdx=0; fcsGood=0; fcsBad=0; fcsRepeatCount=0;
+  // rebuild deck
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
+  const rest=words.filter(w=>new Date(w.next_review||0)>now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
+  fcsDeck=[...due,...rest];
+  document.getElementById('fcs-summary').style.display='none';
+  document.getElementById('fcs-body').style.display='flex';
+  showFcsCard();
+}
+
+function showFcsCard(){
+  if(fcsIdx>=fcsDeck.length){ showFcsSummary(); return; }
+  const w=fcsDeck[fcsIdx];
+  document.getElementById('fcs-word').textContent=w.de;
+  document.getElementById('fcs-mean').textContent=w.fa;
+  document.getElementById('fcs-sent').textContent=w.ex||'';
+  document.getElementById('fcs-inner').classList.remove('flip');
+  fcsFlipped=false;
+  // progress
+  const pct=Math.round(fcsIdx/fcsDeck.length*100);
+  document.getElementById('fcs-bar').style.width=pct+'%';
+  // counter
+  const due=fcsDeck.filter(x=>new Date(x.next_review||0)<=new Date()).length;
+  document.getElementById('fcs-cnt').textContent=(fcsIdx+1)+' / '+fcsDeck.length;
+  document.getElementById('fcs-sub').textContent=due>0?due+' سررسید':'همه مرور شده';
+  // interval preview
+  const o=words.find(x=>x.de===w.de);
+  const nextDays=o?Math.round((o.easiness||2.5)*(o.interval||1)):1;
+  document.getElementById('fcs-interval-lbl').textContent=nextDays>1?nextDays+' روز دیگه':'فردا';
+  // reset repeat badge
+  document.getElementById('rep-badge').classList.remove('show');
+}
+
+function fcsFlip(){
+  fcsFlipped=!fcsFlipped;
+  document.getElementById('fcs-inner').classList.toggle('flip',fcsFlipped);
+}
+
+async function fcsRate(k){
+  const w=fcsDeck[fcsIdx], o=words.find(x=>x.de===w.de);
+  if(o){
+    const q=k?5:1;
+    o.easiness=Math.max(1.3,o.easiness+(0.1-(5-q)*(0.08+(5-q)*0.02)));
+    if(!k) o.interval=1;
+    else if(o.seen===0) o.interval=1;
+    else if(o.seen===1) o.interval=6;
+    else o.interval=Math.round(o.interval*o.easiness);
+    o.interval=Math.max(1,o.interval);
+    const next=new Date(); next.setDate(next.getDate()+o.interval);
+    o.next_review=next.toISOString(); o.reviewed_at=new Date().toISOString();
+    o.score+=k?1:-1; o.seen++;
+    logReview();
+    localStorage.setItem('ws_words_cache',JSON.stringify(words));
+    if(navigator.onLine) dbUpdate(o).catch(console.error);
+  }
+  if(k) fcsGood++; else fcsBad++;
+  fcsIdx++; showFcsCard();
+}
+
+function fcsRepeat(){
+  if(fcsIdx>=fcsDeck.length) return;
+  const w=fcsDeck[fcsIdx];
+  fcsDeck.push({...w});
+  fcsRepeatCount++;
+  const badge=document.getElementById('rep-badge');
+  badge.textContent=fcsRepeatCount;
+  badge.classList.add('show');
+  // wiggle card
+  const inner=document.getElementById('fcs-inner');
+  inner.style.transition='transform .15s';
+  inner.style.transform='rotate(2deg)';
+  setTimeout(()=>{ inner.style.transform='rotate(-2deg)'; setTimeout(()=>{ inner.style.transform=''; inner.style.transition='transform .5s var(--ease)'; },150); },150);
+}
+
+function showFcsSummary(){
+  document.getElementById('fcs-body').style.display='none';
+  document.getElementById('fcs-summary').style.display='flex';
+  document.getElementById('fss-good').textContent=fcsGood;
+  document.getElementById('fss-bad').textContent=fcsBad;
+  document.getElementById('fss-total').textContent=fcsGood+fcsBad;
+  const pct=Math.round(fcsGood/(fcsGood+fcsBad||1)*100);
+  let msg='';
+  if(pct===100) msg='عالی! همه رو بلد بودی 🏆';
+  else if(pct>=80) msg='آفرین! خیلی خوب بود 💪';
+  else if(pct>=60) msg='بد نبود، ادامه بده 📚';
+  else msg='نگران نباش، تکرار کلیدیه 🔄';
+  document.getElementById('fcs-sum-sub').textContent=msg;
+  document.getElementById('fcs-bar').style.width='100%';
+  logReview(); updateStats(); updateStreak();
+}
+
+// Swipe for session
+function initFcsSwipe(){
+  const scene=document.getElementById('fcs-scene');
+  let sx=0,sy=0;
+  scene.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+  scene.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx, dy=Math.abs(e.changedTouches[0].clientY-sy);
+    if(Math.abs(dx)>55&&dy<70){
+      if(!fcsFlipped) fcsFlip();
+      else setTimeout(()=>fcsRate(dx>0),150);
+    } else if(Math.abs(dx)<10&&dy<10) fcsFlip();
+  },{passive:true});
+}
+
+/* ═══════════════════════════════════════
    KEYBOARD
 ═══════════════════════════════════════ */
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&document.getElementById('pane-home').classList.contains('on')&&document.activeElement===document.getElementById('s-inp')) doSearch();
-  if(e.key===' '&&document.getElementById('pane-cards').classList.contains('on')){ e.preventDefault(); flipCard(); }
-  if(e.key==='Escape'){ document.getElementById('drawer').classList.remove('show'); document.getElementById('edit-modal').classList.remove('show'); }
+  if(e.key===' '&&document.getElementById('fc-session').classList.contains('open')){ e.preventDefault(); fcsFlip(); }
+  if(e.key==='Escape'){ document.getElementById('drawer').classList.remove('show'); document.getElementById('edit-modal').classList.remove('show'); if(document.getElementById('fc-session').classList.contains('open')) fcsClose(); }
 });
 
 /* ═══════════════════════════════════════
@@ -2254,7 +2276,7 @@ function dismissReminder(){
 
 function startReview(){
   dismissReminder();
-  reviewDue();
+  openSession();
 }
 
 // Check every minute if it's evening
