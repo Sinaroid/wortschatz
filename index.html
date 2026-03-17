@@ -231,13 +231,13 @@ body.is-offline .topbar { top:33px }
 /* ════════════════════════════════════
    PANES
 ════════════════════════════════════ */
-.pane { display:none; flex:1; padding:var(--s4) 0 120px }
+.pane { display:none; flex:1; padding:0 0 100px }
 .pane.on { display:block; animation:fade .22s var(--ease) }
 
 /* ════════════════════════════════════
    HOME — HERO
 ════════════════════════════════════ */
-.hero { padding:var(--s8) 0 var(--s5); animation:up .4s var(--ease) both }
+.hero { padding:var(--s5) 0 var(--s4); animation:up .4s var(--ease) both }
 .hero h1 { font-family:var(--serif); font-size:clamp(32px,8vw,46px);
   color:var(--fg); line-height:1.08; letter-spacing:-.5px; margin-bottom:var(--s2) }
 .hero p { font-size:14px; color:var(--fg3) }
@@ -614,7 +614,7 @@ body.is-offline .topbar { top:33px }
 /* ════════════════════════════════════
    QUIZ
 ════════════════════════════════════ */
-.quiz-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s5) }
+.quiz-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s5); margin-top:var(--s4) }
 .quiz-title { font-family:var(--serif); font-size:26px; color:var(--fg) }
 .q-prog { display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s5) }
 .q-prog-t { font-size:12px; color:var(--fg3); white-space:nowrap }
@@ -649,9 +649,47 @@ body.is-offline .topbar { top:33px }
 /* ════════════════════════════════════
    LIST
 ════════════════════════════════════ */
-.list-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s4) }
+/* ── List page ── */
+.list-page { padding-top:var(--s4) }
+.list-topbar { display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:var(--s4) }
 .list-title { font-family:var(--serif); font-size:26px; color:var(--fg) }
-.list-search { position:relative; margin-bottom:var(--s4) }
+.list-count { font-size:12px; color:var(--fg3); background:var(--bg2);
+  border:1px solid var(--bg3); padding:3px 10px; border-radius:20px }
+
+/* Sort tabs */
+.sort-tabs { display:flex; gap:var(--s1); margin-bottom:var(--s4);
+  background:var(--bg2); border:1px solid var(--bg3);
+  border-radius:var(--r2); padding:3px; overflow-x:auto }
+.sort-tab { padding:6px 14px; border-radius:var(--r1); border:none;
+  background:transparent; color:var(--fg3); font-family:var(--sans);
+  font-size:12px; font-weight:500; cursor:pointer;
+  transition:all .18s var(--ease); white-space:nowrap; flex-shrink:0 }
+.sort-tab.on { background:var(--card); color:var(--fg);
+  box-shadow:var(--sh1) }
+
+/* Due section */
+.due-section { background:var(--warn); border-radius:var(--r3);
+  padding:var(--s4) var(--s5); margin-bottom:var(--s4);
+  display:none }
+.due-section.show { display:block }
+.due-sec-head { display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:var(--s3) }
+.due-sec-title { font-family:var(--serif); font-size:16px; color:#fff }
+.due-sec-btn { padding:5px 12px; border-radius:20px;
+  background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.25);
+  color:#fff; font-size:12px; font-weight:600; cursor:pointer;
+  font-family:var(--sans); transition:all .15s }
+.due-sec-btn:hover { background:rgba(255,255,255,.3) }
+.due-chips { display:flex; flex-wrap:wrap; gap:6px }
+.due-chip { padding:4px 12px; border-radius:20px;
+  background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.2);
+  color:#fff; font-family:var(--serif); font-size:13px;
+  cursor:pointer; transition:background .15s }
+.due-chip:hover { background:rgba(255,255,255,.3) }
+
+/* Search */
+.list-search-wrap { position:relative; margin-bottom:var(--s3) }
 .list-s { width:100%; padding:10px var(--s4) 10px 38px;
   border-radius:var(--r2); border:1.5px solid var(--bg3);
   background:var(--bg2); color:var(--fg); font-family:var(--sans);
@@ -661,14 +699,25 @@ body.is-offline .topbar { top:33px }
 .list-s::placeholder { color:var(--fg4) }
 .list-s-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%);
   color:var(--fg4); pointer-events:none }
-.word-row { display:flex; align-items:center; gap:var(--s3); padding:12px var(--s4);
+
+/* Section labels in list */
+.list-sec-lbl { font-size:10px; font-weight:700; color:var(--fg4);
+  letter-spacing:1.5px; text-transform:uppercase;
+  padding:var(--s3) 0 var(--s2); display:flex; align-items:center; gap:var(--s2) }
+.list-sec-lbl::after { content:''; flex:1; height:1px; background:var(--bg3) }
+
+/* Word rows */
+.word-row { display:flex; align-items:center; gap:var(--s3); padding:11px var(--s4);
   border-radius:var(--r2); border:1px solid var(--bg3); background:var(--card);
-  margin-bottom:var(--s2); transition:all .15s var(--ease) }
-.word-row:hover { border-color:var(--bg4); transform:translateX(-2px) }
-.word-row.dup { border-color:rgba(180,83,9,.25); background:rgba(180,83,9,.04) }
-.wr-de { font-family:var(--serif); font-size:16px; color:var(--fg); flex:1.2; direction:ltr }
-.wr-fa { font-size:13px; color:var(--fg2); flex:1; text-align:right }
-.wr-sc { font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; flex-shrink:0 }
+  margin-bottom:var(--s2); transition:all .15s var(--ease); cursor:default }
+.word-row:hover { border-color:var(--bg4); background:var(--bg2) }
+.word-row.dup { border-color:rgba(180,83,9,.2); background:rgba(180,83,9,.03) }
+.word-row.is-due { border-color:rgba(180,83,9,.25); }
+.wr-de { font-family:var(--serif); font-size:15px; color:var(--fg);
+  flex:1.2; direction:ltr; line-height:1.3 }
+.wr-fa { font-size:12px; color:var(--fg2); flex:1; text-align:right; line-height:1.4 }
+.wr-sc { font-size:11px; font-weight:700; padding:2px 8px;
+  border-radius:20px; flex-shrink:0; min-width:32px; text-align:center }
 .wr-sc.pos { background:rgba(21,128,61,.1); color:var(--ok) }
 .wr-sc.neg { background:rgba(220,38,38,.08); color:var(--err) }
 .wr-sc.neu { background:var(--bg3); color:var(--fg4) }
@@ -705,116 +754,6 @@ body.is-offline .topbar { top:33px }
 
 
 
-/* ════════════════════════════════════
-   PROGRESS PAGE
-════════════════════════════════════ */
-.prog-title { font-family:var(--serif); font-size:26px; color:var(--fg);
-  margin-bottom:var(--s5) }
-
-/* Hero stats — 2x2 grid */
-.prog-hero { display:grid; grid-template-columns:1fr 1fr;
-  gap:var(--s3); margin-bottom:var(--s4) }
-.ph-box { background:var(--card); border:1px solid var(--bg3);
-  border-radius:var(--r3); padding:var(--s5) var(--s4);
-  box-shadow:var(--sh1); display:flex; flex-direction:column; gap:var(--s1) }
-.ph-box-top { display:flex; align-items:center; justify-content:space-between }
-.ph-icon { font-size:20px; line-height:1 }
-.ph-tag { font-size:10px; font-weight:700; padding:2px 7px;
-  border-radius:20px; letter-spacing:.3px }
-.ph-tag.ok  { background:rgba(21,128,61,.1);  color:var(--ok) }
-.ph-tag.warn{ background:rgba(180,83,9,.1);   color:var(--warn) }
-.ph-tag.blue{ background:var(--bl);            color:var(--blue) }
-.ph-n { font-family:var(--serif); font-size:38px; font-weight:400;
-  color:var(--fg); line-height:1; letter-spacing:-1px }
-.ph-box.ok  .ph-n { color:var(--ok) }
-.ph-box.warn .ph-n { color:var(--warn) }
-.ph-box.blue .ph-n { color:var(--blue) }
-.ph-l { font-size:12px; color:var(--fg3) }
-
-/* Streak row inside a card */
-.streak-card { background:var(--fg); border-radius:var(--r4);
-  padding:var(--s5) var(--s6); margin-bottom:var(--s4);
-  display:flex; align-items:center; justify-content:space-between;
-  box-shadow:var(--sh2); position:relative; overflow:hidden;
-  width:100%; max-width:100% }
-.streak-card::before { content:''; position:absolute; top:-20px; left:-10px;
-  width:100px; height:100px; border-radius:50%;
-  background:rgba(255,255,255,.05); pointer-events:none }
-.sc-left { display:flex; align-items:baseline; gap:var(--s2); position:relative; z-index:1 }
-.sc-n { font-family:var(--serif); font-size:44px; color:#fff; line-height:1; letter-spacing:-2px }
-.sc-unit { font-size:14px; color:rgba(255,255,255,.6) }
-.sc-dots { display:flex; gap:5px; align-items:flex-end; position:relative; z-index:1 }
-.sc-dot { display:flex; flex-direction:column; align-items:center; gap:3px }
-.sc-dot-circle { width:9px; height:9px; border-radius:50%;
-  background:rgba(255,255,255,.2); transition:all .3s var(--ease) }
-.sc-dot-circle.done { background:rgba(255,255,255,.8); box-shadow:0 0 0 2px rgba(255,255,255,.2) }
-.sc-dot-circle.today { background:#fff; transform:scale(1.3); box-shadow:0 0 0 2px rgba(255,255,255,.35) }
-.sc-dot-lbl { font-size:8px; color:rgba(255,255,255,.45) }
-.sc-dot-lbl.t { color:rgba(255,255,255,.75); font-weight:700 }
-
-/* Section card */
-.prog-card { background:var(--card); border:1px solid var(--bg3);
-  border-radius:var(--r4); padding:var(--s5); margin-bottom:var(--s4);
-  box-shadow:var(--sh1) }
-.prog-card-h { display:flex; align-items:baseline; justify-content:space-between;
-  margin-bottom:var(--s4) }
-.prog-card-title { font-family:var(--serif); font-size:18px; color:var(--fg) }
-.prog-card-sub { font-size:12px; color:var(--fg3) }
-
-/* Chart — 14 days */
-.chart14 { display:flex; align-items:flex-end; gap:3px; height:120px; width:100%; overflow:hidden }
-.c14-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px }
-.c14-bw { width:100%; flex:1; position:relative; display:flex; align-items:flex-end }
-.c14-bar { width:100%; border-radius:3px 3px 0 0; min-height:3px;
-  transition:height .55s var(--spring) }
-.c14-bar.e { background:var(--bg3); opacity:.4 }
-.c14-bar.h { background:linear-gradient(to top,var(--blue),
-  color-mix(in srgb,var(--blue) 62%,white));
-  box-shadow:0 -2px 6px var(--bg-glow) }
-.c14-bar.t { background:linear-gradient(to top,#b45309,#f59e0b);
-  box-shadow:0 -2px 8px rgba(180,83,9,.28) }
-.c14-n { position:absolute; top:-16px; left:50%; transform:translateX(-50%);
-  font-size:9px; font-weight:700; color:var(--blue);
-  opacity:0; transition:opacity .15s; white-space:nowrap }
-.c14-col:hover .c14-n { opacity:1 }
-.c14-lbl { font-size:9px; color:var(--fg4) }
-.c14-col.tod .c14-lbl { color:#b45309; font-weight:700 }
-
-/* Calendar */
-.prog-cal { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:100% }
-.cal-d { aspect-ratio:1; border-radius:var(--r1); background:var(--bg3);
-  display:flex; align-items:center; justify-content:center;
-  font-size:8px; color:var(--fg4); cursor:default; transition:all .2s }
-.cal-d.on { background:var(--blue); color:#fff; box-shadow:0 0 0 1px var(--bg-glow) }
-.cal-d.now { outline:2px solid var(--blue); outline-offset:1px }
-
-/* Word rows */
-.pw-row { display:flex; align-items:center; gap:var(--s3); padding:10px var(--s4);
-  border-radius:var(--r2); border:1px solid var(--bg3); background:var(--bg);
-  margin-bottom:var(--s2); cursor:pointer; transition:all .15s }
-.pw-row:hover { border-color:var(--blue); background:var(--bl) }
-.pw-de { font-family:var(--serif); font-size:15px; color:var(--fg); flex:1.2; direction:ltr }
-.pw-fa { font-size:12px; color:var(--fg2); flex:1; text-align:right }
-.pw-sc { font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; flex-shrink:0 }
-.pw-sc.neg { background:rgba(220,38,38,.1); color:var(--err) }
-.pw-sc.pos { background:rgba(21,128,61,.1);  color:var(--ok) }
-.pw-badge { font-size:10px; color:var(--fg4); flex-shrink:0 }
-
-
-
-/* ════════════════════════════════════
-   RESPONSIVE SYSTEM
-   
-   Breakpoints:
-   • Mobile  : < 480px  (phone)
-   • Tablet  : 480–768px (large phone / small tablet)  
-   • Desktop : > 768px  (default — max-width 620px centered)
-   
-   Rule: content always 620px max, centered
-   Padding: 16px on mobile, 16px on desktop (grid handles it)
-════════════════════════════════════ */
-
-/* ── Mobile ( < 480px ) ── */
 @media (max-width: 480px) {
   /* Typography scale down */
   .hero h1         { font-size: 28px }
@@ -1018,7 +957,6 @@ body.is-offline .topbar { top:33px }
       <button class="tab on" id="t-home" onclick="go('home')">خانه<span class="badge"></span></button>
       <button class="tab" id="t-cards" onclick="sesOpen()">کارت<span class="badge"></span></button>
       <button class="tab" id="t-quiz" onclick="go('quiz')">کوییز<span class="badge"></span></button>
-      <button class="tab" id="t-net" onclick="go('net')">پیشرفت<span class="badge"></span></button>
       <button class="tab" id="t-list" onclick="go('list')">لیست<span class="badge"></span></button>
     </nav>
     <div class="top-r">
@@ -1234,101 +1172,45 @@ body.is-offline .topbar { top:33px }
 
 
 
-  <!-- PROGRESS -->
-  <div class="pane" id="pane-net">
-    <div class="prog-title">پیشرفت من</div>
-
-    <!-- Empty state -->
-    <div class="empty" id="prog-empty" style="display:none">
-      <span class="empty-icon">📊</span>
-      <h3>هنوز داده‌ای نیست</h3>
-      <p>لغت اضافه کن و مرور کن تا آمارت اینجا بیاد</p>
-    </div>
-
-    <!-- 2x2 hero stats -->
-    <div class="prog-hero" id="prog-body" style="display:none">
-      <div class="ph-box">
-        <div class="ph-box-top"><span class="ph-icon">📚</span><span class="ph-tag blue">کل</span></div>
-        <div class="ph-n" id="ps-total">0</div>
-        <div class="ph-l">لغت ذخیره شده</div>
-      </div>
-      <div class="ph-box ok">
-        <div class="ph-box-top"><span class="ph-icon">✅</span><span class="ph-tag ok">یاد گرفتم</span></div>
-        <div class="ph-n" id="ps-learned">0</div>
-        <div class="ph-l">لغت تسلط دارم</div>
-      </div>
-      <div class="ph-box warn">
-        <div class="ph-box-top"><span class="ph-icon">⏰</span><span class="ph-tag warn">سررسید</span></div>
-        <div class="ph-n" id="ps-due">0</div>
-        <div class="ph-l">منتظر مرور</div>
-      </div>
-      <div class="ph-box blue">
-        <div class="ph-box-top"><span class="ph-icon">🔥</span><span class="ph-tag blue">streak</span></div>
-        <div class="ph-n" id="ps-streak">0</div>
-        <div class="ph-l">روز متوالی</div>
-      </div>
-    </div>
-
-    <!-- Streak visual card -->
-    <div class="streak-card" id="streak-card" style="display:none">
-      <div class="sc-left">
-        <span class="sc-n" id="sc-n">0</span>
-        <span class="sc-unit">روز</span>
-      </div>
-      <div class="sc-dots" id="sc-dots"></div>
-    </div>
-
-    <!-- 14-day chart -->
-    <div class="prog-card" id="prog-chart-card" style="display:none">
-      <div class="prog-card-h">
-        <div class="prog-card-title">مرور ۱۴ روز اخیر</div>
-        <span class="prog-card-sub" id="prog-week-sum"></span>
-      </div>
-      <div class="chart14" id="prog-chart"></div>
-    </div>
-
-    <!-- 30-day activity -->
-    <div class="prog-card" id="prog-cal-card" style="display:none">
-      <div class="prog-card-h">
-        <div class="prog-card-title">فعالیت ۳۰ روزه</div>
-        <span class="prog-card-sub" id="prog-active-days"></span>
-      </div>
-      <div class="prog-cal" id="prog-cal"></div>
-    </div>
-
-    <!-- Weak words -->
-    <div class="prog-card" id="prog-weak-card" style="display:none">
-      <div class="prog-card-h">
-        <div class="prog-card-title">نیاز به تقویت 💪</div>
-        <span class="prog-card-sub" id="prog-weak-sub"></span>
-      </div>
-      <div id="prog-weak-list"></div>
-      <button class="btn btn-p btn-full" style="margin-top:var(--s4)" onclick="sesOpenWeak()">
-        مرور این لغات ←
-      </button>
-    </div>
-
-    <!-- Best words -->
-    <div class="prog-card" id="prog-best-card" style="display:none">
-      <div class="prog-card-h">
-        <div class="prog-card-title">بهترین لغات ⭐</div>
-        <span class="prog-card-sub" id="prog-best-sub"></span>
-      </div>
-      <div id="prog-best-list"></div>
-    </div>
-  </div>
-
   <!-- LIST -->
   <div class="pane" id="pane-list">
-    <div class="list-head"><div class="list-title">لیست لغات</div></div>
-    <div class="list-search">
-      <svg class="list-s-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <input class="list-s" id="list-q" placeholder="جستجو در لغات..." oninput="renderList()">
+    <div class="list-page">
+      <!-- Header -->
+      <div class="list-topbar">
+        <div class="list-title">لیست لغات</div>
+        <span class="list-count" id="list-count"></span>
+      </div>
+
+      <!-- Due words banner -->
+      <div class="due-section" id="due-section">
+        <div class="due-sec-head">
+          <div class="due-sec-title">⏰ نیاز به مرور</div>
+          <button class="due-sec-btn" onclick="sesOpenWeak()">شروع مرور ←</button>
+        </div>
+        <div class="due-chips" id="due-chips"></div>
+      </div>
+
+      <!-- Sort tabs -->
+      <div class="sort-tabs">
+        <button class="sort-tab on" id="sort-new"   onclick="setSort('new')">جدیدترین</button>
+        <button class="sort-tab"    id="sort-due"   onclick="setSort('due')">سررسید مرور</button>
+        <button class="sort-tab"    id="sort-weak"  onclick="setSort('weak')">ضعیف‌ترین</button>
+        <button class="sort-tab"    id="sort-best"  onclick="setSort('best')">بهترین</button>
+        <button class="sort-tab"    id="sort-alpha" onclick="setSort('alpha')">الفبا</button>
+      </div>
+
+      <!-- Search -->
+      <div class="list-search-wrap">
+        <svg class="list-s-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="list-s" id="list-q" placeholder="جستجو در لغات..." oninput="renderList()">
+      </div>
+
+      <!-- Word list -->
+      <div id="wlist"></div>
     </div>
-    <div id="wlist"></div>
   </div>
 </div><!-- .wrap -->
 
@@ -1497,7 +1379,7 @@ function setThemeIcon(d){
    NAV
 ════════════════════ */
 function go(t){
-  ['home','quiz','net','list'].forEach(id=>{
+  ['home','quiz','list'].forEach(id=>{
     Q('#pane-'+id).classList.toggle('on',id===t);
     Q('#t-'+id).classList.toggle('on',id===t);
   });
@@ -1505,7 +1387,7 @@ function go(t){
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='quiz') qStart();
   if(t==='list') renderList();
-  if(t==='net') renderProgress();
+
 }
 function updateBadges(){
   const has=words.length>0;
@@ -1719,7 +1601,6 @@ function renderDaily(ws){
    STATS
 ════════════════════ */
 function updateStats(){
-  if(Q('#pane-net').classList.contains('on')) renderProgress();
   const el=Q('#stats');
   if(!words.length){ el.classList.remove('show'); return; }
   el.classList.add('show');
@@ -1969,18 +1850,69 @@ function endQ(){
 /* ════════════════════
    LIST
 ════════════════════ */
+let listSort='new';
+function setSort(s){
+  listSort=s;
+  Q('#sort-new').classList.toggle('on',s==='new');
+  Q('#sort-due').classList.toggle('on',s==='due');
+  Q('#sort-weak').classList.toggle('on',s==='weak');
+  Q('#sort-best').classList.toggle('on',s==='best');
+  Q('#sort-alpha').classList.toggle('on',s==='alpha');
+  renderList();
+}
+
 function renderList(){
   const el=Q('#wlist');
-  if(!words.length){ el.innerHTML='<div class="empty"><span class="empty-icon">📭</span><h3>لیست خالیه</h3><p>لغت جستجو کن و اضافه کن</p></div>'; return; }
+  if(!words.length){
+    el.innerHTML='<div class="empty"><span class="empty-icon">📭</span><h3>لیست خالیه</h3><p>لغت جستجو کن و اضافه کن</p></div>';
+    Q('#list-count').textContent='';
+    Q('#due-section').classList.remove('show');
+    return;
+  }
+
+  // Due words banner
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now);
+  const dueEl=Q('#due-section');
+  if(due.length){
+    dueEl.classList.add('show');
+    Q('#due-chips').innerHTML=due.slice(0,8).map(w=>
+      `<span class="due-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`
+    ).join('');
+  } else dueEl.classList.remove('show');
+
+  // Search filter
   const q=(Q('#list-q')?.value||'').trim().toLowerCase();
-  const filtered=q?words.filter(w=>w.de.toLowerCase().includes(q)||w.fa.includes(q)||(w.ex||'').toLowerCase().includes(q)):words;
-  if(!filtered.length){ el.innerHTML=`<div style="text-align:center;padding:var(--s8);color:var(--fg4);font-size:14px">«${q}» پیدا نشد</div>`; return; }
+
+  // Sort
+  let sorted=[...words];
+  if(listSort==='new')  sorted=sorted; // already newest first (unshift)
+  if(listSort==='due')  sorted=sorted.sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
+  if(listSort==='weak') sorted=sorted.sort((a,b)=>a.score-b.score);
+  if(listSort==='best') sorted=sorted.sort((a,b)=>b.score-a.score);
+  if(listSort==='alpha')sorted=sorted.sort((a,b)=>a.de.localeCompare(b.de));
+
+  const filtered=q
+    ? sorted.filter(w=>w.de.toLowerCase().includes(q)||w.fa.includes(q)||(w.ex||'').toLowerCase().includes(q))
+    : sorted;
+
+  // Count
+  Q('#list-count').textContent=`${filtered.length} لغت`;
+
+  if(!filtered.length){
+    el.innerHTML=`<div style="text-align:center;padding:var(--s8);color:var(--fg4);font-size:14px">«${q}» پیدا نشد</div>`;
+    return;
+  }
+
   const cnt={}; words.forEach(w=>cnt[w.de.toLowerCase()]=(cnt[w.de.toLowerCase()]||0)+1);
   function hl(t){ return q?t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<span class="hl">$1</span>'):t; }
+
   el.innerHTML=filtered.map(w=>{
-    const i=words.indexOf(w); const dup=cnt[w.de.toLowerCase()]>1;
-    return `<div class="word-row${dup?' dup':''}">`
-      +(dup?'<span title="تکراری" style="color:var(--warn);font-size:12px;flex-shrink:0">⚠</span>':'')
+    const i=words.indexOf(w);
+    const dup=cnt[w.de.toLowerCase()]>1;
+    const isDue=new Date(w.next_review||0)<=now;
+    return `<div class="word-row${dup?' dup':''}${isDue&&listSort==='due'?' is-due':''}">`
+      +(dup?'<span title="تکراری" style="color:var(--warn);font-size:11px;flex-shrink:0">⚠</span>':'')
       +`<span class="wr-de">${hl(w.de)}</span>`
       +`<span class="wr-fa">${hl(w.fa)}</span>`
       +`<span class="wr-sc ${w.score>0?'pos':w.score<0?'neg':'neu'}">${w.score>0?'+':''}${w.score}</span>`
@@ -1991,6 +1923,19 @@ function renderList(){
       +`</div>`;
   }).join('');
 }
+function sesOpenWeak(){
+  const now=new Date();
+  const weak=words.filter(w=>new Date(w.next_review||0)<=now||w.score<0).sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
+  if(!weak.length){ sesOpen(); return; }
+  sesDeck=weak; sesI=0; sesGood=0; sesBad=0; sesRepCount=0; sesFlipped=false;
+  Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
+  Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
+  Q('#ses-body').style.display='flex';
+  Q('#session').classList.add('open');
+  document.body.style.overflow='hidden';
+  showCard();
+}
+
 async function delWord(i){
   const w=words[i]; words.splice(i,1); updateBadges(); saveCache(); renderList(); updateStats();
   if(navigator.onLine) dbDel(w.id).catch(()=>{});
@@ -2022,153 +1967,7 @@ async function editSave(){
 // Auto-build relations silently when word is added
 const _origAddWord=addWord;
 
-/* ════════════════════
-   PROGRESS PAGE
-════════════════════ */
-function renderProgress(){
-  const rlog=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const hasAny=words.length>0||Object.keys(rlog).length>0;
-  Q('#prog-empty').style.display=hasAny?'none':'block';
-  ['prog-body','streak-card','prog-chart-card','prog-cal-card'].forEach(id=>{
-    const el=Q('#'+id); if(el) el.style.display=hasAny?'':'none';
-  });
-  if(!hasAny) return;
-  renderProgStats();
-  renderProgStreakCard();
-  renderProgChart();
-  renderProgCal();
-  renderProgWeak();
-  renderProgBest();
-}
 
-function renderProgStats(){
-  const now=new Date();
-  const due=words.filter(w=>new Date(w.next_review||0)<=now);
-  const learned=words.filter(w=>w.seen>0&&w.interval>3);
-  Q('#ps-total').textContent=words.length;
-  Q('#ps-learned').textContent=learned.length;
-  Q('#ps-due').textContent=due.length;
-  const {s}=getStreakData();
-  Q('#ps-streak').textContent=s;
-}
-
-function getStreakData(){
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
-  let s=0; const d=new Date();
-  while(all[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
-  return {s,all};
-}
-
-function renderProgStreakCard(){
-  const {s,all}=getStreakData();
-  const el=Q('#streak-card'); if(!el) return;
-  el.style.display=s>0?'flex':'none';
-  Q('#sc-n').textContent=s;
-  const dn=['ی','د','س','چ','پ','ج','ش'];
-  let html='';
-  for(let i=6;i>=0;i--){
-    const day=new Date(); day.setDate(day.getDate()-i);
-    const isT=i===0; const done=!!all[day.toDateString()];
-    const cls=isT?'today':done?'done':'';
-    html+=`<div class="sc-dot">
-      <div class="sc-dot-circle ${cls}"></div>
-      <div class="sc-dot-lbl${isT?' t':''}">${isT?'▲':dn[day.getDay()]}</div>
-    </div>`;
-  }
-  Q('#sc-dots').innerHTML=html;
-}
-
-function renderProgChart(){
-  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const days=[]; for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
-  const counts=days.map(d=>log[d.toDateString()]||0);
-  const mx=Math.max(1,...counts);
-  const tot=counts.reduce((a,b)=>a+b,0);
-  const active=counts.filter(c=>c>0).length;
-  const avg=active>0?Math.round(tot/active):0;
-  Q('#prog-week-sum').textContent=tot>0?`${tot} مرور، میانگین ${avg}/روز`:'هنوز مروری نداری';
-  const dn=['ی','د','س','چ','پ','ج','ش'];
-  Q('#prog-chart').innerHTML=days.map((d,i)=>{
-    const c=counts[i]; const isT=i===13;
-    const h=c>0?Math.max(6,Math.round(c/mx*110)):3;
-    const cls=c>0?(isT?' t':' h'):' e';
-    const lbl=isT?'امروز':(i%2===0?dn[d.getDay()]:'');
-    return `<div class="c14-col${isT?' tod':''}">
-      <div class="c14-bw">
-        <div class="c14-bar${cls}" style="height:${h}px"></div>
-        ${c>0?`<div class="c14-n">${c}</div>`:''}
-      </div>
-      <div class="c14-lbl">${lbl}</div>
-    </div>`;
-  }).join('');
-  const card=Q('#prog-chart-card'); if(card) card.style.display='block';
-}
-
-function renderProgCal(){
-  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={}; Object.keys(log).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
-  const days=[]; for(let i=29;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
-  const active=days.filter(d=>all[d.toDateString()]).length;
-  Q('#prog-active-days').textContent=`${active} روز از ۳۰ روز`;
-  const today=new Date().toDateString();
-  Q('#prog-cal').innerHTML=days.map(d=>{
-    const on=!!all[d.toDateString()]; const isT=d.toDateString()===today;
-    const c=log[d.toDateString()]||0;
-    return `<div class="cal-d${on?' on':''}${isT?' now':''}" title="${d.getDate()}/${d.getMonth()+1}${c?' ('+c+' مرور)':''}">
-      ${d.getDate()}
-    </div>`;
-  }).join('');
-  const card=Q('#prog-cal-card'); if(card) card.style.display='block';
-}
-
-function renderProgWeak(){
-  const weak=words.filter(w=>w.score<0||w.seen===0).sort((a,b)=>a.score-b.score).slice(0,6);
-  const card=Q('#prog-weak-card');
-  if(!weak.length){ card.style.display='none'; return; }
-  card.style.display='block';
-  Q('#prog-weak-sub').textContent=`${weak.length} لغت`;
-  const now=new Date();
-  Q('#prog-weak-list').innerHTML=weak.map(w=>{
-    const due=new Date(w.next_review||0)<=now;
-    return `<div class="pw-row" onclick="qs('${esc(w.de)}')">
-      <span class="pw-de">${w.de}</span>
-      <span class="pw-fa">${w.fa}</span>
-      <span class="pw-sc neg">${w.score}</span>
-      <span class="pw-badge">${due?'⏰':''}</span>
-    </div>`;
-  }).join('');
-}
-
-function renderProgBest(){
-  const best=words.filter(w=>w.score>0&&w.seen>2).sort((a,b)=>b.score-a.score).slice(0,6);
-  const card=Q('#prog-best-card');
-  if(!best.length){ card.style.display='none'; return; }
-  card.style.display='block';
-  Q('#prog-best-sub').textContent=`${best.length} لغت`;
-  Q('#prog-best-list').innerHTML=best.map(w=>`
-    <div class="pw-row" onclick="qs('${esc(w.de)}')">
-      <span class="pw-de">${w.de}</span>
-      <span class="pw-fa">${w.fa}</span>
-      <span class="pw-sc pos">+${w.score}</span>
-      <span class="pw-badge">${w.interval>3?w.interval+' روز':''}</span>
-    </div>`).join('');
-}
-
-// Open session with only weak words
-function sesOpenWeak(){
-  const weak=words.filter(w=>w.score<0||w.seen===0).sort((a,b)=>a.score-b.score);
-  if(!weak.length) return;
-  sesDeck=weak; sesI=0; sesGood=0; sesBad=0; sesRepCount=0; sesFlipped=false;
-  Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
-  Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
-  Q('#ses-body').style.display='flex';
-  Q('#session').classList.add('open');
-  document.body.style.overflow='hidden';
-  showCard();
-}
 
 /* ════════════════════
    KEYBOARD
