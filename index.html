@@ -60,11 +60,38 @@ body.dark {
    RESET
 ════════════════════════════════════ */
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-html { height:100%; -webkit-text-size-adjust:100% }
-body { font-family:var(--sans); background:var(--bg); color:var(--fg);
-  min-height:100%; direction:rtl; -webkit-font-smoothing:antialiased;
+
+html {
+  height:100%;
+  direction:rtl;
+  -webkit-text-size-adjust:100%;
+  overflow-x:hidden;
+}
+
+body {
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--fg);
+  min-height:100%;
+  direction:rtl;
+  -webkit-font-smoothing:antialiased;
   transition:background .3s var(--ease), color .3s var(--ease);
-  overflow-x:hidden }
+  overflow-x:hidden;
+  /* CSS Grid centering — works perfectly with RTL */
+  display:grid;
+  grid-template-columns: 1fr min(620px, calc(100% - 32px)) 1fr;
+  grid-template-rows: auto;
+  align-items:start;
+}
+/* All direct children go in center column */
+body > * { grid-column:2 }
+/* Full-bleed overlays span all columns */
+body > .off-bar,
+body > #gate,
+body > .drawer-bg,
+body > .modal-bg,
+body > #session { grid-column:1/-1; width:100% }
+
 button, input { font-family:var(--sans) }
 ::-webkit-scrollbar { width:3px }
 ::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:3px }
@@ -83,7 +110,7 @@ button, input { font-family:var(--sans) }
 /* ════════════════════════════════════
    LAYOUT
 ════════════════════════════════════ */
-.wrap { max-width:620px; margin:0 auto; padding:0 var(--s4); display:flex; flex-direction:column; min-height:100vh; overflow-x:hidden }
+.wrap { width:100%; display:flex; flex-direction:column; min-height:100vh; }
 
 /* ════════════════════════════════════
    OFFLINE BAR
@@ -489,7 +516,8 @@ body.is-offline .topbar { top:33px }
 ════════════════════════════════════ */
 #session { position:fixed; inset:0; background:var(--bg); z-index:200;
   display:none; flex-direction:column;
-  padding-bottom:env(safe-area-inset-bottom) }
+  padding-bottom:env(safe-area-inset-bottom);
+  align-items:stretch }
 #session.open { display:flex; animation:fade .22s var(--ease) }
 /* Session topbar */
 .ses-bar { display:flex; align-items:center; justify-content:space-between;
@@ -673,13 +701,7 @@ body.is-offline .topbar { top:33px }
 /* ════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════ */
-@media(max-width:480px){
-  .res-top,.res-body { padding:var(--s4) var(--s5) }
-  .card-face { padding:var(--s8) var(--s5); min-height:180px }
-  .ses-acts { gap:var(--s2) }
-  .sa { padding:12px var(--s2) }
-  .tab { padding:5px 10px; font-size:11px }
-}
+
 
 
 
@@ -778,12 +800,63 @@ body.is-offline .topbar { top:33px }
 .pw-sc.pos { background:rgba(21,128,61,.1);  color:var(--ok) }
 .pw-badge { font-size:10px; color:var(--fg4); flex-shrink:0 }
 
-@media(max-width:480px){
-  .ph-n { font-size:32px }
-  .sc-n { font-size:36px }
-  .prog-cal { grid-template-columns:repeat(7,1fr) }
-  .chart14 { height:90px }
+
+
+/* ════════════════════════════════════
+   RESPONSIVE SYSTEM
+   
+   Breakpoints:
+   • Mobile  : < 480px  (phone)
+   • Tablet  : 480–768px (large phone / small tablet)  
+   • Desktop : > 768px  (default — max-width 620px centered)
+   
+   Rule: content always 620px max, centered
+   Padding: 16px on mobile, 16px on desktop (grid handles it)
+════════════════════════════════════ */
+
+/* ── Mobile ( < 480px ) ── */
+@media (max-width: 480px) {
+  /* Typography scale down */
+  .hero h1         { font-size: 28px }
+  .res-word        { font-size: 36px }
+  .c-word          { font-size: 30px }
+  .c-mean          { font-size: 20px }
+  .q-word          { font-size: 28px }
+  .sc-n            { font-size: 32px }
+  .ph-n            { font-size: 28px }
+
+  /* Padding reduction */
+  .res-top, .res-body   { padding: var(--s4) var(--s4) }
+  .ph-top               { padding: var(--s4) var(--s4) }
+  .prog-card            { padding: var(--s4) }
+  .prog-hero            { gap: var(--s2) }
+
+  /* Card adjustments */
+  .card-face     { padding: var(--s8) var(--s4); min-height: 165px }
+  .ses-acts      { gap: var(--s2) }
+  .sa            { padding: 11px var(--s2); font-size: 12px }
+  .flip-btn      { width: 38px; height: 38px }
+
+  /* Nav */
+  .tab           { padding: 5px 9px; font-size: 11px }
+  .tab-nav       { gap: 1px }
+
+  /* Progress */
+  .prog-cal      { grid-template-columns: repeat(7, 1fr) }
+  .chart14       { height: 88px }
+  .prog-hero     { grid-template-columns: 1fr 1fr }
+
+  /* Quiz */
+  .q-opts        { grid-template-columns: 1fr 1fr }
 }
+
+/* ── Small mobile ( < 360px ) ── */
+@media (max-width: 360px) {
+  .tab           { padding: 5px 7px; font-size: 10px }
+  .top-r         { gap: var(--s1) }
+  .q-opts        { grid-template-columns: 1fr }
+}
+
 </style>
 </head>
 <body>
