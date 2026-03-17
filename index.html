@@ -63,7 +63,8 @@ body.dark {
 html { height:100%; -webkit-text-size-adjust:100% }
 body { font-family:var(--sans); background:var(--bg); color:var(--fg);
   min-height:100%; direction:rtl; -webkit-font-smoothing:antialiased;
-  transition:background .3s var(--ease), color .3s var(--ease) }
+  transition:background .3s var(--ease), color .3s var(--ease);
+  overflow-x:hidden }
 button, input { font-family:var(--sans) }
 ::-webkit-scrollbar { width:3px }
 ::-webkit-scrollbar-thumb { background:var(--bg3); border-radius:3px }
@@ -82,14 +83,14 @@ button, input { font-family:var(--sans) }
 /* ════════════════════════════════════
    LAYOUT
 ════════════════════════════════════ */
-.wrap { max-width:620px; margin:0 auto; padding:0 var(--s4); display:flex; flex-direction:column; min-height:100vh }
+.wrap { max-width:620px; margin:0 auto; padding:0 var(--s4); display:flex; flex-direction:column; min-height:100vh; overflow-x:hidden }
 
 /* ════════════════════════════════════
    OFFLINE BAR
 ════════════════════════════════════ */
 .off-bar { display:none; position:fixed; top:0; left:0; right:0; z-index:400;
   background:var(--fg); color:var(--bg); font-size:12px; font-weight:500;
-  text-align:center; padding:8px; animation:slideD .3s var(--ease) }
+  text-align:center; padding:8px var(--s4); animation:slideD .3s var(--ease) }
 .off-bar.show { display:block }
 body.is-offline .topbar { top:33px }
 
@@ -99,7 +100,8 @@ body.is-offline .topbar { top:33px }
 .topbar { display:flex; align-items:center; justify-content:space-between;
   padding:var(--s3) 0; position:sticky; top:0; background:var(--bg);
   z-index:10; border-bottom:1px solid transparent;
-  transition:border-color .2s var(--ease), background .3s var(--ease) }
+  transition:border-color .2s var(--ease), background .3s var(--ease);
+  width:100% }
 .topbar.raised { border-color:var(--bg3) }
 .logo { display:flex; align-items:center; gap:var(--s2); text-decoration:none; user-select:none }
 .logo-mark { width:26px; height:26px; background:var(--blue); border-radius:var(--r2);
@@ -358,7 +360,7 @@ body.is-offline .topbar { top:33px }
 ════════════════════════════════════ */
 .reminder { background:var(--fg); border-radius:var(--r4);
   padding:var(--s5) var(--s6); margin-bottom:var(--s4);
-  display:none; overflow:hidden; position:relative }
+  display:none; overflow:hidden; position:relative; width:100% }
 .reminder.show { display:block; animation:up .3s var(--spring) }
 .reminder::after { content:''; position:absolute; top:-25px; right:-15px;
   width:110px; height:110px; border-radius:50%;
@@ -711,7 +713,8 @@ body.is-offline .topbar { top:33px }
 .streak-card { background:var(--fg); border-radius:var(--r4);
   padding:var(--s5) var(--s6); margin-bottom:var(--s4);
   display:flex; align-items:center; justify-content:space-between;
-  box-shadow:var(--sh2); position:relative; overflow:hidden }
+  box-shadow:var(--sh2); position:relative; overflow:hidden;
+  width:100%; max-width:100% }
 .streak-card::before { content:''; position:absolute; top:-20px; left:-10px;
   width:100px; height:100px; border-radius:50%;
   background:rgba(255,255,255,.05); pointer-events:none }
@@ -737,7 +740,7 @@ body.is-offline .topbar { top:33px }
 .prog-card-sub { font-size:12px; color:var(--fg3) }
 
 /* Chart — 14 days */
-.chart14 { display:flex; align-items:flex-end; gap:4px; height:120px }
+.chart14 { display:flex; align-items:flex-end; gap:3px; height:120px; width:100%; overflow:hidden }
 .c14-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px }
 .c14-bw { width:100%; flex:1; position:relative; display:flex; align-items:flex-end }
 .c14-bar { width:100%; border-radius:3px 3px 0 0; min-height:3px;
@@ -756,7 +759,7 @@ body.is-offline .topbar { top:33px }
 .c14-col.tod .c14-lbl { color:#b45309; font-weight:700 }
 
 /* Calendar */
-.prog-cal { display:grid; grid-template-columns:repeat(10,1fr); gap:3px }
+.prog-cal { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:100% }
 .cal-d { aspect-ratio:1; border-radius:var(--r1); background:var(--bg3);
   display:flex; align-items:center; justify-content:center;
   font-size:8px; color:var(--fg4); cursor:default; transition:all .2s }
