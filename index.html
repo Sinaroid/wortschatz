@@ -323,26 +323,35 @@ body.is-offline .topbar { top:33px }
 .ph-res { background:var(--card); border:1px solid var(--bg3);
   border-radius:var(--r4); overflow:hidden; display:none;
   box-shadow:var(--sh2); margin-bottom:var(--s4); animation:up .3s var(--spring) }
-.ph-top { background:var(--fg); padding:var(--s6); position:relative; overflow:hidden }
-.ph-top::after { content:''; position:absolute; top:-20px; right:-10px;
-  width:100px; height:100px; border-radius:50%;
+.ph-top { background:var(--blue); padding:var(--s6); position:relative; overflow:hidden }
+.ph-top::before { content:''; position:absolute; top:-30px; left:-20px;
+  width:130px; height:130px; border-radius:50%;
+  background:rgba(255,255,255,.07); pointer-events:none }
+.ph-top::after { content:''; position:absolute; bottom:-25px; right:10px;
+  width:90px; height:90px; border-radius:50%;
   background:rgba(255,255,255,.05); pointer-events:none }
 .ph-orig { font-family:var(--serif); font-style:italic;
-  font-size:20px; color:#fff; direction:ltr; text-align:left;
-  line-height:1.4; margin-bottom:var(--s2); position:relative; z-index:1 }
-.ph-meaning { font-size:17px; font-weight:500; color:rgba(255,255,255,.85);
-  line-height:1.4; margin-bottom:var(--s1); position:relative; z-index:1 }
-.ph-syn { font-size:12px; color:rgba(255,255,255,.45);
-  position:relative; z-index:1 }
-.ph-add { display:flex; align-items:center; justify-content:center; gap:var(--s2);
-  margin:var(--s4) var(--s6) var(--s5); padding:12px;
-  border-radius:var(--r2); background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.18); color:#fff;
-  font-family:var(--sans); font-size:14px; font-weight:600;
-  cursor:pointer; transition:all .18s }
-.ph-add:hover { background:rgba(255,255,255,.18) }
-.ph-add:disabled { opacity:.4; cursor:default }
-.ph-add.done { background:rgba(21,128,61,.35); border-color:rgba(21,128,61,.5) }
+  font-size:22px; color:#fff; direction:ltr; text-align:left;
+  line-height:1.35; margin-bottom:var(--s3); position:relative; z-index:1;
+  letter-spacing:-.3px }
+.ph-meaning { font-size:17px; font-weight:500; color:rgba(255,255,255,.9);
+  line-height:1.5; margin-bottom:var(--s2); position:relative; z-index:1 }
+.ph-syn { display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; color:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.12); border-radius:20px;
+  padding:3px 10px; position:relative; z-index:1 }
+.ph-syn:empty { display:none }
+.ph-body { padding:var(--s4) var(--s6) var(--s5) }
+.ph-add { width:100%; display:flex; align-items:center; justify-content:center; gap:var(--s2);
+  padding:13px; border-radius:var(--r2);
+  background:var(--blue); color:#fff;
+  border:none; font-family:var(--sans); font-size:14px; font-weight:600;
+  cursor:pointer; transition:all .2s var(--ease) }
+.ph-add:hover { background:var(--blue2); transform:translateY(-1px);
+  box-shadow:0 4px 16px var(--bg-glow) }
+.ph-add:active { transform:scale(.98) }
+.ph-add:disabled { opacity:.45; transform:none; box-shadow:none; cursor:default }
+.ph-add.done { background:var(--ok) }
 
 /* ════════════════════════════════════
    REMINDER
@@ -669,6 +678,77 @@ body.is-offline .topbar { top:33px }
   .sa { padding:12px var(--s2) }
   .tab { padding:5px 10px; font-size:11px }
 }
+
+/* ════════════════════════════════════
+   WORD NETWORK
+════════════════════════════════════ */
+.net-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s5) }
+.net-title { font-family:var(--serif); font-size:26px; color:var(--fg) }
+.net-build-card { background:var(--card); border:1px solid var(--bg3);
+  border-radius:var(--r4); padding:var(--s10) var(--s6);
+  text-align:center; margin-bottom:var(--s4); box-shadow:var(--sh1) }
+.net-spinner { width:36px; height:36px; border-radius:50%;
+  border:3px solid var(--bg3); border-top-color:var(--blue);
+  animation:spin .8s linear infinite; margin:0 auto var(--s4) }
+.net-build-title { font-family:var(--serif); font-size:18px; color:var(--fg); margin-bottom:var(--s2) }
+.net-build-sub { font-size:13px; color:var(--fg3) }
+/* Suggest */
+.suggest-card { background:var(--card); border:1px solid var(--bg3);
+  border-radius:var(--r4); padding:var(--s5); margin-bottom:var(--s4);
+  box-shadow:var(--sh1) }
+.suggest-header { display:flex; align-items:flex-start; justify-content:space-between;
+  margin-bottom:var(--s4) }
+.suggest-title { font-family:var(--serif); font-size:18px; color:var(--fg) }
+.suggest-sub { font-size:12px; color:var(--fg3); margin-top:3px }
+.suggest-words { display:flex; flex-direction:column; gap:var(--s2) }
+.sug-item { display:flex; align-items:center; gap:var(--s3); padding:10px var(--s4);
+  border-radius:var(--r2); border:1px solid var(--bg3);
+  background:var(--bg); cursor:pointer; transition:all .15s var(--ease) }
+.sug-item:hover { border-color:var(--blue); background:var(--bl) }
+.sug-de { font-family:var(--serif); font-size:16px; color:var(--fg); flex:1.2; direction:ltr }
+.sug-rel { font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; flex-shrink:0 }
+.sug-rel.syn { background:rgba(21,128,61,.1); color:var(--ok) }
+.sug-rel.ant { background:rgba(220,38,38,.08); color:var(--err) }
+.sug-rel.fam { background:rgba(124,58,237,.1); color:#7c3aed }
+.sug-rel.rel { background:var(--bl); color:var(--blue) }
+.sug-why { font-size:12px; color:var(--fg3); flex:1; text-align:right }
+.sug-add { padding:4px 10px; border-radius:20px; border:1.5px solid var(--bg3);
+  background:transparent; color:var(--fg3); font-size:11px; cursor:pointer;
+  transition:all .15s; white-space:nowrap; flex-shrink:0 }
+.sug-add:hover { border-color:var(--blue); color:var(--blue) }
+.sug-add.done { border-color:var(--ok); color:var(--ok); background:rgba(21,128,61,.06) }
+/* SVG graph */
+.net-graph-wrap { background:var(--card); border:1px solid var(--bg3);
+  border-radius:var(--r4); overflow:hidden; margin-bottom:var(--s4);
+  box-shadow:var(--sh1) }
+.net-legend { display:flex; gap:var(--s4); padding:var(--s3) var(--s4);
+  border-bottom:1px solid var(--bg3); flex-wrap:wrap }
+.leg-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--fg3) }
+.leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
+.net-svg { width:100%; height:auto; display:block; cursor:grab; user-select:none }
+.net-svg:active { cursor:grabbing }
+.net-node { cursor:pointer; transition:opacity .2s }
+.net-node:hover circle { opacity:.85 }
+.net-node text { pointer-events:none }
+.net-edge { stroke-opacity:.35; transition:stroke-opacity .2s }
+.net-tooltip { position:absolute; background:var(--fg); color:var(--bg);
+  font-size:12px; padding:6px 10px; border-radius:var(--r1);
+  pointer-events:none; z-index:20; max-width:180px; line-height:1.5;
+  box-shadow:var(--sh2) }
+/* Clusters */
+.cluster-head { font-size:11px; font-weight:700; color:var(--fg3);
+  letter-spacing:1.5px; text-transform:uppercase; margin-bottom:var(--s3) }
+.cluster { background:var(--card); border:1px solid var(--bg3);
+  border-radius:var(--r3); padding:var(--s4); margin-bottom:var(--s2);
+  box-shadow:var(--sh1) }
+.cluster-title { font-family:var(--serif); font-size:15px; color:var(--fg);
+  margin-bottom:var(--s3); display:flex; align-items:center; gap:var(--s2) }
+.cluster-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0 }
+.cluster-chips { display:flex; flex-wrap:wrap; gap:var(--s1) }
+.cluster-chip { font-size:12px; padding:3px 10px; border-radius:20px;
+  border:1px solid var(--bg3); background:var(--bg);
+  color:var(--fg2); cursor:pointer; transition:all .15s; direction:ltr }
+.cluster-chip:hover { border-color:var(--blue); color:var(--blue); background:var(--bl) }
 </style>
 </head>
 <body>
@@ -830,6 +910,7 @@ body.is-offline .topbar { top:33px }
       <button class="tab on" id="t-home" onclick="go('home')">خانه<span class="badge"></span></button>
       <button class="tab" id="t-cards" onclick="sesOpen()">کارت<span class="badge"></span></button>
       <button class="tab" id="t-quiz" onclick="go('quiz')">کوییز<span class="badge"></span></button>
+      <button class="tab" id="t-net" onclick="go('net')">شبکه<span class="badge"></span></button>
       <button class="tab" id="t-list" onclick="go('list')">لیست<span class="badge"></span></button>
     </nav>
     <div class="top-r">
@@ -895,12 +976,14 @@ body.is-offline .topbar { top:33px }
       <div class="ph-top">
         <div class="ph-orig" id="ph-orig"></div>
         <div class="ph-meaning" id="ph-meaning"></div>
-        <div class="ph-syn" id="ph-syn"></div>
+        <span class="ph-syn" id="ph-syn"></span>
       </div>
-      <button class="ph-add" id="ph-add" onclick="addPhrase()">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        افزودن کل اصطلاح به فلش‌کارت‌ها
-      </button>
+      <div class="ph-body">
+        <button class="ph-add" id="ph-add" onclick="addPhrase()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          افزودن کل اصطلاح به فلش‌کارت‌ها
+        </button>
+      </div>
     </div>
 
     <!-- Reminder -->
@@ -987,6 +1070,53 @@ body.is-offline .topbar { top:33px }
       <div class="q-score" id="q-sc"></div>
       <div class="q-msg" id="q-msg"></div>
       <button class="btn btn-p" onclick="qStart()">دوباره بازی کن</button>
+    </div>
+  </div>
+
+
+  <!-- NETWORK -->
+  <div class="pane" id="pane-net">
+    <div class="net-head">
+      <div class="net-title">شبکه لغات</div>
+      <button class="btn btn-sm" id="net-rebuild-btn" onclick="buildNetwork(true)" style="display:none">🔄 بازسازی</button>
+    </div>
+    <div class="empty" id="net-empty" style="display:none">
+      <span class="empty-icon">🕸</span>
+      <h3>شبکه خالیه</h3>
+      <p>لغت اضافه کن تا شبکه ساخته بشه</p>
+    </div>
+    <div id="net-building" style="display:none">
+      <div class="net-build-card">
+        <div class="net-spinner"></div>
+        <div class="net-build-title">در حال ساختن شبکه...</div>
+        <div class="net-build-sub" id="net-build-sub">لغات رو آنالیز می‌کنم</div>
+      </div>
+    </div>
+    <!-- Learn suggestions -->
+    <div id="net-suggest" style="display:none">
+      <div class="suggest-card">
+        <div class="suggest-header">
+          <div class="suggest-title">💡 پیشنهاد یادگیری</div>
+          <div class="suggest-sub" id="sug-sub"></div>
+        </div>
+        <div class="suggest-words" id="sug-words"></div>
+      </div>
+    </div>
+    <!-- Graph -->
+    <div class="net-graph-wrap" id="net-graph-wrap" style="display:none">
+      <div class="net-legend">
+        <span class="leg-item"><span class="leg-dot" style="background:#1847f0"></span>لغات من</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#15803d"></span>مترادف</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#b45309"></span>متضاد</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#7c3aed"></span>هم‌خانواده</span>
+      </div>
+      <svg id="net-svg" class="net-svg" viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="net-tooltip" id="net-tip" style="display:none"></div>
+    </div>
+    <!-- Clusters -->
+    <div id="net-clusters" style="display:none">
+      <div class="cluster-head">دسته‌بندی لغات</div>
+      <div id="cluster-list"></div>
     </div>
   </div>
 
@@ -1169,7 +1299,7 @@ function setThemeIcon(d){
    NAV
 ════════════════════ */
 function go(t){
-  ['home','quiz','list'].forEach(id=>{
+  ['home','quiz','net','list'].forEach(id=>{
     Q('#pane-'+id).classList.toggle('on',id===t);
     Q('#t-'+id).classList.toggle('on',id===t);
   });
@@ -1177,10 +1307,11 @@ function go(t){
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='quiz') qStart();
   if(t==='list') renderList();
+  if(t==='net') openNetwork();
 }
 function updateBadges(){
   const has=words.length>0;
-  ['cards','quiz','list'].forEach(id=>Q('#t-'+id).classList.toggle('lit',has));
+  ['cards','quiz','net','list'].forEach(id=>Q('#t-'+id).classList.toggle('lit',has));
 }
 
 /* ════════════════════
@@ -1310,7 +1441,7 @@ async function addPhrase(){
   words.unshift(w); updateBadges(); updateStats(); saveCache();
   const btn=Q('#ph-add');
   btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.className='ph-add done';
-  if(navigator.onLine) dbAdd(w).catch(()=>{});
+  if(navigator.onLine) dbAdd(w).then(()=>buildWordRelations(w.de,w.fa)).catch(()=>{});
 }
 
 async function addWord(){
@@ -1321,7 +1452,7 @@ async function addWord(){
   words.unshift(w); updateBadges(); updateStats(); saveCache();
   const btn=Q('#add-btn');
   btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.className='add-btn done';
-  if(navigator.onLine) dbAdd(w).catch(()=>{});
+  if(navigator.onLine) dbAdd(w).then(()=>buildWordRelations(w.de,w.fa)).catch(()=>{});
 }
 
 /* ════════════════════
@@ -1683,6 +1814,212 @@ async function editSave(){
   saveCache(); if(navigator.onLine) dbUpd(w).catch(()=>{});
   Q('#edit-modal').classList.remove('open'); renderList();
 }
+
+/* ════════════════════
+   WORD NETWORK
+════════════════════ */
+
+// Network data structure
+// ws_network: { words: { [de]: { related:[{de,fa,type:'syn/ant/fam/rel'}] } }, built_at: ts }
+
+function getNetworkData(){ try{ return JSON.parse(localStorage.getItem('ws_network')||'{}'); }catch(e){ return {}; } }
+function saveNetworkData(d){ localStorage.setItem('ws_network',JSON.stringify(d)); }
+
+// Called after adding a word — builds relations in background silently
+async function buildWordRelations(word, meaning_fa){
+  if(!KEY||!navigator.onLine) return;
+  const net=getNetworkData();
+  if(net[word]) return; // already built
+  try{
+    const p=`لغت آلمانی: "${word}" (معنی: ${meaning_fa})
+۶ تا لغت مرتبط آلمانی پیدا کن — از این دسته‌ها:
+- مترادف (syn): لغت با معنی مشابه
+- متضاد (ant): لغت با معنی مخالف
+- هم‌خانواده (fam): از ریشه مشترک
+- مرتبط (rel): مفهوماً نزدیک
+JSON خالص: [{"de":"لغت","fa":"معنی","type":"syn/ant/fam/rel"}]
+فقط JSON، حداکثر ۶ مورد.`;
+    const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
+    const related=JSON.parse(raw);
+    const netData=getNetworkData();
+    netData[word]={ fa:meaning_fa, related };
+    saveNetworkData(netData);
+  }catch(e){ console.log('network build silently failed'); }
+}
+
+async function buildNetwork(force){
+  if(!words.length){ Q('#net-empty').style.display='block'; return; }
+  if(!KEY||!navigator.onLine){ openNetwork(); return; }
+  const net=getNetworkData();
+  const missing=words.filter(w=>!net[w.de]);
+  if(!force && missing.length===0){ openNetwork(); return; }
+  // build
+  Q('#net-building').style.display='block';
+  Q('#net-graph-wrap').style.display='none';
+  Q('#net-suggest').style.display='none';
+  Q('#net-clusters').style.display='none';
+  const todo=force?words:missing;
+  for(let i=0;i<todo.length;i++){
+    const w=todo[i];
+    Q('#net-build-sub').textContent=`(${i+1}/${todo.length}) ${w.de}`;
+    await buildWordRelations(w.de,w.fa);
+    if(i<todo.length-1) await new Promise(r=>setTimeout(r,300));
+  }
+  Q('#net-building').style.display='none';
+  openNetwork();
+}
+
+function openNetwork(){
+  if(!words.length){ Q('#net-empty').style.display='block'; Q('#net-build-btn') && (Q('#net-rebuild-btn').style.display='none'); return; }
+  Q('#net-empty').style.display='none';
+  Q('#net-rebuild-btn').style.display='inline-flex';
+  const net=getNetworkData();
+  const hasData=words.some(w=>net[w.de]);
+  if(!hasData){ buildNetwork(false); return; }
+  renderNetSuggest(net);
+  renderNetGraph(net);
+  renderNetClusters(net);
+  Q('#net-graph-wrap').style.display='block';
+  Q('#net-suggest').style.display='block';
+  Q('#net-clusters').style.display='block';
+}
+
+function renderNetSuggest(net){
+  // Find words in network but NOT in user's list
+  const myWords=new Set(words.map(w=>w.de.toLowerCase()));
+  const suggestions=[];
+  Object.entries(net).forEach(([word,data])=>{
+    (data.related||[]).forEach(r=>{
+      if(!myWords.has(r.de.toLowerCase())&&r.de.length>1){
+        const existing=suggestions.find(s=>s.de.toLowerCase()===r.de.toLowerCase());
+        if(!existing) suggestions.push({...r,from:word,count:1});
+        else existing.count++;
+      }
+    });
+  });
+  // Sort by count (most connected = most important)
+  suggestions.sort((a,b)=>b.count-a.count);
+  const top=suggestions.slice(0,5);
+  if(!top.length){ Q('#net-suggest').style.display='none'; return; }
+  Q('#sug-sub').textContent=`${top.length} لغت که باید یاد بگیری`;
+  Q('#sug-words').innerHTML=top.map((s,i)=>`
+    <div class="sug-item" onclick="qs('${esc(s.de)}')">
+      <span class="sug-de">${s.de}</span>
+      <span class="sug-why">${s.fa}</span>
+      <span class="sug-rel ${s.type}">${{syn:'مترادف',ant:'متضاد',fam:'هم‌خانواده',rel:'مرتبط'}[s.type]||'مرتبط'}</span>
+      <button class="sug-add" id="sug-${i}" onclick="event.stopPropagation();addSugWord(${i},'${esc(s.de)}','${esc(s.fa)}')">+ اضافه</button>
+    </div>`).join('');
+}
+
+async function addSugWord(i,de,fa){
+  if(words.some(w=>w.de===de)) return;
+  const w={de,fa,ex:'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  words.unshift(w); updateBadges(); updateStats(); saveCache();
+  const btn=Q('#sug-'+i); if(btn){ btn.textContent='✓ اضافه شد'; btn.classList.add('done'); btn.disabled=true; }
+  if(navigator.onLine) dbAdd(w).then(()=>buildWordRelations(de,fa)).catch(()=>{});
+}
+
+function renderNetGraph(net){
+  const svg=Q('#net-svg');
+  if(!svg) return;
+  const W=700, H=480;
+  const myWords=new Set(words.map(w=>w.de));
+  // Build nodes & edges
+  const nodes=[]; const edges=[]; const nodeMap={};
+  const COLORS={mine:'#1847f0',syn:'#15803d',ant:'#dc2626',fam:'#7c3aed',rel:'#b45309'};
+  // Add user words as main nodes
+  words.slice(0,20).forEach((w,i)=>{
+    const angle=(i/Math.min(words.length,20))*2*Math.PI;
+    const r=Math.min(W,H)*0.32;
+    const x=W/2+r*Math.cos(angle-Math.PI/2);
+    const y=H/2+r*Math.sin(angle-Math.PI/2);
+    nodes.push({id:w.de,fa:w.fa,x,y,type:'mine',size:22});
+    nodeMap[w.de]={x,y};
+  });
+  // Add related nodes
+  const relAdded=new Set(words.map(w=>w.de));
+  words.slice(0,20).forEach(w=>{
+    const data=net[w.de]; if(!data) return;
+    (data.related||[]).slice(0,3).forEach((r,j)=>{
+      if(!relAdded.has(r.de)){
+        const parent=nodeMap[w.de];
+        const angle=((j/3)*2*Math.PI)+(Object.keys(nodeMap).indexOf(w.de)/20)*2*Math.PI;
+        const dist=80+Math.random()*30;
+        const x=Math.max(60,Math.min(W-60,(parent?.x||W/2)+dist*Math.cos(angle)));
+        const y=Math.max(40,Math.min(H-40,(parent?.y||H/2)+dist*Math.sin(angle)));
+        nodes.push({id:r.de,fa:r.fa,x,y,type:r.type,size:16});
+        nodeMap[r.de]={x,y};
+        relAdded.add(r.de);
+      }
+      if(nodeMap[r.de]) edges.push({from:w.de,to:r.de,type:r.type});
+    });
+  });
+  // Render SVG
+  let svgContent='';
+  // edges
+  edges.forEach(e=>{
+    const f=nodeMap[e.from], t=nodeMap[e.to]; if(!f||!t)return;
+    const c=COLORS[e.type]||COLORS.rel;
+    svgContent+=`<line class="net-edge" x1="${f.x}" y1="${f.y}" x2="${t.x}" y2="${t.y}" stroke="${c}" stroke-width="1.5"/>`;
+  });
+  // nodes
+  nodes.forEach(n=>{
+    const c=COLORS[n.type]||COLORS.mine;
+    const isMine=myWords.has(n.id);
+    const textLen=n.id.length;
+    const fontSize=textLen>12?9:textLen>8?10:11;
+    svgContent+=`<g class="net-node" onclick="netNodeClick('${esc(n.id)}')" transform="translate(${n.x},${n.y})">
+      <circle r="${n.size}" fill="${c}" fill-opacity="${isMine?1:.7}" stroke="var(--card)" stroke-width="2"/>
+      <text y="${n.size+12}" text-anchor="middle" font-size="${fontSize}" fill="var(--fg)" font-family="var(--sans)">${n.id.length>14?n.id.slice(0,12)+'…':n.id}</text>
+    </g>`;
+  });
+  svg.innerHTML=svgContent;
+  // Simple pan
+  let drag=false,ox=0,oy=0,vx=0,vy=0;
+  svg.addEventListener('mousedown',e=>{drag=true;ox=e.clientX-vx;oy=e.clientY-vy;});
+  svg.addEventListener('mousemove',e=>{ if(!drag)return; vx=e.clientX-ox; vy=e.clientY-oy; svg.style.transform=`translate(${vx*.15}px,${vy*.15}px)`; });
+  svg.addEventListener('mouseup',()=>drag=false);
+}
+
+function netNodeClick(de){
+  // Search for this word
+  go('home');
+  setTimeout(()=>{ Q('#s-inp').value=de; doSearch(); },200);
+}
+
+function renderNetClusters(net){
+  // Group words by semantic clusters using their relations
+  const CLUSTER_COLORS=['#1847f0','#15803d','#b45309','#7c3aed','#dc2626','#0891b2'];
+  const clusters={};
+  words.forEach(w=>{
+    const data=net[w.de];
+    if(!data||!data.related?.length){ 
+      if(!clusters['سایر']) clusters['سایر']=[];
+      clusters['سایر'].push(w.de);
+      return;
+    }
+    // Simple clustering: group by most common type of relations
+    const types=data.related.map(r=>r.type);
+    const dominant=types.sort((a,b)=>types.filter(t=>t===b).length-types.filter(t=>t===a).length)[0];
+    const clusterName={syn:'گروه مترادف‌ها',ant:'گروه متضادها',fam:'خانواده‌های لغوی',rel:'لغات موضوعی'}[dominant]||'سایر';
+    if(!clusters[clusterName]) clusters[clusterName]=[];
+    clusters[clusterName].push(w.de);
+  });
+  const entries=Object.entries(clusters).filter(([,v])=>v.length>0);
+  Q('#cluster-list').innerHTML=entries.map(([name,ws],i)=>`
+    <div class="cluster">
+      <div class="cluster-title">
+        <span class="cluster-dot" style="background:${CLUSTER_COLORS[i%CLUSTER_COLORS.length]}"></span>
+        ${name} <span style="font-size:12px;color:var(--fg3);font-family:var(--sans)">(${ws.length})</span>
+      </div>
+      <div class="cluster-chips">
+        ${ws.map(de=>`<span class="cluster-chip" onclick="qs('${esc(de)}')">${de}</span>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// Auto-build relations silently when word is added
+const _origAddWord=addWord;
 
 /* ════════════════════
    KEYBOARD
