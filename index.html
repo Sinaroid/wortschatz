@@ -551,6 +551,25 @@ body.offline .topbar{top:33px}
   .tab{padding:5px 7px;font-size:10px}
   .q-opts{grid-template-columns:1fr}
 }
+
+/* ── Priority badge ── */
+.priority-badge {
+  display:flex; align-items:flex-start; gap:var(--s2);
+  padding:var(--s3) var(--s4); border-radius:var(--r2);
+  margin-bottom:var(--s4); font-size:13px; line-height:1.5;
+  border:1px solid; animation:up .25s var(--spring);
+}
+.priority-badge.p5 { background:rgba(220,38,38,.06); border-color:rgba(220,38,38,.2); color:var(--ink2) }
+.priority-badge.p4 { background:rgba(180,83,9,.06);  border-color:rgba(180,83,9,.2);  color:var(--ink2) }
+.priority-badge.p3 { background:rgba(24,71,240,.06); border-color:rgba(24,71,240,.15); color:var(--ink2) }
+.priority-badge.p2 { background:var(--bg2); border-color:var(--bg3); color:var(--ink3) }
+.priority-badge.p1 { background:var(--bg2); border-color:var(--bg3); color:var(--ink3) }
+.pb-icon { font-size:16px; flex-shrink:0; line-height:1.3 }
+.pb-text { flex:1 }
+.pb-label { font-weight:700; margin-bottom:1px; font-size:12px }
+.pb-reason { font-size:12px; color:inherit; opacity:.85 }
+.ph-priority { display:flex; align-items:center; gap:6px; font-size:12px;
+  color:rgba(255,255,255,.65); margin-bottom:var(--s2); position:relative; z-index:1 }
 </style>
 </head>
 <body>
@@ -733,6 +752,7 @@ body.offline .topbar{top:33px}
       </div>
       <div class="res-body">
         <div class="res-meaning" id="res-meaning"></div>
+        <div class="priority-badge" id="priority-badge" style="display:none"></div>
         <div class="res-usage" id="res-usage" style="display:none"></div>
         <div id="res-syn-wrap" style="display:none">
           <div class="syn-ant">
@@ -771,6 +791,7 @@ body.offline .topbar{top:33px}
       <div class="ph-top">
         <div class="ph-orig" id="ph-orig"></div>
         <div class="ph-meaning" id="ph-meaning"></div>
+        <div class="ph-priority" id="ph-priority" style="display:none"></div>
         <span class="ph-syn" id="ph-syn"></span>
       </div>
       <div class="ph-body">
@@ -1108,8 +1129,10 @@ async function searchWord(q){
 - آلمانی (یا با کیبورد انگلیسی): تصحیح کن (ae→ä,oe→ö,ue→ü,ss→ß)
 - فارسی یا انگلیسی: معادل آلمانی پیدا کن
 JSON خالص بدون backtick:
-{"word":"لغت بدون حرف تعریف","corrected_from":"فقط اگه واقعاً اصلاح شد وگرنه null","article":"der/die/das یا null","plural":"جمع یا null","preposition":"حرف اضافه مثلاً auf+Akk یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق و کامل","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"examples":[{"de":"جمله اول کاربردی","fa":"ترجمه"},{"de":"جمله دوم در موقعیت دیگر","fa":"ترجمه"}],"grammar_tip":"نکته گرامری کوتاه به فارسی","conjugation":{"ich":"فرم ich","du":"فرم du","er":"فرم er/sie/es"},"usage_pattern":"الگوی استفاده مثلاً jdm etw zutrauen یا null"}
-اگه Verb نیست conjugation=null. فقط JSON.`;
+{"word":"لغت بدون حرف تعریف","corrected_from":"فقط اگه واقعاً اصلاح شد وگرنه null","article":"der/die/das یا null","plural":"جمع یا null","preposition":"حرف اضافه مثلاً auf+Akk یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق و کامل","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"examples":[{"de":"جمله اول کاربردی","fa":"ترجمه"},{"de":"جمله دوم در موقعیت دیگر","fa":"ترجمه"}],"grammar_tip":"نکته گرامری کوتاه به فارسی","conjugation":{"ich":"فرم ich","du":"فرم du","er":"فرم er/sie/es"},"usage_pattern":"الگوی استفاده مثلاً jdm etw zutrauen یا null","priority":{"score":1,"reason":"چرا این لغت مهمه — یه جمله کوتاه فارسی. مثلاً: خیلی پرکاربرد توی محیط کار، یا: توی آزمون B2 زیاد میاد"}}
+اگه Verb نیست conjugation=null.
+برای priority.score: 5=حتماً یاد بگیر(روزمره)، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر/رسمی
+فقط JSON.`;
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
   try{
@@ -1138,6 +1161,16 @@ function renderWord(d){
   if(d.type)tc.innerHTML+=`<span class="res-tag">${d.type}</span>`;
   // Meaning
   Q('#res-meaning').textContent=d.meaning_fa;
+  // Priority badge
+  const pbEl=Q('#priority-badge');
+  if(d.priority&&d.priority.score){
+    const sc=d.priority.score;
+    const icons={5:'🔴',4:'🟠',3:'🔵',2:'⚪',1:'⚪'};
+    const labels={5:'حتماً یاد بگیر',4:'خیلی مهمه',3:'مهمه',2:'معمولی',1:'نادر / رسمی'};
+    pbEl.className='priority-badge p'+sc;
+    pbEl.innerHTML=`<span class="pb-icon">${icons[sc]}</span><div class="pb-text"><div class="pb-label">${labels[sc]}</div><div class="pb-reason">${d.priority.reason||''}</div></div>`;
+    pbEl.style.display='flex';
+  } else pbEl.style.display='none';
   const usEl=Q('#res-usage');
   if(d.usage_pattern&&d.usage_pattern!=='null'&&d.usage_pattern.trim())
     {usEl.textContent=d.usage_pattern;usEl.style.display='block';}
@@ -1208,12 +1241,21 @@ async function searchPhrase(q){
   const p=`اصطلاح یا جمله: "${q}"
 معنی کامل اصطلاح رو به فارسی بده — نه لغت به لغت.
 JSON خالص:
-{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"مترادف یا عبارت مشابه آلمانی یا null","example_de":"یه جمله نمونه کوتاه یا null"}
+{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"مترادف یا عبارت مشابه آلمانی یا null","example_de":"یه جمله نمونه کوتاه یا null","priority":{"score":1,"reason":"چرا این اصطلاح مهمه — یه جمله فارسی"}}
+برای score: 5=خیلی رایج، 4=مهم، 3=متوسط، 2=کمتر رایج، 1=نادر
 فقط JSON.`;
   const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
   curPhrase=JSON.parse(raw);
   Q('#ph-orig').textContent=curPhrase.original;
   Q('#ph-meaning').textContent=curPhrase.meaning_fa;
+  const phpEl=Q('#ph-priority');
+  if(curPhrase.priority&&curPhrase.priority.score){
+    const sc=curPhrase.priority.score;
+    const icons={5:'🔴',4:'🟠',3:'🔵',2:'⚪',1:'⚪'};
+    const labels={5:'خیلی رایجه',4:'مهمه',3:'متوسط',2:'کمتر رایج',1:'نادر'};
+    phpEl.innerHTML=`<span>${icons[sc]}</span><span>${labels[sc]} — ${curPhrase.priority.reason||''}</span>`;
+    phpEl.style.display='flex';
+  } else phpEl.style.display='none';
   const synEl=Q('#ph-syn');
   synEl.textContent=curPhrase.synonym&&curPhrase.synonym!=='null'?'مترادف: '+curPhrase.synonym:'';
   const exists=words.some(w=>w.de===curPhrase.original);
