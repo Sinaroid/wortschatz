@@ -1325,9 +1325,11 @@ async function searchWord(q){
   const ck='wc_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){ try{ curWord=JSON.parse(cached); renderWord(curWord); return; }catch(e){ localStorage.removeItem(ck); } }
-  const p=`لغت آلمانی یا فارسی: "${q}"
-ممکنه با کیبورد انگلیسی تایپ شده — اگه لازمه تصحیح کن (ae→ä,oe→ö,ue→ü,ss→ß).
-اگه فارسیه، معادل آلمانی پیدا کن.
+  const p=`لغت یا عبارت: "${q}"
+این ورودی ممکنه آلمانی، فارسی، یا انگلیسی باشه:
+- اگه آلمانیه (یا با کیبورد انگلیسی نوشته شده): تصحیح کن (ae→ä,oe→ö,ue→ü,ss→ß) و اطلاعاتش رو بده
+- اگه فارسیه: معادل آلمانی پیدا کن
+- اگه انگلیسیه: معادل آلمانی پیدا کن
 JSON خالص بدون backtick:
 {"word":"لغت بدون حرف تعریف","corrected_from":"اگه تصحیح شد وگرنه رشته خالی","article":"der/die/das یا رشته خالی","plural":"جمع اگر اسم وگرنه خالی","preposition":"حرف اضافه مثلاً auf+Akk وگرنه خالی","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق","meaning_en":"English meaning","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"examples":[{"de":"جمله کاربردی اول","fa":"ترجمه"},{"de":"جمله موقعیت دیگر","fa":"ترجمه"}],"related":["کلمه۱","کلمه۲","کلمه۳"],"grammar_tip":"نکته گرامری مهم به فارسی"}
 فقط JSON.`;
