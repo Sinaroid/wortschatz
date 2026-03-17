@@ -292,49 +292,89 @@ body.is-offline .topbar { top:33px }
 .res { background:var(--card); border:1px solid var(--bg3); border-radius:var(--r4);
   overflow:hidden; display:none; box-shadow:var(--sh2);
   margin-bottom:var(--s4); animation:up .3s var(--spring) }
-.res-top { background:var(--blue); padding:var(--s6) var(--s6) var(--s5);
+
+/* Banner */
+.res-top { background:var(--blue); padding:var(--s5) var(--s6);
   position:relative; overflow:hidden }
 .res-top::after { content:''; position:absolute; top:-30px; right:-20px;
-  width:150px; height:150px; border-radius:50%;
+  width:130px; height:130px; border-radius:50%;
   background:rgba(255,255,255,.06); pointer-events:none }
 .res-fix { display:none; font-size:11px; color:rgba(255,255,255,.7);
-  background:rgba(255,255,255,.13); border-radius:var(--r1);
+  background:rgba(255,255,255,.12); border-radius:var(--r1);
   padding:3px 8px; margin-bottom:var(--s2); position:relative; z-index:1 }
 .res-fix.show { display:inline-block }
-.res-art { font-size:11px; font-weight:700; color:rgba(255,255,255,.72);
-  letter-spacing:1.5px; text-transform:uppercase;
-  margin-bottom:var(--s1); position:relative; z-index:1 }
-.res-word { font-family:var(--serif); font-size:clamp(38px,9vw,54px);
+.res-banner-row { display:flex; align-items:flex-start;
+  justify-content:space-between; position:relative; z-index:1 }
+.res-art { font-size:11px; font-weight:700; color:rgba(255,255,255,.65);
+  letter-spacing:1.5px; text-transform:uppercase; margin-bottom:var(--s1) }
+.res-word { font-family:var(--serif); font-size:clamp(36px,8vw,52px);
   color:#fff; line-height:1; letter-spacing:-1.5px;
-  margin-bottom:var(--s2); direction:ltr; position:relative; z-index:1 }
-.res-meta { font-size:12px; color:rgba(255,255,255,.58);
-  direction:ltr; margin-bottom:var(--s3); position:relative; z-index:1 }
-.res-tags { display:flex; gap:var(--s1); flex-wrap:wrap; position:relative; z-index:1 }
-.res-tag { font-size:11px; font-weight:600; padding:2px 9px;
-  border-radius:20px; background:rgba(255,255,255,.16); color:#fff; letter-spacing:.3px }
+  margin-bottom:var(--s1); direction:ltr }
+.res-meta { font-size:12px; color:rgba(255,255,255,.55); direction:ltr }
+.res-tag-col { display:flex; flex-direction:column; gap:var(--s1);
+  align-items:flex-end; flex-shrink:0; margin-right:var(--s2) }
+.res-tag { font-size:11px; font-weight:700; padding:3px 10px;
+  border-radius:20px; background:rgba(255,255,255,.15); color:#fff; letter-spacing:.3px }
+
+/* Body */
 .res-body { padding:var(--s5) var(--s6) }
-.res-fa { font-size:22px; font-weight:600; color:var(--fg); line-height:1.3; margin-bottom:3px }
-.sec-lbl { font-size:10px; font-weight:700; color:var(--fg4);
-  letter-spacing:2px; text-transform:uppercase; margin-bottom:var(--s3);
-  margin-top:var(--s5); display:flex; align-items:center; gap:var(--s2) }
-.sec-lbl:first-child { margin-top:0 }
-.sec-lbl::after { content:''; flex:1; height:1px; background:var(--bg3) }
-.ex-card { background:var(--bg); border:1px solid var(--bg3);
-  border-radius:var(--r2); padding:var(--s3) var(--s4); margin-bottom:var(--s2) }
+.res-meaning { font-size:22px; font-weight:600; color:var(--fg);
+  line-height:1.35; margin-bottom:var(--s2) }
+.res-usage { font-family:var(--serif); font-style:italic; font-size:13px;
+  color:var(--fg3); direction:ltr; text-align:left; margin-bottom:var(--s4) }
+
+/* Section header */
+.res-sec { font-size:10px; font-weight:700; color:var(--fg4);
+  letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:var(--s3); margin-top:var(--s5);
+  display:flex; align-items:center; gap:var(--s2) }
+.res-sec::after { content:''; flex:1; height:1px; background:var(--bg3) }
+
+/* Synonyms/antonyms — PROMINENT */
+.syn-ant-wrap { display:flex; gap:0; margin-bottom:var(--s2);
+  background:var(--bg2); border:1px solid var(--bg3); border-radius:var(--r3);
+  overflow:hidden; margin-top:var(--s5) }
+.syn-col, .ant-col { flex:1; padding:var(--s4) }
+.syn-divider { width:1px; background:var(--bg3); flex-shrink:0 }
+.sa-label { font-size:10px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; margin-bottom:var(--s3); color:var(--ok) }
+.sa-label.ant { color:var(--err) }
+.sa-chips { display:flex; flex-wrap:wrap; gap:var(--s1) }
+.sa-chip { font-family:var(--serif); font-size:14px; padding:5px 13px;
+  border-radius:20px; cursor:pointer; transition:all .15s;
+  direction:ltr; border:1.5px solid }
+.sa-chip.syn { color:var(--ok); border-color:rgba(21,128,61,.25);
+  background:rgba(21,128,61,.06) }
+.sa-chip.syn:hover { background:rgba(21,128,61,.12) }
+.sa-chip.ant { color:var(--err); border-color:rgba(220,38,38,.25);
+  background:rgba(220,38,38,.05) }
+.sa-chip.ant:hover { background:rgba(220,38,38,.1) }
+
+/* Conjugation */
+.conj3 { display:grid; grid-template-columns:repeat(3,1fr);
+  gap:var(--s2); margin-bottom:var(--s2) }
+.cj { background:var(--bg2); border:1px solid var(--bg3);
+  border-radius:var(--r2); padding:var(--s3); text-align:center }
+.cj-pro { font-size:10px; color:var(--fg4); font-weight:600;
+  letter-spacing:.5px; margin-bottom:3px }
+.cj-form { font-family:var(--serif); font-size:15px; color:var(--fg);
+  direction:ltr; line-height:1.3 }
+
+/* Examples */
+.ex-card { background:var(--bg2); border:1px solid var(--bg3);
+  border-radius:var(--r2); padding:var(--s4); margin-bottom:var(--s2) }
 .ex-de { font-family:var(--serif); font-style:italic; font-size:15px;
-  color:var(--fg); direction:ltr; text-align:left; line-height:1.5; margin-bottom:var(--s1) }
-.ex-fa { font-size:12px; color:var(--fg2); line-height:1.5 }
-.chips { display:flex; flex-wrap:wrap; gap:var(--s1) }
-.chip { font-size:12px; padding:4px 12px; border-radius:20px;
-  border:1px solid var(--bg3); background:var(--bg);
-  color:var(--fg2); cursor:pointer; transition:all .15s; direction:ltr }
-.chip:hover { border-color:var(--blue); color:var(--blue); background:var(--bl) }
-.chip.ant { border-color:rgba(220,38,38,.2); color:var(--err) }
-.chip.ant:hover { background:rgba(220,38,38,.05) }
-.tip-box { background:var(--bl); border:1px solid rgba(24,71,240,.14);
-  border-radius:var(--r2); padding:10px 14px 10px 34px;
+  color:var(--fg); direction:ltr; text-align:left;
+  line-height:1.5; margin-bottom:var(--s1) }
+.ex-fa { font-size:12px; color:var(--fg2); line-height:1.6 }
+
+/* Tip */
+.tip-box { background:var(--bg2); border:1px solid var(--bg3);
+  border-radius:var(--r2); padding:10px var(--s4) 10px 34px;
   font-size:13px; color:var(--fg2); line-height:1.75; position:relative }
 .tip-box::before { content:'💡'; position:absolute; top:10px; left:10px; font-size:13px }
+
+/* Add button */
 .add-btn { width:100%; margin-top:var(--s5); padding:13px; border-radius:var(--r2);
   background:var(--blue); color:#fff; border:none; font-family:var(--sans);
   font-size:14px; font-weight:600; cursor:pointer;
@@ -747,29 +787,30 @@ body.is-offline .topbar { top:33px }
   cursor:pointer; transition:all .18s; white-space:nowrap }
 .sc-all-btn:hover { background:var(--bg3); color:var(--fg) }
 
-/* ── Speak button ── */
-.res-word-row { display:flex; align-items:flex-end; gap:var(--s3);
-  position:relative; z-index:1; margin-bottom:var(--s2) }
-.speak-btn { width:36px; height:36px; border-radius:50%;
-  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.3);
-  color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:all .18s; flex-shrink:0; margin-bottom:6px }
-.speak-btn:hover { background:rgba(255,255,255,.3); transform:scale(1.08) }
-.speak-btn.speaking { background:rgba(255,255,255,.35); animation:pulse .8s infinite }
 
-/* ── Usage pattern ── */
-.usage-box { direction:ltr; text-align:left; font-family:var(--serif);
-  font-size:14px; color:var(--blue); margin-bottom:var(--s4);
-  padding:8px 12px; background:var(--bl); border-radius:var(--r1);
-  border-right:3px solid var(--blue) }
 
-/* ── Conjugation ── */
-.conj-box { display:grid; grid-template-columns:repeat(3,1fr);
+
+
+
+
+.res-tags { display:flex; gap:var(--s1); flex-wrap:wrap; flex-direction:column; align-items:flex-end; position:relative; z-index:1 }
+.res-tag { font-size:11px; font-weight:600; padding:3px 10px;
+  border-radius:20px; background:rgba(255,255,255,.16); color:#fff; letter-spacing:.3px }
+
+/* Usage — subtle inline */
+.res-usage-inline { font-family:var(--serif); font-size:13px;
+  color:var(--fg3); direction:ltr; text-align:left;
+  margin-bottom:var(--s4); font-style:italic }
+
+/* Conjugation — clean 3-col grid */
+.conj-grid { display:grid; grid-template-columns:repeat(3,1fr);
   gap:var(--s2); margin-bottom:var(--s4) }
-.conj-item { background:var(--bg); border:1px solid var(--bg3);
-  border-radius:var(--r1); padding:8px var(--s3); text-align:center }
-.conj-pro { font-size:11px; color:var(--fg4); margin-bottom:2px }
-.conj-form { font-family:var(--serif); font-size:14px; color:var(--fg); direction:ltr }
+.cg-item { background:var(--bg2); border:1px solid var(--bg3);
+  border-radius:var(--r2); padding:var(--s3) var(--s3); text-align:center }
+.cg-pro { font-size:10px; color:var(--fg4); margin-bottom:3px;
+  font-weight:600; letter-spacing:.5px }
+.cg-form { font-family:var(--serif); font-size:15px; color:var(--fg);
+  direction:ltr; line-height:1.2 }
 </style>
 </head>
 <body>
@@ -969,39 +1010,68 @@ body.is-offline .topbar { top:33px }
 
     <!-- Word result -->
     <div class="res" id="res">
+
+      <!-- ① BANNER: word + article + tags -->
       <div class="res-top">
         <div class="res-fix" id="res-fix"></div>
-        <div class="res-art" id="res-art"></div>
-        <div class="res-word-row">
-          <div class="res-word" id="res-word"></div>
-          <button class="speak-btn" id="speak-btn" onclick="speakWord()" title="تلفظ">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 5.5H1v5h2l4 3V2.5L3 5.5z" fill="currentColor"/>
-              <path d="M11 4a5 5 0 010 8M13.5 2a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-            </svg>
-          </button>
+        <div class="res-banner-row">
+          <div>
+            <div class="res-art" id="res-art"></div>
+            <div class="res-word" id="res-word"></div>
+            <div class="res-meta" id="res-meta"></div>
+          </div>
+          <div class="res-tag-col" id="res-tags"></div>
         </div>
-        <div class="res-meta" id="res-meta"></div>
-        <div class="res-tags" id="res-tags"></div>
       </div>
+
       <div class="res-body">
-        <div class="res-fa" id="res-fa"></div>
-        <div class="usage-box" id="res-usage" style="display:none"></div>
-        <div class="sec-lbl" id="conj-lbl" style="display:none">صرف فعل</div>
-        <div class="conj-box" id="res-conj" style="display:none"></div>
-        <div class="sec-lbl" id="syn-lbl" style="display:none">مترادف / متضاد</div>
-        <div class="chips" id="res-syn" style="display:none"></div>
-        <div class="sec-lbl" id="ex-lbl" style="display:none">جمله نمونه</div>
-        <div id="res-exs"></div>
-        <div class="sec-lbl" id="tip-lbl" style="display:none">نکته گرامری</div>
-        <div class="tip-box" id="res-tip" style="display:none"></div>
+
+        <!-- ② MEANING -->
+        <div class="res-meaning" id="res-fa"></div>
+        <div class="res-usage" id="res-usage" style="display:none"></div>
+
+        <!-- ③ SYNONYMS / ANTONYMS — prominent -->
+        <div id="res-syn-section" style="display:none">
+          <div class="syn-ant-wrap">
+            <div class="syn-col" id="syn-col" style="display:none">
+              <div class="sa-label">مترادف</div>
+              <div class="sa-chips" id="res-synonyms"></div>
+            </div>
+            <div class="syn-divider" id="syn-divider" style="display:none"></div>
+            <div class="ant-col" id="ant-col" style="display:none">
+              <div class="sa-label ant">متضاد</div>
+              <div class="sa-chips" id="res-antonyms"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ④ CONJUGATION — 3 columns (verbs only) -->
+        <div id="res-conj-section" style="display:none">
+          <div class="res-sec">صرف فعل</div>
+          <div class="conj3" id="res-conj"></div>
+        </div>
+
+        <!-- ⑤ EXAMPLES — 2 cards -->
+        <div id="res-ex-section" style="display:none">
+          <div class="res-sec">جمله‌های نمونه</div>
+          <div id="res-exs"></div>
+        </div>
+
+        <!-- ⑥ GRAMMAR TIP -->
+        <div id="res-tip-section" style="display:none">
+          <div class="res-sec">نکته گرامری</div>
+          <div class="tip-box" id="res-tip"></div>
+        </div>
+
+        <!-- ADD BUTTON -->
         <button class="add-btn" id="add-btn" onclick="addWord()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
           افزودن به فلش‌کارت‌ها
         </button>
       </div>
     </div>
-
     <!-- Phrase result -->
     <div class="ph-res" id="ph-res">
       <div class="ph-top">
@@ -1362,7 +1432,7 @@ async function searchWord(q){
 - اگه فارسیه: معادل آلمانی پیدا کن
 - اگه انگلیسیه: معادل آلمانی پیدا کن
 JSON خالص بدون backtick:
-{"word":"لغت بدون حرف تعریف","corrected_from":"فقط اگه واقعاً تصحیح کردی وگرنه null","article":"der/die/das یا رشته خالی","plural":"جمع اگر اسم وگرنه خالی","preposition":"حرف اضافه مثلاً auf+Akk وگرنه خالی","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق و کامل","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"example":{"de":"بهترین جمله کاربردی","fa":"ترجمه دقیق"},"grammar_tip":"نکته گرامری مهم به فارسی","conjugation":"اگه فعله: ich/du/er صرف کن وگرنه null","usage_pattern":"الگوی استفاده مثلاً jdm etw zutrauen وگرنه null"}
+{"word":"لغت بدون حرف تعریف","corrected_from":"فقط اگه واقعاً تصحیح کردی وگرنه null","article":"der/die/das یا رشته خالی","plural":"جمع اگر اسم وگرنه خالی","preposition":"حرف اضافه مثلاً auf+Akk وگرنه خالی","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق و کامل","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"examples":[{"de":"جمله اول کاربردی","fa":"ترجمه"},{"de":"جمله دوم در موقعیت دیگر","fa":"ترجمه"}],"grammar_tip":"نکته گرامری مهم به فارسی — کوتاه و مفید","conjugation":{"ich":"فرم ich","du":"فرم du","er":"فرم er/sie/es"},"usage_pattern":"الگوی استفاده مثلاً jdm etw zutrauen — اگه نداره null"}
 فقط JSON. corrected_from فقط اگه واقعاً تصحیح کردی وگرنه null.`;
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
@@ -1375,573 +1445,93 @@ JSON خالص بدون backtick:
 }
 
 function renderWord(d){
-  // correction — only show if actually corrected (not null/empty)
+  // Fix notice
   const fix=Q('#res-fix');
-  if(d.corrected_from&&d.corrected_from!=='null'&&d.corrected_from.trim()&&d.corrected_from!==d.word){
-    fix.textContent='تصحیح از: '+d.corrected_from; fix.classList.add('show');
-  } else fix.classList.remove('show');
-  // banner
-  Q('#res-art').textContent=(d.article&&d.article!=='—')?d.article:(d.type||'');
+  if(d.corrected_from&&d.corrected_from!=='null'&&d.corrected_from.trim()&&d.corrected_from!==d.word)
+    { fix.textContent='تصحیح از: '+d.corrected_from; fix.classList.add('show'); }
+  else fix.classList.remove('show');
+
+  // ① Banner
+  Q('#res-art').textContent=(d.article&&d.article!=='—')?d.article:'';
   Q('#res-word').textContent=d.word;
   const meta=[]; if(d.plural)meta.push('Pl: '+d.plural); if(d.preposition)meta.push(d.preposition);
   Q('#res-meta').textContent=meta.join(' · ');
-  const tags=Q('#res-tags'); tags.innerHTML='';
+  const tags=Q('#res-tag-col'); tags.innerHTML='';
   if(d.level) tags.innerHTML+=`<span class="res-tag">${d.level}</span>`;
   if(d.type)  tags.innerHTML+=`<span class="res-tag">${d.type}</span>`;
-  // meaning
+
+  // ② Meaning + usage
   Q('#res-fa').textContent=d.meaning_fa;
-  // usage pattern
-  const usageEl=Q('#res-usage');
-  if(d.usage_pattern&&d.usage_pattern!=='null'&&d.usage_pattern.trim()){
-    usageEl.textContent=d.usage_pattern; usageEl.style.display='block';
-  } else usageEl.style.display='none';
-  // conjugation (verbs only)
-  const conjEl=Q('#res-conj'), conjLbl=Q('#conj-lbl');
+  const usEl=Q('#res-usage');
+  if(d.usage_pattern&&d.usage_pattern!=='null'&&d.usage_pattern.trim())
+    { usEl.textContent=d.usage_pattern; usEl.style.display='block'; }
+  else usEl.style.display='none';
+
+  // ③ Synonyms / antonyms — PROMINENT
+  const syns=d.synonyms||[]; const ants=d.antonyms||[];
+  const synSec=Q('#res-syn-section');
+  if(syns.length||ants.length){
+    synSec.style.display='block';
+    const synCol=Q('#syn-col'), antCol=Q('#ant-col'), div=Q('#syn-divider');
+    if(syns.length){
+      synCol.style.display='block';
+      Q('#res-synonyms').innerHTML=syns.map(s=>`<span class="sa-chip syn" onclick="qs('${esc(s)}')">${s}</span>`).join('');
+    } else synCol.style.display='none';
+    if(ants.length){
+      antCol.style.display='block';
+      Q('#res-antonyms').innerHTML=ants.map(a=>`<span class="sa-chip ant" onclick="qs('${esc(a)}')">${a}</span>`).join('');
+    } else antCol.style.display='none';
+    div.style.display=(syns.length&&ants.length)?'block':'none';
+  } else synSec.style.display='none';
+
+  // ④ Conjugation
+  const conjSec=Q('#res-conj-section'), conjEl=Q('#res-conj');
   if(d.type==='Verb'&&d.conjugation&&d.conjugation!=='null'){
     try{
-      // parse "ich X, du Y, er Z" format
-      const parts=d.conjugation.split(',').map(s=>s.trim());
-      const pronoums=['ich','du','er/sie'];
-      conjEl.innerHTML=parts.slice(0,3).map((p,i)=>{
-        const verb=p.replace(/^(ich|du|er|sie\/er|er\/sie)\s*/i,'').trim();
-        return `<div class="conj-item"><div class="conj-pro">${pronoums[i]||''}</div><div class="conj-form">${verb}</div></div>`;
-      }).join('');
-      conjLbl.style.display='flex'; conjEl.style.display='grid';
-    }catch(e){ conjLbl.style.display='none'; conjEl.style.display='none'; }
-  } else { conjLbl.style.display='none'; conjEl.style.display='none'; }
-  // synonyms/antonyms
-  const synEl=Q('#res-syn'), synLbl=Q('#syn-lbl');
-  const synHTML=[
-    ...(d.synonyms||[]).map(s=>`<span class="chip" onclick="qs('${esc(s)}')">${s}</span>`),
-    ...(d.antonyms||[]).map(a=>`<span class="chip ant" onclick="qs('${esc(a)}')">${a} ↔</span>`)
-  ];
-  if(synHTML.length){ synLbl.style.display='flex'; synEl.innerHTML=synHTML.join(''); synEl.style.display='flex'; }
-  else { synLbl.style.display='none'; synEl.style.display='none'; }
-  // single example
-  const exLbl=Q('#ex-lbl');
-  if(d.example&&d.example.de){
-    exLbl.style.display='flex';
-    Q('#res-exs').innerHTML=`<div class="ex-card"><div class="ex-de">${d.example.de}</div><div class="ex-fa">${d.example.fa}</div></div>`;
-  } else if(d.examples&&d.examples.length){
-    exLbl.style.display='flex';
-    Q('#res-exs').innerHTML=`<div class="ex-card"><div class="ex-de">${d.examples[0].de}</div><div class="ex-fa">${d.examples[0].fa}</div></div>`;
-  } else { exLbl && (exLbl.style.display='none'); Q('#res-exs').innerHTML=''; }
-  // related
+      let ich='',du='',er='';
+      if(typeof d.conjugation==='object'&&!Array.isArray(d.conjugation)){
+        ich=d.conjugation.ich||''; du=d.conjugation.du||''; er=d.conjugation.er||'';
+      } else {
+        const parts=String(d.conjugation).split(',').map(s=>s.trim());
+        ich=parts[0]?.replace(/^ich\s+/i,'').trim()||'';
+        du=parts[1]?.replace(/^du\s+/i,'').trim()||'';
+        er=parts[2]?.replace(/^er\s+/i,'').trim()||'';
+      }
+      if(ich||du||er){
+        conjEl.innerHTML=
+          `<div class="cj"><div class="cj-pro">ich</div><div class="cj-form">${ich}</div></div>`+
+          `<div class="cj"><div class="cj-pro">du</div><div class="cj-form">${du}</div></div>`+
+          `<div class="cj"><div class="cj-pro">er / sie</div><div class="cj-form">${er}</div></div>`;
+        conjSec.style.display='block';
+      } else conjSec.style.display='none';
+    }catch(e){ conjSec.style.display='none'; }
+  } else conjSec.style.display='none';
 
-  // tip
-  const tipEl=Q('#res-tip'), tipLbl=Q('#tip-lbl');
-  if(d.grammar_tip){ tipLbl.style.display='flex'; tipEl.style.display='block'; tipEl.textContent=d.grammar_tip; }
-  else { tipLbl.style.display='none'; tipEl.style.display='none'; }
-  // add button
+  // ⑤ Examples — 2 cards
+  const exSec=Q('#res-ex-section');
+  const exList=d.examples||(d.example?[d.example]:[]);
+  if(exList.length){
+    exSec.style.display='block';
+    Q('#res-exs').innerHTML=exList.slice(0,2).map(e=>
+      `<div class="ex-card"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`
+    ).join('');
+  } else exSec.style.display='none';
+
+  // ⑥ Grammar tip
+  const tipSec=Q('#res-tip-section');
+  if(d.grammar_tip){ tipSec.style.display='block'; Q('#res-tip').textContent=d.grammar_tip; }
+  else tipSec.style.display='none';
+
+  // Add button
   const key=(d.article&&d.article!=='—'?d.article+' ':'')+d.word;
   const exists=words.some(w=>w.de.toLowerCase()===key.toLowerCase());
   const btn=Q('#add-btn');
-  btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به فلش‌کارت‌ها';
+  btn.innerHTML=exists
+    ?'<span>✓</span> قبلاً اضافه شده'
+    :'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به فلش‌کارت‌ها';
   btn.disabled=exists; btn.className='add-btn'+(exists?' done':'');
+
   Q('#res').style.display='block';
   Q('#res').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function qs(w){ Q('#s-inp').value=w; doSearch(); }
 
-/* Phrase search */
-async function searchPhrase(q){
-  setMsg('در حال تحلیل اصطلاح...','info');
-  const p=`اصطلاح یا جمله آلمانی: "${q}"
-معنی کامل این اصطلاح رو به فارسی بده — نه لغت به لغت، بلکه معنی اصلی و کاربردی.
-JSON خالص بدون backtick:
-{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"یه مترادف یا عبارت مشابه آلمانی — اگه نداره رشته خالی","example_de":"یه جمله نمونه کوتاه آلمانی"}
-فقط JSON.`;
-  const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
-  curPhrase=JSON.parse(raw);
-  Q('#ph-orig').textContent=curPhrase.original;
-  Q('#ph-meaning').textContent=curPhrase.meaning_fa;
-  Q('#ph-syn').textContent=curPhrase.synonym?'مترادف: '+curPhrase.synonym:'';
-  const exists=words.some(w=>w.de===curPhrase.original);
-  const btn=Q('#ph-add');
-  btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن کل اصطلاح به فلش‌کارت‌ها';
-  btn.disabled=exists; btn.className='ph-add'+(exists?' done':'');
-  Q('#ph-res').style.display='block';
-  Q('#ph-res').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-async function addPhrase(){
-  if(!curPhrase) return;
-  const de=curPhrase.original;
-  if(words.some(w=>w.de===de)) return;
-  const w={de,fa:curPhrase.meaning_fa,ex:curPhrase.example_de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
-  words.unshift(w); updateBadges(); updateStats(); saveCache();
-  const btn=Q('#ph-add');
-  btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.className='ph-add done';
-  if(navigator.onLine) dbAdd(w).catch(()=>{});
-}
-
-async function addWord(){
-  if(!curWord) return;
-  const key=(curWord.article&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
-  if(words.some(w=>w.de.toLowerCase()===key.toLowerCase())) return;
-  const w={de:key,fa:curWord.meaning_fa,ex:curWord.example?.de||curWord.examples?.[0]?.de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
-  words.unshift(w); updateBadges(); updateStats(); saveCache();
-  const btn=Q('#add-btn');
-  btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.className='add-btn done';
-  if(navigator.onLine) dbAdd(w).catch(()=>{});
-}
-
-/* ── Text to Speech ── */
-function speakWord(){
-  if(!curWord) return;
-  const btn=Q('#speak-btn');
-  if(!window.speechSynthesis){ btn.style.opacity='.3'; return; }
-  window.speechSynthesis.cancel();
-  const utt=new SpeechSynthesisUtterance(curWord.word);
-  utt.lang='de-DE'; utt.rate=0.85; utt.pitch=1;
-  btn.classList.add('speaking');
-  utt.onend=()=>btn.classList.remove('speaking');
-  utt.onerror=()=>btn.classList.remove('speaking');
-  window.speechSynthesis.speak(utt);
-}
-
-/* ════════════════════
-   AUTOCOMPLETE
-════════════════════ */
-function acInput(){
-  const q=Q('#s-inp').value.trim(); acIdx=-1;
-  if(!q||q.length<2){ acClose(); return; }
-  const ql=q.toLowerCase(); const seen=new Set(); const items=[];
-  words.forEach(w=>{ if(seen.has(w.de))return; if(w.de.toLowerCase().startsWith(ql)||w.de.toLowerCase().includes(ql)){ items.push({de:w.de,fa:w.fa,t:'s'}); seen.add(w.de); } });
-  Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>{
-    try{ const d=JSON.parse(localStorage.getItem(k)); if(!d?.word)return;
-      const full=(d.article&&d.article!=='—'?d.article+' ':'')+d.word;
-      if(seen.has(full))return;
-      if(full.toLowerCase().includes(ql)||d.meaning_fa?.includes(q)){ items.push({de:full,fa:d.meaning_fa||'',t:'c'}); seen.add(full); }
-    }catch(e){}
-  });
-  const show=items.slice(0,6);
-  if(!show.length){ acClose(); return; }
-  const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
-  Q('#ac-drop').innerHTML=show.map((it,i)=>`<div class="ac-row" data-i="${i}" onmousedown="acPick('${esc(it.de)}')">`
-    +`<span class="ac-de">${it.de.replace(re,'<mark>$1</mark>')}</span>`
-    +`<span class="ac-fa">${it.fa}</span>`
-    +`<span class="ac-tag ${it.t}">${it.t==='s'?'ذخیره':'قبلی'}</span></div>`).join('');
-  Q('#ac-drop').classList.add('open');
-}
-function acKey(e){
-  const rows=QA('.ac-row'); if(!rows.length)return;
-  if(e.key==='ArrowDown'){ e.preventDefault(); acIdx=Math.min(acIdx+1,rows.length-1); acHL(rows); }
-  else if(e.key==='ArrowUp'){ e.preventDefault(); acIdx=Math.max(acIdx-1,-1); acHL(rows); }
-  else if(e.key==='Tab'&&Q('#ac-drop').classList.contains('open')){ e.preventDefault(); (acIdx>=0?rows[acIdx]:rows[0]).dispatchEvent(new MouseEvent('mousedown')); }
-  else if(e.key==='Escape') acClose();
-}
-function acHL(rows){ rows.forEach((r,i)=>r.classList.toggle('hi',i===acIdx)); if(acIdx>=0) Q('#s-inp').value=rows[acIdx].querySelector('.ac-de').textContent; }
-function acPick(de){ Q('#s-inp').value=de; acClose(); doSearch(); }
-function acClose(){ Q('#ac-drop').classList.remove('open'); acIdx=-1; }
-document.addEventListener('click',e=>{ if(!e.target.closest('.s-wrap')) acClose(); });
-
-
-/* ════════════════════
-   STATS
-════════════════════ */
-function updateStats(){
-  const card=Q('#summary-card');
-  if(!words.length){ if(card) card.style.display='none'; return; }
-  if(card) card.style.display='block';
-  const now=new Date();
-  const due=words.filter(w=>new Date(w.next_review||0)<=now);
-  const learned=words.filter(w=>w.seen>0&&w.interval>3);
-  Q('#sc-total').textContent=words.length;
-  Q('#sc-learned').textContent=learned.length;
-  // streak
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
-  let s=0; const d=new Date();
-  while(all[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
-  Q('#sc-streak').textContent=s;
-  // streak dots (7 days)
-  const dn=['ی','د','س','چ','پ','ج','ش'];
-  const dotsEl=Q('#sc-dots');
-  if(dotsEl){
-    let html='';
-    for(let i=6;i>=0;i--){
-      const day=new Date(); day.setDate(day.getDate()-i);
-      const isT=i===0; const done=!!all[day.toDateString()];
-      html+=`<div class="scd"><div class="scd-circle ${isT?'today':done?'done':''}"></div>`
-        +`<div class="scd-lbl${isT?' t':''}">${isT?'▲':dn[day.getDay()]}</div></div>`;
-    }
-    dotsEl.innerHTML=html;
-  }
-  // review button label
-  const dueBtn=Q('#sc-due-label');
-  if(dueBtn) dueBtn.textContent=due.length>0?`مرور ${due.length} لغت سررسید`:'شروع مرور';
-}
-function updateStreak(){
-  const today=new Date().toDateString();
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  if(!ol[today]){ ol[today]=1; localStorage.setItem('ws_olog',JSON.stringify(ol)); }
-  const all={}; Object.keys(ol).forEach(k=>all[k]=1); Object.keys(rl).forEach(k=>all[k]=1);
-  let s=0; const d=new Date();
-  while(all[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
-  const sn=Q('#streak-n'); if(sn) sn.textContent=s;
-  const sr=Q('#streak-row'); if(sr) sr.classList.toggle('hot',s>=3);
-  const dd=Q('#streak-dots'); if(!dd) return;
-  const dn=['ی','د','س','چ','پ','ج','ش']; // indexed by getDay() 0=Sun..6=Sat
-  let html='';
-  for(let i=6;i>=0;i--){
-    const day=new Date(); day.setDate(day.getDate()-i);
-    const isT=i===0; const done=!!all[day.toDateString()];
-    const cls=isT?'today':done?'done':'';
-    html+=`<div class="sd"><div class="sd-dot ${cls}"></div><div class="sd-lbl${isT?' t':''}">${isT?'امروز':dn[day.getDay()]}</div></div>`;
-  }
-  dd.innerHTML=html;
-}
-function renderChart(){
-  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const days=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
-  const mx=Math.max(1,...days.map(d=>log[d.toDateString()]||0));
-  const tot=days.reduce((s,d)=>s+(log[d.toDateString()]||0),0);
-  Q('#chart-sum').textContent=tot>0?tot+' مرور در هفته':'هنوز مروری نداری';
-  const dn=['ی','د','س','چ','پ','ج','ش'];
-  Q('#chart').innerHTML=days.map((d,i)=>{
-    const c=log[d.toDateString()]||0;
-    const h=c>0?Math.max(8,Math.round(c/mx*64)):3;
-    const isT=i===6;
-    const cls=c>0?(isT?' today':' has'):' empty';
-    return `<div class="bar-col${isT?' is-today':''}">`
-      +`<div class="bar-inner" style="height:64px">`
-      +`<div class="bar${cls}" style="height:${h}px"></div>`
-      +(c>0?`<div class="bar-count">${c}</div>`:'')
-      +`</div><div class="bar-lbl">${isT?'امروز':dn[d.getDay()]}</div></div>`;
-  }).join('');
-}
-function logReview(){
-  const today=new Date().toDateString();
-  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  log[today]=(log[today]||0)+1;
-  const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
-  const t={}; keys.forEach(k=>t[k]=log[k]);
-  localStorage.setItem('ws_rlog',JSON.stringify(t));
-  updateStreak();
-}
-
-/* ════════════════════
-   REMINDER
-════════════════════ */
-function checkReminder(){
-  if(!words.length) return;
-  const h=new Date().getHours(); const today=new Date().toDateString();
-  if(h<20||localStorage.getItem('ws_rem_d')===today) return;
-  const due=words.filter(w=>new Date(w.next_review||0)<=new Date());
-  if(!due.length) return;
-  Q('#rem-title').textContent=`${due.length} لغت سررسید داره 📚`;
-  Q('#rem-sub').textContent='کلیک کن تا مرور شروع بشه';
-  Q('#rem-chips').innerHTML=due.slice(0,5).map(w=>`<span class="rem-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`).join('');
-  Q('#reminder').classList.add('show');
-}
-function remDismiss(){ localStorage.setItem('ws_rem_d',new Date().toDateString()); Q('#reminder').classList.remove('show'); }
-function remStart(){ remDismiss(); sesOpen(); }
-setInterval(checkReminder,60000);
-
-/* ════════════════════
-   SESSION (flashcards)
-════════════════════ */
-function buildDeck(){
-  const now=new Date();
-  const due=words.filter(w=>new Date(w.next_review||0)<=now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
-  const rest=words.filter(w=>new Date(w.next_review||0)>now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
-  return [...due,...rest];
-}
-function sesOpen(){
-  if(!words.length){ alert('هنوز لغتی اضافه نکردی!'); return; }
-  sesDeck=buildDeck(); sesI=0; sesGood=0; sesBad=0; sesRepCount=0; sesFlipped=false;
-  // reset panels
-  Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
-  Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
-  Q('#ses-body').style.display='flex';
-  Q('#session').classList.add('open');
-  document.body.style.overflow='hidden';
-  showCard();
-}
-function sesOpenDue(){
-  if(!words.length) return;
-  const now=new Date();
-  const due=words.filter(w=>new Date(w.next_review||0)<=now).sort((a,b)=>new Date(a.next_review)-new Date(b.next_review));
-  sesDeck=due.length?due:buildDeck();
-  sesI=0; sesGood=0; sesBad=0; sesRepCount=0; sesFlipped=false;
-  Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
-  Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
-  Q('#ses-body').style.display='flex';
-  Q('#session').classList.add('open');
-  document.body.style.overflow='hidden';
-  showCard();
-}
-function sesClose(force){
-  if(!force && sesI<sesDeck.length && Q('#ses-body').style.display!=='none'){
-    Q('#ses-body').style.display='none';
-    Q('#ses-confirm').style.display='flex';
-    requestAnimationFrame(()=>Q('#ses-confirm').classList.add('show'));
-    return;
-  }
-  Q('#session').classList.remove('open');
-  document.body.style.overflow='';
-  updateStats();
-}
-function sesResume(){
-  Q('#ses-confirm').classList.remove('show');
-  setTimeout(()=>{ Q('#ses-confirm').style.display='none'; Q('#ses-body').style.display='flex'; },250);
-}
-function sesRestart(){
-  Q('#ses-end').classList.remove('show');
-  setTimeout(()=>{ Q('#ses-end').style.display='none'; sesOpen(); },250);
-}
-function showCard(){
-  if(sesI>=sesDeck.length){ sesEnd(); return; }
-  const w=sesDeck[sesI];
-  Q('#ses-word').textContent=w.de;
-  Q('#ses-mean').textContent=w.fa;
-  // auto-speak on card show (optional — only if speech available)
-  Q('#ses-sent').textContent=w.ex||'';
-  Q('#card-wrap').classList.remove('flip'); sesFlipped=false;
-  const pct=Math.round(sesI/sesDeck.length*100);
-  Q('#ses-fill').style.width=pct+'%';
-  const due=sesDeck.filter(x=>new Date(x.next_review||0)<=new Date()).length;
-  Q('#ses-cnt').textContent=(sesI+1)+' / '+sesDeck.length;
-  Q('#ses-sub').textContent=due>0?due+' سررسید':'';
-  // preview next interval
-  const o=words.find(x=>x.de===w.de);
-  const nextD=o?Math.max(1,Math.round((o.interval||1)*(o.easiness||2.5))):1;
-  Q('#ses-nxt').textContent=nextD>1?nextD+' روز':'فردا';
-  Q('#rep-n').classList.remove('show');
-}
-function sesFlip(){ sesFlipped=!sesFlipped; Q('#card-wrap').classList.toggle('flip',sesFlipped); }
-async function sesRate(good){
-  const w=sesDeck[sesI], o=words.find(x=>x.de===w.de);
-  if(o){
-    const q=good?5:1;
-    o.easiness=Math.max(1.3, o.easiness+(0.1-(5-q)*(0.08+(5-q)*0.02)));
-    if(!good) o.interval=1;
-    else if(o.seen===0) o.interval=1;
-    else if(o.seen===1) o.interval=6;
-    else o.interval=Math.round(o.interval*o.easiness);
-    o.interval=Math.max(1,o.interval);
-    const next=new Date(); next.setDate(next.getDate()+o.interval);
-    o.next_review=next.toISOString(); o.reviewed_at=new Date().toISOString();
-    o.score+=good?1:-1; o.seen++;
-    logReview(); saveCache();
-    if(navigator.onLine) dbUpd(o).catch(()=>{});
-  }
-  if(good) sesGood++; else sesBad++;
-  sesI++; showCard();
-}
-function sesRepeat(){
-  if(sesI>=sesDeck.length) return;
-  sesDeck.push({...sesDeck[sesI]}); sesRepCount++;
-  const n=Q('#rep-n'); n.textContent=sesRepCount; n.classList.add('show');
-  Q('#card-wrap').style.transition='transform .12s';
-  Q('#card-wrap').style.transform='rotate(2.5deg) scale(1.02)';
-  setTimeout(()=>{ Q('#card-wrap').style.transform='rotate(-2deg)';
-    setTimeout(()=>{ Q('#card-wrap').style.transform=''; Q('#card-wrap').style.transition='transform .5s var(--ease)'; },130); },130);
-}
-function sesEnd(){
-  Q('#ses-body').style.display='none';
-  Q('#ses-end').style.display='flex';
-  requestAnimationFrame(()=>Q('#ses-end').classList.add('show'));
-  Q('#end-g').textContent=sesGood; Q('#end-b').textContent=sesBad; Q('#end-t').textContent=sesGood+sesBad;
-  const pct=Math.round(sesGood/(sesGood+sesBad||1)*100);
-  const msgs=['نگران نباش، تکرار کلیدیه 🔄','بد نبود، ادامه بده 📚','داری پیشرفت می‌کنی 🌟','آفرین، خیلی خوب بود 🎉','عالی! همه رو بلد بودی 🏆'];
-  Q('#end-msg').textContent=msgs[Math.min(4,Math.floor(pct/20))];
-  Q('#ses-fill').style.width='100%';
-  logReview(); updateStats();
-}
-
-function initSwipe(){
-  const scene=Q('#card-scene');
-  let sx=0,sy=0;
-  scene.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
-  scene.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-sx, dy=Math.abs(e.changedTouches[0].clientY-sy);
-    if(Math.abs(dx)>55&&dy<70){ if(!sesFlipped) sesFlip(); else setTimeout(()=>sesRate(dx>0),160); }
-  },{passive:true});
-}
-
-/* ════════════════════
-   QUIZ
-════════════════════ */
-function qStart(){
-  const e=Q('#q-empty'),u=Q('#q-ui'),end=Q('#q-end');
-  if(words.length<4){ e.style.display='block'; u.style.display='none'; end.style.display='none'; return; }
-  e.style.display='none'; end.style.display='none'; u.style.display='block';
-  qDeck=[...words].sort(()=>Math.random()-.5).slice(0,Math.min(10,words.length));
-  qI=0; qScore=0; showQ();
-}
-function showQ(){
-  if(qI>=qDeck.length){ endQ(); return; }
-  const w=qDeck[qI];
-  Q('#q-word').textContent=w.de; Q('#q-ex').textContent=w.ex?'«'+w.ex+'»':'';
-  Q('#qp-txt').textContent=(qI+1)+'/'+qDeck.length;
-  Q('#qp-bar').style.width=Math.round(qI/qDeck.length*100)+'%';
-  Q('#qp-sc').textContent='امتیاز: '+qScore;
-  Q('#q-next').classList.remove('show');
-  const correct=w.fa;
-  const wrongs=words.filter(x=>x.de!==w.de).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.fa);
-  const opts=[correct,...wrongs].sort(()=>Math.random()-.5);
-  Q('#q-opts').innerHTML=opts.map((o,i)=>`<button class="q-opt" onclick="answerQ(${i},'${esc(o)}','${esc(correct)}')">${o}</button>`).join('');
-}
-function answerQ(i,chosen,correct){
-  QA('.q-opt').forEach(b=>b.disabled=true);
-  const ok=chosen===correct;
-  QA('.q-opt')[i].classList.add(ok?'ok':'no');
-  if(!ok) QA('.q-opt').forEach(b=>{ if(b.textContent.trim()===correct) b.classList.add('ok'); });
-  if(ok) qScore++;
-  Q('#qp-sc').textContent='امتیاز: '+qScore;
-  Q('#q-next').classList.add('show');
-}
-function qNext(){ qI++; showQ(); }
-function endQ(){
-  Q('#q-ui').style.display='none'; Q('#q-end').style.display='block';
-  const pct=Math.round(qScore/qDeck.length*100);
-  Q('#q-sc').textContent=qScore+'/'+qDeck.length;
-  const msgs=['نگران نباش 📚','بد نبود 💪','عالی! 🌟','آفرین! 🎉','همه رو بلد بودی 🏆'];
-  Q('#q-msg').textContent=msgs[Math.min(4,Math.floor(pct/20))];
-  logReview(); updateStats();
-}
-
-/* ════════════════════
-   LIST
-════════════════════ */
-let listSort='new';
-function setSort(s){
-  listSort=s;
-  Q('#sort-new').classList.toggle('on',s==='new');
-  Q('#sort-due').classList.toggle('on',s==='due');
-  Q('#sort-weak').classList.toggle('on',s==='weak');
-  Q('#sort-best').classList.toggle('on',s==='best');
-  Q('#sort-alpha').classList.toggle('on',s==='alpha');
-  renderList();
-}
-
-function renderList(){
-  const el=Q('#wlist');
-  if(!words.length){
-    el.innerHTML='<div class="empty"><span class="empty-icon">📭</span><h3>لیست خالیه</h3><p>لغت جستجو کن و اضافه کن</p></div>';
-    Q('#list-count').textContent='';
-    Q('#due-section').classList.remove('show');
-    return;
-  }
-
-  // Due words banner
-  const now=new Date();
-  const due=words.filter(w=>new Date(w.next_review||0)<=now);
-  const dueEl=Q('#due-section');
-  if(due.length){
-    dueEl.classList.add('show');
-    Q('#due-chips').innerHTML=due.slice(0,8).map(w=>
-      `<span class="due-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`
-    ).join('');
-  } else dueEl.classList.remove('show');
-
-  // Search filter
-  const q=(Q('#list-q')?.value||'').trim().toLowerCase();
-
-  // Sort
-  let sorted=[...words];
-  if(listSort==='new')  sorted=sorted; // already newest first (unshift)
-  if(listSort==='due')  sorted=sorted.sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
-  if(listSort==='weak') sorted=sorted.sort((a,b)=>a.score-b.score);
-  if(listSort==='best') sorted=sorted.sort((a,b)=>b.score-a.score);
-  if(listSort==='alpha')sorted=sorted.sort((a,b)=>a.de.localeCompare(b.de));
-
-  const filtered=q
-    ? sorted.filter(w=>w.de.toLowerCase().includes(q)||w.fa.includes(q)||(w.ex||'').toLowerCase().includes(q))
-    : sorted;
-
-  // Count
-  Q('#list-count').textContent=`${filtered.length} لغت`;
-
-  if(!filtered.length){
-    el.innerHTML=`<div style="text-align:center;padding:var(--s8);color:var(--fg4);font-size:14px">«${q}» پیدا نشد</div>`;
-    return;
-  }
-
-  const cnt={}; words.forEach(w=>cnt[w.de.toLowerCase()]=(cnt[w.de.toLowerCase()]||0)+1);
-  function hl(t){ return q?t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<span class="hl">$1</span>'):t; }
-
-  el.innerHTML=filtered.map(w=>{
-    const i=words.indexOf(w);
-    const dup=cnt[w.de.toLowerCase()]>1;
-    const isDue=new Date(w.next_review||0)<=now;
-    return `<div class="word-row${dup?' dup':''}${isDue&&listSort==='due'?' is-due':''}">`
-      +(dup?'<span title="تکراری" style="color:var(--warn);font-size:11px;flex-shrink:0">⚠</span>':'')
-      +`<span class="wr-de">${hl(w.de)}</span>`
-      +`<span class="wr-fa">${hl(w.fa)}</span>`
-      +`<span class="wr-sc ${w.score>0?'pos':w.score<0?'neg':'neu'}">${w.score>0?'+':''}${w.score}</span>`
-      +`<button class="btn-icon" style="width:28px;height:28px" onclick="editOpen(${i})" title="ویرایش">`
-      +`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2l2 2-6.5 6.5H1.5V9L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>`
-      +`<button class="btn-icon" style="width:28px;height:28px" onclick="delWord(${i})" title="حذف">`
-      +`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
-      +`</div>`;
-  }).join('');
-}
-function sesOpenWeak(){
-  const now=new Date();
-  const weak=words.filter(w=>new Date(w.next_review||0)<=now||w.score<0).sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
-  if(!weak.length){ sesOpen(); return; }
-  sesDeck=weak; sesI=0; sesGood=0; sesBad=0; sesRepCount=0; sesFlipped=false;
-  Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
-  Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
-  Q('#ses-body').style.display='flex';
-  Q('#session').classList.add('open');
-  document.body.style.overflow='hidden';
-  showCard();
-}
-
-async function delWord(i){
-  const w=words[i]; words.splice(i,1); updateBadges(); saveCache(); renderList(); updateStats();
-  if(navigator.onLine) dbDel(w.id).catch(()=>{});
-}
-
-/* Edit */
-function editOpen(i){
-  editIdx=i; const w=words[i];
-  Q('#ed-de').value=w.de; Q('#ed-fa').value=w.fa; Q('#ed-ex').value=w.ex||'';
-  Q('#ed-err').textContent='';
-  Q('#edit-modal').classList.add('open');
-}
-function editClose(e){ if(!e||e.target===Q('#edit-modal')) Q('#edit-modal').classList.remove('open'); }
-async function editSave(){
-  const de=Q('#ed-de').value.trim(), fa=Q('#ed-fa').value.trim(), ex=Q('#ed-ex').value.trim();
-  if(!de||!fa){ Q('#ed-err').textContent='هر دو فیلد لازمه'; return; }
-  const dup=words.find((w,i)=>i!==editIdx&&w.de.toLowerCase()===de.toLowerCase());
-  if(dup){ Q('#ed-err').textContent='این لغت قبلاً هست'; return; }
-  const w=words[editIdx]; w.de=de; w.fa=fa; w.ex=ex;
-  saveCache(); if(navigator.onLine) dbUpd(w).catch(()=>{});
-  Q('#edit-modal').classList.remove('open'); renderList();
-}
-
-/* ════════════════════
-   WORD NETWORK
-════════════════════ */
-
-
-// Auto-build relations silently when word is added
-const _origAddWord=addWord;
-
-
-
-/* ════════════════════
-   KEYBOARD
-════════════════════ */
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&Q('#pane-home').classList.contains('on')&&document.activeElement===Q('#s-inp')) doSearch();
-  if(e.key===' '&&Q('#session').classList.contains('open')){ e.preventDefault(); sesFlip(); }
-  if(e.key==='Escape'){
-    Q('#drawer').classList.remove('open');
-    Q('#edit-modal').classList.remove('open');
-    if(Q('#session').classList.contains('open')) sesClose();
-  }
-});
-
-init();
-</script>
-<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});</script>
-</body>
-</html>
