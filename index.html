@@ -679,76 +679,96 @@ body.is-offline .topbar { top:33px }
   .tab { padding:5px 10px; font-size:11px }
 }
 
+
+
 /* ════════════════════════════════════
-   WORD NETWORK
+   PROGRESS PAGE
 ════════════════════════════════════ */
-.net-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s5) }
-.net-title { font-family:var(--serif); font-size:26px; color:var(--fg) }
-.net-build-card { background:var(--card); border:1px solid var(--bg3);
-  border-radius:var(--r4); padding:var(--s10) var(--s6);
-  text-align:center; margin-bottom:var(--s4); box-shadow:var(--sh1) }
-.net-spinner { width:36px; height:36px; border-radius:50%;
-  border:3px solid var(--bg3); border-top-color:var(--blue);
-  animation:spin .8s linear infinite; margin:0 auto var(--s4) }
-.net-build-title { font-family:var(--serif); font-size:18px; color:var(--fg); margin-bottom:var(--s2) }
-.net-build-sub { font-size:13px; color:var(--fg3) }
-/* Suggest */
-.suggest-card { background:var(--card); border:1px solid var(--bg3);
+.prog-page-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s5) }
+.prog-page-title { font-family:var(--serif); font-size:26px; color:var(--fg) }
+
+.prog-stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:var(--s2); margin-bottom:var(--s4) }
+.prog-stat-box { background:var(--card); border:1px solid var(--bg3);
+  border-radius:var(--r3); padding:var(--s4) var(--s3); text-align:center;
+  box-shadow:var(--sh1) }
+.prog-stat-n { font-family:var(--serif); font-size:28px; line-height:1;
+  color:var(--fg); margin-bottom:4px }
+.prog-stat-l { font-size:10px; color:var(--fg3); font-weight:500 }
+.prog-stat-box.green .prog-stat-n { color:var(--ok) }
+.prog-stat-box.orange .prog-stat-n { color:var(--warn) }
+.prog-stat-box.blue .prog-stat-n { color:var(--blue) }
+
+.prog-card { background:var(--card); border:1px solid var(--bg3);
   border-radius:var(--r4); padding:var(--s5); margin-bottom:var(--s4);
   box-shadow:var(--sh1) }
-.suggest-header { display:flex; align-items:flex-start; justify-content:space-between;
-  margin-bottom:var(--s4) }
-.suggest-title { font-family:var(--serif); font-size:18px; color:var(--fg) }
-.suggest-sub { font-size:12px; color:var(--fg3); margin-top:3px }
-.suggest-words { display:flex; flex-direction:column; gap:var(--s2) }
-.sug-item { display:flex; align-items:center; gap:var(--s3); padding:10px var(--s4);
-  border-radius:var(--r2); border:1px solid var(--bg3);
-  background:var(--bg); cursor:pointer; transition:all .15s var(--ease) }
-.sug-item:hover { border-color:var(--blue); background:var(--bl) }
-.sug-de { font-family:var(--serif); font-size:16px; color:var(--fg); flex:1.2; direction:ltr }
-.sug-rel { font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; flex-shrink:0 }
-.sug-rel.syn { background:rgba(21,128,61,.1); color:var(--ok) }
-.sug-rel.ant { background:rgba(220,38,38,.08); color:var(--err) }
-.sug-rel.fam { background:rgba(124,58,237,.1); color:#7c3aed }
-.sug-rel.rel { background:var(--bl); color:var(--blue) }
-.sug-why { font-size:12px; color:var(--fg3); flex:1; text-align:right }
-.sug-add { padding:4px 10px; border-radius:20px; border:1.5px solid var(--bg3);
-  background:transparent; color:var(--fg3); font-size:11px; cursor:pointer;
-  transition:all .15s; white-space:nowrap; flex-shrink:0 }
-.sug-add:hover { border-color:var(--blue); color:var(--blue) }
-.sug-add.done { border-color:var(--ok); color:var(--ok); background:rgba(21,128,61,.06) }
-/* SVG graph */
-.net-graph-wrap { background:var(--card); border:1px solid var(--bg3);
-  border-radius:var(--r4); overflow:hidden; margin-bottom:var(--s4);
-  box-shadow:var(--sh1) }
-.net-legend { display:flex; gap:var(--s4); padding:var(--s3) var(--s4);
-  border-bottom:1px solid var(--bg3); flex-wrap:wrap }
-.leg-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--fg3) }
-.leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
-.net-svg { width:100%; height:auto; display:block; cursor:grab; user-select:none }
-.net-svg:active { cursor:grabbing }
-.net-node { cursor:pointer; transition:opacity .2s }
-.net-node:hover circle { opacity:.85 }
-.net-node text { pointer-events:none }
-.net-edge { stroke-opacity:.35; transition:stroke-opacity .2s }
-.net-tooltip { position:absolute; background:var(--fg); color:var(--bg);
-  font-size:12px; padding:6px 10px; border-radius:var(--r1);
-  pointer-events:none; z-index:20; max-width:180px; line-height:1.5;
-  box-shadow:var(--sh2) }
-/* Clusters */
-.cluster-head { font-size:11px; font-weight:700; color:var(--fg3);
-  letter-spacing:1.5px; text-transform:uppercase; margin-bottom:var(--s3) }
-.cluster { background:var(--card); border:1px solid var(--bg3);
-  border-radius:var(--r3); padding:var(--s4); margin-bottom:var(--s2);
-  box-shadow:var(--sh1) }
-.cluster-title { font-family:var(--serif); font-size:15px; color:var(--fg);
-  margin-bottom:var(--s3); display:flex; align-items:center; gap:var(--s2) }
-.cluster-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0 }
-.cluster-chips { display:flex; flex-wrap:wrap; gap:var(--s1) }
-.cluster-chip { font-size:12px; padding:3px 10px; border-radius:20px;
+.prog-card-head { display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:var(--s5) }
+.prog-card-title { font-family:var(--serif); font-size:18px; color:var(--fg) }
+.prog-card-sub { font-size:12px; color:var(--fg3) }
+
+/* Big chart */
+.prog-chart-wrap { position:relative; padding-right:32px }
+.prog-chart-grid { position:absolute; inset:0 32px 24px 0;
+  display:flex; flex-direction:column; justify-content:space-between;
+  pointer-events:none }
+.pcgl { width:100%; height:1px; background:var(--bg3) }
+.prog-chart { display:flex; align-items:flex-end; gap:4px; height:140px;
+  position:relative; z-index:1 }
+.prog-chart-yaxis { position:absolute; right:0; top:0; bottom:24px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  width:28px }
+.py-label { font-size:9px; color:var(--fg4); text-align:right; line-height:1 }
+.pc-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px }
+.pc-bar-wrap { width:100%; flex:1; display:flex; align-items:flex-end;
+  position:relative }
+.pc-bar { width:100%; border-radius:4px 4px 0 0; min-height:3px;
+  transition:height .6s var(--spring) }
+.pc-bar.empty { background:var(--bg3); opacity:.4 }
+.pc-bar.has { background:linear-gradient(to top, var(--blue),
+  color-mix(in srgb,var(--blue) 65%,white));
+  box-shadow:0 -2px 8px var(--bg-glow) }
+.pc-bar.today { background:linear-gradient(to top,#b45309,#d97706);
+  box-shadow:0 -2px 8px rgba(180,83,9,.25) }
+.pc-count { position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+  font-size:10px; font-weight:700; color:var(--blue); opacity:0;
+  transition:opacity .15s; white-space:nowrap }
+.pc-bar.today~.pc-count { color:#b45309 }
+.pc-col:hover .pc-count { opacity:1 }
+.pc-lbl { font-size:9px; color:var(--fg4); font-weight:500; margin-top:2px }
+.pc-col.is-today .pc-lbl { color:#b45309; font-weight:700 }
+
+/* 30-day calendar */
+.prog-cal { display:flex; flex-wrap:wrap; gap:4px }
+.cal-day { width:28px; height:28px; border-radius:var(--r1);
+  background:var(--bg3); display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:var(--fg4); transition:all .2s;
+  position:relative; cursor:default }
+.cal-day.active { background:var(--blue); color:#fff;
+  box-shadow:0 0 0 2px var(--bg-glow) }
+.cal-day.today { box-shadow:0 0 0 2px var(--blue) }
+.cal-day-num { font-size:9px; font-weight:500 }
+
+/* Weak / Best lists */
+.pw-row { display:flex; align-items:center; gap:var(--s3);
+  padding:10px var(--s4); border-radius:var(--r2);
   border:1px solid var(--bg3); background:var(--bg);
-  color:var(--fg2); cursor:pointer; transition:all .15s; direction:ltr }
-.cluster-chip:hover { border-color:var(--blue); color:var(--blue); background:var(--bl) }
+  margin-bottom:var(--s2); cursor:pointer; transition:all .15s }
+.pw-row:hover { border-color:var(--blue); background:var(--bl) }
+.pw-de { font-family:var(--serif); font-size:15px; color:var(--fg);
+  flex:1; direction:ltr }
+.pw-fa { font-size:12px; color:var(--fg2); flex:1; text-align:right }
+.pw-sc { font-size:11px; font-weight:700; padding:2px 9px;
+  border-radius:20px; flex-shrink:0 }
+.pw-sc.neg { background:rgba(220,38,38,.1); color:var(--err) }
+.pw-sc.pos { background:rgba(21,128,61,.1); color:var(--ok) }
+.pw-next { font-size:10px; color:var(--fg4); flex-shrink:0 }
+
+@media(max-width:480px){
+  .prog-stats-row { grid-template-columns:repeat(2,1fr) }
+  .prog-stat-n { font-size:24px }
+  .cal-day { width:24px; height:24px }
+  .prog-chart { height:110px }
+}
 </style>
 </head>
 <body>
@@ -910,7 +930,7 @@ body.is-offline .topbar { top:33px }
       <button class="tab on" id="t-home" onclick="go('home')">خانه<span class="badge"></span></button>
       <button class="tab" id="t-cards" onclick="sesOpen()">کارت<span class="badge"></span></button>
       <button class="tab" id="t-quiz" onclick="go('quiz')">کوییز<span class="badge"></span></button>
-      <button class="tab" id="t-net" onclick="go('net')">شبکه<span class="badge"></span></button>
+      <button class="tab" id="t-net" onclick="go('net')">پیشرفت<span class="badge"></span></button>
       <button class="tab" id="t-list" onclick="go('list')">لیست<span class="badge"></span></button>
     </nav>
     <div class="top-r">
@@ -1075,16 +1095,6 @@ body.is-offline .topbar { top:33px }
 
 
 
-  <!-- NETWORK -->
-  <div class="pane" id="pane-net">
-    <div class="net-head">
-      <div class="net-title">شبکه لغات</div>
-      <button class="btn btn-sm" id="net-rebuild-btn" onclick="buildNetwork(true)" style="display:none">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10 6A4 4 0 112 6M2 2.5V6h3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        بازسازی
-      </button>
-    </div>
-
     <!-- Empty -->
     <div class="empty" id="net-empty" style="display:none">
       <span class="empty-icon">🕸</span>
@@ -1134,6 +1144,83 @@ body.is-offline .topbar { top:33px }
     </div>
   </div>
 
+
+
+  <!-- PROGRESS -->
+  <div class="pane" id="pane-net">
+    <div class="prog-page-head">
+      <div class="prog-page-title">پیشرفت من</div>
+    </div>
+
+    <!-- Top stats row -->
+    <div class="prog-stats-row">
+      <div class="prog-stat-box">
+        <div class="prog-stat-n" id="ps-total">0</div>
+        <div class="prog-stat-l">کل لغات</div>
+      </div>
+      <div class="prog-stat-box green">
+        <div class="prog-stat-n" id="ps-learned">0</div>
+        <div class="prog-stat-l">یاد گرفتم</div>
+      </div>
+      <div class="prog-stat-box orange">
+        <div class="prog-stat-n" id="ps-due">0</div>
+        <div class="prog-stat-l">سررسید مرور</div>
+      </div>
+      <div class="prog-stat-box blue">
+        <div class="prog-stat-n" id="ps-streak">0</div>
+        <div class="prog-stat-l">روز streak</div>
+      </div>
+    </div>
+
+    <!-- Weekly chart - bigger -->
+    <div class="prog-card">
+      <div class="prog-card-head">
+        <div class="prog-card-title">مرور هفته‌ای</div>
+        <span class="prog-card-sub" id="prog-week-sum"></span>
+      </div>
+      <div class="prog-chart-wrap">
+        <div class="prog-chart-grid">
+          <div class="pcgl"></div><div class="pcgl"></div><div class="pcgl"></div><div class="pcgl"></div>
+        </div>
+        <div class="prog-chart" id="prog-chart"></div>
+        <div class="prog-chart-yaxis" id="prog-yaxis"></div>
+      </div>
+    </div>
+
+    <!-- Streak calendar -->
+    <div class="prog-card">
+      <div class="prog-card-head">
+        <div class="prog-card-title">فعالیت ۳۰ روزه</div>
+        <span class="prog-card-sub" id="prog-active-days"></span>
+      </div>
+      <div class="prog-cal" id="prog-cal"></div>
+    </div>
+
+    <!-- Weak words -->
+    <div class="prog-card" id="prog-weak-card">
+      <div class="prog-card-head">
+        <div class="prog-card-title">نیاز به تقویت 💪</div>
+        <span class="prog-card-sub" id="prog-weak-sub"></span>
+      </div>
+      <div id="prog-weak-list"></div>
+      <button class="btn btn-p btn-full" style="margin-top:var(--s4)" onclick="sesOpenWeak()">مرور این لغات ←</button>
+    </div>
+
+    <!-- Best words -->
+    <div class="prog-card" id="prog-best-card">
+      <div class="prog-card-head">
+        <div class="prog-card-title">بهترین لغات ⭐</div>
+        <span class="prog-card-sub" id="prog-best-sub"></span>
+      </div>
+      <div id="prog-best-list"></div>
+    </div>
+
+    <div class="empty" id="prog-empty" style="display:none">
+      <span class="empty-icon">📊</span>
+      <h3>هنوز داده‌ای نیست</h3>
+      <p>لغت اضافه کن و مرور کن تا آمارت اینجا بیاد</p>
+    </div>
+  </div>
 
   <!-- LIST -->
   <div class="pane" id="pane-list">
@@ -1322,11 +1409,11 @@ function go(t){
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='quiz') qStart();
   if(t==='list') renderList();
-  if(t==='net') openNetwork();
+  if(t==='net') renderProgress();
 }
 function updateBadges(){
   const has=words.length>0;
-  ['cards','quiz','net','list'].forEach(id=>Q('#t-'+id).classList.toggle('lit',has));
+  ['cards','quiz','list'].forEach(id=>Q('#t-'+id).classList.toggle('lit',has));
 }
 
 /* ════════════════════
@@ -1456,7 +1543,7 @@ async function addPhrase(){
   words.unshift(w); updateBadges(); updateStats(); saveCache();
   const btn=Q('#ph-add');
   btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.className='ph-add done';
-  if(navigator.onLine) dbAdd(w).then(()=>buildWordRelations(w.de,w.fa)).catch(()=>{});
+  if(navigator.onLine) dbAdd(w).catch(()=>{});
 }
 
 async function addWord(){
@@ -1467,7 +1554,7 @@ async function addWord(){
   words.unshift(w); updateBadges(); updateStats(); saveCache();
   const btn=Q('#add-btn');
   btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.className='add-btn done';
-  if(navigator.onLine) dbAdd(w).then(()=>buildWordRelations(w.de,w.fa)).catch(()=>{});
+  if(navigator.onLine) dbAdd(w).catch(()=>{});
 }
 
 /* ════════════════════
@@ -1536,6 +1623,7 @@ function renderDaily(ws){
    STATS
 ════════════════════ */
 function updateStats(){
+  if(Q('#pane-net').classList.contains('on')) renderProgress();
   const el=Q('#stats');
   if(!words.length){ el.classList.remove('show'); return; }
   el.classList.add('show');
@@ -1834,211 +1922,131 @@ async function editSave(){
    WORD NETWORK
 ════════════════════ */
 
-// Network data structure
-// ws_network: { words: { [de]: { related:[{de,fa,type:'syn/ant/fam/rel'}] } }, built_at: ts }
-
-function getNetworkData(){ try{ return JSON.parse(localStorage.getItem('ws_network')||'{}'); }catch(e){ return {}; } }
-function saveNetworkData(d){ localStorage.setItem('ws_network',JSON.stringify(d)); }
-
-// Called after adding a word — builds relations in background silently
-// Silent background call for single new word
-async function buildWordRelations(word, fa){
-  if(!KEY||!navigator.onLine) return;
-  const net=getNetworkData();
-  if(net[word]) return; // cached
-  try{
-    const p=`لغت آلمانی: "${word}" (${fa})
-۴ لغت مرتبط بده: مترادف(syn)، متضاد(ant)، هم‌خانواده(fam)، مرتبط(rel).
-JSON خالص: [{"de":"لغت","fa":"معنی فارسی","type":"syn/ant/fam/rel"}]
-فقط JSON.`;
-    const raw=(await ai(p,300)).replace(/```json|```/g,'').trim();
-    const related=JSON.parse(raw);
-    const d=getNetworkData(); d[word]={fa,related}; saveNetworkData(d);
-  }catch(e){}
-}
-
-// Batch build — all words in ONE API call
-async function buildNetwork(force){
-  if(!words.length){ Q('#net-empty').style.display='block'; return; }
-  if(!KEY||!navigator.onLine){ openNetwork(); return; }
-  const net=getNetworkData();
-  const todo=(force?words:words.filter(w=>!net[w.de])).slice(0,15); // max 15
-  if(!force && todo.length===0){ openNetwork(); return; }
-  Q('#net-building').style.display='block';
-  Q('#net-content').style.display='none';
-  Q('#net-build-sub').textContent='یه لحظه صبر کن...';
-  try{
-    const wordList=todo.map(w=>`"${w.de}" (${w.fa})`).join(', ');
-    const p=`برای هر کدوم از این لغات آلمانی، ۳ لغت مرتبط پیدا کن (مترادف/متضاد/هم‌خانواده/مرتبط).
-لغات: ${wordList}
-JSON خالص:
-{"results":{"لغت۱":[{"de":"مرتبط","fa":"معنی","type":"syn/ant/fam/rel"}],"لغت۲":[...]}}
-فقط JSON.`;
-    Q('#net-build-sub').textContent='در حال آنالیز...';
-    const raw=(await ai(p, Math.min(800+todo.length*80, 2000))).replace(/```json|```/g,'').trim();
-    const data=JSON.parse(raw);
-    const d=getNetworkData();
-    todo.forEach(w=>{
-      const related=data.results?.[w.de]||[];
-      d[w.de]={fa:w.fa,related};
-    });
-    saveNetworkData(d);
-  }catch(e){
-    // fallback: build one by one silently
-    for(const w of todo.slice(0,5)){
-      await buildWordRelations(w.de,w.fa);
-    }
-  }
-  Q('#net-building').style.display='none';
-  openNetwork();
-}
-
-function openNetwork(){
-  if(!words.length){ Q('#net-empty').style.display='block'; Q('#net-rebuild-btn').style.display='none'; return; }
-  Q('#net-empty').style.display='none';
-  Q('#net-rebuild-btn').style.display='inline-flex';
-  const net=getNetworkData();
-  const hasData=words.some(w=>net[w.de]);
-  if(!hasData){ buildNetwork(false); return; }
-  Q('#net-content').style.display='block';
-  renderNetSuggest(net);
-  renderNetGraph(net);
-  renderNetClusters(net);
-}
-
-function renderNetSuggest(net){
-  const myWords=new Set(words.map(w=>w.de.toLowerCase()));
-  const suggestions=[];
-  Object.entries(net).forEach(([word,data])=>{
-    (data.related||[]).forEach(r=>{
-      if(!myWords.has(r.de.toLowerCase())&&r.de.length>1){
-        const ex=suggestions.find(s=>s.de.toLowerCase()===r.de.toLowerCase());
-        if(!ex) suggestions.push({...r,count:1});
-        else ex.count++;
-      }
-    });
-  });
-  suggestions.sort((a,b)=>b.count-a.count);
-  const top=suggestions.slice(0,5);
-  const sugEl=Q('#net-suggest');
-  if(!top.length){ sugEl.style.display='none'; return; }
-  sugEl.style.display='block';
-  const typeLabel={syn:'مترادف',ant:'متضاد',fam:'هم‌خانواده',rel:'مرتبط'};
-  Q('#sug-sub').textContent=`${top.length} لغت مرتبط با یادگیری‌هات`;
-  Q('#sug-words').innerHTML=top.map((s,i)=>`
-    <div class="sug-row" onclick="qs('${esc(s.de)}')">
-      <span class="sug-de">${s.de}</span>
-      <span class="sug-fa">${s.fa||''}</span>
-      <span class="sug-type">${typeLabel[s.type]||'مرتبط'}</span>
-      <button class="sug-plus" id="sug-${i}" onclick="event.stopPropagation();addSugWord(${i},'${esc(s.de)}','${esc(s.fa||'')}')" title="اضافه کردن">＋</button>
-    </div>`).join('');
-}
-
-async function addSugWord(i,de,fa){
-  if(words.some(w=>w.de===de)) return;
-  const w={de,fa,ex:'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
-  words.unshift(w); updateBadges(); updateStats(); saveCache();
-  const btn=Q('#sug-'+i); if(btn){ btn.textContent='✓ اضافه شد'; btn.classList.add('done'); btn.disabled=true; }
-  if(navigator.onLine) dbAdd(w).then(()=>buildWordRelations(de,fa)).catch(()=>{});
-}
-
-function renderNetGraph(net){
-  const svg=Q('#net-svg'); if(!svg)return;
-  const W=700,H=480;
-  const myWords=new Set(words.map(w=>w.de));
-  const C={mine:'#1847f0',syn:'#15803d',ant:'#dc2626',fam:'#7c3aed',rel:'#b45309'};
-  const nodes=[],edges=[],nm={};
-
-  // Main nodes — user's words in circle
-  const mw=words.slice(0,18);
-  mw.forEach((w,i)=>{
-    const a=(i/mw.length)*2*Math.PI-Math.PI/2;
-    const r=Math.min(W,H)*0.3;
-    const x=W/2+r*Math.cos(a), y=H/2+r*Math.sin(a);
-    nodes.push({id:w.de,fa:w.fa,x,y,type:'mine',big:true});
-    nm[w.de]={x,y};
-  });
-
-  // Related nodes
-  const added=new Set(words.map(w=>w.de));
-  mw.forEach((w,wi)=>{
-    const d=net[w.de]; if(!d)return;
-    (d.related||[]).slice(0,3).forEach((r,ri)=>{
-      if(!added.has(r.de)){
-        const p=nm[w.de];
-        const a=((ri/3)*2*Math.PI)+((wi/mw.length)*2*Math.PI)+0.5;
-        const dist=75+ri*10;
-        const x=Math.max(55,Math.min(W-55,(p?.x||W/2)+dist*Math.cos(a)));
-        const y=Math.max(35,Math.min(H-35,(p?.y||H/2)+dist*Math.sin(a)));
-        nodes.push({id:r.de,fa:r.fa,x,y,type:r.type,big:false});
-        nm[r.de]={x,y}; added.add(r.de);
-      }
-      if(nm[r.de]) edges.push({from:w.de,to:r.de,type:r.type});
-    });
-  });
-
-  // SVG
-  let out='<defs><filter id="nshadow"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity=".15"/></filter></defs>';
-  // Edges
-  edges.forEach(e=>{
-    const f=nm[e.from],t=nm[e.to]; if(!f||!t)return;
-    const c=C[e.type]||C.rel;
-    const mx=(f.x+t.x)/2, my=(f.y+t.y)/2;
-    out+=`<path d="M${f.x},${f.y} Q${mx+20},${my-20} ${t.x},${t.y}" fill="none" stroke="${c}" stroke-width="1.5" stroke-opacity=".3" stroke-dasharray="${e.type==='ant'?'4 3':'none'}"/>`;
-  });
-  // Nodes
-  nodes.forEach(n=>{
-    const c=C[n.type]||C.mine;
-    const r=n.big?20:14;
-    const lbl=n.id.length>10?n.id.slice(0,9)+'…':n.id;
-    const fs=n.id.length>8?8.5:9.5;
-    out+=`<g class="net-node" onclick="netNodeClick('${esc(n.id)}')" style="cursor:pointer">
-      <circle cx="${n.x}" cy="${n.y}" r="${r}" fill="${c}" fill-opacity="${n.big?1:.72}"
-        stroke="var(--card)" stroke-width="${n.big?2.5:2}" filter="url(#nshadow)"/>
-      <text x="${n.x}" y="${n.y+r+11}" text-anchor="middle"
-        font-size="${fs}" fill="var(--fg)" opacity=".8">${lbl}</text>
-      ${n.big?`<text x="${n.x}" y="${n.y+3.5}" text-anchor="middle" font-size="8" fill="white" opacity=".85">${n.id.slice(0,6)}</text>`:''}
-    </g>`;
-  });
-  svg.innerHTML=out;
-}
-
-function netNodeClick(de){
-  // Search for this word
-  go('home');
-  setTimeout(()=>{ Q('#s-inp').value=de; doSearch(); },200);
-}
-
-function renderNetClusters(net){
-  const COLORS=['#1847f0','#15803d','#b45309','#7c3aed','#dc2626','#0891b2'];
-  const NAMES={syn:'مترادف‌ها',ant:'متضادها',fam:'خانواده لغوی',rel:'لغات موضوعی'};
-  const clusters={};
-  words.forEach(w=>{
-    const data=net[w.de];
-    if(!data||!data.related?.length){
-      (clusters['سایر']||(clusters['سایر']=[])).push(w.de); return;
-    }
-    const types=data.related.map(r=>r.type);
-    const dominant=Object.entries(types.reduce((a,t)=>(a[t]=(a[t]||0)+1,a),{})).sort((a,b)=>b[1]-a[1])[0]?.[0]||'rel';
-    const name=NAMES[dominant]||'سایر';
-    (clusters[name]||(clusters[name]=[])).push(w.de);
-  });
-  const entries=Object.entries(clusters).filter(([,v])=>v.length>0);
-  Q('#cluster-list').innerHTML=entries.map(([name,ws],i)=>`
-    <div class="cluster-card">
-      <div class="cluster-header">
-        <span class="cluster-color" style="background:${COLORS[i%COLORS.length]}"></span>
-        <span class="cluster-name">${name}</span>
-        <span class="cluster-count">${ws.length} لغت</span>
-      </div>
-      <div class="cluster-body">
-        ${ws.map(de=>`<span class="cluster-chip" onclick="qs('${esc(de)}')">${de}</span>`).join('')}
-      </div>
-    </div>`).join('');
-}
 
 // Auto-build relations silently when word is added
 const _origAddWord=addWord;
+
+/* ════════════════════
+   PROGRESS PAGE
+════════════════════ */
+function renderProgress(){
+  if(!words.length && !Object.keys(JSON.parse(localStorage.getItem('ws_rlog')||'{}')).length){
+    Q('#prog-empty').style.display='block'; return;
+  }
+  Q('#prog-empty').style.display='none';
+  renderProgStats();
+  renderProgChart();
+  renderProgCal();
+  renderProgWeak();
+  renderProgBest();
+}
+
+function renderProgStats(){
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now);
+  const learned=words.filter(w=>w.seen>0&&w.interval>3);
+  Q('#ps-total').textContent=words.length;
+  Q('#ps-learned').textContent=learned.length;
+  Q('#ps-due').textContent=due.length;
+  // streak
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
+  let s=0; const d=new Date();
+  while(all[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
+  Q('#ps-streak').textContent=s;
+}
+
+function renderProgChart(){
+  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  // 14 days
+  const days=[]; for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
+  const counts=days.map(d=>log[d.toDateString()]||0);
+  const mx=Math.max(1,...counts);
+  const tot=counts.reduce((a,b)=>a+b,0);
+  const avg=tot>0?Math.round(tot/counts.filter(c=>c>0).length||1):0;
+  Q('#prog-week-sum').textContent=tot>0?`${tot} مرور — میانگین ${avg} در روز`:'هنوز مروری ثبت نشده';
+  const dn=['ی','د','س','چ','پ','ج','ش'];
+  // Y-axis labels
+  Q('#prog-yaxis').innerHTML=[mx,Math.round(mx/2),0].map(v=>`<div class="py-label">${v}</div>`).join('');
+  Q('#prog-chart').innerHTML=days.map((d,i)=>{
+    const c=counts[i]; const isT=i===13;
+    const h=c>0?Math.max(6,Math.round(c/mx*130)):3;
+    const cls=c>0?(isT?' today':' has'):' empty';
+    const lbl=isT?'امروز':(i%2===0?dn[d.getDay()]:'');
+    return `<div class="pc-col${isT?' is-today':''}">
+      <div class="pc-bar-wrap">
+        <div class="pc-bar${cls}" style="height:${h}px"></div>
+        ${c>0?`<div class="pc-count">${c}</div>`:''}
+      </div>
+      <div class="pc-lbl">${lbl}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderProgCal(){
+  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all={}; Object.keys(log).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
+  const days=[]; for(let i=29;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
+  const active=days.filter(d=>all[d.toDateString()]).length;
+  Q('#prog-active-days').textContent=`${active} روز فعال از ۳۰ روز`;
+  const today=new Date().toDateString();
+  Q('#prog-cal').innerHTML=days.map(d=>{
+    const isActive=!!all[d.toDateString()]; const isT=d.toDateString()===today;
+    const count=log[d.toDateString()]||0;
+    const title=`${d.getDate()}/${d.getMonth()+1}${count?' — '+count+' مرور':''}`;
+    return `<div class="cal-day${isActive?' active':''}${isT?' today':''}" title="${title}">
+      <span class="cal-day-num">${d.getDate()}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderProgWeak(){
+  const weak=words.filter(w=>w.score<0||w.seen===0).sort((a,b)=>a.score-b.score).slice(0,6);
+  const card=Q('#prog-weak-card');
+  if(!weak.length){ card.style.display='none'; return; }
+  card.style.display='block';
+  Q('#prog-weak-sub').textContent=`${weak.length} لغت نیاز به تقویت دارن`;
+  const now=new Date();
+  Q('#prog-weak-list').innerHTML=weak.map(w=>{
+    const due=new Date(w.next_review||0)<=now;
+    return `<div class="pw-row" onclick="qs('${esc(w.de)}')">
+      <span class="pw-de">${w.de}</span>
+      <span class="pw-fa">${w.fa}</span>
+      <span class="pw-sc neg">${w.score}</span>
+      <span class="pw-next">${due?'⏰ سررسید':''}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderProgBest(){
+  const best=words.filter(w=>w.score>0&&w.seen>2).sort((a,b)=>b.score-a.score).slice(0,6);
+  const card=Q('#prog-best-card');
+  if(!best.length){ card.style.display='none'; return; }
+  card.style.display='block';
+  Q('#prog-best-sub').textContent=`${best.length} لغتی که خوب یاد گرفتی`;
+  Q('#prog-best-list').innerHTML=best.map(w=>`
+    <div class="pw-row" onclick="qs('${esc(w.de)}')">
+      <span class="pw-de">${w.de}</span>
+      <span class="pw-fa">${w.fa}</span>
+      <span class="pw-sc pos">+${w.score}</span>
+      <span class="pw-next">${w.interval>1?w.interval+' روز':''}</span>
+    </div>`).join('');
+}
+
+// Open session with only weak words
+function sesOpenWeak(){
+  const weak=words.filter(w=>w.score<0||w.seen===0).sort((a,b)=>a.score-b.score);
+  if(!weak.length) return;
+  sesDeck=weak; sesI=0; sesGood=0; sesBad=0; sesRepCount=0; sesFlipped=false;
+  Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
+  Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
+  Q('#ses-body').style.display='flex';
+  Q('#session').classList.add('open');
+  document.body.style.overflow='hidden';
+  showCard();
+}
 
 /* ════════════════════
    KEYBOARD
