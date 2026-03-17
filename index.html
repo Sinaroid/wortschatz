@@ -314,7 +314,6 @@ body.is-offline .topbar { top:33px }
   border-radius:20px; background:rgba(255,255,255,.16); color:#fff; letter-spacing:.3px }
 .res-body { padding:var(--s5) var(--s6) }
 .res-fa { font-size:22px; font-weight:600; color:var(--fg); line-height:1.3; margin-bottom:3px }
-.res-en { font-size:13px; color:var(--fg3); font-style:italic; margin-bottom:var(--s4) }
 .sec-lbl { font-size:10px; font-weight:700; color:var(--fg4);
   letter-spacing:2px; text-transform:uppercase; margin-bottom:var(--s3);
   margin-top:var(--s5); display:flex; align-items:center; gap:var(--s2) }
@@ -747,6 +746,30 @@ body.is-offline .topbar { top:33px }
   color:var(--fg2); font-family:var(--sans); font-size:14px;
   cursor:pointer; transition:all .18s; white-space:nowrap }
 .sc-all-btn:hover { background:var(--bg3); color:var(--fg) }
+
+/* ── Speak button ── */
+.res-word-row { display:flex; align-items:flex-end; gap:var(--s3);
+  position:relative; z-index:1; margin-bottom:var(--s2) }
+.speak-btn { width:36px; height:36px; border-radius:50%;
+  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.3);
+  color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .18s; flex-shrink:0; margin-bottom:6px }
+.speak-btn:hover { background:rgba(255,255,255,.3); transform:scale(1.08) }
+.speak-btn.speaking { background:rgba(255,255,255,.35); animation:pulse .8s infinite }
+
+/* ── Usage pattern ── */
+.usage-box { direction:ltr; text-align:left; font-family:var(--serif);
+  font-size:14px; color:var(--blue); margin-bottom:var(--s4);
+  padding:8px 12px; background:var(--bl); border-radius:var(--r1);
+  border-right:3px solid var(--blue) }
+
+/* ── Conjugation ── */
+.conj-box { display:grid; grid-template-columns:repeat(3,1fr);
+  gap:var(--s2); margin-bottom:var(--s4) }
+.conj-item { background:var(--bg); border:1px solid var(--bg3);
+  border-radius:var(--r1); padding:8px var(--s3); text-align:center }
+.conj-pro { font-size:11px; color:var(--fg4); margin-bottom:2px }
+.conj-form { font-family:var(--serif); font-size:14px; color:var(--fg); direction:ltr }
 </style>
 </head>
 <body>
@@ -949,19 +972,27 @@ body.is-offline .topbar { top:33px }
       <div class="res-top">
         <div class="res-fix" id="res-fix"></div>
         <div class="res-art" id="res-art"></div>
-        <div class="res-word" id="res-word"></div>
+        <div class="res-word-row">
+          <div class="res-word" id="res-word"></div>
+          <button class="speak-btn" id="speak-btn" onclick="speakWord()" title="تلفظ">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 5.5H1v5h2l4 3V2.5L3 5.5z" fill="currentColor"/>
+              <path d="M11 4a5 5 0 010 8M13.5 2a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
         <div class="res-meta" id="res-meta"></div>
         <div class="res-tags" id="res-tags"></div>
       </div>
       <div class="res-body">
         <div class="res-fa" id="res-fa"></div>
-        <div class="res-en" id="res-en"></div>
+        <div class="usage-box" id="res-usage" style="display:none"></div>
+        <div class="sec-lbl" id="conj-lbl" style="display:none">صرف فعل</div>
+        <div class="conj-box" id="res-conj" style="display:none"></div>
         <div class="sec-lbl" id="syn-lbl" style="display:none">مترادف / متضاد</div>
         <div class="chips" id="res-syn" style="display:none"></div>
-        <div class="sec-lbl">جمله‌های نمونه</div>
+        <div class="sec-lbl" id="ex-lbl" style="display:none">جمله نمونه</div>
         <div id="res-exs"></div>
-        <div class="sec-lbl" id="rel-lbl" style="display:none">کلمات مرتبط</div>
-        <div class="chips" id="res-rel"></div>
         <div class="sec-lbl" id="tip-lbl" style="display:none">نکته گرامری</div>
         <div class="tip-box" id="res-tip" style="display:none"></div>
         <button class="add-btn" id="add-btn" onclick="addWord()">
@@ -1331,8 +1362,8 @@ async function searchWord(q){
 - اگه فارسیه: معادل آلمانی پیدا کن
 - اگه انگلیسیه: معادل آلمانی پیدا کن
 JSON خالص بدون backtick:
-{"word":"لغت بدون حرف تعریف","corrected_from":"اگه تصحیح شد وگرنه رشته خالی","article":"der/die/das یا رشته خالی","plural":"جمع اگر اسم وگرنه خالی","preposition":"حرف اضافه مثلاً auf+Akk وگرنه خالی","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق","meaning_en":"English meaning","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"examples":[{"de":"جمله کاربردی اول","fa":"ترجمه"},{"de":"جمله موقعیت دیگر","fa":"ترجمه"}],"related":["کلمه۱","کلمه۲","کلمه۳"],"grammar_tip":"نکته گرامری مهم به فارسی"}
-فقط JSON.`;
+{"word":"لغت بدون حرف تعریف","corrected_from":"فقط اگه واقعاً تصحیح کردی وگرنه null","article":"der/die/das یا رشته خالی","plural":"جمع اگر اسم وگرنه خالی","preposition":"حرف اضافه مثلاً auf+Akk وگرنه خالی","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق و کامل","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"example":{"de":"بهترین جمله کاربردی","fa":"ترجمه دقیق"},"grammar_tip":"نکته گرامری مهم به فارسی","conjugation":"اگه فعله: ich/du/er صرف کن وگرنه null","usage_pattern":"الگوی استفاده مثلاً jdm etw zutrauen وگرنه null"}
+فقط JSON. corrected_from فقط اگه واقعاً تصحیح کردی وگرنه null.`;
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
   try{
@@ -1344,10 +1375,11 @@ JSON خالص بدون backtick:
 }
 
 function renderWord(d){
-  // correction
+  // correction — only show if actually corrected (not null/empty)
   const fix=Q('#res-fix');
-  if(d.corrected_from&&d.corrected_from.trim()){ fix.textContent='تصحیح از: '+d.corrected_from; fix.classList.add('show'); }
-  else fix.classList.remove('show');
+  if(d.corrected_from&&d.corrected_from!=='null'&&d.corrected_from.trim()&&d.corrected_from!==d.word){
+    fix.textContent='تصحیح از: '+d.corrected_from; fix.classList.add('show');
+  } else fix.classList.remove('show');
   // banner
   Q('#res-art').textContent=(d.article&&d.article!=='—')?d.article:(d.type||'');
   Q('#res-word').textContent=d.word;
@@ -1358,7 +1390,25 @@ function renderWord(d){
   if(d.type)  tags.innerHTML+=`<span class="res-tag">${d.type}</span>`;
   // meaning
   Q('#res-fa').textContent=d.meaning_fa;
-  Q('#res-en').textContent=d.meaning_en;
+  // usage pattern
+  const usageEl=Q('#res-usage');
+  if(d.usage_pattern&&d.usage_pattern!=='null'&&d.usage_pattern.trim()){
+    usageEl.textContent=d.usage_pattern; usageEl.style.display='block';
+  } else usageEl.style.display='none';
+  // conjugation (verbs only)
+  const conjEl=Q('#res-conj'), conjLbl=Q('#conj-lbl');
+  if(d.type==='Verb'&&d.conjugation&&d.conjugation!=='null'){
+    try{
+      // parse "ich X, du Y, er Z" format
+      const parts=d.conjugation.split(',').map(s=>s.trim());
+      const pronoums=['ich','du','er/sie'];
+      conjEl.innerHTML=parts.slice(0,3).map((p,i)=>{
+        const verb=p.replace(/^(ich|du|er|sie\/er|er\/sie)\s*/i,'').trim();
+        return `<div class="conj-item"><div class="conj-pro">${pronoums[i]||''}</div><div class="conj-form">${verb}</div></div>`;
+      }).join('');
+      conjLbl.style.display='flex'; conjEl.style.display='grid';
+    }catch(e){ conjLbl.style.display='none'; conjEl.style.display='none'; }
+  } else { conjLbl.style.display='none'; conjEl.style.display='none'; }
   // synonyms/antonyms
   const synEl=Q('#res-syn'), synLbl=Q('#syn-lbl');
   const synHTML=[
@@ -1367,12 +1417,17 @@ function renderWord(d){
   ];
   if(synHTML.length){ synLbl.style.display='flex'; synEl.innerHTML=synHTML.join(''); synEl.style.display='flex'; }
   else { synLbl.style.display='none'; synEl.style.display='none'; }
-  // examples
-  Q('#res-exs').innerHTML=(d.examples||[]).map(e=>`<div class="ex-card"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`).join('');
+  // single example
+  const exLbl=Q('#ex-lbl');
+  if(d.example&&d.example.de){
+    exLbl.style.display='flex';
+    Q('#res-exs').innerHTML=`<div class="ex-card"><div class="ex-de">${d.example.de}</div><div class="ex-fa">${d.example.fa}</div></div>`;
+  } else if(d.examples&&d.examples.length){
+    exLbl.style.display='flex';
+    Q('#res-exs').innerHTML=`<div class="ex-card"><div class="ex-de">${d.examples[0].de}</div><div class="ex-fa">${d.examples[0].fa}</div></div>`;
+  } else { exLbl && (exLbl.style.display='none'); Q('#res-exs').innerHTML=''; }
   // related
-  const relEl=Q('#res-rel'), relLbl=Q('#rel-lbl');
-  if(d.related&&d.related.length){ relLbl.style.display='flex'; relEl.innerHTML=d.related.map(r=>`<span class="chip" onclick="qs('${esc(r)}')">${r}</span>`).join(''); }
-  else { relLbl.style.display='none'; relEl.innerHTML=''; }
+
   // tip
   const tipEl=Q('#res-tip'), tipLbl=Q('#tip-lbl');
   if(d.grammar_tip){ tipLbl.style.display='flex'; tipEl.style.display='block'; tipEl.textContent=d.grammar_tip; }
@@ -1424,11 +1479,25 @@ async function addWord(){
   if(!curWord) return;
   const key=(curWord.article&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase())) return;
-  const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  const w={de:key,fa:curWord.meaning_fa,ex:curWord.example?.de||curWord.examples?.[0]?.de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
   words.unshift(w); updateBadges(); updateStats(); saveCache();
   const btn=Q('#add-btn');
   btn.innerHTML='<span>✓</span> اضافه شد!'; btn.disabled=true; btn.className='add-btn done';
   if(navigator.onLine) dbAdd(w).catch(()=>{});
+}
+
+/* ── Text to Speech ── */
+function speakWord(){
+  if(!curWord) return;
+  const btn=Q('#speak-btn');
+  if(!window.speechSynthesis){ btn.style.opacity='.3'; return; }
+  window.speechSynthesis.cancel();
+  const utt=new SpeechSynthesisUtterance(curWord.word);
+  utt.lang='de-DE'; utt.rate=0.85; utt.pitch=1;
+  btn.classList.add('speaking');
+  utt.onend=()=>btn.classList.remove('speaking');
+  utt.onerror=()=>btn.classList.remove('speaking');
+  window.speechSynthesis.speak(utt);
 }
 
 /* ════════════════════
@@ -1629,6 +1698,7 @@ function showCard(){
   const w=sesDeck[sesI];
   Q('#ses-word').textContent=w.de;
   Q('#ses-mean').textContent=w.fa;
+  // auto-speak on card show (optional — only if speech available)
   Q('#ses-sent').textContent=w.ex||'';
   Q('#card-wrap').classList.remove('flip'); sesFlipped=false;
   const pct=Math.round(sesI/sesDeck.length*100);
