@@ -414,102 +414,9 @@ body.is-offline .topbar { top:33px }
   transition:all .18s; position:relative; z-index:1 }
 .rem-btn:hover { background:rgba(255,255,255,.24) }
 
-/* ════════════════════════════════════
-   DAILY
-════════════════════════════════════ */
-.daily { background:var(--card); border:1px solid var(--bg3);
-  border-radius:var(--r4); padding:var(--s5); margin-bottom:var(--s4);
-  box-shadow:var(--sh1); animation:up .4s .12s var(--ease) both }
-.daily-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s4) }
-.daily-title { font-family:var(--serif); font-size:19px; color:var(--fg) }
-.d-badge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px;
-  color:var(--blue); background:var(--bl); border:1px solid rgba(24,71,240,.15);
-  letter-spacing:.5px }
-.d-items { display:flex; flex-direction:column; gap:var(--s2) }
-.d-item { display:flex; align-items:center; gap:var(--s4); padding:10px var(--s4);
-  border-radius:var(--r2); border:1px solid var(--bg3);
-  background:var(--bg); cursor:pointer; transition:all .15s var(--ease) }
-.d-item:hover { border-color:var(--blue); background:var(--bl) }
-.d-de { font-family:var(--serif); font-size:16px; color:var(--fg);
-  flex:1.3; direction:ltr }
-.d-fa { font-size:13px; color:var(--fg2); flex:1; text-align:right }
-.d-lvl { font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px;
-  color:var(--blue); background:var(--bl); letter-spacing:.3px; flex-shrink:0 }
-.d-placeholder { text-align:center; padding:var(--s8); color:var(--fg4); font-size:14px }
 
-/* ════════════════════════════════════
-   STATS + CHART + STREAK
-════════════════════════════════════ */
-.stats { background:var(--card); border:1px solid var(--bg3);
-  border-radius:var(--r4); padding:var(--s5); margin-bottom:var(--s4);
-  box-shadow:var(--sh1); display:none }
-.stats.show { display:block; animation:up .4s .18s var(--ease) both }
-.stats-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s4) }
-.stats-title { font-family:var(--serif); font-size:19px; color:var(--fg) }
-.due-tag { display:none; align-items:center; gap:var(--s1); padding:4px 10px;
-  border-radius:20px; background:rgba(180,83,9,.1);
-  border:1px solid rgba(180,83,9,.25); color:var(--warn);
-  font-size:12px; font-weight:600; cursor:pointer; transition:all .15s }
-.due-tag.show { display:inline-flex }
-.due-tag:hover { background:rgba(180,83,9,.15) }
-.stat-boxes { display:grid; grid-template-columns:repeat(3,1fr);
-  gap:var(--s2); margin-bottom:var(--s4) }
-.sb { background:var(--bg); border:1px solid var(--bg3);
-  border-radius:var(--r2); padding:var(--s4) var(--s3); text-align:center }
-.sb.click { cursor:pointer; transition:all .15s }
-.sb.click:hover { border-color:var(--blue); background:var(--bl) }
-.sb-n { font-family:var(--serif); font-size:30px; color:var(--fg);
-  line-height:1; margin-bottom:4px }
-.sb.g .sb-n { color:var(--ok) }
-.sb.w .sb-n { color:var(--warn) }
-.sb-l { font-size:11px; color:var(--fg3) }
-/* Streak */
-.streak { display:flex; align-items:center; justify-content:space-between;
-  background:var(--bg); border:1px solid var(--bg3); border-radius:var(--r2);
-  padding:var(--s3) var(--s4); margin-bottom:var(--s4) }
-.streak-left { display:flex; align-items:baseline; gap:var(--s2) }
-.streak-n { font-family:var(--serif); font-size:26px; color:var(--fg); line-height:1;
-  transition:color .3s }
-.streak.hot .streak-n { color:var(--blue) }
-.streak-lbl { font-size:12px; color:var(--fg3) }
-.streak-dots { display:flex; gap:5px; align-items:flex-end }
-.sd { display:flex; flex-direction:column; align-items:center; gap:3px }
-.sd-dot { width:8px; height:8px; border-radius:50%;
-  background:var(--bg3); transition:all .3s var(--ease) }
-.sd-dot.done { background:var(--blue); box-shadow:0 0 0 2px var(--bl) }
-.sd-dot.today { background:var(--blue); transform:scale(1.3);
-  box-shadow:0 0 0 2px var(--bg-glow) }
-.sd-lbl { font-size:9px; color:var(--fg4); font-weight:500 }
-.sd-lbl.t { color:var(--blue); font-weight:700 }
-/* Chart */
-.chart-header { display:flex; align-items:center; justify-content:space-between;
-  font-size:11px; color:var(--fg3); margin-bottom:var(--s3) }
-.chart-box { background:var(--bg); border:1px solid var(--bg3);
-  border-radius:var(--r2); padding:var(--s4) var(--s3) var(--s3);
-  position:relative }
-.chart-grid-lines { position:absolute; inset:var(--s3) var(--s3) 28px;
-  display:flex; flex-direction:column; justify-content:space-between;
-  pointer-events:none }
-.cgl { width:100%; height:1px; background:var(--bg3) }
-.chart-bars { display:flex; align-items:flex-end; gap:5px;
-  height:70px; position:relative; z-index:1 }
-.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px }
-.bar-inner { width:100%; position:relative; display:flex; align-items:flex-end; justify-content:center }
-.bar { width:100%; border-radius:3px 3px 0 0; min-height:3px;
-  transition:height .55s var(--spring) }
-.bar.empty { background:var(--bg3); opacity:.5 }
-.bar.has { background:linear-gradient(to top, var(--blue),
-  color-mix(in srgb, var(--blue) 68%, #fff));
-  box-shadow:0 -2px 8px var(--bg-glow) }
-.bar.today { background:linear-gradient(to top, #b45309, #d97706);
-  box-shadow:0 -2px 8px rgba(180,83,9,.25) }
-.bar-count { position:absolute; top:-17px; left:50%; transform:translateX(-50%);
-  font-size:9px; font-weight:700; color:var(--blue); opacity:0;
-  transition:opacity .15s; white-space:nowrap; pointer-events:none }
-.bar.today ~ .bar-count { color:#b45309 }
-.bar-col:hover .bar-count { opacity:1 }
-.bar-lbl { font-size:9px; color:var(--fg4); font-weight:500 }
-.bar-col.is-today .bar-lbl { color:#b45309; font-weight:700 }
+
+
 
 /* ════════════════════════════════════
    FLASHCARD SESSION (fullscreen)
@@ -808,6 +715,38 @@ body.is-offline .topbar { top:33px }
   animation:up .3s var(--spring);
 }
 .search-tip.show { display:block }
+
+/* ── Summary card (home) ── */
+.summary-card { background:var(--card); border:1px solid var(--bg3);
+  border-radius:var(--r4); padding:var(--s5); margin-bottom:var(--s4);
+  box-shadow:var(--sh1); animation:up .35s .15s var(--ease) both }
+.sc-top { display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:var(--s4); gap:var(--s4) }
+.sc-nums { display:flex; gap:var(--s5) }
+.sc-num-box { text-align:center }
+.sc-n { font-family:var(--serif); font-size:28px; color:var(--fg); line-height:1; margin-bottom:2px }
+.sc-num-box.ok .sc-n { color:var(--ok) }
+.sc-num-box.streak .sc-n { color:var(--blue) }
+.sc-l { font-size:10px; color:var(--fg3); font-weight:500 }
+.sc-streak-dots { display:flex; gap:4px; align-items:flex-end }
+.scd { display:flex; flex-direction:column; align-items:center; gap:2px }
+.scd-circle { width:7px; height:7px; border-radius:50%; background:var(--bg3); transition:all .3s }
+.scd-circle.done { background:var(--blue); box-shadow:0 0 0 2px var(--bl) }
+.scd-circle.today { background:var(--blue); transform:scale(1.35); box-shadow:0 0 0 2px var(--bg-glow) }
+.scd-lbl { font-size:8px; color:var(--fg4) }
+.scd-lbl.t { color:var(--blue); font-weight:700 }
+.sc-actions { display:flex; gap:var(--s2) }
+.sc-review-btn { flex:1; display:flex; align-items:center; justify-content:center;
+  gap:var(--s2); padding:11px var(--s4); border-radius:var(--r2);
+  background:var(--blue); color:#fff; border:none;
+  font-family:var(--sans); font-size:14px; font-weight:600;
+  cursor:pointer; transition:all .18s var(--ease) }
+.sc-review-btn:hover { background:var(--blue2); transform:translateY(-1px) }
+.sc-all-btn { padding:11px var(--s4); border-radius:var(--r2);
+  border:1.5px solid var(--bg3); background:var(--bg2);
+  color:var(--fg2); font-family:var(--sans); font-size:14px;
+  cursor:pointer; transition:all .18s; white-space:nowrap }
+.sc-all-btn:hover { background:var(--bg3); color:var(--fg) }
 </style>
 </head>
 <body>
@@ -1059,46 +998,31 @@ body.is-offline .topbar { top:33px }
       <div class="rem-chips" id="rem-chips"></div>
       <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
     </div>
-
-    <!-- Daily -->
-    <div class="daily" id="daily">
-      <div class="daily-head">
-        <div class="daily-title">پیشنهاد امروز</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="d-badge">B1–C2</span>
-          <button class="btn-icon" style="width:28px;height:28px" onclick="loadDaily(true)">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10 6A4 4 0 112 6M2 2.5V6h3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+    <!-- Summary card -->
+    <div class="summary-card" id="summary-card" style="display:none">
+      <div class="sc-top">
+        <div class="sc-nums">
+          <div class="sc-num-box">
+            <div class="sc-n" id="sc-total">0</div>
+            <div class="sc-l">لغت</div>
+          </div>
+          <div class="sc-num-box ok">
+            <div class="sc-n" id="sc-learned">0</div>
+            <div class="sc-l">یاد گرفتم</div>
+          </div>
+          <div class="sc-num-box streak">
+            <div class="sc-n" id="sc-streak">0</div>
+            <div class="sc-l">روز streak</div>
+          </div>
         </div>
+        <div class="sc-streak-dots" id="sc-dots"></div>
       </div>
-      <div class="d-items" id="d-list"><div class="d-placeholder">در حال بارگذاری...</div></div>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats" id="stats">
-      <div class="stats-head">
-        <div class="stats-title">پیشرفت</div>
-        <span class="due-tag" id="due-tag" onclick="sesOpenDue()">⏰ <span id="due-n">0</span> سررسید</span>
-      </div>
-      <div class="stat-boxes">
-        <div class="sb"><div class="sb-n" id="sb-total">0</div><div class="sb-l">کل لغات</div></div>
-        <div class="sb g"><div class="sb-n" id="sb-learned">0</div><div class="sb-l">یاد گرفتم</div></div>
-        <div class="sb w click" onclick="sesOpenDue()"><div class="sb-n" id="sb-due">0</div><div class="sb-l">مرور ←</div></div>
-      </div>
-      <div class="streak" id="streak-row">
-        <div class="streak-left">
-          <span class="streak-n" id="streak-n">0</span>
-          <span class="streak-lbl">روز متوالی 🔥</span>
-        </div>
-        <div class="streak-dots" id="streak-dots"></div>
-      </div>
-      <div class="chart-header">
-        <span>مرور ۷ روز اخیر</span>
-        <span id="chart-sum" style="color:var(--fg4);font-size:11px"></span>
-      </div>
-      <div class="chart-box">
-        <div class="chart-grid-lines"><div class="cgl"></div><div class="cgl"></div><div class="cgl"></div></div>
-        <div class="chart-bars" id="chart"></div>
+      <div class="sc-actions">
+        <button class="sc-review-btn" id="sc-review-btn" onclick="sesOpenDue()">
+          <span id="sc-due-label">شروع مرور</span>
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7 3l3.5 3.5L7 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="sc-all-btn" onclick="sesOpen()">همه لغات</button>
       </div>
     </div>
   </div>
@@ -1264,7 +1188,6 @@ function init(){
   if(sc){ try{ Q('#drw-sync').value=sc; }catch(e){} Q('#db-status').textContent='کد: '+sc+' ✓'; }
   // load data
   dbLoad().then(()=>{ setTimeout(checkReminder,2500); if(!words.length) showSearchTip(); });
-  loadDaily(false);
   updateStreak();
   // scroll border
   window.addEventListener('scroll',()=>Q('#topbar').classList.toggle('raised',window.scrollY>4));
@@ -1542,50 +1465,42 @@ function acPick(de){ Q('#s-inp').value=de; acClose(); doSearch(); }
 function acClose(){ Q('#ac-drop').classList.remove('open'); acIdx=-1; }
 document.addEventListener('click',e=>{ if(!e.target.closest('.s-wrap')) acClose(); });
 
-/* ════════════════════
-   DAILY
-════════════════════ */
-async function loadDaily(force){
-  const c=localStorage.getItem('ws_daily');
-  if(!force&&c){ try{ const d=JSON.parse(c); if(Date.now()-d.ts<86400000){ renderDaily(d.words); return; } }catch(e){} }
-  if(!KEY||!navigator.onLine){ Q('#d-list').innerHTML='<div class="d-placeholder">API key یا اینترنت لازمه</div>'; return; }
-  Q('#d-list').innerHTML='<div class="d-placeholder">در حال بارگذاری...</div>';
-  try{
-    const known=words.slice(0,20).map(w=>w.de).join(', ');
-    const p=`۵ لغت آلمانی سطح B1 تا C2 برای محیط کار و دانشگاه پیشنهاد بده.${known?' تکرار نکن: '+known:''}
-JSON خالص: [{"de":"لغت با حرف تعریف","fa":"معنی","level":"B1/B2/C1/C2"}]
-فقط JSON.`;
-    const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
-    const ws=JSON.parse(raw);
-    localStorage.setItem('ws_daily',JSON.stringify({ts:Date.now(),words:ws}));
-    renderDaily(ws);
-  }catch(e){ Q('#d-list').innerHTML='<div class="d-placeholder">خطا در بارگذاری</div>'; }
-}
-function renderDaily(ws){
-  Q('#d-list').innerHTML=ws.map(w=>`<div class="d-item" onclick="qs('${esc(w.de)}')">`
-    +`<span class="d-de">${w.de}</span>`
-    +`<span class="d-fa">${w.fa}</span>`
-    +`<span class="d-lvl">${w.level||'B2'}</span></div>`).join('');
-}
 
 /* ════════════════════
    STATS
 ════════════════════ */
 function updateStats(){
-  const el=Q('#stats');
-  if(!words.length){ el.classList.remove('show'); return; }
-  el.classList.add('show');
+  const card=Q('#summary-card');
+  if(!words.length){ if(card) card.style.display='none'; return; }
+  if(card) card.style.display='block';
   const now=new Date();
   const due=words.filter(w=>new Date(w.next_review||0)<=now);
   const learned=words.filter(w=>w.seen>0&&w.interval>3);
-  Q('#sb-total').textContent=words.length;
-  Q('#sb-learned').textContent=learned.length;
-  Q('#sb-due').textContent=due.length;
-  const tag=Q('#due-tag');
-  if(due.length){ tag.classList.add('show'); Q('#due-n').textContent=due.length; }
-  else tag.classList.remove('show');
-  updateStreak();
-  renderChart();
+  Q('#sc-total').textContent=words.length;
+  Q('#sc-learned').textContent=learned.length;
+  // streak
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
+  let s=0; const d=new Date();
+  while(all[d.toDateString()]&&s<365){ s++; d.setDate(d.getDate()-1); }
+  Q('#sc-streak').textContent=s;
+  // streak dots (7 days)
+  const dn=['ی','د','س','چ','پ','ج','ش'];
+  const dotsEl=Q('#sc-dots');
+  if(dotsEl){
+    let html='';
+    for(let i=6;i>=0;i--){
+      const day=new Date(); day.setDate(day.getDate()-i);
+      const isT=i===0; const done=!!all[day.toDateString()];
+      html+=`<div class="scd"><div class="scd-circle ${isT?'today':done?'done':''}"></div>`
+        +`<div class="scd-lbl${isT?' t':''}">${isT?'▲':dn[day.getDay()]}</div></div>`;
+    }
+    dotsEl.innerHTML=html;
+  }
+  // review button label
+  const dueBtn=Q('#sc-due-label');
+  if(dueBtn) dueBtn.textContent=due.length>0?`مرور ${due.length} لغت سررسید`:'شروع مرور';
 }
 function updateStreak(){
   const today=new Date().toDateString();
