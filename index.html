@@ -1074,51 +1074,66 @@ body.is-offline .topbar { top:33px }
   </div>
 
 
+
   <!-- NETWORK -->
   <div class="pane" id="pane-net">
     <div class="net-head">
       <div class="net-title">شبکه لغات</div>
-      <button class="btn btn-sm" id="net-rebuild-btn" onclick="buildNetwork(true)" style="display:none">🔄 بازسازی</button>
+      <button class="btn btn-sm" id="net-rebuild-btn" onclick="buildNetwork(true)" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10 6A4 4 0 112 6M2 2.5V6h3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        بازسازی
+      </button>
     </div>
+
+    <!-- Empty -->
     <div class="empty" id="net-empty" style="display:none">
       <span class="empty-icon">🕸</span>
       <h3>شبکه خالیه</h3>
       <p>لغت اضافه کن تا شبکه ساخته بشه</p>
     </div>
+
+    <!-- Building -->
     <div id="net-building" style="display:none">
-      <div class="net-build-card">
+      <div class="net-loading">
         <div class="net-spinner"></div>
-        <div class="net-build-title">در حال ساختن شبکه...</div>
-        <div class="net-build-sub" id="net-build-sub">لغات رو آنالیز می‌کنم</div>
+        <div class="net-build-title">در حال ساختن شبکه</div>
+        <div class="net-build-sub" id="net-build-sub">لغات رو آنالیز می‌کنم...</div>
       </div>
     </div>
-    <!-- Learn suggestions -->
-    <div id="net-suggest" style="display:none">
-      <div class="suggest-card">
-        <div class="suggest-header">
-          <div class="suggest-title">💡 پیشنهاد یادگیری</div>
-          <div class="suggest-sub" id="sug-sub"></div>
+
+    <!-- Content -->
+    <div id="net-content" style="display:none">
+
+      <!-- Priority learning -->
+      <div id="net-suggest">
+        <div class="sug-banner">
+          <div class="sug-banner-title">این لغات رو یاد بگیر 💡</div>
+          <div class="sug-banner-sub" id="sug-sub">مرتبط با لغاتی که داری</div>
+          <div class="sug-list" id="sug-words"></div>
         </div>
-        <div class="suggest-words" id="sug-words"></div>
       </div>
-    </div>
-    <!-- Graph -->
-    <div class="net-graph-wrap" id="net-graph-wrap" style="display:none">
-      <div class="net-legend">
-        <span class="leg-item"><span class="leg-dot" style="background:#1847f0"></span>لغات من</span>
-        <span class="leg-item"><span class="leg-dot" style="background:#15803d"></span>مترادف</span>
-        <span class="leg-item"><span class="leg-dot" style="background:#b45309"></span>متضاد</span>
-        <span class="leg-item"><span class="leg-dot" style="background:#7c3aed"></span>هم‌خانواده</span>
+
+      <!-- Graph -->
+      <div class="net-sec" style="margin-top:var(--s2)">نقشه ارتباطات</div>
+      <div class="net-graph-card" id="net-graph-wrap">
+        <div class="net-legend">
+          <span class="leg-item"><span class="leg-dot" style="background:#1847f0"></span>لغات من</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#15803d"></span>مترادف</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#dc2626"></span>متضاد</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#7c3aed"></span>هم‌خانواده</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#b45309"></span>مرتبط</span>
+        </div>
+        <div class="net-graph-hint">کلیک روی هر لغت → جستجو</div>
+        <svg id="net-svg" class="net-svg" viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg"></svg>
       </div>
-      <svg id="net-svg" class="net-svg" viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg"></svg>
-      <div class="net-tooltip" id="net-tip" style="display:none"></div>
-    </div>
-    <!-- Clusters -->
-    <div id="net-clusters" style="display:none">
-      <div class="cluster-head">دسته‌بندی لغات</div>
-      <div id="cluster-list"></div>
+
+      <!-- Clusters -->
+      <div class="net-sec">دسته‌بندی</div>
+      <div class="clusters-wrap" id="cluster-list"></div>
+
     </div>
   </div>
+
 
   <!-- LIST -->
   <div class="pane" id="pane-list">
@@ -1826,88 +1841,96 @@ function getNetworkData(){ try{ return JSON.parse(localStorage.getItem('ws_netwo
 function saveNetworkData(d){ localStorage.setItem('ws_network',JSON.stringify(d)); }
 
 // Called after adding a word — builds relations in background silently
-async function buildWordRelations(word, meaning_fa){
+// Silent background call for single new word
+async function buildWordRelations(word, fa){
   if(!KEY||!navigator.onLine) return;
   const net=getNetworkData();
-  if(net[word]) return; // already built
+  if(net[word]) return; // cached
   try{
-    const p=`لغت آلمانی: "${word}" (معنی: ${meaning_fa})
-۶ تا لغت مرتبط آلمانی پیدا کن — از این دسته‌ها:
-- مترادف (syn): لغت با معنی مشابه
-- متضاد (ant): لغت با معنی مخالف
-- هم‌خانواده (fam): از ریشه مشترک
-- مرتبط (rel): مفهوماً نزدیک
-JSON خالص: [{"de":"لغت","fa":"معنی","type":"syn/ant/fam/rel"}]
-فقط JSON، حداکثر ۶ مورد.`;
-    const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
+    const p=`لغت آلمانی: "${word}" (${fa})
+۴ لغت مرتبط بده: مترادف(syn)، متضاد(ant)، هم‌خانواده(fam)، مرتبط(rel).
+JSON خالص: [{"de":"لغت","fa":"معنی فارسی","type":"syn/ant/fam/rel"}]
+فقط JSON.`;
+    const raw=(await ai(p,300)).replace(/```json|```/g,'').trim();
     const related=JSON.parse(raw);
-    const netData=getNetworkData();
-    netData[word]={ fa:meaning_fa, related };
-    saveNetworkData(netData);
-  }catch(e){ console.log('network build silently failed'); }
+    const d=getNetworkData(); d[word]={fa,related}; saveNetworkData(d);
+  }catch(e){}
 }
 
+// Batch build — all words in ONE API call
 async function buildNetwork(force){
   if(!words.length){ Q('#net-empty').style.display='block'; return; }
   if(!KEY||!navigator.onLine){ openNetwork(); return; }
   const net=getNetworkData();
-  const missing=words.filter(w=>!net[w.de]);
-  if(!force && missing.length===0){ openNetwork(); return; }
-  // build
+  const todo=(force?words:words.filter(w=>!net[w.de])).slice(0,15); // max 15
+  if(!force && todo.length===0){ openNetwork(); return; }
   Q('#net-building').style.display='block';
-  Q('#net-graph-wrap').style.display='none';
-  Q('#net-suggest').style.display='none';
-  Q('#net-clusters').style.display='none';
-  const todo=force?words:missing;
-  for(let i=0;i<todo.length;i++){
-    const w=todo[i];
-    Q('#net-build-sub').textContent=`(${i+1}/${todo.length}) ${w.de}`;
-    await buildWordRelations(w.de,w.fa);
-    if(i<todo.length-1) await new Promise(r=>setTimeout(r,300));
+  Q('#net-content').style.display='none';
+  Q('#net-build-sub').textContent='یه لحظه صبر کن...';
+  try{
+    const wordList=todo.map(w=>`"${w.de}" (${w.fa})`).join(', ');
+    const p=`برای هر کدوم از این لغات آلمانی، ۳ لغت مرتبط پیدا کن (مترادف/متضاد/هم‌خانواده/مرتبط).
+لغات: ${wordList}
+JSON خالص:
+{"results":{"لغت۱":[{"de":"مرتبط","fa":"معنی","type":"syn/ant/fam/rel"}],"لغت۲":[...]}}
+فقط JSON.`;
+    Q('#net-build-sub').textContent='در حال آنالیز...';
+    const raw=(await ai(p, Math.min(800+todo.length*80, 2000))).replace(/```json|```/g,'').trim();
+    const data=JSON.parse(raw);
+    const d=getNetworkData();
+    todo.forEach(w=>{
+      const related=data.results?.[w.de]||[];
+      d[w.de]={fa:w.fa,related};
+    });
+    saveNetworkData(d);
+  }catch(e){
+    // fallback: build one by one silently
+    for(const w of todo.slice(0,5)){
+      await buildWordRelations(w.de,w.fa);
+    }
   }
   Q('#net-building').style.display='none';
   openNetwork();
 }
 
 function openNetwork(){
-  if(!words.length){ Q('#net-empty').style.display='block'; Q('#net-build-btn') && (Q('#net-rebuild-btn').style.display='none'); return; }
+  if(!words.length){ Q('#net-empty').style.display='block'; Q('#net-rebuild-btn').style.display='none'; return; }
   Q('#net-empty').style.display='none';
   Q('#net-rebuild-btn').style.display='inline-flex';
   const net=getNetworkData();
   const hasData=words.some(w=>net[w.de]);
   if(!hasData){ buildNetwork(false); return; }
+  Q('#net-content').style.display='block';
   renderNetSuggest(net);
   renderNetGraph(net);
   renderNetClusters(net);
-  Q('#net-graph-wrap').style.display='block';
-  Q('#net-suggest').style.display='block';
-  Q('#net-clusters').style.display='block';
 }
 
 function renderNetSuggest(net){
-  // Find words in network but NOT in user's list
   const myWords=new Set(words.map(w=>w.de.toLowerCase()));
   const suggestions=[];
   Object.entries(net).forEach(([word,data])=>{
     (data.related||[]).forEach(r=>{
       if(!myWords.has(r.de.toLowerCase())&&r.de.length>1){
-        const existing=suggestions.find(s=>s.de.toLowerCase()===r.de.toLowerCase());
-        if(!existing) suggestions.push({...r,from:word,count:1});
-        else existing.count++;
+        const ex=suggestions.find(s=>s.de.toLowerCase()===r.de.toLowerCase());
+        if(!ex) suggestions.push({...r,count:1});
+        else ex.count++;
       }
     });
   });
-  // Sort by count (most connected = most important)
   suggestions.sort((a,b)=>b.count-a.count);
   const top=suggestions.slice(0,5);
-  if(!top.length){ Q('#net-suggest').style.display='none'; return; }
-  Q('#sug-sub').textContent=`${top.length} لغت که باید یاد بگیری`;
+  const sugEl=Q('#net-suggest');
+  if(!top.length){ sugEl.style.display='none'; return; }
+  sugEl.style.display='block';
+  const typeLabel={syn:'مترادف',ant:'متضاد',fam:'هم‌خانواده',rel:'مرتبط'};
+  Q('#sug-sub').textContent=`${top.length} لغت مرتبط با یادگیری‌هات`;
   Q('#sug-words').innerHTML=top.map((s,i)=>`
-    <div class="sug-item" onclick="qs('${esc(s.de)}')">
+    <div class="sug-row" onclick="qs('${esc(s.de)}')">
       <span class="sug-de">${s.de}</span>
-      <span class="sug-why">${s.fa}</span>
-      <span class="sug-rel ${s.type}">${{syn:'مترادف',ant:'متضاد',fam:'هم‌خانواده',rel:'مرتبط'}[s.type]||'مرتبط'}</span>
-      <button class="sug-add" id="sug-${i}" onclick="event.stopPropagation();addSugWord(${i},'${esc(s.de)}','${esc(s.fa)}')">+ اضافه</button>
+      <span class="sug-fa">${s.fa||''}</span>
+      <span class="sug-type">${typeLabel[s.type]||'مرتبط'}</span>
+      <button class="sug-plus" id="sug-${i}" onclick="event.stopPropagation();addSugWord(${i},'${esc(s.de)}','${esc(s.fa||'')}')" title="اضافه کردن">＋</button>
     </div>`).join('');
 }
 
@@ -1920,65 +1943,64 @@ async function addSugWord(i,de,fa){
 }
 
 function renderNetGraph(net){
-  const svg=Q('#net-svg');
-  if(!svg) return;
-  const W=700, H=480;
+  const svg=Q('#net-svg'); if(!svg)return;
+  const W=700,H=480;
   const myWords=new Set(words.map(w=>w.de));
-  // Build nodes & edges
-  const nodes=[]; const edges=[]; const nodeMap={};
-  const COLORS={mine:'#1847f0',syn:'#15803d',ant:'#dc2626',fam:'#7c3aed',rel:'#b45309'};
-  // Add user words as main nodes
-  words.slice(0,20).forEach((w,i)=>{
-    const angle=(i/Math.min(words.length,20))*2*Math.PI;
-    const r=Math.min(W,H)*0.32;
-    const x=W/2+r*Math.cos(angle-Math.PI/2);
-    const y=H/2+r*Math.sin(angle-Math.PI/2);
-    nodes.push({id:w.de,fa:w.fa,x,y,type:'mine',size:22});
-    nodeMap[w.de]={x,y};
+  const C={mine:'#1847f0',syn:'#15803d',ant:'#dc2626',fam:'#7c3aed',rel:'#b45309'};
+  const nodes=[],edges=[],nm={};
+
+  // Main nodes — user's words in circle
+  const mw=words.slice(0,18);
+  mw.forEach((w,i)=>{
+    const a=(i/mw.length)*2*Math.PI-Math.PI/2;
+    const r=Math.min(W,H)*0.3;
+    const x=W/2+r*Math.cos(a), y=H/2+r*Math.sin(a);
+    nodes.push({id:w.de,fa:w.fa,x,y,type:'mine',big:true});
+    nm[w.de]={x,y};
   });
-  // Add related nodes
-  const relAdded=new Set(words.map(w=>w.de));
-  words.slice(0,20).forEach(w=>{
-    const data=net[w.de]; if(!data) return;
-    (data.related||[]).slice(0,3).forEach((r,j)=>{
-      if(!relAdded.has(r.de)){
-        const parent=nodeMap[w.de];
-        const angle=((j/3)*2*Math.PI)+(Object.keys(nodeMap).indexOf(w.de)/20)*2*Math.PI;
-        const dist=80+Math.random()*30;
-        const x=Math.max(60,Math.min(W-60,(parent?.x||W/2)+dist*Math.cos(angle)));
-        const y=Math.max(40,Math.min(H-40,(parent?.y||H/2)+dist*Math.sin(angle)));
-        nodes.push({id:r.de,fa:r.fa,x,y,type:r.type,size:16});
-        nodeMap[r.de]={x,y};
-        relAdded.add(r.de);
+
+  // Related nodes
+  const added=new Set(words.map(w=>w.de));
+  mw.forEach((w,wi)=>{
+    const d=net[w.de]; if(!d)return;
+    (d.related||[]).slice(0,3).forEach((r,ri)=>{
+      if(!added.has(r.de)){
+        const p=nm[w.de];
+        const a=((ri/3)*2*Math.PI)+((wi/mw.length)*2*Math.PI)+0.5;
+        const dist=75+ri*10;
+        const x=Math.max(55,Math.min(W-55,(p?.x||W/2)+dist*Math.cos(a)));
+        const y=Math.max(35,Math.min(H-35,(p?.y||H/2)+dist*Math.sin(a)));
+        nodes.push({id:r.de,fa:r.fa,x,y,type:r.type,big:false});
+        nm[r.de]={x,y}; added.add(r.de);
       }
-      if(nodeMap[r.de]) edges.push({from:w.de,to:r.de,type:r.type});
+      if(nm[r.de]) edges.push({from:w.de,to:r.de,type:r.type});
     });
   });
-  // Render SVG
-  let svgContent='';
-  // edges
+
+  // SVG
+  let out='<defs><filter id="nshadow"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity=".15"/></filter></defs>';
+  // Edges
   edges.forEach(e=>{
-    const f=nodeMap[e.from], t=nodeMap[e.to]; if(!f||!t)return;
-    const c=COLORS[e.type]||COLORS.rel;
-    svgContent+=`<line class="net-edge" x1="${f.x}" y1="${f.y}" x2="${t.x}" y2="${t.y}" stroke="${c}" stroke-width="1.5"/>`;
+    const f=nm[e.from],t=nm[e.to]; if(!f||!t)return;
+    const c=C[e.type]||C.rel;
+    const mx=(f.x+t.x)/2, my=(f.y+t.y)/2;
+    out+=`<path d="M${f.x},${f.y} Q${mx+20},${my-20} ${t.x},${t.y}" fill="none" stroke="${c}" stroke-width="1.5" stroke-opacity=".3" stroke-dasharray="${e.type==='ant'?'4 3':'none'}"/>`;
   });
-  // nodes
+  // Nodes
   nodes.forEach(n=>{
-    const c=COLORS[n.type]||COLORS.mine;
-    const isMine=myWords.has(n.id);
-    const textLen=n.id.length;
-    const fontSize=textLen>12?9:textLen>8?10:11;
-    svgContent+=`<g class="net-node" onclick="netNodeClick('${esc(n.id)}')" transform="translate(${n.x},${n.y})">
-      <circle r="${n.size}" fill="${c}" fill-opacity="${isMine?1:.7}" stroke="var(--card)" stroke-width="2"/>
-      <text y="${n.size+12}" text-anchor="middle" font-size="${fontSize}" fill="var(--fg)" font-family="var(--sans)">${n.id.length>14?n.id.slice(0,12)+'…':n.id}</text>
+    const c=C[n.type]||C.mine;
+    const r=n.big?20:14;
+    const lbl=n.id.length>10?n.id.slice(0,9)+'…':n.id;
+    const fs=n.id.length>8?8.5:9.5;
+    out+=`<g class="net-node" onclick="netNodeClick('${esc(n.id)}')" style="cursor:pointer">
+      <circle cx="${n.x}" cy="${n.y}" r="${r}" fill="${c}" fill-opacity="${n.big?1:.72}"
+        stroke="var(--card)" stroke-width="${n.big?2.5:2}" filter="url(#nshadow)"/>
+      <text x="${n.x}" y="${n.y+r+11}" text-anchor="middle"
+        font-size="${fs}" fill="var(--fg)" opacity=".8">${lbl}</text>
+      ${n.big?`<text x="${n.x}" y="${n.y+3.5}" text-anchor="middle" font-size="8" fill="white" opacity=".85">${n.id.slice(0,6)}</text>`:''}
     </g>`;
   });
-  svg.innerHTML=svgContent;
-  // Simple pan
-  let drag=false,ox=0,oy=0,vx=0,vy=0;
-  svg.addEventListener('mousedown',e=>{drag=true;ox=e.clientX-vx;oy=e.clientY-vy;});
-  svg.addEventListener('mousemove',e=>{ if(!drag)return; vx=e.clientX-ox; vy=e.clientY-oy; svg.style.transform=`translate(${vx*.15}px,${vy*.15}px)`; });
-  svg.addEventListener('mouseup',()=>drag=false);
+  svg.innerHTML=out;
 }
 
 function netNodeClick(de){
@@ -1988,31 +2010,28 @@ function netNodeClick(de){
 }
 
 function renderNetClusters(net){
-  // Group words by semantic clusters using their relations
-  const CLUSTER_COLORS=['#1847f0','#15803d','#b45309','#7c3aed','#dc2626','#0891b2'];
+  const COLORS=['#1847f0','#15803d','#b45309','#7c3aed','#dc2626','#0891b2'];
+  const NAMES={syn:'مترادف‌ها',ant:'متضادها',fam:'خانواده لغوی',rel:'لغات موضوعی'};
   const clusters={};
   words.forEach(w=>{
     const data=net[w.de];
-    if(!data||!data.related?.length){ 
-      if(!clusters['سایر']) clusters['سایر']=[];
-      clusters['سایر'].push(w.de);
-      return;
+    if(!data||!data.related?.length){
+      (clusters['سایر']||(clusters['سایر']=[])).push(w.de); return;
     }
-    // Simple clustering: group by most common type of relations
     const types=data.related.map(r=>r.type);
-    const dominant=types.sort((a,b)=>types.filter(t=>t===b).length-types.filter(t=>t===a).length)[0];
-    const clusterName={syn:'گروه مترادف‌ها',ant:'گروه متضادها',fam:'خانواده‌های لغوی',rel:'لغات موضوعی'}[dominant]||'سایر';
-    if(!clusters[clusterName]) clusters[clusterName]=[];
-    clusters[clusterName].push(w.de);
+    const dominant=Object.entries(types.reduce((a,t)=>(a[t]=(a[t]||0)+1,a),{})).sort((a,b)=>b[1]-a[1])[0]?.[0]||'rel';
+    const name=NAMES[dominant]||'سایر';
+    (clusters[name]||(clusters[name]=[])).push(w.de);
   });
   const entries=Object.entries(clusters).filter(([,v])=>v.length>0);
   Q('#cluster-list').innerHTML=entries.map(([name,ws],i)=>`
-    <div class="cluster">
-      <div class="cluster-title">
-        <span class="cluster-dot" style="background:${CLUSTER_COLORS[i%CLUSTER_COLORS.length]}"></span>
-        ${name} <span style="font-size:12px;color:var(--fg3);font-family:var(--sans)">(${ws.length})</span>
+    <div class="cluster-card">
+      <div class="cluster-header">
+        <span class="cluster-color" style="background:${COLORS[i%COLORS.length]}"></span>
+        <span class="cluster-name">${name}</span>
+        <span class="cluster-count">${ws.length} لغت</span>
       </div>
-      <div class="cluster-chips">
+      <div class="cluster-body">
         ${ws.map(de=>`<span class="cluster-chip" onclick="qs('${esc(de)}')">${de}</span>`).join('')}
       </div>
     </div>`).join('');
