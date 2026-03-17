@@ -604,6 +604,18 @@ body.offline .topbar{top:33px}
   .ses-act{padding:12px var(--s2)}
   .np{padding:5px 10px;font-size:11px}
 }
+
+/* Phrase result - new design */
+.ph-meaning{font-size:22px;font-weight:600;color:#fff;margin-top:var(--s2);line-height:1.3}
+.ph-synonym{font-size:13px;color:rgba(255,255,255,.6);margin-top:var(--s1)}
+.ph-add-btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);
+  margin:var(--s4) var(--s6) var(--s5);padding:12px;
+  border-radius:var(--r2);background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);color:#fff;
+  font-family:var(--sans);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .18s}
+.ph-add-btn:hover{background:rgba(255,255,255,.2)}
+.ph-add-btn.done{background:rgba(26,138,74,.3);border-color:rgba(26,138,74,.5)}
 </style>
 </head>
 <body>
@@ -819,8 +831,15 @@ body.offline .topbar{top:33px}
     </div>
     <!-- Phrase result -->
     <div class="phrase-res" id="phrase-res">
-      <div class="ph-banner"><div class="ph-orig" id="ph-orig"></div><div class="ph-tr" id="ph-tr"></div></div>
-      <div class="ph-body" id="ph-body"></div>
+      <div class="ph-banner">
+        <div class="ph-orig" id="ph-orig"></div>
+        <div class="ph-meaning" id="ph-meaning"></div>
+        <div class="ph-synonym" id="ph-synonym"></div>
+      </div>
+      <button class="ph-add-btn" id="ph-add-btn" onclick="addPhrase()">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        افزودن کل عبارت به فلش‌کارت‌ها
+      </button>
     </div>
     <!-- Reminder -->
     <div class="reminder" id="reminder">
