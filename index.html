@@ -1515,22 +1515,26 @@ async function ai(prompt,tokens=900){
 
   if(r.status===429){
     const d=await r.json().catch(()=>({}));
-    userSearchCount=FREE_LIMIT; // نشون بده تموم شده
+    userSearchCount=FREE_LIMIT;
     updateFreeBanner();
-    throw new Error(d.message||'سقف روزانه تموم شد');
+    throw new Error(d.message||`${FREE_LIMIT} جستجوی رایگان تموم شد`);
   }
   if(!r.ok) throw new Error('HTTP '+r.status);
 
   const d=await r.json();
   if(d.error) throw new Error(d.error);
 
-  // آپدیت local counter از header
-  const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
-  const limit=parseInt(r.headers.get('X-RateLimit-Limit')||String(FREE_LIMIT));
-  const remaining=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
-  if(used>0){ userSearchCount=used; updateFreeBanner(); }
-  if(remaining===5) showToast('⚠ فقط ۵ جستجو تا سقف امروز مونده');
-  else if(remaining===0) showToast('سقف روزانه تموم شد 😔');
+  // آپدیت از header — این مقدار از Supabase میاد (دقیق)
+  const usedHeader=r.headers.get('X-RateLimit-Used');
+  const remainingHeader=r.headers.get('X-RateLimit-Remaining');
+  if(usedHeader){
+    userSearchCount=parseInt(usedHeader)||userSearchCount;
+    updateFreeBanner();
+  }
+  const remaining=parseInt(remainingHeader||'99');
+  if(remaining===10) showToast('⚠ فقط ۱۰ جستجو تا سقف مونده');
+  else if(remaining===5) showToast('⚠ فقط ۵ جستجو مونده');
+  else if(remaining===0) showToast('جستجوی رایگان تموم شد 😔');
 
   return d.content.map(b=>b.text||'').join('').trim();
 }
@@ -1668,16 +1672,13 @@ async function init(){
       setUserUI(session.user);
       hideGate();
       await dbLoad();
-      await loadProfile();
+      await loadProfile(); // هر بار — از Supabase می‌خونه
       setTimeout(checkReminder,2500);
     } else {
-      // logout یا session expire
-      currentUser=null;
-      words=[];
+      currentUser=null; words=[]; userSearchCount=0; userPlan='free';
       saveCache();
       setUserUI(null);
-      updateBadges();
-      updateStats();
+      updateBadges(); updateStats();
       showGate();
     }
   });
