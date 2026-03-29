@@ -1010,6 +1010,37 @@ body.offline .topbar{top:36px}
   </div>
 </div>
 
+<!-- Upgrade Modal -->
+<div class="modal-bg" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:360px">
+    <div style="text-align:center;margin-bottom:var(--s5)">
+      <div style="font-size:40px;margin-bottom:var(--s3)">✨</div>
+      <div class="modal-title" style="font-size:22px">Wortschatz Pro</div>
+      <div style="font-size:28px;font-weight:700;color:var(--accent);margin:var(--s3) 0">€4.99<span style="font-size:14px;font-weight:400;color:var(--ink3)">/ماه</span></div>
+    </div>
+    <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s5)">
+      <div style="display:flex;flex-direction:column;gap:var(--s3);font-size:14px;color:var(--ink2)">
+        <div>✅ جستجوی نامحدود</div>
+        <div>✅ لغت نامحدود</div>
+        <div>✅ sync روی همه دستگاه‌ها</div>
+        <div>✅ پشتیبانی اولویت‌دار</div>
+      </div>
+    </div>
+    <button class="btn btn-p btn-full" style="margin-bottom:var(--s4)" onclick="showToast('به‌زودی 🚀');Q(\'#upgrade-modal\').classList.remove(\'open\')">
+      شروع اشتراک Pro
+    </button>
+    <div class="drw-divider"></div>
+    <div style="margin-top:var(--s4)">
+      <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:var(--s2)">کد بتا داری؟</div>
+      <div style="display:flex;gap:var(--s2)">
+        <input class="inp ltr" id="beta-code-inp" placeholder="BETA-XXXX" style="margin:0;flex:1;text-transform:uppercase">
+        <button class="btn btn-p btn-sm" onclick="redeemBeta()">فعال کن</button>
+      </div>
+      <div style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px" id="beta-code-err"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Confirm Modal -->
 <div class="modal-bg" id="confirm-modal">
   <div class="modal" style="max-width:320px">
@@ -1337,7 +1368,8 @@ const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 const { createClient } = window.supabase;
 const sb = createClient(SB_URL, SB_KEY);
 
-const FREE_LIMIT = 50;      // کل جستجو در نسخه رایگان
+const FREE_LIMIT = 10;      // کل جستجو در نسخه رایگان
+const BETA_LIMIT = 500;     // جستجو برای beta users
 const WORD_LIMIT = 500;     // لغت قابل ذخیره
 
 /* ══════════════════════════════
@@ -1466,27 +1498,57 @@ function canAddMore(){
 function updateFreeBanner(){
   const b=Q('#free-banner'),t=Q('#free-banner-text');
   if(!b||!t)return;
-  if(userPlan==='pro'){b.style.display='none';return;}
+  if(userPlan==='pro'||userPlan==='beta'){b.style.display='none';return;}
 
   const used=userSearchCount;
   const left=FREE_LIMIT-used;
 
   if(left<=0){
     b.className='free-banner warn';
-    t.innerHTML=`${FREE_LIMIT} جستجوی رایگان تموم شد. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
-  } else if(left<=10){
+    t.innerHTML=`${FREE_LIMIT} جستجوی رایگان تموم شد. <a onclick="showUpgrade()">Pro — €4.99/ماه ←</a>`;
+  } else if(left<=3){
     b.className='free-banner warn';
-    t.innerHTML=`${used}/${FREE_LIMIT} جستجو — فقط ${left} تا مونده. <a onclick="showUpgrade()">Pro ←</a>`;
+    t.innerHTML=`${used}/${FREE_LIMIT} جستجو — فقط ${left} تا مونده! <a onclick="showUpgrade()">Pro ←</a>`;
   } else {
     b.className='free-banner';
-    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجو استفاده شده`;
+    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجو — <a onclick="showUpgrade()">ارتقا به Pro</a>`;
   }
   b.style.display='flex';
   updateDrawerPlan();
 }
 
 function showUpgrade(){
-  showToast('به‌زودی: پلن Pro 🚀');
+  // modal upgrade رو نشون بده
+  Q('#upgrade-modal').classList.add('open');
+}
+
+async function redeemBeta(){
+  const input=Q('#beta-code-inp');
+  const code=(input?.value||'').trim().toUpperCase();
+  if(!code){showToast('کد رو وارد کن');return;}
+  if(!currentUser){showToast('اول وارد شو');return;}
+
+  const errEl=Q('#beta-code-err');
+  if(errEl) errEl.textContent='';
+
+  try{
+    const{data,error}=await sb.rpc('redeem_beta_code',{
+      p_code: code,
+      p_user_id: currentUser.id
+    });
+    if(error) throw error;
+    if(data?.success){
+      showToast('✅ کد بتا فعال شد! جستجو نامحدود داری.');
+      userPlan='beta';
+      Q('#upgrade-modal').classList.remove('open');
+      updateFreeBanner();
+      updateDrawerPlan();
+    } else {
+      if(errEl) errEl.textContent=data?.error||'کد معتبر نیست';
+    }
+  }catch(e){
+    if(errEl) errEl.textContent='خطا — دوباره امتحان کن';
+  }
 }
 
 function updateDrawerPlan(){
