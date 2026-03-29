@@ -1433,12 +1433,23 @@ async function dbClear(){
 async function loadProfile(){
   if(!currentUser)return;
   try{
-    const{data}=await sb.from('profiles')
+    let{data,error}=await sb.from('profiles')
       .select('plan,word_count,search_count')
-      .eq('id',currentUser.id).single();
+      .eq('id',currentUser.id)
+      .single();
+
+    // اگه profile نداشت بساز
+    if(error||!data){
+      const{data:newData}=await sb.from('profiles')
+        .upsert({id:currentUser.id,plan:'free',word_count:0,search_count:0})
+        .select('plan,word_count,search_count')
+        .single();
+      data=newData;
+    }
+
     if(data){
       userPlan=data.plan||'free';
-      userWordCount=(data.word_count!=null)?data.word_count:words.length;
+      userWordCount=data.word_count||0;
       userSearchCount=data.search_count||0;
       updateFreeBanner();
       updateDrawerPlan();
@@ -1578,8 +1589,15 @@ function confirmClose(){
 }
 
 async function logout(){
-  try{ await sb.auth.signOut(); }catch(e){}
-  window.location.href = window.location.pathname;
+  try{ await sb.auth.signOut({scope:'global'}); }catch(e){}
+  // پاک کردن همه storage
+  localStorage.clear();
+  sessionStorage.clear();
+  // پاک کردن cookies
+  document.cookie.split(';').forEach(c=>{
+    document.cookie=c.replace(/^ +/,'').replace(/=.*/,'=;expires='+new Date().toUTCString()+';path=/');
+  });
+  window.location.reload();
 }
 
 async function clearAll(){
