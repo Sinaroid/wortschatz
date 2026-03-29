@@ -1406,14 +1406,17 @@ async function dbClear(){
 async function loadProfile(){
   if(!currentUser)return;
   try{
-    const{data}=await sb.from('profiles').select('plan,word_count').eq('id',currentUser.id).single();
+    const{data}=await sb.from('profiles')
+      .select('plan,word_count,is_beta,search_count')
+      .eq('id',currentUser.id).single();
     if(data){
-      userPlan=data.is_beta?'beta':(data.plan||'free');
-      userWordCount=data.word_count||words.length;
+      userPlan = data.is_beta ? 'beta' : (data.plan||'free');
+      userWordCount = data.word_count||0;
+      userSearchCount = data.search_count||0;
       updateFreeBanner();
       updateDrawerPlan();
     }
-  }catch(e){}
+  }catch(e){console.error('loadProfile:',e);}
 }
 
 function canAddMore(){
