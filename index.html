@@ -1560,18 +1560,27 @@ async function init(){
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
-    if(event==='SIGNED_IN' && session?.user && !currentUser){
-      setUserUI(session.user);
-      hideGate();
-      await dbLoad();
-      await loadProfile();
-      setTimeout(checkReminder,2500);
-      const sc=localStorage.getItem('ws_sync');
-      if(sc&&Q('#drw-sync'))Q('#drw-sync').value=sc;
-    } else {
+    if(session?.user){
+      // هر event که session داشت — login یا refresh
+      if(!currentUser){
+        // اولین بار login شد
+        setUserUI(session.user);
+        hideGate();
+        await dbLoad();
+        await loadProfile();
+        setTimeout(checkReminder,2500);
+      } else {
+        // session refresh — فقط user رو update کن
+        setUserUI(session.user);
+      }
+    } else if(event==='SIGNED_OUT'){
+      // فقط وقتی واقعاً logout شد
+      currentUser=null; words=[]; userSearchCount=0; userPlan='free';
       setUserUI(null);
+      updateBadges(); updateStats();
       showGate();
     }
+    // بقیه events (PASSWORD_RECOVERY, etc) رو ignore کن
   });
 
   window.addEventListener('scroll',()=>Q('#topbar')?.classList.toggle('raised',window.scrollY>4));
