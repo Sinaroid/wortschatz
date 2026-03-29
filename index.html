@@ -1394,17 +1394,18 @@ async function dbLoad(){
 }
 
 async function dbAdd(w){
+  if(!currentUser?.id){ console.warn('dbAdd: no user'); return; }
   try{
     const{data,error}=await sb.from('words').insert({
-      user_id:uid(),de:w.de,fa:w.fa,ex:w.ex||'',
-      score:0,seen:0,interval:1,easiness:2.5,
+      user_id: currentUser.id,
+      de:w.de, fa:w.fa, ex:w.ex||'',
+      score:0, seen:0, interval:1, easiness:2.5,
       next_review:new Date().toISOString()
     }).select().single();
-    if(error)throw error;
-    if(data)w.id=data.id;
-    userWordCount++;
+    if(error){ console.error('dbAdd error:', error.message); return; }
+    if(data) w.id=data.id;
     updateFreeBanner();
-  }catch(e){console.error(e);}
+  }catch(e){ console.error('dbAdd exception:', e); }
 }
 
 async function dbUpd(w){
@@ -1574,10 +1575,17 @@ async function logout(){
     okLabel: 'بله، خروج',
     okClass: 'btn-p',
     onOk: async ()=>{
-      await sb.auth.signOut();
-      currentUser=null; words=[];
-      updateBadges(); updateStats();
-      drawerClose(); showGate();
+      drawerClose();
+      try{
+        await sb.auth.signOut();
+        // onAuthStateChange handles the rest
+      } catch(e){
+        // force manual cleanup if signOut fails
+        currentUser=null; words=[];
+        setUserUI(null);
+        updateBadges(); updateStats();
+        showGate();
+      }
     }
   });
 }
@@ -1674,10 +1682,14 @@ async function init(){
       await dbLoad();
       await loadProfile();
       setTimeout(checkReminder,2500);
-      const sc=localStorage.getItem('ws_sync');
-      if(sc&&Q('#drw-sync'))Q('#drw-sync').value=sc;
     } else {
+      // logout یا session expire
+      currentUser=null;
+      words=[];
+      saveCache();
       setUserUI(null);
+      updateBadges();
+      updateStats();
       showGate();
     }
   });
