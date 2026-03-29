@@ -1318,35 +1318,20 @@ async function searchWord(q){
   const ck='wc_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
-  const p=`ورودی: "${q}"
-ممکنه آلمانی، فارسی یا انگلیسی باشه:
-- آلمانی (یا تایپ انگلیسی): تصحیح کن (ae→ä, oe→ö, ue→ü, ss→ß)
-- فارسی یا انگلیسی: معادل آلمانی پیدا کن
-
-JSON خالص بدون backtick — دقیقاً این ساختار:
-{
-  "word": "لغت بدون حرف تعریف",
-  "corrected_from": "null یا لغت اصلی قبل از تصحیح",
-  "article": "der/die/das یا null",
-  "plural": "جمع یا null",
-  "type": "Nomen/Verb/Adjektiv/Adverb/Redewendung",
-  "level": "A1/A2/B1/B2/C1/C2",
-  "meaning_fa": "معنی فارسی — دقیق، کامل، اگر چند معنی دارد با / جدا کن",
-  "usage_pattern": "الگو مثل: sich engagieren für+Akk یا jdm etw. geben — null اگه ندارد",
-  "preposition": "حرف اضافه اصلی مثل auf+Akk یا null",
-  "synonyms": ["مترادف۱", "مترادف۲"],
-  "antonyms": ["متضاد۱"],
-  "conjugation": {"ich": "...", "du": "...", "er": "..."} ,
-  "examples": [
-    {"de": "جمله نمونه اول — طبیعی و کاربردی", "fa": "ترجمه فارسی"},
-    {"de": "جمله نمونه دوم — موقعیت متفاوت", "fa": "ترجمه فارسی"}
-  ],
-  "grammar_tip": "نکته گرامری مهم به فارسی — اگر ندارد null",
-  "priority": {"score": 3, "reason": "یه جمله کوتاه فارسی — چرا مهمه"}
-}
-قوانین: اگه Verb نیست conjugation=null. اگه Nomen نیست plural=null.
-priority.score: 5=روزمره/حیاتی، 4=خیلی مهم(B1/B2)، 3=مهم، 2=متوسط، 1=نادر/فنی
-فقط JSON. بدون توضیح اضافه.`;
+  const schema = '{"word":"...","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق","usage_pattern":"الگو مثل sich engagieren fur+Akk یا null","preposition":"حرف اضافه یا null","synonyms":["s1"],"antonyms":["a1"],"conjugation":{"ich":"...","du":"...","er":"..."},"examples":[{"de":"جمله اول","fa":"ترجمه"},{"de":"جمله دوم","fa":"ترجمه"}],"grammar_tip":"نکته گرامری یا null","priority":{"score":3,"reason":"چرا مهمه"}}';
+  const p='ورودی: "'+q+'"\n'
+   +'ممکنه آلمانی، فارسی یا انگلیسی باشه.\n'
+   +'آلمانی یا تایپ انگلیسی: تصحیح کن (ae→ä, oe→ö, ue→ü, ss→ß)\n'
+   +'فارسی یا انگلیسی: معادل آلمانی پیدا کن\n\n'
+   +'JSON خالص (بدون markdown):\n'
+   +schema+'\n\n'
+   +'قوانین:\n'
+   +'- اگه Verb نیست conjugation=null\n'
+   +'- اگه Nomen نیست plural=null\n'
+   +'- meaning_fa: اگر چند معنی دارد با / جدا کن\n'
+   +'- usage_pattern: الگوی دقیق مثل sich engagieren fur+Akk یا jdm etw. geben\n'
+   +'- priority.score: 5=روزمره/حیاتی، 4=خیلی مهم(B1/B2)، 3=مهم، 2=متوسط، 1=نادر\n'
+   +'فقط JSON.';
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
   try{
@@ -1574,6 +1559,8 @@ setInterval(checkReminder,60000);
 ══════════════════════════════ */
 const SESSION_SIZE = 10;
 const MAX_NEW = 3;
+
+function buildSmartDeck(){
   const now = new Date();
   const due   = words.filter(w => new Date(w.next_review||0) <= now)
                      .sort((a,b) => new Date(a.next_review) - new Date(b.next_review));
