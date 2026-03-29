@@ -1337,7 +1337,8 @@ const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 const { createClient } = window.supabase;
 const sb = createClient(SB_URL, SB_KEY);
 
-const FREE_LIMIT = 50;
+const FREE_LIMIT = 50;      // جستجو در روز
+const WORD_LIMIT = 200;     // لغت قابل ذخیره (نامحدود عملاً)
 
 /* ══════════════════════════════
    STATE
@@ -1349,6 +1350,7 @@ let sesRepeat=new Set();
 let currentUser=null;
 let userPlan='free';
 let userWordCount=0;
+let userSearchCount=0;
 
 /* ══════════════════════════════
    HELPERS
@@ -1431,22 +1433,27 @@ async function dbClear(){
 async function loadProfile(){
   if(!currentUser)return;
   try{
-    const{data}=await sb.from('profiles').select('plan,word_count').eq('id',currentUser.id).single();
+    const{data}=await sb.from('profiles')
+      .select('plan,word_count,search_count,search_reset_at')
+      .eq('id',currentUser.id).single();
     if(data){
       userPlan=data.plan||'free';
-      // word_count از Supabase — trigger auto-update می‌کنه
-      userWordCount = (data.word_count != null) ? data.word_count : words.length;
+      userWordCount=data.word_count||words.length;
+      userSearchCount=data.search_count||0;
+      // اگه reset_at گذشته، count محلی رو صفر کن
+      if(data.search_reset_at && new Date()>new Date(data.search_reset_at)){
+        userSearchCount=0;
+      }
       updateFreeBanner();
       updateDrawerPlan();
     }
-  }catch(e){ console.error('loadProfile:', e); }
+  }catch(e){ console.error('loadProfile:',e); }
 }
 
 function canAddMore(){
+  // ذخیره لغت محدودیت جداگانه داره — فعلاً بدون محدودیت برای free
   if(userPlan==='pro') return true;
-  // از word_count Supabase بخون — با پاک کردن لغات reset نمیشه
-  // userWordCount از loadProfile پر میشه
-  return userWordCount < FREE_LIMIT;
+  return words.length < WORD_LIMIT;
 }
 
 function updateFreeBanner(){
@@ -1454,19 +1461,19 @@ function updateFreeBanner(){
   if(!b||!t)return;
   if(userPlan==='pro'){b.style.display='none';return;}
 
-  // از words.length بخون — source of truth
-  const used = words.length;
-  const left = FREE_LIMIT - used;
+  // banner جستجو رو نشون بده
+  const used=userSearchCount;
+  const left=FREE_LIMIT-used;
 
   if(left<=0){
     b.className='free-banner warn';
-    t.innerHTML=`به سقف ${FREE_LIMIT} لغت رسیدی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
+    t.innerHTML=`سقف ${FREE_LIMIT} جستجوی امروز تموم شد. <a onclick="showUpgrade()">Pro ←</a>`;
   } else if(left<=10){
     b.className='free-banner warn';
-    t.innerHTML=`${used}/${FREE_LIMIT} لغت — فقط ${left} تا مونده. <a onclick="showUpgrade()">Pro ←</a>`;
+    t.innerHTML=`${used}/${FREE_LIMIT} جستجو امروز — ${left} تا مونده. <a onclick="showUpgrade()">Pro ←</a>`;
   } else {
     b.className='free-banner';
-    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} لغت`;
+    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجوی امروز`;
   }
   b.style.display='flex';
   updateDrawerPlan();
@@ -1513,6 +1520,8 @@ async function ai(prompt,tokens=900){
 
   if(r.status===429){
     const d=await r.json().catch(()=>({}));
+    userSearchCount=FREE_LIMIT; // نشون بده تموم شده
+    updateFreeBanner();
     throw new Error(d.message||'سقف روزانه تموم شد');
   }
   if(!r.ok) throw new Error('HTTP '+r.status);
@@ -1520,9 +1529,12 @@ async function ai(prompt,tokens=900){
   const d=await r.json();
   if(d.error) throw new Error(d.error);
 
-  // warn when running low
+  // آپدیت local counter از header
+  const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
+  const limit=parseInt(r.headers.get('X-RateLimit-Limit')||String(FREE_LIMIT));
   const remaining=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
-  if(remaining===3) showToast('۳ جستجو تا سقف روزانه مونده');
+  if(used>0){ userSearchCount=used; updateFreeBanner(); }
+  if(remaining===5) showToast('⚠ فقط ۵ جستجو تا سقف امروز مونده');
   else if(remaining===0) showToast('سقف روزانه تموم شد 😔');
 
   return d.content.map(b=>b.text||'').join('').trim();
