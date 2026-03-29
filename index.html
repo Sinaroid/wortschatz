@@ -1431,20 +1431,27 @@ function updateFreeBanner(){
   const b=Q('#free-banner'),t=Q('#free-banner-text');
   if(!b||!t)return;
   if(userPlan==='pro'){b.style.display='none';return;}
-  const left=FREE_LIMIT-userWordCount;
-  if(left>5){
-    b.className='free-banner';
-    t.innerHTML=`پلن رایگان: ${userWordCount}/${FREE_LIMIT} لغت استفاده شده. `;
-    b.style.display='flex';
-  } else if(left>0){
-    b.className='free-banner warn';
-    t.innerHTML=`فقط ${left} لغت دیگه می‌تونی اضافه کنی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
-    b.style.display='flex';
-  } else {
+
+  // همیشه از words.length بخون — دقیق‌ترین مقدار
+  const used = words.length;
+  userWordCount = used; // sync state
+  const left = FREE_LIMIT - used;
+  const pct  = Math.round(used/FREE_LIMIT*100);
+
+  if(left<=0){
     b.className='free-banner warn';
     t.innerHTML=`به سقف ${FREE_LIMIT} لغت رسیدی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
-    b.style.display='flex';
+  } else if(left<=10){
+    b.className='free-banner warn';
+    t.innerHTML=`${used}/${FREE_LIMIT} لغت — فقط ${left} تا مونده. <a onclick="showUpgrade()">Pro ←</a>`;
+  } else {
+    b.className='free-banner';
+    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} لغت استفاده شده`;
   }
+  b.style.display='flex';
+
+  // drawer رو هم آپدیت کن
+  updateDrawerPlan();
 }
 
 function showUpgrade(){
@@ -1453,18 +1460,19 @@ function showUpgrade(){
 
 function updateDrawerPlan(){
   const isPro = userPlan==='pro';
-  const badge=Q('#drw-plan-badge');
-  const label=Q('#drw-plan-label');
-  const fill=Q('#drw-plan-fill');
-  const count=Q('#drw-word-count');
-  const upgradeBtn=Q('#drw-upgrade-btn');
-  const barWrap=Q('#drw-plan-bar-wrap');
+  const used  = words.length;
+  const badge    = Q('#drw-plan-badge');
+  const label    = Q('#drw-plan-label');
+  const fill     = Q('#drw-plan-fill');
+  const count    = Q('#drw-word-count');
+  const upgradeBtn = Q('#drw-upgrade-btn');
+  const barWrap  = Q('#drw-plan-bar-wrap');
 
   if(badge){badge.textContent=isPro?'Pro ✨':'Free';badge.className=isPro?'drw-plan-badge pro':'drw-plan-badge';}
   if(label)label.textContent=isPro?'پلن Pro':'پلن رایگان';
-  if(count)count.textContent=isPro?`${userWordCount} لغت`:`${userWordCount} / ${FREE_LIMIT} لغت`;
+  if(count)count.textContent=isPro?`${used} لغت`:`${used} / ${FREE_LIMIT} لغت`;
   if(fill){
-    const pct=isPro?100:Math.min(100,Math.round(userWordCount/FREE_LIMIT*100));
+    const pct=isPro?100:Math.min(100,Math.round(used/FREE_LIMIT*100));
     fill.style.width=pct+'%';
     fill.style.background=pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--accent)';
   }
@@ -1696,7 +1704,7 @@ function updateBadges(){
 ══════════════════════════════ */
 function updateStats(){
   const card=Q('#sum-card');
-  if(!words.length){card.classList.remove('show');return;}
+  if(!words.length){card.classList.remove('show');updateFreeBanner();return;}
   card.classList.add('show');
   const now=new Date();
   const due=words.filter(w=>new Date(w.next_review||0)<=now);
@@ -1728,6 +1736,8 @@ function updateStats(){
     const smartDeck=buildSmartDeck();
     lbl.textContent=due.length>0?`مرور ${smartDeck.length} کارت`:`سشن ${smartDeck.length} کارتی`;
   }
+  // banner همیشه sync
+  updateFreeBanner();
 }
 function logReview(){
   const today=new Date().toDateString();
