@@ -311,10 +311,8 @@ body.offline .topbar{top:36px}
 }
 .c-mean{font-size:clamp(18px,5vw,26px);font-weight:600;color:#fff;text-align:center;line-height:1.2}
 .c-sent{
-  font-family:var(--serif);font-style:italic;font-size:14px;
-  color:rgba(255,255,255,.8);text-align:center;direction:ltr;
-  max-width:300px;line-height:1.7;margin-top:var(--s2);
-  border-top:1px solid rgba(255,255,255,.15);padding-top:var(--s3);
+  font-family:var(--serif);font-style:italic;font-size:12px;
+  color:rgba(255,255,255,.55);text-align:center;direction:ltr;max-width:300px;line-height:1.6;
 }
 .swipe-row{display:flex;justify-content:space-between;font-size:11px;color:var(--ink4);width:100%;max-width:460px;padding:0 var(--s1)}
 .ses-acts{display:flex;gap:var(--s3);width:100%;max-width:460px;flex-shrink:0}
@@ -701,12 +699,6 @@ body.offline .topbar{top:36px}
 
 
 /* ─── DRAWER REDESIGN ─── */
-.drw-guest-box{
-  text-align:center;padding:var(--s5) var(--s4);
-}
-.drw-guest-icon{font-size:40px;margin-bottom:var(--s3);opacity:.4}
-.drw-guest-title{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:var(--s2)}
-.drw-guest-desc{font-size:13px;color:var(--ink3);line-height:1.65}
 .drw-profile{
   display:flex;align-items:center;gap:var(--s3);
   padding:var(--s4);background:var(--bg2);border-radius:var(--r3);
@@ -747,22 +739,6 @@ body.offline .topbar{top:36px}
 .drw-upgrade-btn.hidden{display:none}
 .drw-divider{height:1px;background:var(--bg3);margin:var(--s4) 0}
 .drw-section-title{font-size:11px;font-weight:700;color:var(--ink4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:var(--s3)}
-.drw-stats-row{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);
-  margin-bottom:0;
-}
-.drw-stat{
-  text-align:center;padding:var(--s3) var(--s2);
-  background:var(--bg2);border-radius:var(--r2);
-  border:1px solid var(--bg3);
-}
-.drw-stat-n{
-  font-family:var(--serif);font-size:22px;font-weight:600;
-  color:var(--ink);line-height:1;margin-bottom:3px;
-}
-.drw-stat-n.accent{color:var(--accent)}
-.drw-stat-n.err{color:var(--err)}
-.drw-stat-l{font-size:10px;color:var(--ink3)}
 
 /* ─── FREEMIUM BANNER ─── */
 .free-banner{
@@ -793,9 +769,6 @@ body.offline .topbar{top:36px}
 .user-avatar img{width:100%;height:100%;object-fit:cover}
 .user-name{font-size:11px;font-weight:500;color:var(--ink2);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-
-.confirm-icon{font-size:36px;text-align:center;margin-bottom:var(--s3)}
-.confirm-msg{font-size:14px;color:var(--ink3);text-align:center;line-height:1.7;margin-top:var(--s2)}
 
 #toast{
   position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;
@@ -934,122 +907,52 @@ body.offline .topbar{top:36px}
   <div class="drawer">
     <div class="drw-handle"></div>
 
-    <!-- ─ NOT LOGGED IN ─ -->
-    <div id="drw-guest" style="display:none">
-      <div class="drw-guest-box">
-        <div class="drw-guest-icon">👤</div>
-        <div class="drw-guest-title">وارد نشدی</div>
-        <div class="drw-guest-desc">با ورود، لغاتت روی همه دستگاه‌هات sync میشه.</div>
-        <button class="btn btn-p btn-full" style="margin-top:var(--s3)" onclick="drawerClose();showGate()">ورود / ثبت‌نام</button>
+    <!-- Profile header -->
+    <div class="drw-profile" id="drw-profile">
+      <div class="drw-avatar" id="drw-avatar-big">?</div>
+      <div class="drw-profile-info">
+        <div class="drw-profile-name" id="drw-profile-name">—</div>
+        <div class="drw-profile-email" id="drw-email">—</div>
       </div>
     </div>
 
-    <!-- ─ LOGGED IN ─ -->
-    <div id="drw-user" style="display:none">
-
-      <!-- Profile row -->
-      <div class="drw-profile" id="drw-profile">
-        <div class="drw-avatar" id="drw-avatar-big">?</div>
-        <div class="drw-profile-info">
-          <div class="drw-profile-name" id="drw-profile-name">—</div>
-          <div class="drw-profile-email" id="drw-email">—</div>
-        </div>
+    <!-- Plan card -->
+    <div class="drw-plan-card" id="drw-plan-card">
+      <div class="drw-plan-row">
+        <span class="drw-plan-label" id="drw-plan-label">پلن رایگان</span>
+        <span class="drw-plan-badge" id="drw-plan-badge">Free</span>
       </div>
-
-      <!-- Plan card -->
-      <div class="drw-plan-card" id="drw-plan-card">
-        <div class="drw-plan-row">
-          <span class="drw-plan-label" id="drw-plan-label">پلن رایگان</span>
-          <span class="drw-plan-badge" id="drw-plan-badge">Free</span>
-        </div>
-        <div class="drw-plan-bar-wrap" id="drw-plan-bar-wrap">
-          <div class="drw-plan-bar"><div class="drw-plan-fill" id="drw-plan-fill" style="width:0%"></div></div>
-          <span class="drw-plan-count" id="drw-word-count">0 / 50 لغت</span>
-        </div>
-        <button class="drw-upgrade-btn" id="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">
-          ✨ ارتقا به Pro — لغت نامحدود
-        </button>
+      <div class="drw-plan-bar-wrap" id="drw-plan-bar-wrap">
+        <div class="drw-plan-bar"><div class="drw-plan-fill" id="drw-plan-fill"></div></div>
+        <span class="drw-plan-count" id="drw-word-count">0 / 50 لغت</span>
       </div>
-
-      <div class="drw-divider"></div>
-
-      <!-- Stats row -->
-      <div class="drw-stats-row">
-        <div class="drw-stat">
-          <div class="drw-stat-n" id="drw-stat-total">—</div>
-          <div class="drw-stat-l">کل لغت</div>
-        </div>
-        <div class="drw-stat">
-          <div class="drw-stat-n" id="drw-stat-learned">—</div>
-          <div class="drw-stat-l">یاد گرفتم</div>
-        </div>
-        <div class="drw-stat">
-          <div class="drw-stat-n accent" id="drw-stat-streak">—</div>
-          <div class="drw-stat-l">روز streak</div>
-        </div>
-        <div class="drw-stat">
-          <div class="drw-stat-n err" id="drw-stat-due">—</div>
-          <div class="drw-stat-l">سررسید</div>
-        </div>
-      </div>
-
-      <div class="drw-divider"></div>
-
-      <!-- Actions -->
-      <div style="display:flex;flex-direction:column;gap:var(--s2)">
-        <button class="btn btn-full btn-sm" onclick="logout()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.55;flex-shrink:0">
-            <path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          خروج از حساب
-        </button>
-        <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
-      </div>
+      <button class="drw-upgrade-btn" id="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">
+        ارتقا به Pro ✨
+      </button>
     </div>
 
-  </div>
-</div>
-
-<!-- Upgrade Modal -->
-<div class="modal-bg" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:360px">
-    <div style="text-align:center;margin-bottom:var(--s5)">
-      <div style="font-size:40px;margin-bottom:var(--s3)">✨</div>
-      <div class="modal-title" style="font-size:22px">Wortschatz Pro</div>
-      <div style="font-size:28px;font-weight:700;color:var(--accent);margin:var(--s3) 0">€4.99<span style="font-size:14px;font-weight:400;color:var(--ink3)">/ماه</span></div>
-    </div>
-    <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s5)">
-      <div style="display:flex;flex-direction:column;gap:var(--s3);font-size:14px;color:var(--ink2)">
-        <div>✅ جستجوی نامحدود</div>
-        <div>✅ لغت نامحدود</div>
-        <div>✅ sync روی همه دستگاه‌ها</div>
-        <div>✅ پشتیبانی اولویت‌دار</div>
-      </div>
-    </div>
-    <button class="btn btn-p btn-full" style="margin-bottom:var(--s4)" onclick="showToast('به‌زودی 🚀');Q(\'#upgrade-modal\').classList.remove(\'open\')">
-      شروع اشتراک Pro
-    </button>
     <div class="drw-divider"></div>
-    <div style="margin-top:var(--s4)">
-      <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:var(--s2)">کد بتا داری؟</div>
-      <div style="display:flex;gap:var(--s2)">
-        <input class="inp ltr" id="beta-code-inp" placeholder="BETA-XXXX" style="margin:0;flex:1;text-transform:uppercase">
-        <button class="btn btn-p btn-sm" onclick="redeemBeta()">فعال کن</button>
-      </div>
-      <div style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px" id="beta-code-err"></div>
-    </div>
-  </div>
-</div>
 
-<!-- Confirm Modal -->
-<div class="modal-bg" id="confirm-modal">
-  <div class="modal" style="max-width:320px">
-    <div class="confirm-icon" id="confirm-icon">⚠️</div>
-    <div class="modal-title" id="confirm-title">مطمئنی؟</div>
-    <p class="confirm-msg" id="confirm-msg"></p>
-    <div class="modal-acts" style="margin-top:var(--s5)">
-      <button class="btn btn-danger" style="flex:1" id="confirm-ok">تأیید</button>
-      <button class="btn" style="flex:1" onclick="confirmClose()">انصراف</button>
+    <!-- Settings -->
+    <div class="drw-section-title">تنظیمات</div>
+
+    <div class="drw-lbl">کد همگام‌سازی (قدیمی)</div>
+    <div class="drw-row">
+      <input class="inp ltr" id="drw-sync" type="text" placeholder="مثلاً: sina123" style="margin:0;flex:1">
+      <button class="btn btn-p btn-sm" onclick="saveSync()">ذخیره</button>
+    </div>
+
+    <div class="drw-divider"></div>
+
+    <!-- Actions -->
+    <div style="display:flex;flex-direction:column;gap:var(--s2)">
+      <button class="btn btn-full btn-sm" id="drw-logout" onclick="logout()" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.6">
+          <path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        خروج از حساب
+      </button>
+      <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
     </div>
   </div>
 </div>
@@ -1368,9 +1271,8 @@ const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 const { createClient } = window.supabase;
 const sb = createClient(SB_URL, SB_KEY);
 
-const FREE_LIMIT = 10;      // کل جستجو در نسخه رایگان
-const BETA_LIMIT = 500;     // جستجو برای beta users
-const WORD_LIMIT = 500;     // لغت قابل ذخیره
+const FREE_LIMIT = 10;
+const BETA_LIMIT = 500;
 
 /* ══════════════════════════════
    STATE
@@ -1428,18 +1330,17 @@ async function dbLoad(){
 }
 
 async function dbAdd(w){
-  if(!currentUser?.id){ console.warn('dbAdd: no user'); return; }
   try{
     const{data,error}=await sb.from('words').insert({
-      user_id: currentUser.id,
-      de:w.de, fa:w.fa, ex:w.ex||'',
-      score:0, seen:0, interval:1, easiness:2.5,
+      user_id:uid(),de:w.de,fa:w.fa,ex:w.ex||'',
+      score:0,seen:0,interval:1,easiness:2.5,
       next_review:new Date().toISOString()
     }).select().single();
-    if(error){ console.error('dbAdd error:', error.message); return; }
-    if(data) w.id=data.id;
+    if(error)throw error;
+    if(data)w.id=data.id;
+    userWordCount++;
     updateFreeBanner();
-  }catch(e){ console.error('dbAdd exception:', e); }
+  }catch(e){console.error(e);}
 }
 
 async function dbUpd(w){
@@ -1465,107 +1366,78 @@ async function dbClear(){
 async function loadProfile(){
   if(!currentUser)return;
   try{
-    let{data,error}=await sb.from('profiles')
-      .select('plan,word_count,search_count')
-      .eq('id',currentUser.id)
-      .single();
-
-    // اگه profile نداشت بساز
-    if(error||!data){
-      const{data:newData}=await sb.from('profiles')
-        .upsert({id:currentUser.id,plan:'free',word_count:0,search_count:0})
-        .select('plan,word_count,search_count')
-        .single();
-      data=newData;
-    }
-
+    const{data}=await sb.from('profiles').select('plan,word_count').eq('id',currentUser.id).single();
     if(data){
-      userPlan=data.plan||'free';
-      userWordCount=data.word_count||0;
-      userSearchCount=data.search_count||0;
+      userPlan=data.is_beta?'beta':(data.plan||'free');
+      userWordCount=data.word_count||words.length;
       updateFreeBanner();
       updateDrawerPlan();
     }
-  }catch(e){console.error('loadProfile:',e);}
+  }catch(e){}
 }
 
 function canAddMore(){
-  // ذخیره لغت محدودیت جداگانه داره — فعلاً بدون محدودیت برای free
-  if(userPlan==='pro') return true;
-  return words.length < WORD_LIMIT;
+  if(userPlan==='pro')return true;
+  return userWordCount<FREE_LIMIT;
 }
 
 function updateFreeBanner(){
   const b=Q('#free-banner'),t=Q('#free-banner-text');
   if(!b||!t)return;
   if(userPlan==='pro'||userPlan==='beta'){b.style.display='none';return;}
-
-  const used=userSearchCount;
-  const left=FREE_LIMIT-used;
-
-  if(left<=0){
-    b.className='free-banner warn';
-    t.innerHTML=`${FREE_LIMIT} جستجوی رایگان تموم شد. <a onclick="showUpgrade()">Pro — €4.99/ماه ←</a>`;
-  } else if(left<=3){
-    b.className='free-banner warn';
-    t.innerHTML=`${used}/${FREE_LIMIT} جستجو — فقط ${left} تا مونده! <a onclick="showUpgrade()">Pro ←</a>`;
-  } else {
+  const left=FREE_LIMIT-userWordCount;
+  if(left>5){
     b.className='free-banner';
-    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجو — <a onclick="showUpgrade()">ارتقا به Pro</a>`;
+    t.innerHTML=`پلن رایگان: ${userWordCount}/${FREE_LIMIT} لغت استفاده شده. `;
+    b.style.display='flex';
+  } else if(left>0){
+    b.className='free-banner warn';
+    t.innerHTML=`فقط ${left} لغت دیگه می‌تونی اضافه کنی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
+    b.style.display='flex';
+  } else {
+    b.className='free-banner warn';
+    t.innerHTML=`به سقف ${FREE_LIMIT} لغت رسیدی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
+    b.style.display='flex';
   }
-  b.style.display='flex';
-  updateDrawerPlan();
 }
 
 function showUpgrade(){
-  // modal upgrade رو نشون بده
   Q('#upgrade-modal').classList.add('open');
 }
-
 async function redeemBeta(){
-  const input=Q('#beta-code-inp');
-  const code=(input?.value||'').trim().toUpperCase();
-  if(!code){showToast('کد رو وارد کن');return;}
-  if(!currentUser){showToast('اول وارد شو');return;}
-
+  const code=(Q('#beta-code-inp')?.value||'').trim().toUpperCase();
   const errEl=Q('#beta-code-err');
-  if(errEl) errEl.textContent='';
-
+  if(!code){if(errEl)errEl.textContent='کد رو وارد کن';return;}
+  if(!currentUser){if(errEl)errEl.textContent='اول وارد شو';return;}
+  if(errEl)errEl.textContent='';
   try{
-    const{data,error}=await sb.rpc('redeem_beta_code',{
-      p_code: code,
-      p_user_id: currentUser.id
-    });
-    if(error) throw error;
+    const{data,error}=await sb.rpc('redeem_beta_code',{p_code:code,p_user_id:currentUser.id});
+    if(error)throw error;
     if(data?.success){
-      showToast('✅ کد بتا فعال شد! جستجو نامحدود داری.');
       userPlan='beta';
+      showToast('کد بتا فعال شد! جستجو نامحدوده ✅');
       Q('#upgrade-modal').classList.remove('open');
-      updateFreeBanner();
-      updateDrawerPlan();
+      updateFreeBanner();updateDrawerPlan();
     } else {
-      if(errEl) errEl.textContent=data?.error||'کد معتبر نیست';
+      if(errEl)errEl.textContent=data?.error||'کد معتبر نیست';
     }
-  }catch(e){
-    if(errEl) errEl.textContent='خطا — دوباره امتحان کن';
-  }
+  }catch(e){if(errEl)errEl.textContent='خطا — دوباره امتحان کن';}
 }
 
 function updateDrawerPlan(){
   const isPro = userPlan==='pro';
-  const used  = userSearchCount;   // جستجوهای استفاده‌شده
-  const badge    = Q('#drw-plan-badge');
-  const label    = Q('#drw-plan-label');
-  const fill     = Q('#drw-plan-fill');
-  const count    = Q('#drw-word-count');
-  const upgradeBtn = Q('#drw-upgrade-btn');
-  const barWrap  = Q('#drw-plan-bar-wrap');
+  const badge=Q('#drw-plan-badge');
+  const label=Q('#drw-plan-label');
+  const fill=Q('#drw-plan-fill');
+  const count=Q('#drw-word-count');
+  const upgradeBtn=Q('#drw-upgrade-btn');
+  const barWrap=Q('#drw-plan-bar-wrap');
 
   if(badge){badge.textContent=isPro?'Pro ✨':'Free';badge.className=isPro?'drw-plan-badge pro':'drw-plan-badge';}
   if(label)label.textContent=isPro?'پلن Pro':'پلن رایگان';
-  if(count)count.textContent=isPro?'نامحدود':`${used} / ${FREE_LIMIT} جستجو`;
+  if(count)count.textContent=isPro?`${userWordCount} لغت`:`${userWordCount} / ${FREE_LIMIT} لغت`;
   if(fill){
-    const pct=isPro?0:Math.min(100,Math.round(used/FREE_LIMIT*100));
+    const pct=isPro?100:Math.min(100,Math.round(userWordCount/FREE_LIMIT*100));
     fill.style.width=pct+'%';
     fill.style.background=pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--accent)';
   }
@@ -1577,38 +1449,11 @@ function updateDrawerPlan(){
    AI (no API key from user)
 ══════════════════════════════ */
 async function ai(prompt,tokens=900){
-  const headers={'Content-Type':'application/json'};
-  if(currentUser?.id) headers['x-user-id']=currentUser.id;
-
-  const r=await fetch('/api',{
-    method:'POST',
-    headers,
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})
-  });
-
-  if(r.status===429){
-    const d=await r.json().catch(()=>({}));
-    userSearchCount=FREE_LIMIT;
-    updateFreeBanner();
-    throw new Error(d.message||`${FREE_LIMIT} جستجوی رایگان تموم شد`);
-  }
-  if(!r.ok) throw new Error('HTTP '+r.status);
-
+  const r=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
+  if(!r.ok)throw new Error('HTTP '+r.status);
   const d=await r.json();
-  if(d.error) throw new Error(d.error);
-
-  // آپدیت از header — این مقدار از Supabase میاد (دقیق)
-  const usedHeader=r.headers.get('X-RateLimit-Used');
-  const remainingHeader=r.headers.get('X-RateLimit-Remaining');
-  if(usedHeader){
-    userSearchCount=parseInt(usedHeader)||userSearchCount;
-    updateFreeBanner();
-  }
-  const remaining=parseInt(remainingHeader||'99');
-  if(remaining===10) showToast('⚠ فقط ۱۰ جستجو تا سقف مونده');
-  else if(remaining===5) showToast('⚠ فقط ۵ جستجو مونده');
-  else if(remaining===0) showToast('جستجوی رایگان تموم شد 😔');
-
+  if(d.error)throw new Error(d.error);
   return d.content.map(b=>b.text||'').join('').trim();
 }
 
@@ -1633,48 +1478,21 @@ async function loginMagicLink(){
   Q('#gate-sent').style.display='block';
 }
 
-/* ══════════════════════════════
-   CONFIRM MODAL
-══════════════════════════════ */
-function confirmModal({icon='⚠️', title, msg, okLabel='تأیید', okClass='btn-danger', onOk}){
-  Q('#confirm-icon').textContent = icon;
-  Q('#confirm-title').textContent = title;
-  Q('#confirm-msg').textContent = msg;
-  const okBtn = Q('#confirm-ok');
-  okBtn.textContent = okLabel;
-  okBtn.className = 'btn '+okClass;
-  okBtn.onclick = ()=>{ confirmClose(); onOk(); };
-  Q('#confirm-modal').classList.add('open');
-}
-function confirmClose(){
-  Q('#confirm-modal').classList.remove('open');
-}
-
 async function logout(){
   try{ await sb.auth.signOut({scope:'global'}); }catch(e){}
-  // پاک کردن همه storage
-  localStorage.clear();
-  sessionStorage.clear();
-  // پاک کردن cookies
-  document.cookie.split(';').forEach(c=>{
-    document.cookie=c.replace(/^ +/,'').replace(/=.*/,'=;expires='+new Date().toUTCString()+';path=/');
-  });
+  localStorage.clear(); sessionStorage.clear();
   window.location.reload();
 }
+async function logout_OLD(){
+  await sb.auth.signOut();
+  currentUser=null;
+  words=[];
+  drawerClose();
+  showGate();
+}
 
-async function clearAll(){
-  confirmModal({
-    icon: '🗑️',
-    title: 'پاک کردن همه لغات',
-    msg: 'همه '+words.length+' لغت پاک میشن و قابل بازیابی نیستن. مطمئنی؟',
-    okLabel: 'بله، پاک کن',
-    okClass: 'btn-danger',
-    onOk: async ()=>{
-      words=[];saveCache();updateBadges();updateStats();renderList();
-      drawerClose();
-      if(currentUser) dbClear().catch(()=>{});
-    }
-  });
+function showGate(){
+  Q('#gate').classList.add('open');
 }
 function hideGate(){
   const g=Q('#gate');
@@ -1684,60 +1502,42 @@ function hideGate(){
 
 function setUserUI(user){
   currentUser=user;
-  const guestPanel=Q('#drw-guest'), userPanel=Q('#drw-user');
-  const chip=Q('#user-chip'), avatar=Q('#user-avatar'), name=Q('#user-name');
-  const settingsBtn=Q('#settings-btn');
+  const chip=Q('#user-chip'),avatar=Q('#user-avatar'),name=Q('#user-name');
+  const bigAvatar=Q('#drw-avatar-big'),profileName=Q('#drw-profile-name'),emailEl=Q('#drw-email');
+  const logoutBtn=Q('#drw-logout');
 
   if(user){
     const photoUrl=user.user_metadata?.avatar_url;
     const displayName=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';
+    const email=user.email||'';
 
     // topbar chip
     if(chip){
-      if(avatar){
-        if(photoUrl) avatar.innerHTML=`<img src="${photoUrl}" alt="">`;
-        else avatar.textContent=displayName[0].toUpperCase();
-      }
-      if(name) name.textContent=displayName;
+      if(photoUrl)avatar.innerHTML=`<img src="${photoUrl}" alt="">`;
+      else avatar.textContent=displayName[0].toUpperCase();
+      if(name)name.textContent=displayName;
       chip.style.display='flex';
     }
-    if(settingsBtn) settingsBtn.style.display='none';
-
-    // drawer: show user panel
-    if(guestPanel) guestPanel.style.display='none';
-    if(userPanel)  userPanel.style.display='block';
+    const settingsBtn=Q('#settings-btn');
+    if(settingsBtn)settingsBtn.style.display='none';
 
     // drawer profile
-    const bigAvatar=Q('#drw-avatar-big');
     if(bigAvatar){
-      if(photoUrl) bigAvatar.innerHTML=`<img src="${photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      if(photoUrl)bigAvatar.innerHTML=`<img src="${photoUrl}" alt="">`;
       else bigAvatar.textContent=displayName[0].toUpperCase();
     }
-    if(Q('#drw-profile-name')) Q('#drw-profile-name').textContent=displayName;
-    if(Q('#drw-email'))        Q('#drw-email').textContent=user.email||'';
+    if(profileName)profileName.textContent=displayName;
+    if(emailEl)emailEl.textContent=email;
+    if(logoutBtn)logoutBtn.style.display='flex';
 
   } else {
-    if(chip) chip.style.display='none';
-    if(settingsBtn) settingsBtn.style.display='flex';
-    if(guestPanel) guestPanel.style.display='block';
-    if(userPanel)  userPanel.style.display='none';
+    if(chip)chip.style.display='none';
+    const settingsBtn=Q('#settings-btn');
+    if(settingsBtn)settingsBtn.style.display='flex';
+    if(profileName)profileName.textContent='وارد نشدی';
+    if(emailEl)emailEl.textContent='';
+    if(logoutBtn)logoutBtn.style.display='none';
   }
-}
-
-function updateDrawerStats(){
-  if(!Q('#drw-stat-total')) return;
-  const now=new Date();
-  const due=words.filter(w=>new Date(w.next_review||0)<=now).length;
-  const learned=words.filter(w=>w.seen>0&&w.interval>3).length;
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
-  let streak=0; const dd=new Date();
-  while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
-  Q('#drw-stat-total').textContent=words.length;
-  Q('#drw-stat-learned').textContent=learned;
-  Q('#drw-stat-streak').textContent=streak;
-  Q('#drw-stat-due').textContent=due;
 }
 
 /* ══════════════════════════════
@@ -1746,7 +1546,8 @@ function updateDrawerStats(){
 async function init(){
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
 
-  // ── فوری session رو بگیر — قبل از هر چیز ──
+  // Auth state listener
+  // فوری session رو بگیر
   const{data:{session:initSession}}=await sb.auth.getSession();
   if(initSession?.user){
     setUserUI(initSession.user);
@@ -1758,18 +1559,17 @@ async function init(){
     showGate();
   }
 
-  // ── بعد listener رو هم set کن برای تغییرات بعدی ──
   sb.auth.onAuthStateChange(async(event,session)=>{
     if(event==='SIGNED_IN' && session?.user && !currentUser){
       setUserUI(session.user);
       hideGate();
       await dbLoad();
       await loadProfile();
-    } else if(event==='SIGNED_OUT'){
-      currentUser=null; words=[]; userSearchCount=0; userPlan='free';
-      saveCache();
+      setTimeout(checkReminder,2500);
+      const sc=localStorage.getItem('ws_sync');
+      if(sc&&Q('#drw-sync'))Q('#drw-sync').value=sc;
+    } else {
       setUserUI(null);
-      updateBadges(); updateStats();
       showGate();
     }
   });
@@ -1791,14 +1591,8 @@ function syncOnline(){
 /* ══════════════════════════════
    DRAWER
 ══════════════════════════════ */
-function drawerOpen(){
-  Q('#drawer').classList.add('open');
-  updateDrawerPlan();
-  updateDrawerStats();
-}
-function drawerClose(){
-  Q('#drawer').classList.remove('open');
-}
+function drawerOpen(){Q('#drawer').classList.add('open');}
+function drawerClose(){Q('#drawer').classList.remove('open');}
 
 function saveSync(){
   const c=Q('#drw-sync')?.value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
@@ -1808,10 +1602,11 @@ function saveSync(){
   dbLoad();drawerClose();
 }
 
-
-
-function showGate(){
-  Q('#gate').classList.add('open');
+async function clearAll(){
+  if(!confirm('همه لغات پاک بشن؟'))return;
+  words=[];saveCache();updateBadges();updateStats();renderList();
+  drawerClose();
+  if(currentUser)dbClear().catch(()=>{});
 }
 
 /* ══════════════════════════════
@@ -1851,7 +1646,7 @@ function updateBadges(){
 ══════════════════════════════ */
 function updateStats(){
   const card=Q('#sum-card');
-  if(!words.length){card.classList.remove('show');updateFreeBanner();return;}
+  if(!words.length){card.classList.remove('show');return;}
   card.classList.add('show');
   const now=new Date();
   const due=words.filter(w=>new Date(w.next_review||0)<=now);
@@ -1883,8 +1678,6 @@ function updateStats(){
     const smartDeck=buildSmartDeck();
     lbl.textContent=due.length>0?`مرور ${smartDeck.length} کارت`:`سشن ${smartDeck.length} کارتی`;
   }
-  // banner همیشه sync
-  updateFreeBanner();
 }
 function logReview(){
   const today=new Date().toDateString();
@@ -1908,6 +1701,7 @@ function detectMode(q){
 async function doSearch(){
   const q=Q('#s-inp').value.trim();if(!q)return;
   if(!navigator.onLine){setMsg('📡 آفلاین','err');return;}
+  if(!KEY){setMsg('⚠ اول API key از تنظیمات وارد کن','err');return;}
   acClose();
   Q('#search-tip').classList.remove('show');
   const btn=Q('#s-btn');btn.disabled=true;btn.classList.add('busy');
@@ -1923,7 +1717,7 @@ async function doSearch(){
 function setMsg(t,cls){const e=Q('#s-msg');e.textContent=t;e.className='s-msg'+(cls?' '+cls:'');}
 
 async function searchWord(q){
-  const ck='wc_'+(currentUser?.id||'anon')+'_'+q.toLowerCase();
+  const ck='wc_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
   const schema='{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","usage_pattern":"الگوی استفاده مثل sich engagieren fur+Akk یا ein Praktikum absolvieren — null اگه ندارد","preposition":"حرف اضافه مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی و طبیعی","fa":"ترجمه فارسی"}],"grammar_tip":"نکته گرامری مهم یا null","priority":{"score":3,"reason":"چرا مهمه — یه جمله کوتاه"}}';
@@ -1941,9 +1735,8 @@ async function searchWord(q){
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
   try{
-    const cachePrefix='wc_'+(currentUser?.id||'anon')+'_';
-    const keys=Object.keys(localStorage).filter(k=>k.startsWith(cachePrefix));
-    if(keys.length>80)localStorage.removeItem(keys[0]);
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
+    if(keys.length>100)localStorage.removeItem(keys[0]);
     localStorage.setItem(ck,JSON.stringify(curWord));
   }catch(e){}
   renderWord(curWord);
@@ -2103,23 +1896,12 @@ function acInput(){
   const q=Q('#s-inp').value.trim();acSel=-1;
   if(!q||q.length<2){acClose();return;}
   const ql=q.toLowerCase();const seen=new Set();const items=[];
-  // ۱. لغات ذخیره‌شده این user
-  words.forEach(w=>{
-    if(seen.has(w.de))return;
-    if(w.de.toLowerCase().startsWith(ql)||w.de.toLowerCase().includes(ql)){
-      items.push({de:w.de,fa:w.fa,t:'s'});seen.add(w.de);
-    }
-  });
-  // ۲. cache جستجوهای قبلی — فقط اگه user login کرده یا همین browser
-  const cachePrefix='wc_'+(currentUser?.id||'anon')+'_';
-  Object.keys(localStorage).filter(k=>k.startsWith(cachePrefix)).forEach(k=>{
-    try{
-      const d=JSON.parse(localStorage.getItem(k));if(!d?.word)return;
+  words.forEach(w=>{if(seen.has(w.de))return;if(w.de.toLowerCase().startsWith(ql)||w.de.toLowerCase().includes(ql)){items.push({de:w.de,fa:w.fa,t:'s'});seen.add(w.de);}});
+  Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>{
+    try{const d=JSON.parse(localStorage.getItem(k));if(!d?.word)return;
       const full=(d.article&&d.article!=='null'&&d.article!=='—'?d.article+' ':'')+d.word;
       if(seen.has(full))return;
-      if(full.toLowerCase().includes(ql)||d.meaning_fa?.includes(q)){
-        items.push({de:full,fa:d.meaning_fa||'',t:'c'});seen.add(full);
-      }
+      if(full.toLowerCase().includes(ql)||d.meaning_fa?.includes(q)){items.push({de:full,fa:d.meaning_fa||'',t:'c'});seen.add(full);}
     }catch(e){}
   });
   const show=items.slice(0,6);
@@ -2269,17 +2051,13 @@ function sesResume(){
 }
 function sesRestart(){
   Q('#ses-end').classList.remove('show');
-  setTimeout(()=>{
-    Q('#ses-end').style.display='none';
-    // reset کامل state
-    sesDeck=[]; sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
-    sesOpenSmart();
-  },180);
+  setTimeout(()=>{Q('#ses-end').style.display='none'; sesOpenSmart();},180);
 }
 
 function showCard(){
   if(sesI >= sesDeck.length){ sesSummary(); return; }
-  const w = sesDeck[sesI];  Q('#ses-word').textContent = w.de;
+  const w = sesDeck[sesI];
+  Q('#ses-word').textContent = w.de;
   Q('#ses-mean').textContent = w.fa;
   Q('#ses-sent').textContent = w.ex || '';
   Q('#card-wrap').classList.remove('flip');
@@ -2303,76 +2081,41 @@ function showCard(){
 
   // next interval preview
   const o = words.find(x=>x.de===w.de);
-  const nextEl = Q('#ses-next');
-  if(nextEl){
-    const o = words.find(x=>x.de===w.de);
-    const days = o ? Math.min(o.interval||1, 30) : 1;
-    nextEl.textContent = days <= 1 ? 'فردا' : days+' روز';
-  }
+  const nextD = o ? Math.max(1, Math.round((o.interval||1)*(o.easiness||2.5))) : 1;
+  Q('#ses-next').textContent = nextD > 1 ? nextD+' روز' : 'فردا';
   Q('#again-n').classList.remove('show');
 }
 
 function sesFlip(){ Q('#card-wrap').classList.toggle('flip'); }
 
 async function sesRate(good){
-  // اگه session تموم شده ignore کن
-  if(sesI >= sesDeck.length) return;
-
   const w = sesDeck[sesI];
-  const isRepeat = sesRepeat.has(w.de); // این کارت قبلاً توی همین session رد شده؟
-
-  // SM-2 فقط اگه repeat نیست اجرا بشه
-  if(!isRepeat){
-    const o = words.find(x=>x.de===w.de);
-    if(o){
-      const today = new Date().toDateString();
-      const lastReview = o.reviewed_at ? new Date(o.reviewed_at).toDateString() : null;
-      const alreadyToday = lastReview === today;
-
-      // اگه امروز قبلاً مرور شده، فقط score آپدیت کن — interval تغییر نکنه
-      if(alreadyToday){
-        o.score += good ? 1 : -1;
-        saveCache();
-      } else {
-        const q = good ? 5 : 1;
-        o.easiness = Math.max(1.3, o.easiness + (0.1 - (5-q)*(0.08+(5-q)*0.02)));
-        if(!good){
-          o.interval = 1;
-        } else if(o.seen===0){
-          o.interval = 1;
-        } else if(o.seen===1){
-          o.interval = 4;
-        } else {
-          o.interval = Math.round(o.interval * o.easiness);
-        }
-        // cap: حداکثر ۳۰ روز — اگه کاربر بخواد بیشتر بشه باید خودش تأیید کنه
-        o.interval = Math.min(Math.max(1, o.interval), 30);
-        const next = new Date(); next.setDate(next.getDate()+o.interval);
-        o.next_review = next.toISOString();
-        o.reviewed_at = new Date().toISOString();
-        o.score += good ? 1 : -1;
-        o.seen++;
-        logReview();
-        saveCache();
-        if(navigator.onLine) dbUpd(o).catch(()=>{});
-      }
-    }
+  const o = words.find(x=>x.de===w.de);
+  if(o){
+    const q = good ? 5 : 1;
+    o.easiness = Math.max(1.3, o.easiness + (0.1 - (5-q)*(0.08+(5-q)*0.02)));
+    if(!good) o.interval = 1;
+    else if(o.seen===0) o.interval = 1;
+    else if(o.seen===1) o.interval = 6;
+    else o.interval = Math.round(o.interval * o.easiness);
+    o.interval = Math.max(1, o.interval);
+    const next = new Date(); next.setDate(next.getDate()+o.interval);
+    o.next_review = next.toISOString(); o.reviewed_at = new Date().toISOString();
+    o.score += good ? 1 : -1; o.seen++;
+    logReview(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
   }
 
-  // اگه بلد نبود و هنوز repeat نشده → یه‌بار برگردون
-  if(!good && !isRepeat){
+  if(!good && !sesRepeat.has(w.de)){
+    // یه بار برگردون — ۱ تا ۳ کارت بعد
     sesRepeat.add(w.de);
-    sesRepN++;
     const insertAt = Math.min(sesI + 1 + Math.floor(Math.random()*2+1), sesDeck.length);
     sesDeck.splice(insertAt, 0, {...w, _type: w._type});
-    const n = Q('#again-n'); if(n){n.textContent=sesRepN;n.classList.add('show');}
+    sesRepN++;
+    const n = Q('#again-n'); n.textContent = sesRepN; n.classList.add('show');
   }
 
   if(good) sesGood++; else sesBad++;
-  sesI++;
-
-  if(sesI >= sesDeck.length){ sesSummary(); return; }
-  showCard();
+  sesI++; showCard();
 }
 
 function sesAgain(){
@@ -2508,7 +2251,6 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     Q('#drawer').classList.remove('open');
     Q('#edit-modal').classList.remove('open');
-    Q('#confirm-modal').classList.remove('open');
     if(Q('#session').classList.contains('open'))sesClose();
   }
 });
@@ -2516,5 +2258,35 @@ document.addEventListener('keydown',e=>{
 init();
 </script>
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});</script>
+
+<!-- Upgrade Modal -->
+<div class="modal-bg" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:360px">
+    <div style="text-align:center;margin-bottom:var(--s5)">
+      <div style="font-size:40px;margin-bottom:var(--s3)">✨</div>
+      <div class="modal-title" style="font-size:22px">Wortschatz Pro</div>
+      <div style="font-size:28px;font-weight:700;color:var(--accent);margin:var(--s3) 0">€4.99<span style="font-size:14px;font-weight:400;color:var(--ink3)">/ماه</span></div>
+    </div>
+    <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s5)">
+      <div style="display:flex;flex-direction:column;gap:var(--s3);font-size:14px;color:var(--ink2)">
+        <div>✅ جستجوی نامحدود</div>
+        <div>✅ لغت نامحدود</div>
+        <div>✅ sync روی همه دستگاه‌ها</div>
+      </div>
+    </div>
+    <button class="btn btn-p btn-full" style="margin-bottom:var(--s4)" onclick="showToast('به‌زودی 🚀');Q('#upgrade-modal').classList.remove('open')">
+      شروع اشتراک Pro
+    </button>
+    <div class="drw-divider"></div>
+    <div style="margin-top:var(--s4)">
+      <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:var(--s2)">کد بتا داری؟</div>
+      <div style="display:flex;gap:var(--s2)">
+        <input class="inp ltr" id="beta-code-inp" placeholder="BETA-XXXX" style="margin:0;flex:1;text-transform:uppercase">
+        <button class="btn btn-p btn-sm" onclick="redeemBeta()">فعال کن</button>
+      </div>
+      <div style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px" id="beta-code-err"></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
