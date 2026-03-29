@@ -311,8 +311,10 @@ body.offline .topbar{top:36px}
 }
 .c-mean{font-size:clamp(18px,5vw,26px);font-weight:600;color:#fff;text-align:center;line-height:1.2}
 .c-sent{
-  font-family:var(--serif);font-style:italic;font-size:12px;
-  color:rgba(255,255,255,.55);text-align:center;direction:ltr;max-width:300px;line-height:1.6;
+  font-family:var(--serif);font-style:italic;font-size:14px;
+  color:rgba(255,255,255,.8);text-align:center;direction:ltr;
+  max-width:300px;line-height:1.7;margin-top:var(--s2);
+  border-top:1px solid rgba(255,255,255,.15);padding-top:var(--s3);
 }
 .swipe-row{display:flex;justify-content:space-between;font-size:11px;color:var(--ink4);width:100%;max-width:460px;padding:0 var(--s1)}
 .ses-acts{display:flex;gap:var(--s3);width:100%;max-width:460px;flex-shrink:0}
@@ -2122,13 +2124,17 @@ function sesResume(){
 }
 function sesRestart(){
   Q('#ses-end').classList.remove('show');
-  setTimeout(()=>{Q('#ses-end').style.display='none'; sesOpenSmart();},180);
+  setTimeout(()=>{
+    Q('#ses-end').style.display='none';
+    // reset کامل state
+    sesDeck=[]; sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
+    sesOpenSmart();
+  },180);
 }
 
 function showCard(){
   if(sesI >= sesDeck.length){ sesSummary(); return; }
-  const w = sesDeck[sesI];
-  Q('#ses-word').textContent = w.de;
+  const w = sesDeck[sesI];  Q('#ses-word').textContent = w.de;
   Q('#ses-mean').textContent = w.fa;
   Q('#ses-sent').textContent = w.ex || '';
   Q('#card-wrap').classList.remove('flip');
@@ -2160,6 +2166,9 @@ function showCard(){
 function sesFlip(){ Q('#card-wrap').classList.toggle('flip'); }
 
 async function sesRate(good){
+  // اگه session تموم شده ignore کن
+  if(sesI >= sesDeck.length) return;
+
   const w = sesDeck[sesI];
   const o = words.find(x=>x.de===w.de);
   if(o){
@@ -2176,17 +2185,24 @@ async function sesRate(good){
     logReview(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
   }
 
+  // فقط یه‌بار برگردون — و فقط اگه هنوز جا داریم
   if(!good && !sesRepeat.has(w.de)){
-    // یه بار برگردون — ۱ تا ۳ کارت بعد
     sesRepeat.add(w.de);
+    sesRepN++;
     const insertAt = Math.min(sesI + 1 + Math.floor(Math.random()*2+1), sesDeck.length);
     sesDeck.splice(insertAt, 0, {...w, _type: w._type});
-    sesRepN++;
-    const n = Q('#again-n'); n.textContent = sesRepN; n.classList.add('show');
+    const n = Q('#again-n'); if(n){n.textContent=sesRepN;n.classList.add('show');}
   }
 
   if(good) sesGood++; else sesBad++;
-  sesI++; showCard();
+  sesI++;
+
+  // اگه تموم شد — فوری summary نشون بده
+  if(sesI >= sesDeck.length){
+    sesSummary();
+    return;
+  }
+  showCard();
 }
 
 function sesAgain(){
