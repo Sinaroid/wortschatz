@@ -1420,28 +1420,30 @@ async function loadProfile(){
 }
 
 function canAddMore(){
-  if(userPlan==='pro')return true;
-  return userWordCount<FREE_LIMIT;
+  if(userPlan==='pro'||userPlan==='beta') return true;
+  return userSearchCount < FREE_LIMIT;
 }
 
 function updateFreeBanner(){
   const b=Q('#free-banner'),t=Q('#free-banner-text');
   if(!b||!t)return;
   if(userPlan==='pro'||userPlan==='beta'){b.style.display='none';return;}
-  const left=FREE_LIMIT-userWordCount;
-  if(left>5){
-    b.className='free-banner';
-    t.innerHTML=`پلن رایگان: ${userWordCount}/${FREE_LIMIT} لغت استفاده شده. `;
-    b.style.display='flex';
-  } else if(left>0){
+
+  const used = userSearchCount;
+  const left = FREE_LIMIT - used;
+
+  if(left<=0){
     b.className='free-banner warn';
-    t.innerHTML=`فقط ${left} لغت دیگه می‌تونی اضافه کنی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
-    b.style.display='flex';
+    t.innerHTML=`${FREE_LIMIT} جستجوی رایگان تموم شد. <a onclick="showUpgrade()">Pro — €4.99/ماه ←</a>`;
+  } else if(left<=3){
+    b.className='free-banner warn';
+    t.innerHTML=`${used}/${FREE_LIMIT} جستجو — فقط ${left} تا مونده! <a onclick="showUpgrade()">Pro ←</a>`;
   } else {
-    b.className='free-banner warn';
-    t.innerHTML=`به سقف ${FREE_LIMIT} لغت رسیدی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
-    b.style.display='flex';
+    b.className='free-banner';
+    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجو استفاده شده`;
   }
+  b.style.display='flex';
+  updateDrawerPlan();
 }
 
 function showUpgrade(){
