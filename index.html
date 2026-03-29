@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 /* ═══════════════════════════════════
    DESIGN TOKENS
@@ -682,7 +683,50 @@ body.offline .topbar{top:36px}
 .end-next{font-size:13px;color:var(--ink3);line-height:1.65;max-width:260px;margin-top:var(--s1)}
 
 
-/* ─── TOAST ─── */
+/* ─── AUTH GATE ─── */
+.btn-google{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px;border-radius:var(--r2);border:1.5px solid var(--bg3);
+  background:var(--card);color:var(--ink);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .18s;font-family:var(--sans);margin-bottom:var(--s3);
+}
+.btn-google:hover{background:var(--bg2);border-color:var(--bg4)}
+.gate-or{
+  display:flex;align-items:center;gap:var(--s3);
+  margin:var(--s3) 0;color:var(--ink4);font-size:12px;
+}
+.gate-or::before,.gate-or::after{content:'';flex:1;height:1px;background:var(--bg3)}
+
+/* ─── FREEMIUM BANNER ─── */
+.free-banner{
+  display:flex;align-items:center;gap:var(--s3);padding:10px var(--s4);
+  background:var(--abl);border-radius:var(--r2);margin-bottom:var(--s4);
+  font-size:12px;color:var(--accent);border:1px solid rgba(26,58,242,.15);
+  animation:up .3s var(--spring);
+}
+.free-banner.warn{
+  background:rgba(168,72,0,.07);border-color:rgba(168,72,0,.2);color:var(--warn);
+}
+.free-banner svg{flex-shrink:0}
+.free-banner span{flex:1;line-height:1.5}
+.free-banner a{font-weight:600;cursor:pointer;text-decoration:underline;color:inherit}
+
+/* ─── USER CHIP (topbar) ─── */
+.user-chip{
+  display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;
+  border-radius:20px;border:1px solid var(--bg3);background:var(--bg2);
+  cursor:pointer;transition:all .18s;
+}
+.user-chip:hover{background:var(--bg3)}
+.user-avatar{
+  width:22px;height:22px;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;
+}
+.user-avatar img{width:100%;height:100%;object-fit:cover}
+.user-name{font-size:11px;font-weight:500;color:var(--ink2);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+
 #toast{
   position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;
   transform:translateX(-50%) translateY(8px);
@@ -761,7 +805,7 @@ body.offline .topbar{top:36px}
 
 <div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
 
-<!-- Gate -->
+<!-- Auth Gate -->
 <div id="gate">
   <div class="gate-box">
     <div class="gate-icon">
@@ -770,11 +814,34 @@ body.offline .topbar{top:36px}
       </svg>
     </div>
     <div class="gate-h">Wortschatz</div>
-    <p class="gate-p">برای جستجوی هوشمند، یه‌بار API key وارد کن.<br>از <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> می‌گیری.</p>
-    <input class="inp ltr" id="gate-inp" type="password" placeholder="sk-ant-api03-...">
-    <div class="gate-err" id="gate-err"></div>
-    <button class="btn btn-p btn-full" onclick="gateSave()">شروع کن</button>
-    <div class="gate-skip"><a onclick="gateSkip()">فعلاً رد کن</a></div>
+    <p class="gate-p">دستیار یادگیری لغت آلمانی — وارد شو و شروع کن.</p>
+
+    <!-- Google -->
+    <button class="btn-google" id="btn-google" onclick="loginGoogle()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      ورود با Google
+    </button>
+
+    <div class="gate-or"><span>یا با ایمیل</span></div>
+
+    <!-- Magic Link -->
+    <div id="gate-email-section">
+      <input class="inp ltr" id="gate-email" type="email" placeholder="your@email.com" autocomplete="email">
+      <div class="gate-err" id="gate-err"></div>
+      <button class="btn btn-p btn-full" onclick="loginMagicLink()">ارسال لینک ورود</button>
+    </div>
+
+    <!-- Sent state -->
+    <div id="gate-sent" style="display:none;text-align:center;padding:var(--s4) 0">
+      <div style="font-size:32px;margin-bottom:var(--s3)">📬</div>
+      <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:var(--s2)">لینک فرستاده شد!</div>
+      <div style="font-size:13px;color:var(--ink3);line-height:1.7">ایمیلت رو چک کن و روی لینک کلیک کن.</div>
+    </div>
   </div>
 </div>
 
@@ -782,21 +849,34 @@ body.offline .topbar{top:36px}
 <div class="drawer-bg" id="drawer" onclick="if(event.target===this)drawerClose()">
   <div class="drawer">
     <div class="drw-handle"></div>
-    <div class="drw-title">تنظیمات</div>
-    <div class="drw-lbl">API Key</div>
-    <div class="drw-row">
-      <input class="inp ltr" id="drw-key" type="password" placeholder="sk-ant-api03-..." style="margin:0;flex:1">
-      <button class="btn btn-p btn-sm" onclick="saveKey()">ذخیره</button>
+    <div class="drw-title">حساب کاربری</div>
+
+    <!-- account info -->
+    <div class="status-row" id="drw-account" style="margin-bottom:var(--s4)">
+      <div class="dot2 ok" id="drw-auth-dot"></div>
+      <span id="drw-email" style="font-size:13px;color:var(--ink2);direction:ltr">وارد نشدی</span>
     </div>
-    <div class="status-row"><div class="dot2" id="api-dot"></div><span id="api-st">وارد نشده</span></div>
-    <div class="drw-lbl" style="margin-top:var(--s4)">کد همگام‌سازی</div>
+
+    <!-- plan -->
+    <div id="drw-plan-row" style="display:none;margin-bottom:var(--s4)">
+      <div class="drw-lbl">پلن</div>
+      <div class="status-row">
+        <span id="drw-plan-badge" style="font-size:13px;font-weight:600"></span>
+        <span id="drw-word-count" style="font-size:12px;color:var(--ink3);margin-right:auto"></span>
+      </div>
+    </div>
+
+    <!-- sync code (legacy) -->
+    <div class="drw-lbl" style="margin-top:var(--s2)">کد همگام‌سازی (قدیمی)</div>
     <div class="drw-row">
       <input class="inp ltr" id="drw-sync" type="text" placeholder="مثلاً: sina123" style="margin:0;flex:1">
       <button class="btn btn-p btn-sm" onclick="saveSync()">ذخیره</button>
     </div>
     <div class="status-row"><div class="dot2 ok"></div><span id="sync-st">Supabase متصل</span></div>
-    <div style="padding-top:var(--s4);border-top:1px solid var(--bg3);margin-top:var(--s4)">
+
+    <div style="padding-top:var(--s4);border-top:1px solid var(--bg3);margin-top:var(--s5);display:flex;flex-direction:column;gap:var(--s2)">
       <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
+      <button class="btn btn-full btn-sm" id="drw-logout" onclick="logout()" style="display:none">خروج از حساب</button>
     </div>
   </div>
 </div>
@@ -907,7 +987,11 @@ body.offline .topbar{top:36px}
           <path d="M12.5 8.5A5.5 5.5 0 116.5 3a4.5 4.5 0 006 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
-      <button class="btn-ic" onclick="drawerOpen()">
+      <div class="user-chip" id="user-chip" onclick="drawerOpen()" style="display:none">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span class="user-name" id="user-name"></span>
+      </div>
+      <button class="btn-ic" id="settings-btn" onclick="drawerOpen()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -919,6 +1003,14 @@ body.offline .topbar{top:36px}
       <div class="hero-eye">دستیار یادگیری آلمانی</div>
       <h1>لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
       <p>لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
+    </div>
+
+    <div class="free-banner" id="free-banner" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M7 4v3.5L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span id="free-banner-text"></span>
     </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
@@ -1096,26 +1188,25 @@ body.offline .topbar{top:36px}
 /* ══════════════════════════════
    CONFIG
 ══════════════════════════════ */
-const SB='https://ekogfglcsftpwmithxbi.supabase.co';
-const SBK='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
+const SB_URL='https://ekogfglcsftpwmithxbi.supabase.co';
+const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
+
+// Supabase client (via CDN)
+const { createClient } = window.supabase;
+const sb = createClient(SB_URL, SB_KEY);
+
+const FREE_LIMIT = 50;
 
 /* ══════════════════════════════
    STATE
 ══════════════════════════════ */
-let KEY=localStorage.getItem('ws_key')||'';
 let words=[], curWord=null, curPhrase=null;
 let acSel=-1, editIdx=-1, listSort='new';
 let sesDeck=[], sesI=0, sesGood=0, sesBad=0, sesRepN=0;
 let sesRepeat=new Set();
-
-function getUID(){
-  const c=localStorage.getItem('ws_sync');
-  if(c) return 'sync_'+c;
-  let id=localStorage.getItem('ws_uid');
-  if(!id){id='u_'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('ws_uid',id);}
-  return id;
-}
-let UID=getUID();
+let currentUser=null;
+let userPlan='free';
+let userWordCount=0;
 
 /* ══════════════════════════════
    HELPERS
@@ -1123,91 +1214,241 @@ let UID=getUID();
 const Q=s=>document.querySelector(s);
 const QA=s=>document.querySelectorAll(s);
 const esc=s=>String(s).replace(/'/g,"\\'");
-const saveCache=()=>localStorage.setItem('ws_cache',JSON.stringify(words));
+const saveCache=()=>localStorage.setItem('ws_cache_'+uid(),JSON.stringify(words));
+const uid=()=>currentUser?.id||localStorage.getItem('ws_uid')||'anon';
 
 let _toastT;
-function showToast(msg, dur=2800){
+function showToast(msg,dur=2800){
   let el=Q('#toast');
   if(!el){el=document.createElement('div');el.id='toast';document.body.appendChild(el);}
-  el.textContent=msg; el.classList.add('show');
+  el.textContent=msg;el.classList.add('show');
   clearTimeout(_toastT);
   _toastT=setTimeout(()=>el.classList.remove('show'),dur);
 }
 
 /* ══════════════════════════════
-   SUPABASE
+   SUPABASE (supabase-js v2)
 ══════════════════════════════ */
-function setSdot(s){const d=Q('#sync-dot');d.className='sync-dot'+(s==='ok'?' ok':s==='busy'?' busy':'');}
-async function sbReq(path,opts={}){
-  setSdot('busy');
-  const r=await fetch(SB+path,{...opts,headers:{apikey:SBK,'Authorization':'Bearer '+SBK,'Content-Type':'application/json','Prefer':opts.prefer||'',...(opts.headers||{})}});
-  const t=await r.text();setSdot('ok');
-  return t?JSON.parse(t):[];
-}
+function setSdot(s){const d=Q('#sync-dot');if(d)d.className='sync-dot'+(s==='ok'?' ok':s==='busy'?' busy':'');}
+
 async function dbLoad(){
-  const c=localStorage.getItem('ws_cache');
+  const c=localStorage.getItem('ws_cache_'+uid());
   if(c){try{words=JSON.parse(c);updateBadges();updateStats();}catch(e){}}
   if(!navigator.onLine){setSdot('');return;}
+  setSdot('busy');
   try{
-    const rows=await sbReq(`/rest/v1/words?user_id=eq.${UID}&order=created_at.asc`);
-    words=rows.map(r=>({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',score:r.score||0,seen:r.seen||0,interval:r.interval||1,easiness:r.easiness||2.5,next_review:r.next_review||new Date().toISOString(),reviewed_at:r.reviewed_at||null}));
+    const{data,error}=await sb.from('words').select('*').order('created_at',{ascending:true});
+    if(error)throw error;
+    words=(data||[]).map(r=>({
+      id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',
+      score:r.score||0,seen:r.seen||0,
+      interval:r.interval||1,easiness:r.easiness||2.5,
+      next_review:r.next_review||new Date().toISOString(),
+      reviewed_at:r.reviewed_at||null
+    }));
     saveCache();updateBadges();updateStats();
+    setSdot('ok');
   }catch(e){setSdot('');console.error(e);}
 }
-async function dbAdd(w){try{const r=await sbReq('/rest/v1/words',{method:'POST',prefer:'return=representation',body:JSON.stringify({user_id:UID,de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()})});if(r&&r[0])w.id=r[0].id;}catch(e){}}
-async function dbUpd(w){if(!w.id)return;try{await sbReq(`/rest/v1/words?id=eq.${w.id}`,{method:'PATCH',body:JSON.stringify({score:w.score,seen:w.seen,interval:w.interval,easiness:w.easiness,next_review:w.next_review,reviewed_at:w.reviewed_at})});}catch(e){}}
-async function dbDel(id){if(!id)return;try{await sbReq(`/rest/v1/words?id=eq.${id}`,{method:'DELETE'});}catch(e){}}
-async function dbClear(){try{await sbReq(`/rest/v1/words?user_id=eq.${UID}`,{method:'DELETE'});}catch(e){}}
+
+async function dbAdd(w){
+  try{
+    const{data,error}=await sb.from('words').insert({
+      user_id:uid(),de:w.de,fa:w.fa,ex:w.ex||'',
+      score:0,seen:0,interval:1,easiness:2.5,
+      next_review:new Date().toISOString()
+    }).select().single();
+    if(error)throw error;
+    if(data)w.id=data.id;
+    userWordCount++;
+    updateFreeBanner();
+  }catch(e){console.error(e);}
+}
+
+async function dbUpd(w){
+  if(!w.id)return;
+  try{
+    await sb.from('words').update({
+      score:w.score,seen:w.seen,interval:w.interval,
+      easiness:w.easiness,next_review:w.next_review,
+      reviewed_at:w.reviewed_at
+    }).eq('id',w.id);
+  }catch(e){}
+}
+
+async function dbDel(id){
+  if(!id)return;
+  try{await sb.from('words').delete().eq('id',id);}catch(e){}
+}
+
+async function dbClear(){
+  try{await sb.from('words').delete().eq('user_id',uid());}catch(e){}
+}
+
+async function loadProfile(){
+  if(!currentUser)return;
+  try{
+    const{data}=await sb.from('profiles').select('plan,word_count').eq('id',currentUser.id).single();
+    if(data){
+      userPlan=data.plan||'free';
+      userWordCount=data.word_count||words.length;
+      updateFreeBanner();
+      updateDrawerPlan();
+    }
+  }catch(e){}
+}
+
+function canAddMore(){
+  if(userPlan==='pro')return true;
+  return userWordCount<FREE_LIMIT;
+}
+
+function updateFreeBanner(){
+  const b=Q('#free-banner'),t=Q('#free-banner-text');
+  if(!b||!t)return;
+  if(userPlan==='pro'){b.style.display='none';return;}
+  const left=FREE_LIMIT-userWordCount;
+  if(left>5){
+    b.className='free-banner';
+    t.innerHTML=`پلن رایگان: ${userWordCount}/${FREE_LIMIT} لغت استفاده شده. `;
+    b.style.display='flex';
+  } else if(left>0){
+    b.className='free-banner warn';
+    t.innerHTML=`فقط ${left} لغت دیگه می‌تونی اضافه کنی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
+    b.style.display='flex';
+  } else {
+    b.className='free-banner warn';
+    t.innerHTML=`به سقف ${FREE_LIMIT} لغت رسیدی. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
+    b.style.display='flex';
+  }
+}
+
+function showUpgrade(){
+  showToast('به‌زودی: پلن Pro 🚀');
+}
+
+function updateDrawerPlan(){
+  const row=Q('#drw-plan-row');
+  if(!row)return;
+  row.style.display='block';
+  Q('#drw-plan-badge').textContent=userPlan==='pro'?'✨ Pro':'رایگان';
+  Q('#drw-plan-badge').style.color=userPlan==='pro'?'var(--accent)':'var(--ink3)';
+  Q('#drw-word-count').textContent=`${userWordCount} لغت ذخیره شده`;
+}
 
 /* ══════════════════════════════
-   AI
+   AI (no API key from user)
 ══════════════════════════════ */
 async function ai(prompt,tokens=900){
   const r=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({apiKey:KEY,model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
-  if(!r.ok) throw new Error('HTTP '+r.status);
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
+  if(!r.ok)throw new Error('HTTP '+r.status);
   const d=await r.json();
+  if(d.error)throw new Error(d.error);
   return d.content.map(b=>b.text||'').join('').trim();
+}
+
+/* ══════════════════════════════
+   AUTH
+══════════════════════════════ */
+async function loginGoogle(){
+  const{error}=await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.origin}
+  });
+  if(error)showToast('خطا: '+error.message);
+}
+
+async function loginMagicLink(){
+  const email=Q('#gate-email').value.trim();
+  if(!email||!email.includes('@')){Q('#gate-err').textContent='ایمیل معتبر وارد کن';return;}
+  Q('#gate-err').textContent='';
+  const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
+  if(error){Q('#gate-err').textContent=error.message;return;}
+  Q('#gate-email-section').style.display='none';
+  Q('#gate-sent').style.display='block';
+}
+
+async function logout(){
+  await sb.auth.signOut();
+  currentUser=null;
+  words=[];
+  drawerClose();
+  showGate();
+}
+
+function showGate(){
+  Q('#gate').classList.add('open');
+}
+function hideGate(){
+  const g=Q('#gate');
+  g.style.opacity='0';g.style.transition='opacity .3s';
+  setTimeout(()=>{g.classList.remove('open');g.style.opacity='';g.style.transition='';},300);
+}
+
+function setUserUI(user){
+  currentUser=user;
+  const chip=Q('#user-chip'),avatar=Q('#user-avatar'),name=Q('#user-name');
+  if(!chip)return;
+  if(user){
+    // avatar
+    const photoUrl=user.user_metadata?.avatar_url;
+    if(photoUrl)avatar.innerHTML=`<img src="${photoUrl}" alt="">`;
+    else avatar.textContent=(user.email||'?')[0].toUpperCase();
+    // name
+    name.textContent=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';
+    chip.style.display='flex';
+    Q('#settings-btn').style.display='none';
+    // drawer
+    const emailEl=Q('#drw-email');if(emailEl)emailEl.textContent=user.email||'';
+    const logoutBtn=Q('#drw-logout');if(logoutBtn)logoutBtn.style.display='block';
+  } else {
+    chip.style.display='none';
+    Q('#settings-btn').style.display='flex';
+  }
 }
 
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
-function init(){
+async function init(){
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
-  if(!KEY){Q('#gate').classList.add('open');}
-  else{try{Q('#drw-key').value=KEY;}catch(e){}setApiDot(true);}
-  const sc=localStorage.getItem('ws_sync');
-  if(sc){try{Q('#drw-sync').value=sc;}catch(e){}Q('#sync-st').textContent='کد: '+sc+' ✓';}
-  dbLoad().then(()=>setTimeout(checkReminder,2500));
-  window.addEventListener('scroll',()=>Q('#topbar').classList.toggle('raised',window.scrollY>4));
-  syncOnline();window.addEventListener('online',syncOnline);window.addEventListener('offline',syncOnline);
+
+  // Auth state listener
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    if(session?.user){
+      setUserUI(session.user);
+      hideGate();
+      await dbLoad();
+      await loadProfile();
+      setTimeout(checkReminder,2500);
+      // legacy sync code
+      const sc=localStorage.getItem('ws_sync');
+      if(sc&&Q('#drw-sync'))Q('#drw-sync').value=sc;
+    } else {
+      setUserUI(null);
+      // check legacy sync (anonymous mode)
+      const legacy=localStorage.getItem('ws_cache_anon')||localStorage.getItem('ws_cache');
+      if(legacy){
+        try{words=JSON.parse(legacy);updateBadges();updateStats();}catch(e){}
+      }
+      // show gate only if no local words
+      if(!words.length) showGate();
+    }
+  });
+
+  window.addEventListener('scroll',()=>Q('#topbar')?.classList.toggle('raised',window.scrollY>4));
+  syncOnline();
+  window.addEventListener('online',syncOnline);
+  window.addEventListener('offline',syncOnline);
   initSwipe();
-  if(!KEY||!localStorage.getItem('ws_cache')) setTimeout(()=>{if(!words.length)Q('#search-tip').classList.add('show');},800);
-}
-function syncOnline(){
-  const off=!navigator.onLine;
-  Q('#off-bar').classList.toggle('show',off);
-  document.body.classList.toggle('offline',off);
+  setTimeout(()=>{if(!words.length&&!Q('#gate').classList.contains('open'))Q('#search-tip')?.classList.add('show');},1000);
 }
 
-/* ══════════════════════════════
-   GATE
-══════════════════════════════ */
-function gateSave(){
-  const k=Q('#gate-inp').value.trim();
-  if(!k){Q('#gate-err').textContent='API key لازمه';return;}
-  if(!k.startsWith('sk-')){Q('#gate-err').textContent='باید با sk- شروع بشه';return;}
-  KEY=k;localStorage.setItem('ws_key',k);
-  try{Q('#drw-key').value=k;}catch(e){}
-  setApiDot(true);gateClose();
-}
-function gateSkip(){gateClose();}
-function gateClose(){
-  const g=Q('#gate');g.style.opacity='0';g.style.transition='opacity .3s';
-  setTimeout(()=>{g.classList.remove('open');g.style.opacity='';g.style.transition='';
-    if(!words.length)Q('#search-tip').classList.add('show');
-  },300);
+function syncOnline(){
+  const off=!navigator.onLine;
+  Q('#off-bar')?.classList.toggle('show',off);
+  document.body.classList.toggle('offline',off);
 }
 
 /* ══════════════════════════════
@@ -1215,19 +1456,20 @@ function gateClose(){
 ══════════════════════════════ */
 function drawerOpen(){Q('#drawer').classList.add('open');}
 function drawerClose(){Q('#drawer').classList.remove('open');}
-function saveKey(){const k=Q('#drw-key').value.trim();if(!k)return;KEY=k;localStorage.setItem('ws_key',k);setApiDot(true);drawerClose();}
+
 function saveSync(){
-  const c=Q('#drw-sync').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  const c=Q('#drw-sync')?.value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
   if(!c){alert('کد معتبر وارد کن');return;}
-  localStorage.setItem('ws_sync',c);UID='sync_'+c;
+  localStorage.setItem('ws_sync',c);
   Q('#sync-st').textContent='کد: '+c+' ✓';
   dbLoad();drawerClose();
 }
-function setApiDot(ok){Q('#api-dot').className='dot2 '+(ok?'ok':'err');Q('#api-st').textContent=ok?'API متصل ✓':'خطا';}
+
 async function clearAll(){
   if(!confirm('همه لغات پاک بشن؟'))return;
   words=[];saveCache();updateBadges();updateStats();renderList();
-  drawerClose();dbClear().catch(()=>{});
+  drawerClose();
+  if(currentUser)dbClear().catch(()=>{});
 }
 
 /* ══════════════════════════════
@@ -1461,6 +1703,7 @@ function qs(w){Q('#s-inp').value=w;doSearch();}
 
 async function addWord(){
   if(!curWord)return;
+  if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
   const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
@@ -1500,6 +1743,7 @@ JSON خالص:
 }
 async function addPhrase(){
   if(!curPhrase)return;
+  if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const de=curPhrase.original;
   if(words.some(w=>w.de===de))return;
   const w={de,fa:curPhrase.meaning_fa,ex:curPhrase.example_de&&curPhrase.example_de!=='null'?curPhrase.example_de:'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
