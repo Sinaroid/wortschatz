@@ -794,6 +794,9 @@ body.offline .topbar{top:36px}
 .user-name{font-size:11px;font-weight:500;color:var(--ink2);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 
+.confirm-icon{font-size:36px;text-align:center;margin-bottom:var(--s3)}
+.confirm-msg{font-size:14px;color:var(--ink3);text-align:center;line-height:1.7;margin-top:var(--s2)}
+
 #toast{
   position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;
   transform:translateX(-50%) translateY(8px);
@@ -1004,6 +1007,19 @@ body.offline .topbar{top:36px}
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-bg" id="confirm-modal">
+  <div class="modal" style="max-width:320px">
+    <div class="confirm-icon" id="confirm-icon">⚠️</div>
+    <div class="modal-title" id="confirm-title">مطمئنی؟</div>
+    <p class="confirm-msg" id="confirm-msg"></p>
+    <div class="modal-acts" style="margin-top:var(--s5)">
+      <button class="btn btn-danger" style="flex:1" id="confirm-ok">تأیید</button>
+      <button class="btn" style="flex:1" onclick="confirmClose()">انصراف</button>
+    </div>
   </div>
 </div>
 
@@ -1533,16 +1549,52 @@ async function loginMagicLink(){
   Q('#gate-sent').style.display='block';
 }
 
-async function logout(){
-  await sb.auth.signOut();
-  currentUser=null;
-  words=[];
-  drawerClose();
-  showGate();
+/* ══════════════════════════════
+   CONFIRM MODAL
+══════════════════════════════ */
+function confirmModal({icon='⚠️', title, msg, okLabel='تأیید', okClass='btn-danger', onOk}){
+  Q('#confirm-icon').textContent = icon;
+  Q('#confirm-title').textContent = title;
+  Q('#confirm-msg').textContent = msg;
+  const okBtn = Q('#confirm-ok');
+  okBtn.textContent = okLabel;
+  okBtn.className = 'btn '+okClass;
+  okBtn.onclick = ()=>{ confirmClose(); onOk(); };
+  Q('#confirm-modal').classList.add('open');
+}
+function confirmClose(){
+  Q('#confirm-modal').classList.remove('open');
 }
 
-function showGate(){
-  Q('#gate').classList.add('open');
+async function logout(){
+  confirmModal({
+    icon: '👋',
+    title: 'خروج از حساب',
+    msg: 'مطمئنی می‌خوای خارج بشی؟ لغاتت ذخیره‌ست و دوباره با Google وارد بشی همه چیز هست.',
+    okLabel: 'بله، خروج',
+    okClass: 'btn-p',
+    onOk: async ()=>{
+      await sb.auth.signOut();
+      currentUser=null; words=[];
+      updateBadges(); updateStats();
+      drawerClose(); showGate();
+    }
+  });
+}
+
+async function clearAll(){
+  confirmModal({
+    icon: '🗑️',
+    title: 'پاک کردن همه لغات',
+    msg: 'همه '+words.length+' لغت پاک میشن و قابل بازیابی نیستن. مطمئنی؟',
+    okLabel: 'بله، پاک کن',
+    okClass: 'btn-danger',
+    onOk: async ()=>{
+      words=[];saveCache();updateBadges();updateStats();renderList();
+      drawerClose();
+      if(currentUser) dbClear().catch(()=>{});
+    }
+  });
 }
 function hideGate(){
   const g=Q('#gate');
@@ -1662,11 +1714,10 @@ function saveSync(){
   dbLoad();drawerClose();
 }
 
-async function clearAll(){
-  if(!confirm('همه لغات پاک بشن؟'))return;
-  words=[];saveCache();updateBadges();updateStats();renderList();
-  drawerClose();
-  if(currentUser)dbClear().catch(()=>{});
+
+
+function showGate(){
+  Q('#gate').classList.add('open');
 }
 
 /* ══════════════════════════════
@@ -2363,6 +2414,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     Q('#drawer').classList.remove('open');
     Q('#edit-modal').classList.remove('open');
+    Q('#confirm-modal').classList.remove('open');
     if(Q('#session').classList.contains('open'))sesClose();
   }
 });
