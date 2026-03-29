@@ -413,79 +413,106 @@ body.offline .topbar{top:36px}
 .search-tip.show{display:block}
 
 /* ═══════════════════════════════════
-   WORD RESULT CARD
+   WORD RESULT CARD — new design
 ═══════════════════════════════════ */
 .res{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
   overflow:hidden;display:none;box-shadow:var(--sh2);
   margin-bottom:var(--s4);animation:up .3s var(--spring);
 }
-.res-top{
-  background:var(--accent);padding:var(--s5) var(--s6);
-  position:relative;overflow:hidden;
-}
-.res-top::before{
-  content:'';position:absolute;top:-40px;left:-20px;width:160px;height:160px;
-  border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;
-}
-.res-top::after{
-  content:'';position:absolute;bottom:-30px;right:-10px;width:100px;height:100px;
-  border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none;
-}
+/* ─ Header ─ */
+.res-head{padding:var(--s5) var(--s5) var(--s4);border-bottom:1px solid var(--bg2)}
 .res-fix{
-  display:none;font-size:11px;color:rgba(255,255,255,.7);
-  background:rgba(255,255,255,.14);border-radius:var(--r1);
-  padding:3px 8px;margin-bottom:var(--s3);position:relative;z-index:1;
+  display:none;font-size:11px;color:var(--ink3);background:var(--bg2);
+  border-radius:var(--r1);padding:2px 8px;margin-bottom:var(--s3);
+  border:1px solid var(--bg3);
 }
 .res-fix.show{display:inline-block}
-.res-banner-row{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1}
-.res-art{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
-.res-word{
-  font-family:var(--serif);font-size:clamp(36px,9vw,54px);font-weight:600;
-  color:#fff;line-height:.95;letter-spacing:-2px;margin-bottom:5px;direction:ltr;
+.res-main{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s2)}
+.res-art-word{display:flex;align-items:baseline;gap:8px}
+.res-art{
+  font-size:13px;font-weight:600;color:var(--accent);
+  font-family:var(--sans);letter-spacing:.3px;
 }
-.res-meta{font-size:12px;color:rgba(255,255,255,.5);direction:ltr}
-.res-tag-col{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;margin-top:3px}
-.res-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.16);color:#fff;letter-spacing:.3px}
-.res-body{padding:var(--s5) var(--s6)}
-.res-meaning{font-size:22px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:var(--s3)}
-.res-usage{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink3);direction:ltr;text-align:left;margin-bottom:var(--s4)}
+.res-word{
+  font-family:var(--serif);font-size:clamp(32px,8vw,46px);font-weight:600;
+  color:var(--ink);line-height:1;letter-spacing:-1.5px;direction:ltr;
+}
+.res-badges{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0;padding-top:4px}
+.res-badge{
+  font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;
+  letter-spacing:.3px;
+}
+.res-badge.level{background:var(--abl);color:var(--accent)}
+.res-badge.type{background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3)}
+.res-meta-row{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.res-meta{font-size:12px;color:var(--ink4);direction:ltr;font-family:var(--sans)}
+.res-usage-inline{
+  font-family:var(--serif);font-style:italic;font-size:12px;
+  color:var(--ink3);direction:ltr;
+}
+/* ─ Body ─ */
+.res-body{padding:var(--s4) var(--s5) var(--s5)}
+.res-meaning-row{display:flex;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s4)}
+.res-meaning{font-size:21px;font-weight:600;color:var(--ink);line-height:1.3;flex:1}
+.res-priority{
+  flex-shrink:0;display:flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
+  margin-top:4px;border:1px solid;
+}
+.res-priority.p5{background:rgba(204,32,32,.07);border-color:rgba(204,32,32,.2);color:var(--err)}
+.res-priority.p4{background:rgba(168,72,0,.07);border-color:rgba(168,72,0,.2);color:var(--warn)}
+.res-priority.p3{background:var(--abl);border-color:rgba(26,58,242,.15);color:var(--accent)}
+.res-priority.p2,.res-priority.p1{background:var(--bg2);border-color:var(--bg3);color:var(--ink4)}
+/* Section label */
 .sec{
   font-size:10px;font-weight:700;color:var(--ink4);letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:var(--s3);margin-top:var(--s5);
+  text-transform:uppercase;margin-bottom:var(--s3);margin-top:var(--s4);
   display:flex;align-items:center;gap:var(--s2);
 }
 .sec::after{content:'';flex:1;height:1px;background:var(--bg3)}
+/* Synonyms */
 .syn-ant{
   display:flex;background:var(--bg2);border:1px solid var(--bg3);
-  border-radius:var(--r3);overflow:hidden;margin-top:var(--s5);margin-bottom:var(--s2);
+  border-radius:var(--r3);overflow:hidden;margin-bottom:var(--s2);
 }
-.syn-col,.ant-col{flex:1;padding:var(--s4)}
+.syn-col,.ant-col{flex:1;padding:var(--s3) var(--s4)}
 .syn-divider{width:1px;background:var(--bg3);flex-shrink:0}
-.sa-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:var(--s3);color:var(--ok)}
+.sa-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:var(--s2);color:var(--ok)}
 .sa-lbl.a{color:var(--err)}
 .sa-chips{display:flex;flex-wrap:wrap;gap:var(--s1)}
 .sa-chip{
-  font-family:var(--serif);font-size:14px;padding:5px 12px;
+  font-family:var(--serif);font-size:14px;padding:4px 11px;
   border-radius:20px;cursor:pointer;transition:all .15s;direction:ltr;border:1.5px solid;
 }
 .sa-chip.s{color:var(--ok);border-color:rgba(18,110,53,.25);background:var(--okbg)}
 .sa-chip.s:hover{background:rgba(18,110,53,.14)}
 .sa-chip.a{color:var(--err);border-color:rgba(204,32,32,.25);background:var(--errbg)}
 .sa-chip.a:hover{background:rgba(204,32,32,.12)}
+/* Conjugation */
 .conj3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);margin-bottom:var(--s2)}
 .cj{background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);padding:var(--s3);text-align:center}
 .cj-pro{font-size:10px;color:var(--ink4);font-weight:600;letter-spacing:.5px;margin-bottom:3px}
 .cj-form{font-family:var(--serif);font-size:15px;color:var(--ink);direction:ltr;line-height:1.3}
-.ex-card{background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);padding:var(--s4);margin-bottom:var(--s2)}
-.ex-de{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);direction:ltr;text-align:left;line-height:1.5;margin-bottom:var(--s1)}
-.ex-fa{font-size:12px;color:var(--ink2);line-height:1.6}
+/* Examples */
+.ex-card{
+  border-radius:var(--r2);padding:var(--s3) var(--s4);
+  margin-bottom:var(--s2);border-right:3px solid var(--accent);
+  background:var(--bg2);
+}
+.ex-de{
+  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);
+  direction:ltr;text-align:left;line-height:1.5;margin-bottom:5px;
+}
+.ex-fa{font-size:12px;color:var(--ink3);line-height:1.6}
+/* Tip */
 .tip-box{
   background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);
   padding:10px var(--s4) 10px 36px;font-size:13px;color:var(--ink2);
-  line-height:1.75;position:relative;
+  line-height:1.75;position:relative;margin-top:var(--s3);
 }
 .tip-box::before{content:'💡';position:absolute;top:11px;left:11px;font-size:13px}
+/* Add button */
 .add-btn{
   width:100%;margin-top:var(--s5);padding:14px;border-radius:var(--r3);
   background:var(--accent);color:#fff;border:none;font-family:var(--sans);
@@ -496,23 +523,6 @@ body.offline .topbar{top:36px}
 .add-btn:disabled{opacity:.45;transform:none;box-shadow:none;cursor:default}
 .add-btn.done{background:var(--ok)}
 
-/* ═══════════════════════════════════
-   PRIORITY BADGE
-═══════════════════════════════════ */
-.priority-badge{
-  display:flex;align-items:flex-start;gap:var(--s2);
-  padding:var(--s3) var(--s4);border-radius:var(--r2);
-  margin-bottom:var(--s4);font-size:13px;line-height:1.5;
-  border:1px solid;animation:up .25s var(--spring);
-}
-.priority-badge.p5{background:rgba(220,38,38,.06);border-color:rgba(220,38,38,.2);color:var(--ink2)}
-.priority-badge.p4{background:rgba(168,72,0,.06);border-color:rgba(168,72,0,.2);color:var(--ink2)}
-.priority-badge.p3{background:rgba(26,58,242,.06);border-color:rgba(26,58,242,.15);color:var(--ink2)}
-.priority-badge.p2{background:var(--bg2);border-color:var(--bg3);color:var(--ink3)}
-.priority-badge.p1{background:var(--bg2);border-color:var(--bg3);color:var(--ink3)}
-.pb-icon{font-size:16px;flex-shrink:0;line-height:1.3}
-.pb-label{font-weight:700;margin-bottom:1px;font-size:12px}
-.pb-reason{font-size:12px;opacity:.85}
 
 /* ═══════════════════════════════════
    PHRASE RESULT
@@ -655,95 +665,6 @@ body.offline .topbar{top:36px}
 .c-type.rev{background:var(--okbg);color:var(--ok)}
 .end-next{font-size:13px;color:var(--ink3);line-height:1.65;max-width:260px;margin-top:var(--s1)}
 
-/* ═══════════════════════════════════
-   STATS PANE
-═══════════════════════════════════ */
-.stats-head{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink);margin-bottom:var(--s5)}
-.stat-section{margin-bottom:var(--s5)}
-.stat-sec-lbl{font-size:11px;font-weight:700;color:var(--ink4);letter-spacing:2px;text-transform:uppercase;margin-bottom:var(--s3)}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2);margin-bottom:var(--s2)}
-.stat-box{background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);padding:var(--s4);text-align:center}
-.stat-box-n{font-family:var(--serif);font-size:32px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:4px}
-.stat-box-n.accent{color:var(--accent)}.stat-box-n.ok{color:var(--ok)}.stat-box-n.err{color:var(--err)}
-.stat-box-l{font-size:11px;color:var(--ink3)}
-.heatmap-wrap{background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);padding:var(--s4)}
-.heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:var(--s3)}
-.hm-cell{aspect-ratio:1;border-radius:3px;background:var(--bg3)}
-.hm-cell.l1{background:var(--abl)}.hm-cell.l2{background:rgba(26,58,242,.25)}
-.hm-cell.l3{background:rgba(26,58,242,.5)}.hm-cell.l4{background:var(--accent)}
-.heatmap-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink4)}
-.level-curve{background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s2)}
-.lc-title{font-size:12px;color:var(--ink3);margin-bottom:var(--s3)}
-.lc-bars{display:flex;align-items:flex-end;gap:3px;height:60px}
-.lc-bar{flex:1;border-radius:3px 3px 0 0;background:var(--abl);transition:height .4s var(--spring);min-height:4px;position:relative}
-.lc-bar.active{background:var(--accent)}
-.lc-bar-tip{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--ink3);white-space:nowrap}
-
-/* ═══════════════════════════════════
-   LIST
-═══════════════════════════════════ */
-.list-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
-.list-title{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink)}
-.list-count{font-size:12px;color:var(--ink3);background:var(--bg2);border:1px solid var(--bg3);padding:3px 10px;border-radius:20px}
-.due-banner{background:var(--warn);border-radius:var(--r3);padding:var(--s4) var(--s5);margin-bottom:var(--s4);display:none}
-.due-banner.show{display:block}
-.due-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
-.due-label{font-family:var(--serif);font-size:16px;color:#fff}
-.due-btn{
-  padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.2);
-  border:1px solid rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:600;
-  cursor:pointer;font-family:var(--sans);transition:all .15s;
-}
-.due-btn:hover{background:rgba(255,255,255,.3)}
-.due-chips{display:flex;flex-wrap:wrap;gap:6px}
-.due-chip{
-  padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.18);
-  border:1px solid rgba(255,255,255,.2);color:#fff;font-family:var(--serif);
-  font-size:13px;cursor:pointer;transition:background .15s;
-}
-.due-chip:hover{background:rgba(255,255,255,.3)}
-.sort-tabs{
-  display:flex;gap:var(--s1);margin-bottom:var(--s4);
-  background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);
-  padding:3px;overflow-x:auto;
-}
-.sort-tab{
-  padding:7px 13px;border-radius:var(--r1);border:none;background:transparent;
-  color:var(--ink3);font-family:var(--sans);font-size:12px;font-weight:500;
-  cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0;
-}
-.sort-tab.on{background:var(--card);color:var(--ink);box-shadow:var(--sh1)}
-.list-s-wrap{position:relative;margin-bottom:var(--s3)}
-.list-s{
-  width:100%;padding:10px var(--s4) 10px 40px;border-radius:var(--r2);
-  border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink);
-  font-family:var(--sans);font-size:14px;outline:none;direction:rtl;transition:all .2s;
-}
-.list-s:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 3px var(--aglow)}
-.list-s::placeholder{color:var(--ink4)}
-.list-s-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none}
-.word-row{
-  display:flex;align-items:center;gap:var(--s3);padding:12px var(--s4);
-  border-radius:var(--r2);border:1px solid var(--bg3);background:var(--card);
-  margin-bottom:var(--s2);transition:all .15s;
-}
-.word-row:hover{border-color:var(--bg4);background:var(--bg2)}
-.word-row.dup{border-color:rgba(168,72,0,.2);background:rgba(168,72,0,.03)}
-.wr-de{font-family:var(--serif);font-size:15px;color:var(--ink);flex:1.2;direction:ltr}
-.wr-fa{font-size:12px;color:var(--ink2);flex:1;text-align:right}
-.wr-sc{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;min-width:30px;text-align:center}
-.wr-sc.pos{background:var(--okbg);color:var(--ok)}
-.wr-sc.neg{background:var(--errbg);color:var(--err)}
-.wr-sc.neu{background:var(--bg3);color:var(--ink4)}
-.hl{color:var(--accent);font-weight:700}
-
-/* ═══════════════════════════════════
-   EMPTY
-═══════════════════════════════════ */
-.empty{text-align:center;padding:var(--s10) var(--s4);color:var(--ink3);animation:fade .35s}
-.empty-ic{font-size:48px;opacity:.35;display:block;margin-bottom:var(--s4)}
-.empty h3{font-family:var(--serif);font-size:20px;color:var(--ink2);margin-bottom:var(--s2)}
-.empty p{font-size:14px;line-height:1.75}
 
 /* ─── TOAST ─── */
 #toast{
@@ -972,21 +893,32 @@ body.offline .topbar{top:36px}
 
     <!-- Word result -->
     <div class="res" id="res">
-      <div class="res-top">
+      <!-- Header -->
+      <div class="res-head">
         <div class="res-fix" id="res-fix"></div>
-        <div class="res-banner-row">
-          <div>
-            <div class="res-art" id="res-art"></div>
-            <div class="res-word" id="res-word"></div>
-            <div class="res-meta" id="res-meta"></div>
+        <div class="res-main">
+          <div class="res-art-word">
+            <span class="res-art" id="res-art"></span>
+            <span class="res-word" id="res-word"></span>
           </div>
-          <div class="res-tag-col" id="res-tag-col"></div>
+          <div class="res-badges">
+            <span class="res-badge level" id="res-level"></span>
+            <span class="res-badge type" id="res-type"></span>
+          </div>
+        </div>
+        <div class="res-meta-row">
+          <span class="res-meta" id="res-meta"></span>
+          <span class="res-usage-inline" id="res-usage"></span>
         </div>
       </div>
+      <!-- Body -->
       <div class="res-body">
-        <div class="res-meaning" id="res-meaning"></div>
-        <div class="priority-badge" id="priority-badge" style="display:none"></div>
-        <div class="res-usage" id="res-usage" style="display:none"></div>
+        <!-- معنی + اولویت -->
+        <div class="res-meaning-row">
+          <div class="res-meaning" id="res-meaning"></div>
+          <div class="res-priority" id="res-priority" style="display:none"></div>
+        </div>
+        <!-- مترادف / متضاد -->
         <div id="res-syn-wrap" style="display:none">
           <div class="syn-ant">
             <div class="syn-col" id="syn-col" style="display:none">
@@ -1000,16 +932,18 @@ body.offline .topbar{top:36px}
             </div>
           </div>
         </div>
+        <!-- صرف فعل -->
         <div id="res-conj-wrap" style="display:none">
           <div class="sec">صرف فعل</div>
           <div class="conj3" id="res-conj"></div>
         </div>
+        <!-- جمله نمونه -->
         <div id="res-ex-wrap" style="display:none">
-          <div class="sec">جمله‌های نمونه</div>
+          <div class="sec">جمله نمونه</div>
           <div id="res-exs"></div>
         </div>
+        <!-- نکته گرامری -->
         <div id="res-tip-wrap" style="display:none">
-          <div class="sec">نکته گرامری</div>
           <div class="tip-box" id="res-tip"></div>
         </div>
         <button class="add-btn" id="add-btn" onclick="addWord()">
@@ -1104,32 +1038,7 @@ body.offline .topbar{top:36px}
     <div id="wlist"></div>
   </div>
 
-  <!-- STATS PANE -->
-  <div class="pane" id="pane-stats">
-    <div class="stats-head">آمار یادگیری</div>
-    <div class="stat-section">
-      <div class="stat-grid">
-        <div class="stat-box"><div class="stat-box-n accent" id="st-total">0</div><div class="stat-box-l">کل لغت</div></div>
-        <div class="stat-box"><div class="stat-box-n ok" id="st-learned">0</div><div class="stat-box-l">یاد گرفتم</div></div>
-        <div class="stat-box"><div class="stat-box-n err" id="st-due-c">0</div><div class="stat-box-l">سررسید امروز</div></div>
-        <div class="stat-box"><div class="stat-box-n accent" id="st-streak">0</div><div class="stat-box-l">روز streak</div></div>
-      </div>
-    </div>
-    <div class="stat-section">
-      <div class="stat-sec-lbl">سشن‌های ۲۸ روز اخیر</div>
-      <div class="heatmap-wrap">
-        <div class="heatmap" id="st-heatmap"></div>
-        <div class="heatmap-labels"><span>۴ هفته پیش</span><span>امروز</span></div>
-      </div>
-    </div>
-    <div class="stat-section">
-      <div class="stat-sec-lbl">توزیع interval لغات</div>
-      <div class="level-curve">
-        <div class="lc-title">هر ستون = تعداد لغات در آن بازه تکرار</div>
-        <div class="lc-bars" id="lc-bars"></div>
-      </div>
-    </div>
-  </div>
+
 </div><!-- .app -->
 
 <!-- Bottom nav -->
@@ -1149,14 +1058,6 @@ body.offline .topbar{top:36px}
       <path d="M6 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
     <span class="nav-label">کارت‌ها</span>
-  </button>
-  <button class="nav-item" id="t-stats" onclick="go('stats')">
-    <div class="nav-dot" id="nd-stats"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path d="M4 14l4-4 3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="2.5" y="2.5" width="15" height="15" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
-    </svg>
-    <span class="nav-label">آمار</span>
   </button>
   <button class="nav-item" id="t-list" onclick="go('list')">
     <div class="nav-dot" id="nd-list"></div>
@@ -1320,7 +1221,7 @@ function setThemeIc(d){
    NAV
 ══════════════════════════════ */
 function go(t){
-  ['home','stats','list'].forEach(id=>{
+  ['home','list'].forEach(id=>{
     const pane=Q('#pane-'+id);
     if(pane) pane.classList.toggle('on',id===t);
     const tab=Q('#t-'+id);
@@ -1329,11 +1230,10 @@ function go(t){
   Q('#t-cards').classList.remove('on');
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='list') renderList();
-  if(t==='stats') renderStats();
 }
 function updateBadges(){
   const has=words.length>0;
-  ['cards','stats','list'].forEach(id=>{
+  ['cards','list'].forEach(id=>{
     const el=Q('#t-'+id);
     if(el) el.classList.toggle('lit',has);
   });
@@ -1420,13 +1320,33 @@ async function searchWord(q){
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
   const p=`ورودی: "${q}"
 ممکنه آلمانی، فارسی یا انگلیسی باشه:
-- آلمانی (یا با کیبورد انگلیسی): تصحیح کن (ae→ä,oe→ö,ue→ü,ss→ß)
+- آلمانی (یا تایپ انگلیسی): تصحیح کن (ae→ä, oe→ö, ue→ü, ss→ß)
 - فارسی یا انگلیسی: معادل آلمانی پیدا کن
-JSON خالص بدون backtick:
-{"word":"لغت بدون حرف تعریف","corrected_from":"فقط اگه واقعاً اصلاح شد وگرنه null","article":"der/die/das یا null","plural":"جمع یا null","preposition":"حرف اضافه مثلاً auf+Akk یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق و کامل","synonyms":["مترادف۱","مترادف۲"],"antonyms":["متضاد۱"],"examples":[{"de":"جمله اول کاربردی","fa":"ترجمه"},{"de":"جمله دوم در موقعیت دیگر","fa":"ترجمه"}],"grammar_tip":"نکته گرامری کوتاه به فارسی","conjugation":{"ich":"فرم ich","du":"فرم du","er":"فرم er/sie/es"},"usage_pattern":"الگوی استفاده مثلاً jdm etw zutrauen یا null","priority":{"score":1,"reason":"چرا این لغت مهمه — یه جمله کوتاه فارسی. مثلاً: خیلی پرکاربرد توی محیط کار، یا: توی آزمون B2 زیاد میاد"}}
-اگه Verb نیست conjugation=null.
-برای priority.score: 5=حتماً یاد بگیر(روزمره)، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر/رسمی
-فقط JSON.`;
+
+JSON خالص بدون backtick — دقیقاً این ساختار:
+{
+  "word": "لغت بدون حرف تعریف",
+  "corrected_from": "null یا لغت اصلی قبل از تصحیح",
+  "article": "der/die/das یا null",
+  "plural": "جمع یا null",
+  "type": "Nomen/Verb/Adjektiv/Adverb/Redewendung",
+  "level": "A1/A2/B1/B2/C1/C2",
+  "meaning_fa": "معنی فارسی — دقیق، کامل، اگر چند معنی دارد با / جدا کن",
+  "usage_pattern": "الگو مثل: sich engagieren für+Akk یا jdm etw. geben — null اگه ندارد",
+  "preposition": "حرف اضافه اصلی مثل auf+Akk یا null",
+  "synonyms": ["مترادف۱", "مترادف۲"],
+  "antonyms": ["متضاد۱"],
+  "conjugation": {"ich": "...", "du": "...", "er": "..."} ,
+  "examples": [
+    {"de": "جمله نمونه اول — طبیعی و کاربردی", "fa": "ترجمه فارسی"},
+    {"de": "جمله نمونه دوم — موقعیت متفاوت", "fa": "ترجمه فارسی"}
+  ],
+  "grammar_tip": "نکته گرامری مهم به فارسی — اگر ندارد null",
+  "priority": {"score": 3, "reason": "یه جمله کوتاه فارسی — چرا مهمه"}
+}
+قوانین: اگه Verb نیست conjugation=null. اگه Nomen نیست plural=null.
+priority.score: 5=روزمره/حیاتی، 4=خیلی مهم(B1/B2)، 3=مهم، 2=متوسط، 1=نادر/فنی
+فقط JSON. بدون توضیح اضافه.`;
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
   try{
@@ -1438,38 +1358,49 @@ JSON خالص بدون backtick:
 }
 
 function renderWord(d){
-  // Fix notice
+  /* ─ Fix notice ─ */
   const fix=Q('#res-fix');
   if(d.corrected_from&&d.corrected_from!=='null'&&d.corrected_from.trim()&&d.corrected_from!==d.word)
     {fix.textContent='تصحیح از: '+d.corrected_from;fix.classList.add('show');}
   else fix.classList.remove('show');
-  // Banner
-  Q('#res-art').textContent=(d.article&&d.article!=='null'&&d.article!=='—')?d.article:'';
+
+  /* ─ Article + Word ─ */
+  const artEl=Q('#res-art');
+  const art=(d.article&&d.article!=='null'&&d.article!=='—')?d.article:'';
+  artEl.textContent=art;
+  artEl.style.display=art?'':'none';
   Q('#res-word').textContent=d.word;
+
+  /* ─ Badges ─ */
+  const lvlEl=Q('#res-level'),typEl=Q('#res-type');
+  if(d.level){lvlEl.textContent=d.level;lvlEl.style.display='';}else lvlEl.style.display='none';
+  if(d.type){typEl.textContent=d.type;typEl.style.display='';}else typEl.style.display='none';
+
+  /* ─ Meta row ─ */
   const meta=[];
-  if(d.plural&&d.plural!=='null')meta.push('Pl: '+d.plural);
+  if(d.plural&&d.plural!=='null')meta.push('جمع: '+d.plural);
   if(d.preposition&&d.preposition!=='null')meta.push(d.preposition);
   Q('#res-meta').textContent=meta.join(' · ');
-  const tc=Q('#res-tag-col');tc.innerHTML='';
-  if(d.level)tc.innerHTML+=`<span class="res-tag">${d.level}</span>`;
-  if(d.type)tc.innerHTML+=`<span class="res-tag">${d.type}</span>`;
-  // Meaning
+  const uEl=Q('#res-usage');
+  if(d.usage_pattern&&d.usage_pattern!=='null'&&d.usage_pattern.trim())
+    {uEl.textContent=d.usage_pattern;uEl.style.display='';}
+  else uEl.style.display='none';
+
+  /* ─ Meaning ─ */
   Q('#res-meaning').textContent=d.meaning_fa;
-  // Priority badge
-  const pbEl=Q('#priority-badge');
+
+  /* ─ Priority pill ─ */
+  const prEl=Q('#res-priority');
   if(d.priority&&d.priority.score){
     const sc=d.priority.score;
-    const icons={5:'🔴',4:'🟠',3:'🔵',2:'⚪',1:'⚪'};
-    const labels={5:'حتماً یاد بگیر',4:'خیلی مهمه',3:'مهمه',2:'معمولی',1:'نادر / رسمی'};
-    pbEl.className='priority-badge p'+sc;
-    pbEl.innerHTML=`<span class="pb-icon">${icons[sc]}</span><div class="pb-text"><div class="pb-label">${labels[sc]}</div><div class="pb-reason">${d.priority.reason||''}</div></div>`;
-    pbEl.style.display='flex';
-  } else pbEl.style.display='none';
-  const usEl=Q('#res-usage');
-  if(d.usage_pattern&&d.usage_pattern!=='null'&&d.usage_pattern.trim())
-    {usEl.textContent=d.usage_pattern;usEl.style.display='block';}
-  else usEl.style.display='none';
-  // Synonyms / Antonyms
+    const icons={5:'🔴',4:'🟠',3:'🔵',2:'⬜',1:'⬜'};
+    const labels={5:'حتماً یاد بگیر',4:'خیلی مهم',3:'مهم',2:'معمولی',1:'نادر'};
+    prEl.className=`res-priority p${sc}`;
+    prEl.innerHTML=`${icons[sc]} ${labels[sc]}`;
+    prEl.style.display='flex';
+  } else prEl.style.display='none';
+
+  /* ─ Syn / Ant ─ */
   const syns=d.synonyms||[],ants=d.antonyms||[];
   const synWrap=Q('#res-syn-wrap');
   if(syns.length||ants.length){
@@ -1481,7 +1412,8 @@ function renderWord(d){
     else antCol.style.display='none';
     div.style.display=(syns.length&&ants.length)?'block':'none';
   } else synWrap.style.display='none';
-  // Conjugation
+
+  /* ─ Conjugation ─ */
   const conjWrap=Q('#res-conj-wrap'),conjEl=Q('#res-conj');
   if(d.type==='Verb'&&d.conjugation&&d.conjugation!=='null'&&typeof d.conjugation==='object'){
     const ich=d.conjugation.ich||'',du=d.conjugation.du||'',er=d.conjugation.er||'';
@@ -1493,7 +1425,8 @@ function renderWord(d){
       conjWrap.style.display='block';
     } else conjWrap.style.display='none';
   } else conjWrap.style.display='none';
-  // Examples
+
+  /* ─ Examples ─ */
   const exWrap=Q('#res-ex-wrap');
   const exs=d.examples||[];
   if(exs.length){
@@ -1502,19 +1435,22 @@ function renderWord(d){
       `<div class="ex-card"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`
     ).join('');
   } else exWrap.style.display='none';
-  // Tip
+
+  /* ─ Grammar tip ─ */
   const tipWrap=Q('#res-tip-wrap');
-  if(d.grammar_tip&&d.grammar_tip!=='null')
+  if(d.grammar_tip&&d.grammar_tip!=='null'&&d.grammar_tip.trim())
     {tipWrap.style.display='block';Q('#res-tip').textContent=d.grammar_tip;}
   else tipWrap.style.display='none';
-  // Add button
-  const key=(d.article&&d.article!=='null'&&d.article!=='—'?d.article+' ':'')+d.word;
+
+  /* ─ Add button ─ */
+  const key=(art?art+' ':'')+d.word;
   const exists=words.some(w=>w.de.toLowerCase()===key.toLowerCase());
   const btn=Q('#add-btn');
   btn.innerHTML=exists
     ?'<span>✓</span> قبلاً اضافه شده'
     :'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به فلش‌کارت‌ها';
-  btn.disabled=exists;btn.className='add-btn'+(exists?' done':'');
+  btn.disabled=exists; btn.className='add-btn'+(exists?' done':'');
+
   Q('#res').style.display='block';
   setTimeout(()=>Q('#res').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
 }
@@ -1882,52 +1818,6 @@ function initSwipe(){
   },{passive:true});
 }
 
-/* ══════════════════════════════
-   STATS PANE
-══════════════════════════════ */
-function renderStats(){
-  const now = new Date();
-  const due = words.filter(w=>new Date(w.next_review||0)<=now).length;
-  const learned = words.filter(w=>w.seen>0&&w.interval>3).length;
-  Q('#st-total').textContent = words.length;
-  Q('#st-learned').textContent = learned;
-  Q('#st-due-c').textContent = due;
-
-  // streak
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
-  let s=0; const dd=new Date();
-  while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
-  Q('#st-streak').textContent = s;
-
-  // heatmap 28 days
-  const hm = Q('#st-heatmap'); hm.innerHTML='';
-  for(let i=27;i>=0;i--){
-    const day=new Date(); day.setDate(day.getDate()-i);
-    const cnt = rl[day.toDateString()]||0;
-    const lvl = cnt===0?'':cnt<5?'l1':cnt<10?'l2':cnt<20?'l3':'l4';
-    hm.innerHTML += `<div class="hm-cell ${lvl}" title="${day.toLocaleDateString('fa')}"></div>`;
-  }
-
-  // interval distribution
-  const buckets=[1,3,7,14,30,60,90,180,365];
-  const counts=new Array(buckets.length).fill(0);
-  words.forEach(w=>{
-    const iv=w.interval||1;
-    for(let i=0;i<buckets.length;i++){
-      if(iv<=buckets[i]){counts[i]++;break;}
-      if(i===buckets.length-1)counts[i]++;
-    }
-  });
-  const maxC=Math.max(...counts,1);
-  const labels=['1','3','7','14','30','60','90','180','365+'];
-  const bars=Q('#lc-bars'); bars.innerHTML='';
-  counts.forEach((c,i)=>{
-    const h=Math.max(6,Math.round(c/maxC*100))+'%';
-    bars.innerHTML+=`<div class="lc-bar" style="height:${h}" title="${labels[i]}d: ${c}"><span class="lc-bar-tip">${c||''}</span></div>`;
-  });
-}
 
 /* ══════════════════════════════
    LIST
