@@ -1586,16 +1586,8 @@ function logoutStep1Cancel(){
 }
 
 async function logout(){
-  // مستقیم signOut کن — confirm در drawer هست
-  try{
-    await sb.auth.signOut();
-  } catch(e){
-    console.error('signOut error:', e);
-    // دستی cleanup
-    currentUser=null; words=[];
-    setUserUI(null); updateBadges(); updateStats();
-    showGate();
-  }
+  try{ await sb.auth.signOut(); }catch(e){}
+  window.location.href = window.location.pathname;
 }
 
 async function clearAll(){
