@@ -413,119 +413,111 @@ body.offline .topbar{top:36px}
 .search-tip.show{display:block}
 
 /* ═══════════════════════════════════
-   WORD RESULT CARD — new design
+   WORD RESULT CARD
 ═══════════════════════════════════ */
 .res{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
   overflow:hidden;display:none;box-shadow:var(--sh2);
   margin-bottom:var(--s4);animation:up .3s var(--spring);
 }
-/* ─ Header ─ */
-.res-head{padding:var(--s5) var(--s5) var(--s4);border-bottom:1px solid var(--bg2)}
+/* fix notice */
 .res-fix{
-  display:none;font-size:11px;color:var(--ink3);background:var(--bg2);
-  border-radius:var(--r1);padding:2px 8px;margin-bottom:var(--s3);
-  border:1px solid var(--bg3);
+  display:none;font-size:11px;color:var(--ink3);
+  background:var(--bg2);border-bottom:1px solid var(--bg3);
+  padding:6px var(--s5);
 }
-.res-fix.show{display:inline-block}
-.res-main{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s2)}
-.res-art-word{display:flex;align-items:baseline;gap:8px}
+.res-fix.show{display:block}
+
+/* ─ word block ─ */
+.res-word-block{padding:var(--s5) var(--s5) var(--s4)}
+.res-art-word{display:flex;align-items:baseline;gap:9px;margin-bottom:5px}
 .res-art{
-  font-size:13px;font-weight:600;color:var(--accent);
-  font-family:var(--sans);letter-spacing:.3px;
+  font-size:14px;font-weight:700;color:var(--accent);
+  font-family:var(--sans);flex-shrink:0;
 }
 .res-word{
-  font-family:var(--serif);font-size:clamp(32px,8vw,46px);font-weight:600;
-  color:var(--ink);line-height:1;letter-spacing:-1.5px;direction:ltr;
+  font-family:var(--serif);font-size:clamp(30px,7vw,42px);font-weight:600;
+  color:var(--ink);line-height:1;letter-spacing:-1px;direction:ltr;
 }
-.res-badges{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0;padding-top:4px}
+.res-principal{
+  font-family:var(--serif);font-style:italic;font-size:14px;
+  color:var(--ink3);direction:ltr;line-height:1.4;
+}
+.res-plural{
+  font-size:12px;color:var(--ink4);direction:ltr;margin-top:2px;
+}
+
+/* ─ divider ─ */
+.res-divider{height:1px;background:var(--bg2);margin:0 var(--s5)}
+
+/* ─ info block ─ */
+.res-info-block{padding:var(--s4) var(--s5)}
+.res-meaning{
+  font-size:20px;font-weight:600;color:var(--ink);
+  line-height:1.35;margin-bottom:var(--s3);
+}
+.res-synonym{
+  font-size:13px;color:var(--ink2);margin-bottom:var(--s2);line-height:1.55;
+}
+.res-synonym .syn-word{
+  font-family:var(--serif);font-style:italic;color:var(--ink);
+  cursor:pointer;border-bottom:1px dashed var(--bg4);
+  transition:border-color .15s;
+}
+.res-synonym .syn-word:hover{border-color:var(--accent);color:var(--accent)}
+.res-synonym .syn-fa{color:var(--ink3)}
+.res-usage-line{
+  font-size:13px;color:var(--ink3);direction:ltr;text-align:left;
+  margin-bottom:var(--s2);line-height:1.5;
+}
+.res-usage-line::before{content:'* ';color:var(--accent);font-weight:700}
+.res-example{
+  font-family:var(--serif);font-style:italic;font-size:14px;
+  color:var(--ink2);direction:ltr;text-align:left;
+  line-height:1.6;padding:var(--s3) var(--s4);
+  background:var(--bg2);border-radius:var(--r2);
+  border-right:3px solid var(--accent);
+  margin-top:var(--s2);
+}
+.res-tip-line{
+  font-size:12px;color:var(--ink3);line-height:1.65;
+  margin-top:var(--s3);padding:8px var(--s4) 8px 32px;
+  background:var(--bg2);border-radius:var(--r2);
+  position:relative;
+}
+.res-tip-line::before{content:'💡';position:absolute;left:10px;top:8px;font-size:12px}
+
+/* ─ footer badges ─ */
+.res-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--s3) var(--s5);
+}
+.res-footer-left{display:flex;gap:var(--s2)}
 .res-badge{
   font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;
-  letter-spacing:.3px;
+  letter-spacing:.2px;
 }
 .res-badge.level{background:var(--abl);color:var(--accent)}
 .res-badge.type{background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3)}
-.res-meta-row{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
-.res-meta{font-size:12px;color:var(--ink4);direction:ltr;font-family:var(--sans)}
-.res-usage-inline{
-  font-family:var(--serif);font-style:italic;font-size:12px;
-  color:var(--accent);direction:ltr;
-}
-.res-principal{
-  font-family:var(--serif);font-style:italic;font-size:13px;
-  color:var(--ink3);direction:ltr;margin-top:2px;
-  letter-spacing:.1px;
-}
-.chip-fa{font-size:11px;opacity:.75;font-family:var(--sans);font-style:normal}
-/* ─ Body ─ */
-.res-body{padding:var(--s4) var(--s5) var(--s5)}
-.res-meaning-row{display:flex;align-items:flex-start;gap:var(--s3);margin-bottom:var(--s4)}
-.res-meaning{font-size:21px;font-weight:600;color:var(--ink);line-height:1.3;flex:1}
 .res-priority{
-  flex-shrink:0;display:flex;align-items:center;gap:4px;
-  font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;
-  margin-top:4px;border:1px solid;
+  display:none;align-items:center;gap:4px;font-size:11px;font-weight:600;
+  padding:3px 10px;border-radius:20px;border:1px solid;
 }
+.res-priority.show{display:flex}
 .res-priority.p5{background:rgba(204,32,32,.07);border-color:rgba(204,32,32,.2);color:var(--err)}
 .res-priority.p4{background:rgba(168,72,0,.07);border-color:rgba(168,72,0,.2);color:var(--warn)}
 .res-priority.p3{background:var(--abl);border-color:rgba(26,58,242,.15);color:var(--accent)}
 .res-priority.p2,.res-priority.p1{background:var(--bg2);border-color:var(--bg3);color:var(--ink4)}
-/* Section label */
-.sec{
-  font-size:10px;font-weight:700;color:var(--ink4);letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:var(--s3);margin-top:var(--s4);
-  display:flex;align-items:center;gap:var(--s2);
-}
-.sec::after{content:'';flex:1;height:1px;background:var(--bg3)}
-/* Synonyms */
-.syn-ant{
-  display:flex;background:var(--bg2);border:1px solid var(--bg3);
-  border-radius:var(--r3);overflow:hidden;margin-bottom:var(--s2);
-}
-.syn-col,.ant-col{flex:1;padding:var(--s3) var(--s4)}
-.syn-divider{width:1px;background:var(--bg3);flex-shrink:0}
-.sa-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:var(--s2);color:var(--ok)}
-.sa-lbl.a{color:var(--err)}
-.sa-chips{display:flex;flex-wrap:wrap;gap:var(--s1)}
-.sa-chip{
-  font-family:var(--serif);font-size:14px;padding:4px 11px;
-  border-radius:20px;cursor:pointer;transition:all .15s;direction:ltr;border:1.5px solid;
-}
-.sa-chip.s{color:var(--ok);border-color:rgba(18,110,53,.25);background:var(--okbg)}
-.sa-chip.s:hover{background:rgba(18,110,53,.14)}
-.sa-chip.a{color:var(--err);border-color:rgba(204,32,32,.25);background:var(--errbg)}
-.sa-chip.a:hover{background:rgba(204,32,32,.12)}
-/* Conjugation */
-.conj3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);margin-bottom:var(--s2)}
-.cj{background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);padding:var(--s3);text-align:center}
-.cj-pro{font-size:10px;color:var(--ink4);font-weight:600;letter-spacing:.5px;margin-bottom:3px}
-.cj-form{font-family:var(--serif);font-size:15px;color:var(--ink);direction:ltr;line-height:1.3}
-/* Examples */
-.ex-card{
-  border-radius:var(--r2);padding:var(--s3) var(--s4);
-  margin-bottom:var(--s2);border-right:3px solid var(--accent);
-  background:var(--bg2);
-}
-.ex-de{
-  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);
-  direction:ltr;text-align:left;line-height:1.5;margin-bottom:5px;
-}
-.ex-fa{font-size:12px;color:var(--ink3);line-height:1.6}
-/* Tip */
-.tip-box{
-  background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);
-  padding:10px var(--s4) 10px 36px;font-size:13px;color:var(--ink2);
-  line-height:1.75;position:relative;margin-top:var(--s3);
-}
-.tip-box::before{content:'💡';position:absolute;top:11px;left:11px;font-size:13px}
-/* Add button */
+
+/* ─ add button ─ */
+.res-add-wrap{padding:0 var(--s5) var(--s5)}
 .add-btn{
-  width:100%;margin-top:var(--s5);padding:14px;border-radius:var(--r3);
+  width:100%;padding:13px;border-radius:var(--r3);
   background:var(--accent);color:#fff;border:none;font-family:var(--sans);
   font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;
   display:flex;align-items:center;justify-content:center;gap:var(--s2);
 }
-.add-btn:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 6px 20px var(--aglow)}
+.add-btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 16px var(--aglow)}
 .add-btn:disabled{opacity:.45;transform:none;box-shadow:none;cursor:default}
 .add-btn.done{background:var(--ok)}
 
@@ -924,60 +916,41 @@ body.offline .topbar{top:36px}
 
     <!-- Word result -->
     <div class="res" id="res">
-      <!-- Header -->
-      <div class="res-head">
-        <div class="res-fix" id="res-fix"></div>
-        <div class="res-main">
-          <div class="res-art-word">
-            <span class="res-art" id="res-art"></span>
-            <span class="res-word" id="res-word"></span>
-          </div>
-          <div class="res-badges">
-            <span class="res-badge level" id="res-level"></span>
-            <span class="res-badge type" id="res-type"></span>
-          </div>
+      <div class="res-fix" id="res-fix"></div>
+
+      <!-- اسم لغت -->
+      <div class="res-word-block">
+        <div class="res-art-word">
+          <span class="res-art" id="res-art"></span>
+          <span class="res-word" id="res-word"></span>
         </div>
-        <div class="res-meta-row">
-          <span class="res-meta" id="res-meta"></span>
-          <span class="res-usage-inline" id="res-usage"></span>
-        </div>
-        <div class="res-principal" id="res-principal" style="display:none"></div>
+        <div class="res-principal" id="res-principal"></div>
+        <div class="res-plural" id="res-plural"></div>
       </div>
-      <!-- Body -->
-      <div class="res-body">
-        <!-- معنی + اولویت -->
-        <div class="res-meaning-row">
-          <div class="res-meaning" id="res-meaning"></div>
-          <div class="res-priority" id="res-priority" style="display:none"></div>
+
+      <div class="res-divider"></div>
+
+      <!-- معنی و اطلاعات -->
+      <div class="res-info-block">
+        <div class="res-meaning" id="res-meaning"></div>
+        <div class="res-synonym" id="res-synonym"></div>
+        <div class="res-usage-line" id="res-usage-line"></div>
+        <div class="res-example" id="res-example"></div>
+        <div class="res-tip-line" id="res-tip-line"></div>
+      </div>
+
+      <div class="res-divider"></div>
+
+      <!-- badges + priority -->
+      <div class="res-footer">
+        <div class="res-footer-left">
+          <span class="res-badge level" id="res-level"></span>
+          <span class="res-badge type" id="res-type"></span>
         </div>
-        <!-- مترادف / متضاد -->
-        <div id="res-syn-wrap" style="display:none">
-          <div class="syn-ant">
-            <div class="syn-col" id="syn-col" style="display:none">
-              <div class="sa-lbl">مترادف</div>
-              <div class="sa-chips" id="res-syns"></div>
-            </div>
-            <div class="syn-divider" id="syn-div" style="display:none"></div>
-            <div class="ant-col" id="ant-col" style="display:none">
-              <div class="sa-lbl a">متضاد</div>
-              <div class="sa-chips" id="res-ants"></div>
-            </div>
-          </div>
-        </div>
-        <!-- صرف فعل -->
-        <div id="res-conj-wrap" style="display:none">
-          <div class="sec">صرف فعل</div>
-          <div class="conj3" id="res-conj"></div>
-        </div>
-        <!-- جمله نمونه -->
-        <div id="res-ex-wrap" style="display:none">
-          <div class="sec">جمله نمونه</div>
-          <div id="res-exs"></div>
-        </div>
-        <!-- نکته گرامری -->
-        <div id="res-tip-wrap" style="display:none">
-          <div class="tip-box" id="res-tip"></div>
-        </div>
+        <div class="res-priority" id="res-priority"></div>
+      </div>
+
+      <div class="res-add-wrap">
         <button class="add-btn" id="add-btn" onclick="addWord()">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           افزودن به فلش‌کارت‌ها
@@ -1350,20 +1323,17 @@ async function searchWord(q){
   const ck='wc_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
-  const schema = '{"word":"...","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی دقیق","principal_parts":"برای Verb: شکل گذشته و past participle مثل engagierte sich – hat sich engagiert — null برای غیر Verb","usage_pattern":"الگو مثل sich engagieren fur+Akk یا jdm etw. geben — null اگه ندارد","preposition":"حرف اضافه یا null","synonyms":[{"de":"مترادف آلمانی","fa":"معنی مترادف به فارسی"}],"antonyms":["متضاد آلمانی"],"examples":[{"de":"جمله اول","fa":"ترجمه"},{"de":"جمله دوم","fa":"ترجمه"}],"grammar_tip":"نکته گرامری یا null","priority":{"score":3,"reason":"چرا مهمه"}}';
+  const schema='{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","usage_pattern":"الگوی استفاده مثل sich engagieren fur+Akk یا ein Praktikum absolvieren — null اگه ندارد","preposition":"حرف اضافه مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی و طبیعی","fa":"ترجمه فارسی"}],"grammar_tip":"نکته گرامری مهم یا null","priority":{"score":3,"reason":"چرا مهمه — یه جمله کوتاه"}}';
   const p='ورودی: "'+q+'"\n'
    +'ممکنه آلمانی، فارسی یا انگلیسی باشه.\n'
    +'آلمانی یا تایپ انگلیسی: تصحیح کن (ae→ä, oe→ö, ue→ü, ss→ß)\n'
    +'فارسی یا انگلیسی: معادل آلمانی پیدا کن\n\n'
-   +'JSON خالص (بدون markdown):\n'
-   +schema+'\n\n'
+   +'JSON خالص:\n'+schema+'\n\n'
    +'قوانین:\n'
-   +'- اگه Verb نیست principal_parts=null و conjugation حذف کن\n'
-   +'- synonyms: آرایه‌ای از آبجکت {de, fa} — نه string\n'
-   +'- principal_parts: فقط ۲ شکل مثل "engagierte sich – hat sich engagiert" — بدون infinitive\n'
-   +'- meaning_fa: اگر چند معنی دارد با / جدا کن\n'
-   +'- usage_pattern: الگوی دقیق مثل sich engagieren fur+Akk یا jdm etw. geben\n'
-   +'- priority.score: 5=روزمره/حیاتی، 4=خیلی مهم(B1/B2)، 3=مهم، 2=متوسط، 1=نادر\n'
+   +'- principal_parts: فقط برای Verb، فقط ۲ شکل Präteritum و Perfekt (بدون Infinitiv)\n'
+   +'- synonyms: حداکثر ۲ تا، هر کدام {de, fa}\n'
+   +'- examples: دقیقاً ۱ جمله — طبیعی، کاربردی، مرتبط با usage_pattern\n'
+   +'- priority.score: 5=روزمره، 4=خیلی مهم(B1/B2)، 3=مهم، 2=متوسط، 1=نادر\n'
    +'فقط JSON.';
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
@@ -1376,109 +1346,84 @@ async function searchWord(q){
 }
 
 function renderWord(d){
+  const nul = v => !v||v==='null'||v==='—'||!String(v).trim();
+
   /* ─ Fix notice ─ */
   const fix=Q('#res-fix');
-  if(d.corrected_from&&d.corrected_from!=='null'&&d.corrected_from.trim()&&d.corrected_from!==d.word)
+  if(!nul(d.corrected_from)&&d.corrected_from!==d.word)
     {fix.textContent='تصحیح از: '+d.corrected_from;fix.classList.add('show');}
   else fix.classList.remove('show');
 
   /* ─ Article + Word ─ */
-  const artEl=Q('#res-art');
-  const art=(d.article&&d.article!=='null'&&d.article!=='—')?d.article:'';
-  artEl.textContent=art;
-  artEl.style.display=art?'':'none';
-  Q('#res-word').textContent=d.word;
+  const art = nul(d.article)?'':d.article;
+  const artEl = Q('#res-art');
+  artEl.textContent = art;
+  artEl.style.display = art ? '' : 'none';
+  Q('#res-word').textContent = d.word;
+
+  /* ─ Principal parts (Verb) ─
+     format: engagieren – engagierte sich – hat sich engagiert  */
+  const pp = nul(d.principal_parts)?'':d.principal_parts.trim();
+  const ppEl = Q('#res-principal');
+  if(pp){ ppEl.textContent = d.word+' – '+pp; ppEl.style.display=''; }
+  else   ppEl.style.display='none';
+
+  /* ─ Plural (Nomen) ─ */
+  const plEl = Q('#res-plural');
+  if(!nul(d.plural)){ plEl.textContent = 'Pl: '+d.plural; plEl.style.display=''; }
+  else plEl.style.display='none';
+
+  /* ─ Meaning ─ */
+  Q('#res-meaning').textContent = d.meaning_fa||'';
+
+  /* ─ Synonym line: "Synonym: sich einsetzen (متعهدانه تلاش کردن)" ─ */
+  const synEl = Q('#res-synonym');
+  const rawSyns = d.synonyms||[];
+  const syns = rawSyns.map(s=>typeof s==='object'?s:{de:s,fa:''}).filter(s=>s.de&&s.de!=='null');
+  if(syns.length){
+    synEl.style.display='';
+    synEl.innerHTML = 'Synonym: ' + syns.map(s=>
+      `<span class="syn-word" onclick="qs('${esc(s.de)}')">${s.de}</span>`+
+      (s.fa?` <span class="syn-fa">(${s.fa})</span>`:'')
+    ).join('، ');
+  } else synEl.style.display='none';
+
+  /* ─ Usage line: "* sich engagieren für + Akk" ─ */
+  const usEl = Q('#res-usage-line');
+  const up = nul(d.usage_pattern)?'':d.usage_pattern.trim();
+  // also add preposition if no usage_pattern
+  const pre = nul(d.preposition)?'':d.preposition.trim();
+  const usageText = up || pre;
+  if(usageText){ usEl.textContent=usageText; usEl.style.display=''; }
+  else usEl.style.display='none';
+
+  /* ─ First example sentence ─ */
+  const exEl = Q('#res-example');
+  const exs = d.examples||[];
+  if(exs.length && exs[0].de){
+    exEl.innerHTML = exs[0].de+(exs[0].fa?'<br><span style="font-size:12px;font-style:normal;color:var(--ink3)">'+exs[0].fa+'</span>':'');
+    exEl.style.display='';
+  } else exEl.style.display='none';
+
+  /* ─ Grammar tip ─ */
+  const tipEl = Q('#res-tip-line');
+  if(!nul(d.grammar_tip)){ tipEl.textContent=d.grammar_tip; tipEl.style.display=''; }
+  else tipEl.style.display='none';
 
   /* ─ Badges ─ */
   const lvlEl=Q('#res-level'),typEl=Q('#res-type');
   if(d.level){lvlEl.textContent=d.level;lvlEl.style.display='';}else lvlEl.style.display='none';
   if(d.type){typEl.textContent=d.type;typEl.style.display='';}else typEl.style.display='none';
 
-  /* ─ Meta row: plural / preposition / principal parts ─ */
-  const meta=[];
-  if(d.plural&&d.plural!=='null')meta.push('جمع: '+d.plural);
-  if(d.preposition&&d.preposition!=='null')meta.push(d.preposition);
-  Q('#res-meta').textContent=meta.join(' · ');
-
-  /* ─ Principal parts (Verb conjugation line) ─ */
-  const pp=d.principal_parts&&d.principal_parts!=='null'?d.principal_parts.trim():'';
-  const ppEl=Q('#res-principal');
-  if(ppEl){
-    if(pp){ppEl.textContent=d.word+' – '+pp;ppEl.style.display='';}
-    else ppEl.style.display='none';
-  }
-
-  /* ─ Usage pattern ─ */
-  const uEl=Q('#res-usage');
-  if(d.usage_pattern&&d.usage_pattern!=='null'&&d.usage_pattern.trim())
-    {uEl.textContent=d.usage_pattern;uEl.style.display='';}
-  else uEl.style.display='none';
-
-  /* ─ Meaning ─ */
-  Q('#res-meaning').textContent=d.meaning_fa;
-
-  /* ─ Priority pill ─ */
+  /* ─ Priority ─ */
   const prEl=Q('#res-priority');
-  if(d.priority&&d.priority.score){
+  if(d.priority&&d.priority.score>=3){
     const sc=d.priority.score;
-    const icons={5:'🔴',4:'🟠',3:'🔵',2:'⬜',1:'⬜'};
-    const labels={5:'حتماً یاد بگیر',4:'خیلی مهم',3:'مهم',2:'معمولی',1:'نادر'};
-    prEl.className=`res-priority p${sc}`;
-    prEl.innerHTML=icons[sc]+' '+labels[sc];
-    prEl.style.display='flex';
-  } else prEl.style.display='none';
-
-  /* ─ Synonyms with Persian meaning ─ */
-  const rawSyns=d.synonyms||[];
-  // support both old string[] and new {de,fa}[] format
-  const synsData=rawSyns.map(s=>typeof s==='object'?s:{de:s,fa:''});
-  const rawAnts=d.antonyms||[];
-  const antsData=rawAnts.map(a=>typeof a==='object'?a.de||a:a);
-  const synWrap=Q('#res-syn-wrap');
-  if(synsData.length||antsData.length){
-    synWrap.style.display='block';
-    const synCol=Q('#syn-col'),antCol=Q('#ant-col'),div=Q('#syn-div');
-    if(synsData.length){
-      synCol.style.display='block';
-      Q('#res-syns').innerHTML=synsData.map(s=>
-        `<span class="sa-chip s" onclick="qs('${esc(s.de||s)}')">${s.de||s}${s.fa?' <span class="chip-fa">('+s.fa+')</span>':''}</span>`
-      ).join('');
-    } else synCol.style.display='none';
-    if(antsData.length){
-      antCol.style.display='block';
-      Q('#res-ants').innerHTML=antsData.map(a=>`<span class="sa-chip a" onclick="qs('${esc(a)}')">${a}</span>`).join('');
-    } else antCol.style.display='none';
-    div.style.display=(synsData.length&&antsData.length)?'block':'none';
-  } else synWrap.style.display='none';
-
-  /* ─ Conjugation table ─ */
-  const conjWrap=Q('#res-conj-wrap'),conjEl=Q('#res-conj');
-  if(d.type==='Verb'&&d.conjugation&&d.conjugation!=='null'&&typeof d.conjugation==='object'){
-    const ich=d.conjugation.ich||'',du=d.conjugation.du||'',er=d.conjugation.er||'';
-    if(ich||du||er){
-      conjEl.innerHTML=
-        `<div class="cj"><div class="cj-pro">ich</div><div class="cj-form">${ich}</div></div>`+
-        `<div class="cj"><div class="cj-pro">du</div><div class="cj-form">${du}</div></div>`+
-        `<div class="cj"><div class="cj-pro">er / sie</div><div class="cj-form">${er}</div></div>`;
-      conjWrap.style.display='block';
-    } else conjWrap.style.display='none';
-  } else conjWrap.style.display='none';
-
-  /* ─ Examples ─ */
-  const exWrap=Q('#res-ex-wrap');
-  const exs=d.examples||[];
-  if(exs.length){
-    exWrap.style.display='block';
-    Q('#res-exs').innerHTML=exs.slice(0,2).map(e=>
-      `<div class="ex-card"><div class="ex-de">${e.de}</div><div class="ex-fa">${e.fa}</div></div>`
-    ).join('');
-  } else exWrap.style.display='none';
-
-  /* ─ Grammar tip ─ */
-  const tipWrap=Q('#res-tip-wrap');
-  if(d.grammar_tip&&d.grammar_tip!=='null'&&d.grammar_tip.trim())
-    {tipWrap.style.display='block';Q('#res-tip').textContent=d.grammar_tip;}
-  else tipWrap.style.display='none';
+    const icons={5:'🔴',4:'🟠',3:'🔵'};
+    const labels={5:'حتماً یاد بگیر',4:'خیلی مهم',3:'مهم'};
+    prEl.className='res-priority show p'+sc;
+    prEl.textContent=icons[sc]+' '+labels[sc];
+  } else { prEl.className='res-priority'; }
 
   /* ─ Add button ─ */
   const key=(art?art+' ':'')+d.word;
