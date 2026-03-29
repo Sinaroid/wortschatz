@@ -469,30 +469,41 @@ body.offline .topbar{top:36px}
 .res-synonym .syn-fa{color:var(--ink3);font-size:12px}
 
 .res-usage-line{
-  font-size:13px;color:var(--ink3);direction:ltr;text-align:left;
-  margin-bottom:var(--s3);line-height:1.5;
+  font-size:13px;line-height:1.55;margin-bottom:var(--s3);
+  direction:ltr;text-align:left;
+  display:flex;align-items:flex-start;gap:7px;
 }
-.res-usage-line::before{content:'* ';color:var(--accent);font-weight:700}
+.res-usage-line::before{
+  content:'*';color:var(--accent);font-weight:800;font-size:16px;
+  flex-shrink:0;line-height:1.2;
+}
 
 .res-example{
   font-family:var(--serif);font-style:italic;font-size:14px;
   color:var(--ink);direction:ltr;text-align:left;
-  line-height:1.65;padding:var(--s3) var(--s4);
+  line-height:1.7;padding:var(--s3) var(--s4);
   background:var(--bg2);border-radius:var(--r2);
-  border-right:2px solid var(--accent);
+  border-right:none;border-left:none;
+  border-top:1px solid var(--bg3);
+  margin-top:var(--s2);
 }
 .res-example .ex-tr{
   display:block;font-style:normal;font-family:var(--sans);
-  font-size:12px;color:var(--ink3);margin-top:4px;direction:rtl;text-align:right;
+  font-size:12px;color:var(--ink3);margin-top:5px;
+  direction:rtl;text-align:right;
+  opacity:.85;
 }
 
 .res-tip-line{
-  font-size:12px;color:var(--ink3);line-height:1.65;
-  margin-top:var(--s3);padding:8px var(--s3) 8px 30px;
+  font-size:12px;color:var(--ink2);line-height:1.7;
+  margin-top:var(--s3);padding:var(--s3) var(--s4) var(--s3) 34px;
   background:var(--bg2);border-radius:var(--r2);
-  position:relative;direction:rtl;
+  position:relative;direction:rtl;border:1px solid var(--bg3);
 }
-.res-tip-line::before{content:'💡';position:absolute;right:auto;left:9px;top:8px;font-size:11px}
+.res-tip-line::before{
+  content:'💡';position:absolute;right:auto;left:10px;top:50%;
+  transform:translateY(-50%);font-size:13px;line-height:1;
+}
 
 /* ─ footer ─ */
 .res-footer{
@@ -1398,11 +1409,12 @@ function renderWord(d){
   /* ─ Usage line: "* sich engagieren für + Akk" ─ */
   const usEl = Q('#res-usage-line');
   const up = nul(d.usage_pattern)?'':d.usage_pattern.trim();
-  // also add preposition if no usage_pattern
   const pre = nul(d.preposition)?'':d.preposition.trim();
   const usageText = up || pre;
-  if(usageText){ usEl.textContent=usageText; usEl.style.display=''; }
-  else usEl.style.display='none';
+  if(usageText){
+    usEl.innerHTML = `<span>${usageText}</span>`;
+    usEl.style.display='flex';
+  } else usEl.style.display='none';
 
   /* ─ First example sentence ─ */
   const exEl = Q('#res-example');
