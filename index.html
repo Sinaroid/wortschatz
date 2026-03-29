@@ -770,6 +770,14 @@ body.offline .topbar{top:36px}
 .user-name{font-size:11px;font-weight:500;color:var(--ink2);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 
+.drw-plan-beta{background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.05));border-color:rgba(26,58,242,.2)}
+.drw-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-top:0}
+.drw-stat{text-align:center;padding:var(--s3) var(--s2);background:var(--bg2);border-radius:var(--r2);border:1px solid var(--bg3)}
+.drw-stat-n{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:3px}
+.drw-stat-n.accent{color:var(--accent)}
+.drw-stat-n.err{color:var(--err)}
+.drw-stat-l{font-size:10px;color:var(--ink3)}
+
 #toast{
   position:fixed;bottom:calc(var(--nav-h) + 14px);left:50%;
   transform:translateX(-50%) translateY(8px);
@@ -907,7 +915,7 @@ body.offline .topbar{top:36px}
   <div class="drawer">
     <div class="drw-handle"></div>
 
-    <!-- Profile header -->
+    <!-- Profile -->
     <div class="drw-profile" id="drw-profile">
       <div class="drw-avatar" id="drw-avatar-big">?</div>
       <div class="drw-profile-info">
@@ -916,44 +924,76 @@ body.offline .topbar{top:36px}
       </div>
     </div>
 
-    <!-- Plan card -->
-    <div class="drw-plan-card" id="drw-plan-card">
+    <!-- Plan card — FREE -->
+    <div class="drw-plan-card" id="drw-plan-free">
       <div class="drw-plan-row">
-        <span class="drw-plan-label" id="drw-plan-label">پلن رایگان</span>
-        <span class="drw-plan-badge" id="drw-plan-badge">Free</span>
+        <span class="drw-plan-label">نسخه رایگان</span>
+        <span class="drw-plan-badge">Free</span>
       </div>
-      <div class="drw-plan-bar-wrap" id="drw-plan-bar-wrap">
+      <div class="drw-plan-bar-wrap">
         <div class="drw-plan-bar"><div class="drw-plan-fill" id="drw-plan-fill"></div></div>
-        <span class="drw-plan-count" id="drw-word-count">0 / 50 لغت</span>
+        <span class="drw-plan-count" id="drw-word-count">0 / 10</span>
       </div>
-      <button class="drw-upgrade-btn" id="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">
-        ارتقا به Pro ✨
-      </button>
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s3);text-align:right">جستجو استفاده شده</div>
+      <button class="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">✨ ارتقا به Pro — €4.99/ماه</button>
+    </div>
+
+    <!-- Plan card — BETA -->
+    <div class="drw-plan-card drw-plan-beta" id="drw-plan-beta" style="display:none">
+      <div class="drw-plan-row">
+        <span class="drw-plan-label">دسترسی بتا</span>
+        <span class="drw-plan-badge pro">Beta 🚀</span>
+      </div>
+      <div style="font-size:13px;color:var(--ink2);line-height:1.6">
+        جستجوی نامحدود فعاله.<br>
+        <span style="font-size:12px;color:var(--ink3)">ممنون که اپ رو تست می‌کنی ❤️</span>
+      </div>
+    </div>
+
+    <!-- Plan card — PRO -->
+    <div class="drw-plan-card" id="drw-plan-pro" style="display:none">
+      <div class="drw-plan-row">
+        <span class="drw-plan-label">Wortschatz Pro</span>
+        <span class="drw-plan-badge pro">Pro ✨</span>
+      </div>
+      <div style="font-size:13px;color:var(--ink2)">جستجو و لغت نامحدود ✅</div>
     </div>
 
     <div class="drw-divider"></div>
 
-    <!-- Settings -->
-    <div class="drw-section-title">تنظیمات</div>
-
-    <div class="drw-lbl">کد همگام‌سازی (قدیمی)</div>
-    <div class="drw-row">
-      <input class="inp ltr" id="drw-sync" type="text" placeholder="مثلاً: sina123" style="margin:0;flex:1">
-      <button class="btn btn-p btn-sm" onclick="saveSync()">ذخیره</button>
+    <!-- Stats -->
+    <div class="drw-stats-row">
+      <div class="drw-stat">
+        <div class="drw-stat-n" id="drw-stat-total">—</div>
+        <div class="drw-stat-l">کل لغت</div>
+      </div>
+      <div class="drw-stat">
+        <div class="drw-stat-n" id="drw-stat-learned">—</div>
+        <div class="drw-stat-l">یاد گرفتم</div>
+      </div>
+      <div class="drw-stat">
+        <div class="drw-stat-n accent" id="drw-stat-streak">—</div>
+        <div class="drw-stat-l">روز streak</div>
+      </div>
+      <div class="drw-stat">
+        <div class="drw-stat-n err" id="drw-stat-due">—</div>
+        <div class="drw-stat-l">سررسید</div>
+      </div>
     </div>
 
     <div class="drw-divider"></div>
 
     <!-- Actions -->
     <div style="display:flex;flex-direction:column;gap:var(--s2)">
-      <button class="btn btn-full btn-sm" id="drw-logout" onclick="logout()" style="display:none">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.6">
+      <button class="btn btn-full btn-sm" onclick="logout()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.5">
           <path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         خروج از حساب
       </button>
       <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
     </div>
+
   </div>
 </div>
 
@@ -1425,24 +1465,50 @@ async function redeemBeta(){
 }
 
 function updateDrawerPlan(){
-  const isPro = userPlan==='pro';
-  const badge=Q('#drw-plan-badge');
-  const label=Q('#drw-plan-label');
-  const fill=Q('#drw-plan-fill');
-  const count=Q('#drw-word-count');
-  const upgradeBtn=Q('#drw-upgrade-btn');
-  const barWrap=Q('#drw-plan-bar-wrap');
+  // نشون دادن card درست بر اساس plan
+  const isFree = userPlan==='free';
+  const isBeta = userPlan==='beta';
+  const isPro  = userPlan==='pro';
 
-  if(badge){badge.textContent=isPro?'Pro ✨':'Free';badge.className=isPro?'drw-plan-badge pro':'drw-plan-badge';}
-  if(label)label.textContent=isPro?'پلن Pro':'پلن رایگان';
-  if(count)count.textContent=isPro?`${userWordCount} لغت`:`${userWordCount} / ${FREE_LIMIT} لغت`;
-  if(fill){
-    const pct=isPro?100:Math.min(100,Math.round(userWordCount/FREE_LIMIT*100));
-    fill.style.width=pct+'%';
-    fill.style.background=pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--accent)';
+  const freeCard = Q('#drw-plan-free');
+  const betaCard = Q('#drw-plan-beta');
+  const proCard  = Q('#drw-plan-pro');
+
+  if(freeCard) freeCard.style.display = isFree  ? 'block' : 'none';
+  if(betaCard) betaCard.style.display = isBeta  ? 'block' : 'none';
+  if(proCard)  proCard.style.display  = isPro   ? 'block' : 'none';
+
+  // progress bar برای free
+  if(isFree){
+    const used = userSearchCount;
+    const pct  = Math.min(100, Math.round(used/FREE_LIMIT*100));
+    const fill = Q('#drw-plan-fill');
+    const count= Q('#drw-word-count');
+    if(fill){
+      fill.style.width = pct+'%';
+      fill.style.background = pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--accent)';
+    }
+    if(count) count.textContent = `${used} / ${FREE_LIMIT}`;
   }
-  if(barWrap)barWrap.style.display=isPro?'none':'flex';
-  if(upgradeBtn)upgradeBtn.className=isPro?'drw-upgrade-btn hidden':'drw-upgrade-btn';
+
+  // stats
+  updateDrawerStats();
+}
+
+function updateDrawerStats(){
+  if(!Q('#drw-stat-total')) return;
+  const now = new Date();
+  const due = words.filter(w=>new Date(w.next_review||0)<=now).length;
+  const learned = words.filter(w=>w.seen>0&&w.interval>3).length;
+  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all = {}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
+  let streak=0; const dd=new Date();
+  while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
+  Q('#drw-stat-total').textContent  = words.length;
+  Q('#drw-stat-learned').textContent= learned;
+  Q('#drw-stat-streak').textContent = streak;
+  Q('#drw-stat-due').textContent    = due;
 }
 
 /* ══════════════════════════════
@@ -1593,7 +1659,7 @@ function syncOnline(){
 /* ══════════════════════════════
    DRAWER
 ══════════════════════════════ */
-function drawerOpen(){Q('#drawer').classList.add('open');}
+function drawerOpen(){Q('#drawer').classList.add('open');updateDrawerPlan();}
 function drawerClose(){Q('#drawer').classList.remove('open');}
 
 function saveSync(){
@@ -1703,7 +1769,6 @@ function detectMode(q){
 async function doSearch(){
   const q=Q('#s-inp').value.trim();if(!q)return;
   if(!navigator.onLine){setMsg('📡 آفلاین','err');return;}
-  if(!KEY){setMsg('⚠ اول API key از تنظیمات وارد کن','err');return;}
   acClose();
   Q('#search-tip').classList.remove('show');
   const btn=Q('#s-btn');btn.disabled=true;btn.classList.add('busy');
