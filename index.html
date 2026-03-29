@@ -997,12 +997,21 @@ body.offline .topbar{top:36px}
 
       <!-- Actions -->
       <div style="display:flex;flex-direction:column;gap:var(--s2)">
-        <button class="btn btn-full btn-sm" onclick="logout()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.55;flex-shrink:0">
-            <path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          خروج از حساب
-        </button>
+        <div id="drw-logout-wrap">
+          <button class="btn btn-full btn-sm" id="drw-logout-btn" onclick="logoutStep1()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.55;flex-shrink:0">
+              <path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            خروج از حساب
+          </button>
+          <div id="drw-logout-confirm" style="display:none;margin-top:var(--s2);background:var(--errbg);border:1px solid rgba(204,32,32,.2);border-radius:var(--r2);padding:var(--s3) var(--s4)">
+            <div style="font-size:13px;color:var(--err);margin-bottom:var(--s3);font-weight:600">مطمئنی؟</div>
+            <div style="display:flex;gap:var(--s2)">
+              <button class="btn btn-danger btn-sm" style="flex:1" onclick="logout()">بله، خروج</button>
+              <button class="btn btn-sm" style="flex:1" onclick="logoutStep1Cancel()">انصراف</button>
+            </div>
+          </div>
+        </div>
         <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
       </div>
     </div>
@@ -1567,27 +1576,26 @@ function confirmClose(){
   Q('#confirm-modal').classList.remove('open');
 }
 
+function logoutStep1(){
+  Q('#drw-logout-btn').style.display='none';
+  Q('#drw-logout-confirm').style.display='block';
+}
+function logoutStep1Cancel(){
+  Q('#drw-logout-btn').style.display='';
+  Q('#drw-logout-confirm').style.display='none';
+}
+
 async function logout(){
-  confirmModal({
-    icon: '👋',
-    title: 'خروج از حساب',
-    msg: 'مطمئنی می‌خوای خارج بشی؟ لغاتت ذخیره‌ست و دوباره با Google وارد بشی همه چیز هست.',
-    okLabel: 'بله، خروج',
-    okClass: 'btn-p',
-    onOk: async ()=>{
-      drawerClose();
-      try{
-        await sb.auth.signOut();
-        // onAuthStateChange handles the rest
-      } catch(e){
-        // force manual cleanup if signOut fails
-        currentUser=null; words=[];
-        setUserUI(null);
-        updateBadges(); updateStats();
-        showGate();
-      }
-    }
-  });
+  // مستقیم signOut کن — confirm در drawer هست
+  try{
+    await sb.auth.signOut();
+  } catch(e){
+    console.error('signOut error:', e);
+    // دستی cleanup
+    currentUser=null; words=[];
+    setUserUI(null); updateBadges(); updateStats();
+    showGate();
+  }
 }
 
 async function clearAll(){
@@ -1716,7 +1724,13 @@ function drawerOpen(){
   updateDrawerPlan();
   updateDrawerStats();
 }
-function drawerClose(){Q('#drawer').classList.remove('open');}
+function drawerClose(){
+  Q('#drawer').classList.remove('open');
+  // reset logout confirm state
+  const lb=Q('#drw-logout-btn'), lc=Q('#drw-logout-confirm');
+  if(lb) lb.style.display='';
+  if(lc) lc.style.display='none';
+}
 
 function saveSync(){
   const c=Q('#drw-sync')?.value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
