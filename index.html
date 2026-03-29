@@ -1751,7 +1751,6 @@ function detectMode(q){
 async function doSearch(){
   const q=Q('#s-inp').value.trim();if(!q)return;
   if(!navigator.onLine){setMsg('📡 آفلاین','err');return;}
-  if(!KEY){setMsg('⚠ اول API key از تنظیمات وارد کن','err');return;}
   acClose();
   Q('#search-tip').classList.remove('show');
   const btn=Q('#s-btn');btn.disabled=true;btn.classList.add('busy');
@@ -1767,7 +1766,7 @@ async function doSearch(){
 function setMsg(t,cls){const e=Q('#s-msg');e.textContent=t;e.className='s-msg'+(cls?' '+cls:'');}
 
 async function searchWord(q){
-  const ck='wc_'+q.toLowerCase();
+  const ck='wc_'+(currentUser?.id||'anon')+'_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
   const schema='{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","usage_pattern":"الگوی استفاده مثل sich engagieren fur+Akk یا ein Praktikum absolvieren — null اگه ندارد","preposition":"حرف اضافه مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی و طبیعی","fa":"ترجمه فارسی"}],"grammar_tip":"نکته گرامری مهم یا null","priority":{"score":3,"reason":"چرا مهمه — یه جمله کوتاه"}}';
@@ -1785,8 +1784,9 @@ async function searchWord(q){
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
   try{
-    const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
-    if(keys.length>100)localStorage.removeItem(keys[0]);
+    const cachePrefix='wc_'+(currentUser?.id||'anon')+'_';
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith(cachePrefix));
+    if(keys.length>80)localStorage.removeItem(keys[0]);
     localStorage.setItem(ck,JSON.stringify(curWord));
   }catch(e){}
   renderWord(curWord);
@@ -1946,12 +1946,23 @@ function acInput(){
   const q=Q('#s-inp').value.trim();acSel=-1;
   if(!q||q.length<2){acClose();return;}
   const ql=q.toLowerCase();const seen=new Set();const items=[];
-  words.forEach(w=>{if(seen.has(w.de))return;if(w.de.toLowerCase().startsWith(ql)||w.de.toLowerCase().includes(ql)){items.push({de:w.de,fa:w.fa,t:'s'});seen.add(w.de);}});
-  Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>{
-    try{const d=JSON.parse(localStorage.getItem(k));if(!d?.word)return;
+  // ۱. لغات ذخیره‌شده این user
+  words.forEach(w=>{
+    if(seen.has(w.de))return;
+    if(w.de.toLowerCase().startsWith(ql)||w.de.toLowerCase().includes(ql)){
+      items.push({de:w.de,fa:w.fa,t:'s'});seen.add(w.de);
+    }
+  });
+  // ۲. cache جستجوهای قبلی — فقط اگه user login کرده یا همین browser
+  const cachePrefix='wc_'+(currentUser?.id||'anon')+'_';
+  Object.keys(localStorage).filter(k=>k.startsWith(cachePrefix)).forEach(k=>{
+    try{
+      const d=JSON.parse(localStorage.getItem(k));if(!d?.word)return;
       const full=(d.article&&d.article!=='null'&&d.article!=='—'?d.article+' ':'')+d.word;
       if(seen.has(full))return;
-      if(full.toLowerCase().includes(ql)||d.meaning_fa?.includes(q)){items.push({de:full,fa:d.meaning_fa||'',t:'c'});seen.add(full);}
+      if(full.toLowerCase().includes(ql)||d.meaning_fa?.includes(q)){
+        items.push({de:full,fa:d.meaning_fa||'',t:'c'});seen.add(full);
+      }
     }catch(e){}
   });
   const show=items.slice(0,6);
