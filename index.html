@@ -1492,6 +1492,7 @@ async function logout_OLD(){
 }
 
 function showGate(){
+  if(currentUser) return; // اگه login هست gate نشون نده
   Q('#gate').classList.add('open');
 }
 function hideGate(){
@@ -1546,42 +1547,23 @@ function setUserUI(user){
 async function init(){
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
 
-  // Auth state listener
-  // فوری session رو بگیر
-  const{data:{session:initSession}}=await sb.auth.getSession();
-  if(initSession?.user){
-    setUserUI(initSession.user);
-    hideGate();
-    await dbLoad();
-    await loadProfile();
-    setTimeout(checkReminder,2500);
-  } else {
-    showGate();
-  }
-
+  // ── Auth ──
   sb.auth.onAuthStateChange(async(event,session)=>{
     if(session?.user){
-      // هر event که session داشت — login یا refresh
-      if(!currentUser){
-        // اولین بار login شد
-        setUserUI(session.user);
-        hideGate();
-        await dbLoad();
-        await loadProfile();
-        setTimeout(checkReminder,2500);
-      } else {
-        // session refresh — فقط user رو update کن
-        setUserUI(session.user);
-      }
+      if(currentUser?.id === session.user.id) return;
+      setUserUI(session.user);
+      hideGate();
+      await dbLoad();
+      await loadProfile();
+      if(!currentUser) setTimeout(checkReminder,2500);
     } else if(event==='SIGNED_OUT'){
-      // فقط وقتی واقعاً logout شد
       currentUser=null; words=[]; userSearchCount=0; userPlan='free';
-      setUserUI(null);
-      updateBadges(); updateStats();
-      showGate();
+      setUserUI(null); updateBadges(); updateStats(); showGate();
     }
-    // بقیه events (PASSWORD_RECOVERY, etc) رو ignore کن
   });
+
+  // اگه بعد از ۱.۵ ثانیه هنوز login نشده، gate نشون بده
+  setTimeout(()=>{ if(!currentUser) showGate(); }, 1500);
 
   window.addEventListener('scroll',()=>Q('#topbar')?.classList.toggle('raised',window.scrollY>4));
   syncOnline();
