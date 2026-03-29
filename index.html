@@ -1337,8 +1337,8 @@ const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 const { createClient } = window.supabase;
 const sb = createClient(SB_URL, SB_KEY);
 
-const FREE_LIMIT = 50;      // جستجو در روز
-const WORD_LIMIT = 200;     // لغت قابل ذخیره (نامحدود عملاً)
+const FREE_LIMIT = 50;      // کل جستجو در نسخه رایگان
+const WORD_LIMIT = 500;     // لغت قابل ذخیره
 
 /* ══════════════════════════════
    STATE
@@ -1434,20 +1434,16 @@ async function loadProfile(){
   if(!currentUser)return;
   try{
     const{data}=await sb.from('profiles')
-      .select('plan,word_count,search_count,search_reset_at')
+      .select('plan,word_count,search_count')
       .eq('id',currentUser.id).single();
     if(data){
       userPlan=data.plan||'free';
-      userWordCount=data.word_count||words.length;
+      userWordCount=(data.word_count!=null)?data.word_count:words.length;
       userSearchCount=data.search_count||0;
-      // اگه reset_at گذشته، count محلی رو صفر کن
-      if(data.search_reset_at && new Date()>new Date(data.search_reset_at)){
-        userSearchCount=0;
-      }
       updateFreeBanner();
       updateDrawerPlan();
     }
-  }catch(e){ console.error('loadProfile:',e); }
+  }catch(e){console.error('loadProfile:',e);}
 }
 
 function canAddMore(){
@@ -1461,19 +1457,18 @@ function updateFreeBanner(){
   if(!b||!t)return;
   if(userPlan==='pro'){b.style.display='none';return;}
 
-  // banner جستجو رو نشون بده
   const used=userSearchCount;
   const left=FREE_LIMIT-used;
 
   if(left<=0){
     b.className='free-banner warn';
-    t.innerHTML=`سقف ${FREE_LIMIT} جستجوی امروز تموم شد. <a onclick="showUpgrade()">Pro ←</a>`;
+    t.innerHTML=`${FREE_LIMIT} جستجوی رایگان تموم شد. <a onclick="showUpgrade()">ارتقا به Pro ←</a>`;
   } else if(left<=10){
     b.className='free-banner warn';
-    t.innerHTML=`${used}/${FREE_LIMIT} جستجو امروز — ${left} تا مونده. <a onclick="showUpgrade()">Pro ←</a>`;
+    t.innerHTML=`${used}/${FREE_LIMIT} جستجو — فقط ${left} تا مونده. <a onclick="showUpgrade()">Pro ←</a>`;
   } else {
     b.className='free-banner';
-    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجوی امروز`;
+    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجو استفاده شده`;
   }
   b.style.display='flex';
   updateDrawerPlan();
@@ -1485,7 +1480,7 @@ function showUpgrade(){
 
 function updateDrawerPlan(){
   const isPro = userPlan==='pro';
-  const used  = words.length;
+  const used  = userSearchCount;   // جستجوهای استفاده‌شده
   const badge    = Q('#drw-plan-badge');
   const label    = Q('#drw-plan-label');
   const fill     = Q('#drw-plan-fill');
@@ -1495,9 +1490,9 @@ function updateDrawerPlan(){
 
   if(badge){badge.textContent=isPro?'Pro ✨':'Free';badge.className=isPro?'drw-plan-badge pro':'drw-plan-badge';}
   if(label)label.textContent=isPro?'پلن Pro':'پلن رایگان';
-  if(count)count.textContent=isPro?`${used} لغت`:`${used} / ${FREE_LIMIT} لغت`;
+  if(count)count.textContent=isPro?'نامحدود':`${used} / ${FREE_LIMIT} جستجو`;
   if(fill){
-    const pct=isPro?100:Math.min(100,Math.round(used/FREE_LIMIT*100));
+    const pct=isPro?0:Math.min(100,Math.round(used/FREE_LIMIT*100));
     fill.style.width=pct+'%';
     fill.style.background=pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--accent)';
   }
