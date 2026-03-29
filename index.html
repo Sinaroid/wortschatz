@@ -2158,8 +2158,12 @@ function showCard(){
 
   // next interval preview
   const o = words.find(x=>x.de===w.de);
-  const nextD = o ? Math.max(1, Math.round((o.interval||1)*(o.easiness||2.5))) : 1;
-  Q('#ses-next').textContent = nextD > 1 ? nextD+' روز' : 'فردا';
+  const nextEl = Q('#ses-next');
+  if(nextEl){
+    const o = words.find(x=>x.de===w.de);
+    const days = o ? Math.min(o.interval||1, 30) : 1;
+    nextEl.textContent = days <= 1 ? 'فردا' : days+' روز';
+  }
   Q('#again-n').classList.remove('show');
 }
 
