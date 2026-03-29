@@ -150,26 +150,40 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    GATE
 ═══════════════════════════════════ */
+/* ─── AUTH GATE ─── */
 #gate{
   position:fixed;inset:0;background:var(--bg);display:none;
-  align-items:center;justify-content:center;z-index:400;padding:var(--s6);
+  align-items:center;justify-content:center;z-index:400;padding:var(--s5);
 }
 #gate.open{display:flex}
 .gate-box{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r5);
   padding:var(--s8) var(--s6);width:100%;max-width:360px;
-  box-shadow:var(--sh3);animation:up .45s var(--spring);
+  box-shadow:var(--sh3);animation:up .4s var(--spring);
 }
+.gate-brand{display:flex;align-items:center;gap:10px;margin-bottom:var(--s6)}
 .gate-icon{
-  width:44px;height:44px;background:var(--accent);border-radius:14px;
-  display:flex;align-items:center;justify-content:center;margin-bottom:var(--s5);
+  width:40px;height:40px;background:var(--accent);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.gate-h{font-family:var(--serif);font-size:20px;font-weight:600;margin-bottom:var(--s2);color:var(--ink)}
-.gate-p{font-size:13px;color:var(--ink3);line-height:1.75;margin-bottom:var(--s5)}
-.gate-p a{color:var(--accent)}
-.gate-err{font-size:12px;color:var(--err);min-height:16px;margin-bottom:var(--s2)}
-.gate-skip{text-align:center;margin-top:var(--s4);font-size:12px;color:var(--ink3)}
-.gate-skip a{color:var(--ink2);cursor:pointer;text-decoration:underline}
+.gate-brand-name{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink)}
+.gate-headline{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.gate-sub{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:var(--s6)}
+.btn-google{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px;border-radius:var(--r2);border:1.5px solid var(--bg3);
+  background:var(--card);color:var(--ink);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .18s;font-family:var(--sans);margin-bottom:var(--s3);
+}
+.btn-google:hover{background:var(--bg2);border-color:var(--bg4);transform:translateY(-1px)}
+.btn-google:active{transform:scale(.98)}
+.gate-or{display:flex;align-items:center;gap:var(--s3);margin:var(--s3) 0;color:var(--ink4);font-size:12px}
+.gate-or::before,.gate-or::after{content:'';flex:1;height:1px;background:var(--bg3)}
+.gate-err{font-size:12px;color:var(--err);min-height:14px;margin-bottom:var(--s2)}
+.gate-features{display:flex;flex-direction:column;gap:6px;margin-top:var(--s5);padding-top:var(--s5);border-top:1px solid var(--bg2)}
+.gate-feat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3)}
+.gate-feat-ic{width:18px;height:18px;border-radius:50%;background:var(--okbg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px}
+
 
 /* ═══════════════════════════════════
    FORM ELEMENTS
@@ -683,19 +697,70 @@ body.offline .topbar{top:36px}
 .end-next{font-size:13px;color:var(--ink3);line-height:1.65;max-width:260px;margin-top:var(--s1)}
 
 
-/* ─── AUTH GATE ─── */
-.btn-google{
-  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:12px;border-radius:var(--r2);border:1.5px solid var(--bg3);
-  background:var(--card);color:var(--ink);font-size:14px;font-weight:600;
-  cursor:pointer;transition:all .18s;font-family:var(--sans);margin-bottom:var(--s3);
+
+/* ─── DRAWER REDESIGN ─── */
+.drw-guest-box{
+  text-align:center;padding:var(--s5) var(--s4);
 }
-.btn-google:hover{background:var(--bg2);border-color:var(--bg4)}
-.gate-or{
+.drw-guest-icon{font-size:40px;margin-bottom:var(--s3);opacity:.4}
+.drw-guest-title{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:var(--s2)}
+.drw-guest-desc{font-size:13px;color:var(--ink3);line-height:1.65}
+.drw-profile{
   display:flex;align-items:center;gap:var(--s3);
-  margin:var(--s3) 0;color:var(--ink4);font-size:12px;
+  padding:var(--s4);background:var(--bg2);border-radius:var(--r3);
+  margin-bottom:var(--s4);
 }
-.gate-or::before,.gate-or::after{content:'';flex:1;height:1px;background:var(--bg3)}
+.drw-avatar{
+  width:44px;height:44px;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;
+}
+.drw-avatar img{width:100%;height:100%;object-fit:cover}
+.drw-profile-info{flex:1;min-width:0}
+.drw-profile-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drw-profile-email{font-size:12px;color:var(--ink3);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drw-plan-card{
+  background:var(--bg2);border-radius:var(--r3);
+  padding:var(--s4);margin-bottom:var(--s4);
+  border:1px solid var(--bg3);
+}
+.drw-plan-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
+.drw-plan-label{font-size:13px;font-weight:600;color:var(--ink)}
+.drw-plan-badge{
+  font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;
+  background:var(--bg3);color:var(--ink3);
+}
+.drw-plan-badge.pro{background:var(--abl);color:var(--accent)}
+.drw-plan-bar-wrap{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3)}
+.drw-plan-bar{flex:1;height:5px;background:var(--bg3);border-radius:5px;overflow:hidden}
+.drw-plan-fill{height:100%;background:var(--accent);border-radius:5px;transition:width .4s var(--ease)}
+.drw-plan-count{font-size:11px;color:var(--ink3);white-space:nowrap;flex-shrink:0}
+.drw-upgrade-btn{
+  width:100%;padding:9px;border-radius:var(--r2);
+  background:var(--accent);color:#fff;border:none;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .18s;
+}
+.drw-upgrade-btn:hover{background:var(--accent2)}
+.drw-upgrade-btn.hidden{display:none}
+.drw-divider{height:1px;background:var(--bg3);margin:var(--s4) 0}
+.drw-section-title{font-size:11px;font-weight:700;color:var(--ink4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:var(--s3)}
+.drw-stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);
+  margin-bottom:0;
+}
+.drw-stat{
+  text-align:center;padding:var(--s3) var(--s2);
+  background:var(--bg2);border-radius:var(--r2);
+  border:1px solid var(--bg3);
+}
+.drw-stat-n{
+  font-family:var(--serif);font-size:22px;font-weight:600;
+  color:var(--ink);line-height:1;margin-bottom:3px;
+}
+.drw-stat-n.accent{color:var(--accent)}
+.drw-stat-n.err{color:var(--err)}
+.drw-stat-l{font-size:10px;color:var(--ink3)}
 
 /* ─── FREEMIUM BANNER ─── */
 .free-banner{
@@ -808,16 +873,21 @@ body.offline .topbar{top:36px}
 <!-- Auth Gate -->
 <div id="gate">
   <div class="gate-box">
-    <div class="gate-icon">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M3 6L7 16L10 9L13 16L17 6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+    <!-- Brand -->
+    <div class="gate-brand">
+      <div class="gate-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M3 6L7 16L10 9L13 16L17 6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="gate-brand-name">Wortschatz</span>
     </div>
-    <div class="gate-h">Wortschatz</div>
-    <p class="gate-p">دستیار یادگیری لغت آلمانی — وارد شو و شروع کن.</p>
+
+    <div class="gate-headline">خوش اومدی 👋</div>
+    <p class="gate-sub">برای شروع، با یکی از روش‌های زیر وارد شو.</p>
 
     <!-- Google -->
-    <button class="btn-google" id="btn-google" onclick="loginGoogle()">
+    <button class="btn-google" onclick="loginGoogle()">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
         <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
         <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
@@ -836,11 +906,20 @@ body.offline .topbar{top:36px}
       <button class="btn btn-p btn-full" onclick="loginMagicLink()">ارسال لینک ورود</button>
     </div>
 
-    <!-- Sent state -->
-    <div id="gate-sent" style="display:none;text-align:center;padding:var(--s4) 0">
-      <div style="font-size:32px;margin-bottom:var(--s3)">📬</div>
-      <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:var(--s2)">لینک فرستاده شد!</div>
-      <div style="font-size:13px;color:var(--ink3);line-height:1.7">ایمیلت رو چک کن و روی لینک کلیک کن.</div>
+    <!-- Sent -->
+    <div id="gate-sent" style="display:none;text-align:center;padding:var(--s5) 0">
+      <div style="font-size:36px;margin-bottom:var(--s3)">📬</div>
+      <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:var(--s2)">لینک ارسال شد!</div>
+      <div style="font-size:13px;color:var(--ink3);line-height:1.7">ایمیلت رو چک کن و روی لینک کلیک کن تا وارد بشی.</div>
+      <button class="btn btn-sm" style="margin-top:var(--s4);width:100%" onclick="Q('#gate-sent').style.display='none';Q('#gate-email-section').style.display='block'">برگشت</button>
+    </div>
+
+    <!-- Features -->
+    <div class="gate-features">
+      <div class="gate-feat"><div class="gate-feat-ic">✓</div>۵۰ لغت رایگان</div>
+      <div class="gate-feat"><div class="gate-feat-ic">✓</div>جستجوی هوشمند با AI</div>
+      <div class="gate-feat"><div class="gate-feat-ic">✓</div>فلش‌کارت با الگوریتم SM-2</div>
+      <div class="gate-feat"><div class="gate-feat-ic">✓</div>همگام‌سازی روی همه دستگاه‌ها</div>
     </div>
   </div>
 </div>
@@ -849,35 +928,80 @@ body.offline .topbar{top:36px}
 <div class="drawer-bg" id="drawer" onclick="if(event.target===this)drawerClose()">
   <div class="drawer">
     <div class="drw-handle"></div>
-    <div class="drw-title">حساب کاربری</div>
 
-    <!-- account info -->
-    <div class="status-row" id="drw-account" style="margin-bottom:var(--s4)">
-      <div class="dot2 ok" id="drw-auth-dot"></div>
-      <span id="drw-email" style="font-size:13px;color:var(--ink2);direction:ltr">وارد نشدی</span>
-    </div>
-
-    <!-- plan -->
-    <div id="drw-plan-row" style="display:none;margin-bottom:var(--s4)">
-      <div class="drw-lbl">پلن</div>
-      <div class="status-row">
-        <span id="drw-plan-badge" style="font-size:13px;font-weight:600"></span>
-        <span id="drw-word-count" style="font-size:12px;color:var(--ink3);margin-right:auto"></span>
+    <!-- ─ NOT LOGGED IN ─ -->
+    <div id="drw-guest" style="display:none">
+      <div class="drw-guest-box">
+        <div class="drw-guest-icon">👤</div>
+        <div class="drw-guest-title">وارد نشدی</div>
+        <div class="drw-guest-desc">با ورود، لغاتت روی همه دستگاه‌هات sync میشه.</div>
+        <button class="btn btn-p btn-full" style="margin-top:var(--s3)" onclick="drawerClose();showGate()">ورود / ثبت‌نام</button>
       </div>
     </div>
 
-    <!-- sync code (legacy) -->
-    <div class="drw-lbl" style="margin-top:var(--s2)">کد همگام‌سازی (قدیمی)</div>
-    <div class="drw-row">
-      <input class="inp ltr" id="drw-sync" type="text" placeholder="مثلاً: sina123" style="margin:0;flex:1">
-      <button class="btn btn-p btn-sm" onclick="saveSync()">ذخیره</button>
-    </div>
-    <div class="status-row"><div class="dot2 ok"></div><span id="sync-st">Supabase متصل</span></div>
+    <!-- ─ LOGGED IN ─ -->
+    <div id="drw-user" style="display:none">
 
-    <div style="padding-top:var(--s4);border-top:1px solid var(--bg3);margin-top:var(--s5);display:flex;flex-direction:column;gap:var(--s2)">
-      <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
-      <button class="btn btn-full btn-sm" id="drw-logout" onclick="logout()" style="display:none">خروج از حساب</button>
+      <!-- Profile row -->
+      <div class="drw-profile" id="drw-profile">
+        <div class="drw-avatar" id="drw-avatar-big">?</div>
+        <div class="drw-profile-info">
+          <div class="drw-profile-name" id="drw-profile-name">—</div>
+          <div class="drw-profile-email" id="drw-email">—</div>
+        </div>
+      </div>
+
+      <!-- Plan card -->
+      <div class="drw-plan-card" id="drw-plan-card">
+        <div class="drw-plan-row">
+          <span class="drw-plan-label" id="drw-plan-label">پلن رایگان</span>
+          <span class="drw-plan-badge" id="drw-plan-badge">Free</span>
+        </div>
+        <div class="drw-plan-bar-wrap" id="drw-plan-bar-wrap">
+          <div class="drw-plan-bar"><div class="drw-plan-fill" id="drw-plan-fill" style="width:0%"></div></div>
+          <span class="drw-plan-count" id="drw-word-count">0 / 50 لغت</span>
+        </div>
+        <button class="drw-upgrade-btn" id="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">
+          ✨ ارتقا به Pro — لغت نامحدود
+        </button>
+      </div>
+
+      <div class="drw-divider"></div>
+
+      <!-- Stats row -->
+      <div class="drw-stats-row">
+        <div class="drw-stat">
+          <div class="drw-stat-n" id="drw-stat-total">—</div>
+          <div class="drw-stat-l">کل لغت</div>
+        </div>
+        <div class="drw-stat">
+          <div class="drw-stat-n" id="drw-stat-learned">—</div>
+          <div class="drw-stat-l">یاد گرفتم</div>
+        </div>
+        <div class="drw-stat">
+          <div class="drw-stat-n accent" id="drw-stat-streak">—</div>
+          <div class="drw-stat-l">روز streak</div>
+        </div>
+        <div class="drw-stat">
+          <div class="drw-stat-n err" id="drw-stat-due">—</div>
+          <div class="drw-stat-l">سررسید</div>
+        </div>
+      </div>
+
+      <div class="drw-divider"></div>
+
+      <!-- Actions -->
+      <div style="display:flex;flex-direction:column;gap:var(--s2)">
+        <button class="btn btn-full btn-sm" onclick="logout()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.55;flex-shrink:0">
+            <path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          خروج از حساب
+        </button>
+        <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -1328,23 +1452,53 @@ function showUpgrade(){
 }
 
 function updateDrawerPlan(){
-  const row=Q('#drw-plan-row');
-  if(!row)return;
-  row.style.display='block';
-  Q('#drw-plan-badge').textContent=userPlan==='pro'?'✨ Pro':'رایگان';
-  Q('#drw-plan-badge').style.color=userPlan==='pro'?'var(--accent)':'var(--ink3)';
-  Q('#drw-word-count').textContent=`${userWordCount} لغت ذخیره شده`;
+  const isPro = userPlan==='pro';
+  const badge=Q('#drw-plan-badge');
+  const label=Q('#drw-plan-label');
+  const fill=Q('#drw-plan-fill');
+  const count=Q('#drw-word-count');
+  const upgradeBtn=Q('#drw-upgrade-btn');
+  const barWrap=Q('#drw-plan-bar-wrap');
+
+  if(badge){badge.textContent=isPro?'Pro ✨':'Free';badge.className=isPro?'drw-plan-badge pro':'drw-plan-badge';}
+  if(label)label.textContent=isPro?'پلن Pro':'پلن رایگان';
+  if(count)count.textContent=isPro?`${userWordCount} لغت`:`${userWordCount} / ${FREE_LIMIT} لغت`;
+  if(fill){
+    const pct=isPro?100:Math.min(100,Math.round(userWordCount/FREE_LIMIT*100));
+    fill.style.width=pct+'%';
+    fill.style.background=pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--accent)';
+  }
+  if(barWrap)barWrap.style.display=isPro?'none':'flex';
+  if(upgradeBtn)upgradeBtn.className=isPro?'drw-upgrade-btn hidden':'drw-upgrade-btn';
 }
 
 /* ══════════════════════════════
    AI (no API key from user)
 ══════════════════════════════ */
 async function ai(prompt,tokens=900){
-  const r=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
-  if(!r.ok)throw new Error('HTTP '+r.status);
+  const headers={'Content-Type':'application/json'};
+  if(currentUser?.id) headers['x-user-id']=currentUser.id;
+
+  const r=await fetch('/api',{
+    method:'POST',
+    headers,
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})
+  });
+
+  if(r.status===429){
+    const d=await r.json().catch(()=>({}));
+    throw new Error(d.message||'سقف روزانه تموم شد');
+  }
+  if(!r.ok) throw new Error('HTTP '+r.status);
+
   const d=await r.json();
-  if(d.error)throw new Error(d.error);
+  if(d.error) throw new Error(d.error);
+
+  // warn when running low
+  const remaining=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
+  if(remaining===3) showToast('۳ جستجو تا سقف روزانه مونده');
+  else if(remaining===0) showToast('سقف روزانه تموم شد 😔');
+
   return d.content.map(b=>b.text||'').join('').trim();
 }
 
@@ -1388,24 +1542,60 @@ function hideGate(){
 
 function setUserUI(user){
   currentUser=user;
-  const chip=Q('#user-chip'),avatar=Q('#user-avatar'),name=Q('#user-name');
-  if(!chip)return;
+  const guestPanel=Q('#drw-guest'), userPanel=Q('#drw-user');
+  const chip=Q('#user-chip'), avatar=Q('#user-avatar'), name=Q('#user-name');
+  const settingsBtn=Q('#settings-btn');
+
   if(user){
-    // avatar
     const photoUrl=user.user_metadata?.avatar_url;
-    if(photoUrl)avatar.innerHTML=`<img src="${photoUrl}" alt="">`;
-    else avatar.textContent=(user.email||'?')[0].toUpperCase();
-    // name
-    name.textContent=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';
-    chip.style.display='flex';
-    Q('#settings-btn').style.display='none';
-    // drawer
-    const emailEl=Q('#drw-email');if(emailEl)emailEl.textContent=user.email||'';
-    const logoutBtn=Q('#drw-logout');if(logoutBtn)logoutBtn.style.display='block';
+    const displayName=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';
+
+    // topbar chip
+    if(chip){
+      if(avatar){
+        if(photoUrl) avatar.innerHTML=`<img src="${photoUrl}" alt="">`;
+        else avatar.textContent=displayName[0].toUpperCase();
+      }
+      if(name) name.textContent=displayName;
+      chip.style.display='flex';
+    }
+    if(settingsBtn) settingsBtn.style.display='none';
+
+    // drawer: show user panel
+    if(guestPanel) guestPanel.style.display='none';
+    if(userPanel)  userPanel.style.display='block';
+
+    // drawer profile
+    const bigAvatar=Q('#drw-avatar-big');
+    if(bigAvatar){
+      if(photoUrl) bigAvatar.innerHTML=`<img src="${photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      else bigAvatar.textContent=displayName[0].toUpperCase();
+    }
+    if(Q('#drw-profile-name')) Q('#drw-profile-name').textContent=displayName;
+    if(Q('#drw-email'))        Q('#drw-email').textContent=user.email||'';
+
   } else {
-    chip.style.display='none';
-    Q('#settings-btn').style.display='flex';
+    if(chip) chip.style.display='none';
+    if(settingsBtn) settingsBtn.style.display='flex';
+    if(guestPanel) guestPanel.style.display='block';
+    if(userPanel)  userPanel.style.display='none';
   }
+}
+
+function updateDrawerStats(){
+  if(!Q('#drw-stat-total')) return;
+  const now=new Date();
+  const due=words.filter(w=>new Date(w.next_review||0)<=now).length;
+  const learned=words.filter(w=>w.seen>0&&w.interval>3).length;
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
+  let streak=0; const dd=new Date();
+  while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
+  Q('#drw-stat-total').textContent=words.length;
+  Q('#drw-stat-learned').textContent=learned;
+  Q('#drw-stat-streak').textContent=streak;
+  Q('#drw-stat-due').textContent=due;
 }
 
 /* ══════════════════════════════
@@ -1422,18 +1612,11 @@ async function init(){
       await dbLoad();
       await loadProfile();
       setTimeout(checkReminder,2500);
-      // legacy sync code
       const sc=localStorage.getItem('ws_sync');
       if(sc&&Q('#drw-sync'))Q('#drw-sync').value=sc;
     } else {
       setUserUI(null);
-      // check legacy sync (anonymous mode)
-      const legacy=localStorage.getItem('ws_cache_anon')||localStorage.getItem('ws_cache');
-      if(legacy){
-        try{words=JSON.parse(legacy);updateBadges();updateStats();}catch(e){}
-      }
-      // show gate only if no local words
-      if(!words.length) showGate();
+      showGate();
     }
   });
 
@@ -1454,7 +1637,11 @@ function syncOnline(){
 /* ══════════════════════════════
    DRAWER
 ══════════════════════════════ */
-function drawerOpen(){Q('#drawer').classList.add('open');}
+function drawerOpen(){
+  Q('#drawer').classList.add('open');
+  updateDrawerPlan();
+  updateDrawerStats();
+}
 function drawerClose(){Q('#drawer').classList.remove('open');}
 
 function saveSync(){
