@@ -1,45 +1,48 @@
-// api/index.js — Claude proxy with reliable search counting
-//
-// ENV VARS:
-//   ANTHROPIC_API_KEY    → sk-ant-...
-//   SUPABASE_URL         → https://ekogfglcsftpwmithxbi.supabase.co
-//   SUPABASE_SERVICE_KEY → service_role key (NOT anon)
+// api/index.js — Claude proxy + reliable search counting
+// ENV VARS: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
 
 const LIMITS = { anonymous: 3, free: 50, pro: 9999 };
 
-const SB_HEADERS = () => ({
-  apikey: process.env.SUPABASE_SERVICE_KEY,
-  Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
-  'Content-Type': 'application/json',
-  Prefer: 'return=representation',
-});
-
-// Get profile row — returns { plan, search_count } or null
-async function getProfile(userId) {
-  if (!userId || !process.env.SUPABASE_URL) return null;
+async function sbFetch(path, opts={}) {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_KEY;
+  if(!url || !key) return null;
   try {
-    const r = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=plan,search_count`,
-      { headers: SB_HEADERS() }
-    );
-    const d = await r.json();
-    return d?.[0] || null;
-  } catch { return null; }
+    const r = await fetch(url + path, {
+      ...opts,
+      headers: {
+        'apikey': key,
+        'Authorization': 'Bearer ' + key,
+        'Content-Type': 'application/json',
+        ...(opts.headers||{}),
+      }
+    });
+    if(opts.method === 'PATCH') return r.status < 300 ? true : null;
+    const text = await r.text();
+    return text ? JSON.parse(text) : null;
+  } catch(e) {
+    console.error('sbFetch error:', e.message);
+    return null;
+  }
 }
 
-// Increment search_count with direct PATCH (no RPC needed)
+async function getProfile(userId) {
+  if(!userId) return null;
+  const data = await sbFetch(`/rest/v1/profiles?id=eq.${userId}&select=plan,search_count`);
+  return data?.[0] || null;
+}
+
 async function incrementCount(userId, currentCount) {
-  if (!userId || !process.env.SUPABASE_URL) return;
-  try {
-    await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`,
-      {
-        method: 'PATCH',
-        headers: SB_HEADERS(),
-        body: JSON.stringify({ search_count: currentCount + 1 }),
-      }
-    );
-  } catch (e) { console.error('increment error:', e.message); }
+  if(!userId) return;
+  const newCount = (currentCount || 0) + 1;
+  console.log(`increment user=${userId} from ${currentCount} to ${newCount}`);
+  const result = await sbFetch(`/rest/v1/profiles?id=eq.${userId}`, {
+    method: 'PATCH',
+    headers: { 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ search_count: newCount }),
+  });
+  console.log('PATCH result:', result);
+  return result;
 }
 
 export default async function handler(req, res) {
@@ -53,30 +56,28 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY missing' });
 
   const userId = (req.headers['x-user-id'] || '').trim() || null;
+  console.log('Request userId:', userId);
 
-  // ── Get profile ──
   const profile = await getProfile(userId);
+  console.log('Profile:', profile);
+
   const plan = profile?.plan || (userId ? 'free' : 'anonymous');
-  const searchCount = profile?.search_count || 0;
+  const searchCount = typeof profile?.search_count === 'number' ? profile.search_count : 0;
   const limit = LIMITS[plan] ?? LIMITS.free;
 
-  // ── Check limit ──
+  console.log(`plan=${plan} count=${searchCount} limit=${limit}`);
+
   if (searchCount >= limit) {
     return res.status(429).json({
-      error: 'rate_limit',
-      plan, limit,
-      used: searchCount,
-      remaining: 0,
+      error: 'rate_limit', plan, limit, used: searchCount, remaining: 0,
       message: `${limit} جستجوی رایگان تموم شد. برای ادامه به Pro ارتقا بده.`,
     });
   }
 
-  // ── Validate body ──
   const { model, max_tokens, messages } = req.body || {};
   if (!Array.isArray(messages) || !messages.length)
     return res.status(400).json({ error: 'messages required' });
 
-  // ── Call Anthropic ──
   try {
     const upstream = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -99,9 +100,9 @@ export default async function handler(req, res) {
 
     const data = await upstream.json();
 
-    // ── Increment AFTER successful response ──
+    // increment — await برای مطمئن بودن
     if (userId) {
-      await incrementCount(userId, searchCount); // await = reliable
+      await incrementCount(userId, searchCount);
     }
 
     const newCount = searchCount + 1;
@@ -113,8 +114,8 @@ export default async function handler(req, res) {
     res.setHeader('X-RateLimit-Remaining', String(remaining));
 
     return res.status(200).json(data);
-
   } catch (err) {
+    console.error('Anthropic error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
