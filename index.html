@@ -823,14 +823,6 @@ body.offline .topbar{top:36px}
   </div>
   <div class="ses-prog"><div class="ses-fill" id="ses-fill" style="width:0%"></div></div>
 
-  <!-- Deck intro screen -->
-  <div class="ses-intro" id="ses-intro">
-    <div class="si-icon">📚</div>
-    <div class="si-title" id="si-title">سشن امروز</div>
-    <div class="si-chips" id="si-chips"></div>
-    <div class="si-desc" id="si-desc"></div>
-    <button class="btn btn-p si-start" onclick="sesBegin()">شروع کن ←</button>
-  </div>
 
   <div class="ses-body" id="ses-body">
     <div class="card-scene" onclick="sesFlip()">
@@ -1671,69 +1663,31 @@ function sesOpenSmart(){
   if(!words.length){ showToast('هنوز لغتی اضافه نکردی!'); return; }
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
-  showSesIntro();
+  startSession();
 }
 function sesOpenDue(){
   if(!words.length) return;
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
-  showSesIntro();
+  startSession();
 }
 function sesOpen(){
-  // legacy — همه لغات (بدون محدودیت SESSION_SIZE)
   if(!words.length){ showToast('هنوز لغتی اضافه نکردی!'); return; }
   const now=new Date();
   const all=[...words].sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
   sesDeck=all.map(w=>({...w,_type:new Date(w.next_review||0)<=now?'due':w.seen===0?'new':w.score<0?'weak':'rev'}));
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
-  showSesIntro();
+  startSession();
 }
-
-function showSesIntro(){
-  resetSesUI();
-  const stats = getDeckStats(sesDeck);
-  const now = new Date();
-  const totalDue = words.filter(w=>new Date(w.next_review||0)<=now).length;
-
-  // icon
-  const icon = totalDue > 0 ? '⏰' : sesDeck.some(w=>w._type==='new') ? '🌱' : '🔄';
-  Q('#si-icon').textContent = icon;
-
-  // title
-  Q('#si-title').textContent = totalDue > 0
-    ? `${sesDeck.length} کارت امروز`
-    : `سشن مرور — ${sesDeck.length} کارت`;
-
-  // chips
-  const chips = [];
-  if(stats.due)  chips.push(`<span class="si-chip due">⏰ ${stats.due} سررسید</span>`);
-  if(stats.new)  chips.push(`<span class="si-chip new">🌱 ${stats.new} جدید</span>`);
-  if(stats.weak) chips.push(`<span class="si-chip weak">💪 ${stats.weak} ضعیف</span>`);
-  if(stats.rev)  chips.push(`<span class="si-chip rev">✓ ${stats.rev} مرور</span>`);
-  Q('#si-chips').innerHTML = chips.join('');
-
-  // desc
-  const newLeft = words.filter(w=>w.seen===0).length;
-  Q('#si-desc').textContent = newLeft > 0
-    ? `${newLeft} لغت جدید منتظرن. هر سشن حداکثر ${MAX_NEW} تا معرفی میشه.`
-    : 'همه لغات دیده شدن — ادامه مرور منظم!';
-
-  Q('#session').classList.add('open');
-  document.body.style.overflow='hidden';
-  Q('#ses-intro').classList.add('show');
-}
-
-function sesBegin(){
-  Q('#ses-intro').classList.remove('show');
-  setTimeout(()=>{ Q('#ses-intro').style.display='none'; Q('#ses-body').style.display='flex'; showCard(); },200);
-}
-
-function resetSesUI(){
+function startSession(){
   Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
   Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
-  Q('#ses-intro').classList.remove('show'); Q('#ses-intro').style.display='';
-  Q('#ses-body').style.display='none';
+  Q('#ses-body').style.display='flex';
+  Q('#session').classList.add('open');
+  document.body.style.overflow='hidden';
+  showCard();
 }
+
 function sesClose(force){
   if(!force && sesI<sesDeck.length && Q('#ses-body').style.display!=='none'){
     Q('#ses-body').style.display='none';
@@ -1741,15 +1695,17 @@ function sesClose(force){
     requestAnimationFrame(()=>Q('#ses-confirm').classList.add('show'));
     return;
   }
-  Q('#session').classList.remove('open'); document.body.style.overflow=''; updateStats();
+  Q('#session').classList.remove('open');
+  document.body.style.overflow='';
+  updateStats();
 }
 function sesResume(){
   Q('#ses-confirm').classList.remove('show');
-  setTimeout(()=>{ Q('#ses-confirm').style.display='none'; Q('#ses-body').style.display='flex'; },220);
+  setTimeout(()=>{Q('#ses-confirm').style.display='none'; Q('#ses-body').style.display='flex';},180);
 }
 function sesRestart(){
   Q('#ses-end').classList.remove('show');
-  setTimeout(()=>{ Q('#ses-end').style.display='none'; sesOpenSmart(); },220);
+  setTimeout(()=>{Q('#ses-end').style.display='none'; sesOpenSmart();},180);
 }
 
 function showCard(){
@@ -1763,16 +1719,19 @@ function showCard(){
   // type badge
   const typeEl = Q('#c-type');
   const labels = {due:'سررسید',new:'جدید',weak:'ضعیف',rev:'مرور'};
-  typeEl.textContent = labels[w._type] || '';
-  typeEl.className = `c-type show ${w._type}`;
+  typeEl.textContent = labels[w._type]||'';
+  typeEl.className = 'c-type show ' + (w._type||'rev');
 
   const pct = Math.round(sesI / sesDeck.length * 100);
   Q('#ses-fill').style.width = pct + '%';
   Q('#ses-cnt').textContent = (sesI+1) + ' / ' + sesDeck.length;
 
-  // نمایش repeat count
-  const repeats = sesRepeat.has(w.de) ? ' 🔄' : '';
-  Q('#ses-sub').textContent = (sesRepN > 0 ? `${sesRepN} تکرار${repeats}` : '');
+  // sub line: نوع deck
+  const stats = getDeckStats(sesDeck);
+  const parts=[];
+  if(stats.due) parts.push(stats.due+' سررسید');
+  if(stats.new) parts.push(stats.new+' جدید');
+  Q('#ses-sub').textContent = parts.join(' · ');
 
   // next interval preview
   const o = words.find(x=>x.de===w.de);
@@ -1939,10 +1898,7 @@ async function editSave(){
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&Q('#pane-home').classList.contains('on')&&document.activeElement===Q('#s-inp'))doSearch();
   if(Q('#session').classList.contains('open')){
-    if(e.key===' '){e.preventDefault();
-      if(Q('#ses-intro').classList.contains('show'))sesBegin();
-      else sesFlip();
-    }
+    if(e.key===' '){e.preventDefault(); sesFlip();}
     if(e.key==='ArrowRight'&&Q('#card-wrap').classList.contains('flip'))sesRate(true);
     if(e.key==='ArrowLeft'&&Q('#card-wrap').classList.contains('flip'))sesRate(false);
   }
