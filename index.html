@@ -1684,15 +1684,26 @@ function updateDrawerStats(){
 async function init(){
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
 
-  // Auth state listener
+  // ── فوری session رو بگیر — قبل از هر چیز ──
+  const{data:{session:initSession}}=await sb.auth.getSession();
+  if(initSession?.user){
+    setUserUI(initSession.user);
+    hideGate();
+    await dbLoad();
+    await loadProfile();
+    setTimeout(checkReminder,2500);
+  } else {
+    showGate();
+  }
+
+  // ── بعد listener رو هم set کن برای تغییرات بعدی ──
   sb.auth.onAuthStateChange(async(event,session)=>{
-    if(session?.user){
+    if(event==='SIGNED_IN' && session?.user && !currentUser){
       setUserUI(session.user);
       hideGate();
       await dbLoad();
-      await loadProfile(); // هر بار — از Supabase می‌خونه
-      setTimeout(checkReminder,2500);
-    } else {
+      await loadProfile();
+    } else if(event==='SIGNED_OUT'){
       currentUser=null; words=[]; userSearchCount=0; userPlan='free';
       saveCache();
       setUserUI(null);
