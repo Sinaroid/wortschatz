@@ -853,6 +853,10 @@ body.offline .topbar{top:36px}
 @media(max-width:360px){
   .pane{padding-left:var(--s3);padding-right:var(--s3)}
 }
+#ses-intro.open{display:flex!important}
+@keyframes confettiFall{
+  to{transform:translateY(110vh) rotate(720deg);opacity:0}
+}
 </style>
 </head>
 <body>
@@ -1016,6 +1020,17 @@ body.offline .topbar{top:36px}
 </div>
 
 <!-- Session -->
+<!-- Session Intro -->
+<div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
+  <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
+  <div style="font-family:var(--serif);font-size:28px;font-weight:600;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
+  <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
+  <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
+    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">شروع مرور →</button>
+    <button class="btn btn-full" onclick="introClose()">بعداً</button>
+  </div>
+</div>
+
 <div id="session">
   <div class="ses-topbar">
     <button class="ses-close" onclick="sesClose()">
@@ -2069,13 +2084,13 @@ function sesOpenSmart(){
   if(!words.length){ showToast('هنوز لغتی اضافه نکردی!'); return; }
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
-  startSession();
+  showIntro();
 }
 function sesOpenDue(){
   if(!words.length) return;
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
-  startSession();
+  showIntro();
 }
 function sesOpen(){
   if(!words.length){ showToast('هنوز لغتی اضافه نکردی!'); return; }
@@ -2085,6 +2100,35 @@ function sesOpen(){
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
   startSession();
 }
+function showIntro(){
+  const now=new Date();
+  const due=sesDeck.filter(w=>w._type==='due').length;
+  const newW=sesDeck.filter(w=>w._type==='new').length;
+  const total=sesDeck.length;
+  // Set emoji and title based on time
+  const h=now.getHours();
+  const greet = h<12?'صبح بخیر ☀️':h<17?'وقت مرور 🧠':h<21?'عصر بخیر 🌤':'شب بخیر 🌙';
+  const intro=Q('#ses-intro');
+  Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
+  Q('#intro-title').textContent=greet;
+  let sub='';
+  if(due>0) sub+=`<b style="color:var(--accent)">${due} کارت</b> سررسیده `;
+  if(newW>0) sub+=(due>0?'و ':'')+`<b>${newW} لغت</b> جدید `;
+  sub+=`داری — جمعاً <b>${total} کارت</b>`;
+  Q('#intro-sub').innerHTML=sub;
+  intro.style.display='flex';
+  intro.classList.add('open');
+}
+function introStart(){
+  Q('#ses-intro').style.display='none';
+  Q('#ses-intro').classList.remove('open');
+  startSession();
+}
+function introClose(){
+  Q('#ses-intro').style.display='none';
+  Q('#ses-intro').classList.remove('open');
+}
+
 function startSession(){
   Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
   Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
@@ -2193,6 +2237,66 @@ function sesAgain(){
   }
 }
 
+
+function checkStreakReward(){
+  if(userPlan==='pro'||userPlan==='beta') return; // نامحدود نیاز به جایزه نداره
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
+  let streak=0; const dd=new Date();
+  while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
+
+  const lastRewardKey='ws_last_streak_reward';
+  const lastReward=parseInt(localStorage.getItem(lastRewardKey)||'0');
+
+  // milestone های streak
+  const milestones=[3,7,14,30,60,100];
+  const hit=milestones.find(m=>streak>=m && lastReward<m);
+  if(!hit) return;
+
+  // reward: +searches
+  const bonus = hit>=30?15:hit>=14?10:hit>=7?5:3;
+  localStorage.setItem(lastRewardKey, String(hit));
+
+  // نشون بده
+  setTimeout(()=>{
+    showStreakReward(streak, bonus);
+  }, 1000);
+}
+
+function showStreakReward(streak, bonus){
+  const msg = `🎉 ${streak} روز streak!
+به عنوان جایزه ${bonus} جستجو اضافه گرفتی!`;
+  // Update search count in Supabase
+  if(currentUser?.id && sb){
+    sb.from('profiles')
+      .update({search_count: Math.max(0, userSearchCount - bonus)})
+      .eq('id', currentUser.id)
+      .then(()=>{
+        userSearchCount = Math.max(0, userSearchCount - bonus);
+        updateFreeBanner();
+      });
+  }
+  // Show celebration toast
+  showToast(msg, 4000);
+  // Confetti effect
+  confetti();
+}
+
+function confetti(){
+  const colors=['#1a3af2','#f2c41a','#1af27a','#f21a1a','#f21af2'];
+  for(let i=0;i<30;i++){
+    const el=document.createElement('div');
+    el.style.cssText=`position:fixed;width:8px;height:8px;border-radius:50%;
+      background:${colors[i%colors.length]};
+      left:${Math.random()*100}vw;top:-10px;
+      animation:confettiFall ${1+Math.random()*2}s ease-in forwards;
+      z-index:9999;pointer-events:none`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 3000);
+  }
+}
+
 function sesSummary(){
   Q('#ses-body').style.display='none'; Q('#ses-end').style.display='flex';
   requestAnimationFrame(()=>Q('#ses-end').classList.add('show'));
@@ -2220,6 +2324,9 @@ function sesSummary(){
   }
 
   logReview(); updateStats();
+
+  // Streak reward check
+  checkStreakReward();
 }
 
 function initSwipe(){
