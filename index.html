@@ -770,6 +770,9 @@ body.offline .topbar{top:36px}
 .user-name{font-size:11px;font-weight:500;color:var(--ink2);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 
+.drw-plan-free-card{background:linear-gradient(135deg,#f8f9ff,#f0f2ff)}
+.drw-free-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
+.drw-free-msg{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:var(--s4);text-align:right}
 .drw-plan-beta{background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.05));border-color:rgba(26,58,242,.2)}
 .drw-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-top:0}
 .drw-stat{text-align:center;padding:var(--s3) var(--s2);background:var(--bg2);border-radius:var(--r2);border:1px solid var(--bg3)}
@@ -925,17 +928,17 @@ body.offline .topbar{top:36px}
     </div>
 
     <!-- Plan card — FREE -->
-    <div class="drw-plan-card" id="drw-plan-free">
-      <div class="drw-plan-row">
-        <span class="drw-plan-label">نسخه رایگان</span>
+    <div class="drw-plan-card drw-plan-free-card" id="drw-plan-free">
+      <div class="drw-free-top">
         <span class="drw-plan-badge">Free</span>
+        <span class="drw-plan-label">نسخه رایگان</span>
       </div>
-      <div class="drw-plan-bar-wrap">
-        <div class="drw-plan-bar"><div class="drw-plan-fill" id="drw-plan-fill"></div></div>
-        <span class="drw-plan-count" id="drw-word-count">0 / 10</span>
+      <div class="drw-free-msg">
+        یادگیری بدون محدودیت رو تجربه کن 🚀
       </div>
-      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s3);text-align:right">جستجو استفاده شده</div>
-      <button class="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">✨ ارتقا به Pro — €4.99/ماه</button>
+      <button class="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">
+        ✨ شروع Pro — فقط €4.99/ماه
+      </button>
     </div>
 
     <!-- Plan card — BETA -->
@@ -1469,18 +1472,7 @@ function updateDrawerPlan(){
   if(betaCard) betaCard.style.display = isBeta  ? 'block' : 'none';
   if(proCard)  proCard.style.display  = isPro   ? 'block' : 'none';
 
-  // progress bar برای free
-  if(isFree){
-    const used = userSearchCount;
-    const pct  = Math.min(100, Math.round(used/FREE_LIMIT*100));
-    const fill = Q('#drw-plan-fill');
-    const count= Q('#drw-word-count');
-    if(fill){
-      fill.style.width = pct+'%';
-      fill.style.background = pct>=90?'var(--err)':pct>=70?'var(--warn)':'var(--accent)';
-    }
-    if(count) count.textContent = `${used} / ${FREE_LIMIT}`;
-  }
+  // free card — بدون progress bar
 
   // stats
   updateDrawerStats();
