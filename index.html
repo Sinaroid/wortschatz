@@ -1287,7 +1287,7 @@ body.offline .topbar{top:36px}
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
   padding:var(--s4) var(--s3);text-align:center;cursor:pointer;
   transition:transform .15s,box-shadow .15s;position:relative;
-  min-width:0;
+  min-width:0;width:100%;font-family:var(--sans);
 }
 .pack-card:active{transform:scale(.97)}
 .pack-card:hover{box-shadow:var(--sh2)}
@@ -1835,36 +1835,36 @@ body.offline .topbar{top:36px}
   <div style="padding:0 var(--s5);display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-bottom:var(--s6)">
 
     <!-- A1 FREE -->
-    <div class="pack-card" onclick="openPack('a1')">
+    <button class="pack-card" onclick="openPack('a1')" type="button">
       <div class="pack-emoji">🌱</div>
       <div class="pack-name">پایه A1</div>
       <div class="pack-count">۵۰ لغت</div>
       <div class="pack-badge free">رایگان</div>
-    </div>
+    </button>
 
     <!-- Conversation PRO -->
-    <div class="pack-card" onclick="openPack('b1')">
+    <button class="pack-card" onclick="openPack('b1')" type="button">
       <div class="pack-emoji">💬</div>
       <div class="pack-name">مکالمه روزمره</div>
       <div class="pack-count">۸۰ لغت</div>
       <div class="pack-badge pro">Pro 🔒</div>
-    </div>
+    </button>
 
     <!-- Work PRO -->
-    <div class="pack-card" onclick="openPack('work')">
+    <button class="pack-card" onclick="openPack('work')" type="button">
       <div class="pack-emoji">💼</div>
       <div class="pack-name">کار و شغل</div>
       <div class="pack-count">۶۰ لغت</div>
       <div class="pack-badge pro">Pro 🔒</div>
-    </div>
+    </button>
 
     <!-- Travel PRO -->
-    <div class="pack-card" onclick="openPack('travel')">
+    <button class="pack-card" onclick="openPack('travel')" type="button">
       <div class="pack-emoji">✈️</div>
       <div class="pack-name">سفر</div>
       <div class="pack-count">۵۰ لغت</div>
       <div class="pack-badge pro">Pro 🔒</div>
-    </div>
+    </button>
 
   </div>
 
