@@ -1738,6 +1738,31 @@ function updateFreeBanner(){
 function showUpgrade(){
   Q('#upgrade-modal').classList.add('open');
 }
+
+async function startCheckout(){
+  if(!currentUser){
+    showToast('اول وارد شو');
+    Q('#upgrade-modal').classList.remove('open');
+    showGate();
+    return;
+  }
+  const btn = Q('#checkout-btn');
+  btn.disabled = true;
+  btn.textContent = 'در حال انتقال...';
+  try{
+    const r = await fetch('/api/checkout', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-user-id':currentUser.id}
+    });
+    const d = await r.json();
+    if(d.url) window.location.href = d.url;
+    else throw new Error(d.error||'خطا');
+  }catch(e){
+    showToast('خطا: '+e.message);
+    btn.disabled=false;
+    btn.textContent='شروع اشتراک Pro';
+  }
+}
 async function redeemBeta(){
   const code=(Q('#beta-code-inp')?.value||'').trim().toUpperCase();
   const errEl=Q('#beta-code-err');
@@ -1913,6 +1938,24 @@ function setUserUI(user){
 ══════════════════════════════ */
 async function init(){
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
+
+  // Handle Stripe redirect
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('upgrade')==='success'){
+    history.replaceState({},document.title,window.location.pathname);
+    // upgrade user after successful payment
+    const uid = params.get('user_id');
+    if(uid){
+      fetch('/api/upgrade',{method:'POST',headers:{'Content-Type':'application/json','x-user-id':uid}})
+        .then(()=>{
+          showToast('🎉 Pro فعال شد! جستجوی نامحدود داری');
+          setTimeout(()=>loadProfile(),1500);
+        }).catch(()=>{});
+    }
+  } else if(params.get('upgrade')==='cancel'){
+    history.replaceState({},document.title,window.location.pathname);
+    showToast('پرداخت لغو شد');
+  }
 
   // Auth state listener
   // فوری session رو بگیر
@@ -3223,8 +3266,8 @@ function packLearnRestart(){
     <div style="background:var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s4);font-size:12px;color:var(--ink3);text-align:center">
       امروز جستجوی رایگانت تموم شد.<br>فردا دوباره ۱۰ تا داری — یا همین الان Pro بگیر 🚀
     </div>
-    <button class="btn btn-p btn-full" style="margin-bottom:var(--s4)" onclick="showToast('به‌زودی 🚀');Q('#upgrade-modal').classList.remove('open')">
-      شروع اشتراک Pro — €4.99/ماه
+    <button class="btn btn-p btn-full" style="margin-bottom:var(--s4);font-size:16px;padding:16px" id="checkout-btn" onclick="startCheckout()">
+      شروع اشتراک Pro — €4.99/ماه 🚀
     </button>
     <div class="drw-divider"></div>
     <div style="margin-top:var(--s4)">
