@@ -5,7 +5,9 @@
     { "src": "api/*.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/api/checkout", "dest": "/api/checkout.js" },
+    { "src": "/api/upgrade", "dest": "/api/upgrade.js" },
+    { "src": "/api", "dest": "/api/index.js" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
