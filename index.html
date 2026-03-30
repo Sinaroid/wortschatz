@@ -1118,7 +1118,7 @@ body.offline .topbar{top:36px}
         <span class="drw-plan-badge">Free</span>
         <span class="drw-plan-label">نسخه رایگان</span>
       </div>
-      <div class="drw-free-msg">
+      <div class="drw-free-msg" id="drw-free-msg">
         یادگیری بدون محدودیت رو تجربه کن 🚀
       </div>
       <button class="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">
@@ -1593,7 +1593,7 @@ const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 const { createClient } = window.supabase;
 const sb = createClient(SB_URL, SB_KEY);
 
-const FREE_LIMIT = 30;
+const FREE_LIMIT = 10; // روزانه — reset هر شب
 const BETA_LIMIT = 500;
 
 /* ══════════════════════════════
@@ -1687,16 +1687,28 @@ async function loadProfile(){
   if(!currentUser)return;
   try{
     const{data}=await sb.from('profiles')
-      .select('plan,word_count,is_beta,search_count')
+      .select('plan,word_count,is_beta,search_count,search_reset_at')
       .eq('id',currentUser.id).single();
     if(data){
       userPlan = data.is_beta ? 'beta' : (data.plan||'free');
       userWordCount = data.word_count||0;
-      userSearchCount = data.search_count||0;
-      updateFreeBanner();
-      updateDrawerPlan();
+      const now=new Date();
+      const resetAt=data.search_reset_at?new Date(data.search_reset_at):null;
+      if(!resetAt||now>=resetAt){
+        userSearchCount=0;
+        const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
+        sb.from('profiles').update({search_count:0,search_reset_at:tomorrow.toISOString()}).eq('id',currentUser.id).then(()=>{}).catch(()=>{});
+      } else {
+        userSearchCount=data.search_count||0;
+      }
+    } else {
+      const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
+      await sb.from('profiles').upsert({id:currentUser.id,plan:'free',word_count:0,search_count:0,is_beta:false,search_reset_at:tomorrow.toISOString()});
+      userPlan='free';userWordCount=0;userSearchCount=0;
     }
   }catch(e){console.error('loadProfile:',e);}
+  updateFreeBanner();
+  updateDrawerPlan();
 }
 
 function canAddMore(){
@@ -1708,14 +1720,17 @@ function updateFreeBanner(){
   const b=Q('#free-banner');
   if(b) b.style.display='none';
   if(userPlan==='pro'||userPlan==='beta') return;
+
   const used=userSearchCount;
   const left=FREE_LIMIT-used;
+
   if(left<=0){
+    // تموم شد — upgrade modal
     showUpgrade();
+  } else if(left===2){
+    showToast('⚠ فقط ۲ جستجو امروز مونده');
   } else if(left===1){
-    showToast('⚠ فقط ۱ جستجو رایگان مونده!');
-  } else if(left===3){
-    showToast('⚠ ۳ جستجو تا سقف رایگان مونده');
+    showToast('🔴 آخرین جستجوی امروز!');
   }
   updateDrawerPlan();
 }
@@ -1744,7 +1759,6 @@ async function redeemBeta(){
 }
 
 function updateDrawerPlan(){
-  // نشون دادن card درست بر اساس plan
   const isFree = userPlan==='free';
   const isBeta = userPlan==='beta';
   const isPro  = userPlan==='pro';
@@ -1757,9 +1771,17 @@ function updateDrawerPlan(){
   if(betaCard) betaCard.style.display = isBeta  ? 'block' : 'none';
   if(proCard)  proCard.style.display  = isPro   ? 'block' : 'none';
 
-  // free card — بدون progress bar
+  if(isFree){
+    const used = userSearchCount;
+    const left = FREE_LIMIT - used;
+    const msg = Q('#drw-free-msg');
+    if(msg){
+      if(left<=0) msg.innerHTML='جستجوی امروز تموم شد 😔<br><small>فردا دوباره ۱۰ تا داری</small>';
+      else if(left<=3) msg.innerHTML=`⚠ فقط <b>${left}</b> جستجو امروز مونده`;
+      else msg.innerHTML=`امروز <b>${used}</b> از <b>${FREE_LIMIT}</b> جستجو استفاده کردی`;
+    }
+  }
 
-  // stats
   updateDrawerStats();
 }
 
@@ -1790,7 +1812,8 @@ async function ai(prompt,tokens=900){
   if(r.status===429){
     const d=await r.json().catch(()=>({}));
     userSearchCount=FREE_LIMIT; updateFreeBanner();
-    throw new Error(d.message||`${FREE_LIMIT} جستجوی رایگان تموم شد`);
+    const hours=d.reset_hours||24;
+    throw new Error(d.message||`جستجوی امروز تموم شد. ${hours} ساعت دیگه reset میشه`);
   }
   if(!r.ok) throw new Error('HTTP '+r.status);
   const d=await r.json();
@@ -3197,8 +3220,11 @@ function packLearnRestart(){
         <div>✅ sync روی همه دستگاه‌ها</div>
       </div>
     </div>
+    <div style="background:var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s4);font-size:12px;color:var(--ink3);text-align:center">
+      امروز جستجوی رایگانت تموم شد.<br>فردا دوباره ۱۰ تا داری — یا همین الان Pro بگیر 🚀
+    </div>
     <button class="btn btn-p btn-full" style="margin-bottom:var(--s4)" onclick="showToast('به‌زودی 🚀');Q('#upgrade-modal').classList.remove('open')">
-      شروع اشتراک Pro
+      شروع اشتراک Pro — €4.99/ماه
     </button>
     <div class="drw-divider"></div>
     <div style="margin-top:var(--s4)">
