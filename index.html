@@ -10,7 +10,46 @@
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+function wordDetail(idx){
+  const w = words[idx];
+  if(!w) return;
+  const now = new Date();
+  const nr = new Date(w.next_review||0);
+  const diff = Math.round((nr-now)/(1000*60*60*24));
+  const nextStr = !w.seen?'هنوز مرور نشده':diff<=0?'سررسیده':diff===1?'فردا':diff+' روز دیگه';
+  const level = Math.min(5,Math.max(0,w.seen||0));
+  const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
+
+  const html = `<div style="text-align:right">
+    <div style="font-family:var(--serif);font-size:28px;font-weight:700;color:var(--ink);direction:ltr;text-align:left;margin-bottom:4px">${w.de}</div>
+    <div style="font-size:16px;color:var(--ink2);margin-bottom:var(--s4)">${w.fa}</div>
+    ${w.ex?`<div style="background:var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s4)">
+      <div style="font-size:13px;font-style:italic;color:var(--ink2);direction:ltr;text-align:left">${w.ex}</div>
+    </div>`:''}
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
+      <span style="font-size:12px;color:var(--ink3)">پیشرفت</span>
+      <div>${dots}</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
+      <span style="font-size:12px;color:var(--ink3)">مرور بعدی</span>
+      <span style="font-size:12px;font-weight:600;color:var(--ink)">${nextStr}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
+      <span style="font-size:12px;color:var(--ink3)">تعداد مرور</span>
+      <span style="font-size:12px;font-weight:600;color:var(--ink)">${w.seen||0} بار</span>
+    </div>
+    <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
+      <button class="btn btn-p" style="flex:1" onclick="editOpen(${idx});Q('#word-detail-modal').classList.remove('open')">ویرایش</button>
+      <button class="btn" onclick="Q('#word-detail-modal').classList.remove('open')">بستن</button>
+    </div>
+  </div>`;
+
+  Q('#word-detail-body').innerHTML = html;
+  Q('#word-detail-modal').classList.add('open');
+}
+
+</script>
 <style>
 /* ═══════════════════════════════════
    DESIGN TOKENS
@@ -972,6 +1011,32 @@ body.offline .topbar{top:36px}
 .pl-sum-n{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px}
 .pl-sum-l{font-size:11px;color:var(--ink3)}
 .pl-sum-msg{font-size:14px;color:var(--ink2);line-height:1.7;max-width:280px}
+
+
+/* ─── LIST v2 ─── */
+.word-row2{
+  display:flex;align-items:center;
+  padding:var(--s3) var(--s4);
+  background:var(--card);border:1px solid var(--bg3);
+  border-radius:var(--r3);margin-bottom:var(--s2);
+  cursor:pointer;transition:background .15s,transform .1s;
+  gap:var(--s3);
+}
+.word-row2:active{transform:scale(.99);background:var(--bg2)}
+.wr2-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.wr2-top{display:flex;align-items:center;justify-content:space-between;gap:var(--s2)}
+.wr2-de{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink);direction:ltr}
+.wr2-bottom{display:flex;align-items:center;justify-content:space-between}
+.wr2-fa{font-size:12px;color:var(--ink2)}
+.wr2-dots{display:flex;gap:3px;align-items:center}
+.wr-dot{width:6px;height:6px;border-radius:50%;background:var(--bg3);flex-shrink:0}
+.wr-dot.fill{background:var(--accent)}
+.wr-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.wr-status.new{background:rgba(26,58,242,.1);color:var(--accent)}
+.wr-status.due{background:rgba(204,32,32,.1);color:var(--err)}
+.wr-status.soon{background:rgba(168,72,0,.1);color:var(--warn)}
+.wr-status.ok{background:rgba(18,110,53,.1);color:var(--ok)}
+.wr2-actions{display:flex;gap:4px;flex-shrink:0}
 
 </style>
 </head>
@@ -2565,6 +2630,7 @@ function renderList(){
     banner.classList.add('show');
     Q('#due-chips').innerHTML=due.slice(0,8).map(w=>`<span class="due-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`).join('');
   } else banner.classList.remove('show');
+
   const q=(Q('#list-q')?.value||'').trim().toLowerCase();
   let sorted=[...words];
   if(listSort==='due')sorted=sorted.sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
@@ -2573,21 +2639,49 @@ function renderList(){
   else if(listSort==='alpha')sorted=sorted.sort((a,b)=>a.de.localeCompare(b.de));
   const filtered=q?sorted.filter(w=>w.de.toLowerCase().includes(q)||w.fa.includes(q)||(w.ex||'').toLowerCase().includes(q)):sorted;
   Q('#list-count').textContent=filtered.length+' لغت';
-  if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:var(--s8);color:var(--ink4);font-size:14px">«${q}» پیدا نشد</div>`;return;}
-  const cnt={};words.forEach(w=>cnt[w.de.toLowerCase()]=(cnt[w.de.toLowerCase()]||0)+1);
+  if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:var(--s8);color:var(--ink3);font-size:14px">«${q}» پیدا نشد</div>`;return;}
+
   function hl(t){return q?t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<span class="hl">$1</span>'):t;}
+
+  function nextReviewLabel(w){
+    if(!w.seen) return '<span class="wr-status new">جدید</span>';
+    const nr=new Date(w.next_review||0);
+    const diff=Math.round((nr-now)/(1000*60*60*24));
+    if(diff<=0) return '<span class="wr-status due">سررسیده ⏰</span>';
+    if(diff===1) return '<span class="wr-status soon">فردا</span>';
+    if(diff<=3) return '<span class="wr-status soon">'+diff+' روز دیگه</span>';
+    return '<span class="wr-status ok">'+diff+' روز دیگه</span>';
+  }
+
+  function progressDots(w){
+    const level=Math.min(5,Math.max(0,w.seen||0));
+    return Array.from({length:5},(_,i)=>
+      `<span class="wr-dot${i<level?' fill':''}" style="${i<level?'background:var(--accent)':''}"></span>`
+    ).join('');
+  }
+
   el.innerHTML=filtered.map(w=>{
-    const i=words.indexOf(w);const dup=cnt[w.de.toLowerCase()]>1;
-    return `<div class="word-row${dup?' dup':''}">`
-      +(dup?'<span style="color:var(--warn);font-size:11px;flex-shrink:0">⚠</span>':'')
-      +`<span class="wr-de">${hl(w.de)}</span>`
-      +`<span class="wr-fa">${hl(w.fa)}</span>`
-      +`<span class="wr-sc ${w.score>0?'pos':w.score<0?'neg':'neu'}">${w.score>0?'+':''}${w.score}</span>`
-      +`<button class="btn-ic" style="width:28px;height:28px" onclick="editOpen(${i})">`
-      +`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2l2 2-6.5 6.5H1.5V9L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>`
-      +`<button class="btn-ic" style="width:28px;height:28px" onclick="delWord(${i})">`
-      +`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
-      +`</div>`;
+    const i=words.indexOf(w);
+    return `<div class="word-row2" onclick="wordDetail(${i})">
+      <div class="wr2-main">
+        <div class="wr2-top">
+          <span class="wr2-de">${hl(w.de)}</span>
+          ${nextReviewLabel(w)}
+        </div>
+        <div class="wr2-bottom">
+          <span class="wr2-fa">${hl(w.fa)}</span>
+          <div class="wr2-dots">${progressDots(w)}</div>
+        </div>
+      </div>
+      <div class="wr2-actions" onclick="event.stopPropagation()">
+        <button class="btn-ic" onclick="editOpen(${i})">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M8 2l2 2-6.5 6.5H1.5V9L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn-ic" onclick="delWord(${i})">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M3.5 3l.5 7h4l.5-7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>`;
   }).join('');
 }
 async function delWord(i){
@@ -3219,5 +3313,12 @@ function packLearnRestart(){
   </div>
 </div>
 
+
+<!-- Word Detail Modal -->
+<div class="modal-bg" id="word-detail-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:360px">
+    <div id="word-detail-body"></div>
+  </div>
+</div>
 </body>
 </html>
