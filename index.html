@@ -49,10 +49,19 @@ let aiPackWords = [];
 function openPack(id){
   const pack = PACKS[id];
   if(!pack) return;
+
+  // Pro packs — check plan
   if(!pack.free && userPlan==='free'){
     showUpgrade();
     return;
   }
+
+  // Empty pro packs — coming soon
+  if(!pack.free && !pack.words.length){
+    showToast('این pack به‌زودی اضافه میشه 🔜');
+    return;
+  }
+
   curPack = pack;
   Q('#pack-modal-emoji').textContent = pack.emoji;
   Q('#pack-modal-title').textContent = pack.name;
@@ -1053,15 +1062,16 @@ body.offline .topbar{top:36px}
 }
 
 /* ─── PACKS ─── */
-.packs-section{padding:var(--s5) var(--s5) var(--s6);margin-top:var(--s2)}
+.packs-section{padding:var(--s5) var(--s5) var(--s4);margin-top:var(--s2)}
 .packs-header{margin-bottom:var(--s4)}
 .packs-title{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);margin-bottom:4px}
 .packs-sub{font-size:13px;color:var(--ink3)}
-.packs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3)}
+.packs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s3);max-width:400px}
 .pack-card{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
   padding:var(--s4) var(--s3);text-align:center;cursor:pointer;
   transition:transform .15s,box-shadow .15s;position:relative;
+  min-width:0;
 }
 .pack-card:active{transform:scale(.97)}
 .pack-card:hover{box-shadow:var(--sh2)}
@@ -1236,55 +1246,36 @@ body.offline .topbar{top:36px}
   </div>
 
   <div class="packs-grid" id="packs-grid">
-
-    <!-- A1 — FREE -->
     <div class="pack-card" onclick="openPack('a1')">
       <div class="pack-emoji">🌱</div>
       <div class="pack-name">پایه A1</div>
       <div class="pack-count">۵۰ لغت</div>
       <div class="pack-badge free">رایگان</div>
     </div>
-
-    <!-- B1 — PRO -->
-    <div class="pack-card pro-lock" onclick="openPack('b1')">
+    <div class="pack-card" onclick="openPack('b1')">
       <div class="pack-emoji">💬</div>
       <div class="pack-name">مکالمه روزمره</div>
       <div class="pack-count">۸۰ لغت</div>
       <div class="pack-badge pro">Pro 🔒</div>
     </div>
-
-    <!-- Work — PRO -->
-    <div class="pack-card pro-lock" onclick="openPack('work')">
+    <div class="pack-card" onclick="openPack('work')">
       <div class="pack-emoji">💼</div>
       <div class="pack-name">کار و شغل</div>
       <div class="pack-count">۶۰ لغت</div>
       <div class="pack-badge pro">Pro 🔒</div>
     </div>
-
-    <!-- Travel — PRO -->
-    <div class="pack-card pro-lock" onclick="openPack('travel')">
+    <div class="pack-card" onclick="openPack('travel')">
       <div class="pack-emoji">✈️</div>
       <div class="pack-name">سفر</div>
       <div class="pack-count">۵۰ لغت</div>
       <div class="pack-badge pro">Pro 🔒</div>
     </div>
-
-    <!-- Food — PRO -->
-    <div class="pack-card pro-lock" onclick="openPack('food')">
+    <div class="pack-card" onclick="openPack('food')">
       <div class="pack-emoji">🍕</div>
       <div class="pack-name">غذا و رستوران</div>
       <div class="pack-count">۴۰ لغت</div>
       <div class="pack-badge pro">Pro 🔒</div>
     </div>
-
-    <!-- AI Generator — PRO -->
-    <div class="pack-card pack-ai pro-lock" onclick="openAIPack()">
-      <div class="pack-emoji">✨</div>
-      <div class="pack-name">ساخت با AI</div>
-      <div class="pack-count">هر موضوعی</div>
-      <div class="pack-badge pro">Pro 🔒</div>
-    </div>
-
   </div>
 </div>
 
