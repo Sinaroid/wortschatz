@@ -247,7 +247,6 @@ function openPack(id){
   plFlipped = false;
 
   Q('#pl-summary').style.display='none';
-  Q('#pl-card-area') && (Q('#pl-card-area').style.display='flex');
   Q('#pack-learn-modal').classList.add('open');
   plShowCard();
 }
@@ -388,7 +387,6 @@ function packLearnSave(){
 }
 
 function plShowSummary(){
-  Q('#pl-card-area') && (Q('#pl-card-area').style.display='none');
   Q('#pl-actions').style.display='none';
 
   const total = plWords.length;
@@ -427,7 +425,7 @@ function packLearnClose(){
 function packLearnRestart(){
   plIdx=0; plFlashCount=0; plSaveCount=0; plSkipCount=0;
   Q('#pl-summary').style.display='none';
-  if(Q('#pl-card-area')) Q('#pl-card-area').style.display='flex';
+  const ca=Q('#pl-card-area');if(ca)ca.style.display='flex';
   plShowCard();
 }
 
@@ -3082,7 +3080,7 @@ init();
 </div>
 
 <!-- Pack Learn Modal -->
-<div class="modal-bg" id="pack-learn-modal">
+<div id="pack-learn-modal">
   <div class="pack-learn-wrap">
 
     <!-- Header -->
@@ -3107,7 +3105,7 @@ init();
     </div>
 
     <!-- Card Area -->
-    <div class="pl-card-area">
+    <div class="pl-card-area" id="pl-card-area">
       <div class="pl-card" id="pl-card" onclick="packLearnFlip()">
 
         <!-- Front -->
