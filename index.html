@@ -10,426 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-/* ══════════════════════════════
-   WORD PACKS
-══════════════════════════════ */
-const PACKS = {
-  a1: {
-    name:'پایه A1', emoji:'🌱', free:true,
-    words:[
-      {de:'Hallo',fa:'سلام',ex:'Hallo! Wie geht es dir?',ex_fa:'سلام! حالت چطوره؟',tip:'رسمی‌ترش Guten Tag هست'},
-      {de:'Danke',fa:'ممنون',ex:'Danke schön!',ex_fa:'خیلی ممنون!',tip:'Bitte یعنی خواهش می‌کنم — جواب Danke'},
-      {de:'Bitte',fa:'خواهش می‌کنم',ex:'Bitte sehr!',ex_fa:'خواهش می‌کنم!',tip:'هم "please" هم "you're welcome"'},
-      {de:'Ja',fa:'بله',ex:'Ja, natürlich!',ex_fa:'بله، البته!',tip:'Jawohl خیلی رسمیه'},
-      {de:'Nein',fa:'نه',ex:'Nein, danke.',ex_fa:'نه، ممنون.',tip:'Nö محاوره‌ایه'},
-      {de:'Wasser',fa:'آب',ex:'Ich trinke Wasser.',ex_fa:'آب می‌نوشم.',tip:'das Wasser — خنثی'},
-      {de:'Essen',fa:'غذا / خوردن',ex:'Das Essen ist lecker.',ex_fa:'غذا خوشمزه‌ست.',tip:'هم اسم هم فعل'},
-      {de:'Haus',fa:'خانه',ex:'Ich bin zu Hause.',ex_fa:'خونه‌ام.',tip:'Heim هم خانه است ولی احساسی‌تر'},
-      {de:'Auto',fa:'ماشین',ex:'Das Auto ist neu.',ex_fa:'ماشین نوئه.',tip:'das Auto — خنثی'},
-      {de:'Arbeit',fa:'کار',ex:'Ich gehe zur Arbeit.',ex_fa:'می‌رم سر کار.',tip:'Job هم کار است — انگلیسی'},
-      {de:'Familie',fa:'خانواده',ex:'Meine Familie ist groß.',ex_fa:'خانواده‌ام بزرگه.',tip:'die Familie — مؤنث'},
-      {de:'Freund',fa:'دوست',ex:'Er ist mein Freund.',ex_fa:'اون دوستمه.',tip:'Freundin برای دختر'},
-      {de:'Zeit',fa:'وقت / زمان',ex:'Ich habe keine Zeit.',ex_fa:'وقت ندارم.',tip:'یکی از پرکاربردترین کلمات'},
-      {de:'Tag',fa:'روز',ex:'Guten Tag!',ex_fa:'روز بخیر!',tip:'Tage جمعشه'},
-      {de:'Nacht',fa:'شب',ex:'Gute Nacht!',ex_fa:'شب بخیر!',tip:'die Nacht — مؤنث'},
-      {de:'Geld',fa:'پول',ex:'Ich brauche Geld.',ex_fa:'پول لازم دارم.',tip:'das Geld — خنثی'},
-      {de:'Stadt',fa:'شهر',ex:'Die Stadt ist schön.',ex_fa:'شهر قشنگه.',tip:'Städte جمعشه'},
-      {de:'Land',fa:'کشور / روستا',ex:'Das Land ist groß.',ex_fa:'کشور بزرگه.',tip:'هم country هم countryside'},
-      {de:'Schule',fa:'مدرسه',ex:'Ich gehe zur Schule.',ex_fa:'می‌رم مدرسه.',tip:'die Schule — مؤنث'},
-      {de:'Buch',fa:'کتاب',ex:'Ich lese ein Buch.',ex_fa:'دارم کتاب می‌خونم.',tip:'das Buch — خنثی'},
-      {de:'Kind',fa:'بچه',ex:'Das Kind spielt.',ex_fa:'بچه بازی می‌کنه.',tip:'Kinder جمعشه'},
-      {de:'Mann',fa:'مرد / شوهر',ex:'Der Mann arbeitet.',ex_fa:'مرد کار می‌کنه.',tip:'der Mann — مذکر'},
-      {de:'Frau',fa:'زن / خانم',ex:'Die Frau ist nett.',ex_fa:'خانم مهربونه.',tip:'هم woman هم Mrs'},
-      {de:'groß',fa:'بزرگ',ex:'Er ist sehr groß.',ex_fa:'خیلی بلنده.',tip:'هم tall هم big'},
-      {de:'klein',fa:'کوچک',ex:'Das ist ein kleines Haus.',ex_fa:'اینه یه خونه کوچیکه.',tip:'مخالف groß'},
-      {de:'gut',fa:'خوب',ex:'Das ist gut!',ex_fa:'این خوبه!',tip:'besser=بهتر، best=بهترین'},
-      {de:'schlecht',fa:'بد',ex:'Das Wetter ist schlecht.',ex_fa:'هوا بده.',tip:'schlimm هم بد است — بدتر'},
-      {de:'neu',fa:'جدید',ex:'Ich habe ein neues Auto.',ex_fa:'ماشین جدید دارم.',tip:'مخالف alt'},
-      {de:'alt',fa:'قدیمی / پیر',ex:'Das Haus ist sehr alt.',ex_fa:'خونه خیلی قدیمیه.',tip:'هم old هم elderly'},
-      {de:'kalt',fa:'سرد',ex:'Es ist kalt draußen.',ex_fa:'بیرون سرده.',tip:'مخالف warm'},
-      {de:'warm',fa:'گرم',ex:'Das Wasser ist warm.',ex_fa:'آب گرمه.',tip:'heiß خیلی داغه'},
-      {de:'schnell',fa:'سریع',ex:'Fahr nicht so schnell!',ex_fa:'اینقدر سریع نرو!',tip:'مخالف langsam'},
-      {de:'langsam',fa:'آرام / کند',ex:'Bitte sprechen Sie langsam.',ex_fa:'لطفاً آروم صحبت کنید.',tip:'خیلی کاربردی برای مبتدیا'},
-      {de:'kommen',fa:'آمدن',ex:'Ich komme aus Iran.',ex_fa:'از ایران میام.',tip:'ich komme, du kommst'},
-      {de:'gehen',fa:'رفتن',ex:'Ich gehe nach Hause.',ex_fa:'می‌رم خونه.',tip:'پرکاربردترین فعل'},
-      {de:'sehen',fa:'دیدن',ex:'Ich sehe dich!',ex_fa:'می‌بینمت!',tip:'schauen هم نگاه کردنه'},
-      {de:'sprechen',fa:'صحبت کردن',ex:'Sprechen Sie Deutsch?',ex_fa:'آلمانی بلدید؟',tip:'reden محاوره‌ایه'},
-      {de:'hören',fa:'شنیدن',ex:'Ich höre Musik.',ex_fa:'موزیک گوش می‌دم.',tip:'zuhören = گوش دادن دقیق'},
-      {de:'essen',fa:'خوردن',ex:'Was essen wir heute?',ex_fa:'امروز چی می‌خوریم؟',tip:'ich esse, du isst'},
-      {de:'trinken',fa:'نوشیدن',ex:'Ich trinke Kaffee.',ex_fa:'قهوه می‌نوشم.',tip:'trinken = نوشیدن، essen = خوردن'},
-      {de:'schlafen',fa:'خوابیدن',ex:'Ich schlafe acht Stunden.',ex_fa:'۸ ساعت می‌خوابم.',tip:'ich schlafe, du schläfst'},
-      {de:'kaufen',fa:'خریدن',ex:'Ich kaufe ein Buch.',ex_fa:'یه کتاب می‌خرم.',tip:'verkaufen = فروختن'},
-      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
-      {de:'lesen',fa:'خواندن',ex:'Ich lese jeden Tag.',ex_fa:'هر روز می‌خونم.',tip:'ich lese, du liest'},
-      {de:'schreiben',fa:'نوشتن',ex:'Schreib mir!',ex_fa:'برام بنویس!',tip:'tippen = تایپ کردن'},
-      {de:'Straße',fa:'خیابان',ex:'Die Straße ist lang.',ex_fa:'خیابون بلنده.',tip:'die Straße — مؤنث'},
-      {de:'Bahnhof',fa:'ایستگاه قطار',ex:'Wo ist der Bahnhof?',ex_fa:'ایستگاه کجاست؟',tip:'der Bahnhof — مذکر'},
-      {de:'Supermarkt',fa:'سوپرمارکت',ex:'Ich gehe zum Supermarkt.',ex_fa:'می‌رم سوپرمارکت.',tip:'der Supermarkt — مذکر'},
-      {de:'Arzt',fa:'دکتر',ex:'Ich brauche einen Arzt.',ex_fa:'به دکتر نیاز دارم.',tip:'Ärztin برای دکتر زن'},
-      {de:'Krankenhaus',fa:'بیمارستان',ex:'Er ist im Krankenhaus.',ex_fa:'اون توی بیمارستانه.',tip:'das Krankenhaus — خنثی'}
-    ]
-  },
-  b1:{name:'مکالمه روزمره',emoji:'💬',free:false,words:[]},
-  work:{name:'کار و شغل',emoji:'💼',free:false,words:[]},
-  travel:{name:'سفر',emoji:'✈️',free:false,words:[]},
-  food:{name:'غذا و رستوران',emoji:'🍕',free:false,words:[]},
-};
-
-let curPack = null;
-let aiPackWords = [];
-
-function packClose(){
-  Q('#pack-modal').classList.remove('open');
-  curPack = null;
-}
-
-async function addPackToFlashcards(){
-  if(!curPack) return;
-  const btn = Q('#pack-modal-btn');
-  btn.disabled = true;
-  btn.textContent = 'در حال افزودن...';
-  let added = 0;
-  for(const w of curPack.words){
-    if(words.find(x=>x.de===w.de)) continue; // already have it
-    const newW = {
-      de:w.de, fa:w.fa, ex:'',
-      score:0, seen:0, interval:1, easiness:2.5,
-      next_review:new Date().toISOString()
-    };
-    words.unshift(newW);
-    if(currentUser) await dbAdd(newW).catch(()=>{});
-    added++;
-  }
-  saveCache(); updateBadges(); updateStats();
-  packClose();
-  showToast(`✅ ${added} لغت اضافه شد!`);
-  btn.disabled = false;
-  btn.textContent = '+ افزودن همه به فلش‌کارت‌ها';
-}
-
-function openAIPack(){
-  if(userPlan==='free'){
-    showUpgrade();
-    return;
-  }
-  Q('#ai-pack-inp').value='';
-  Q('#ai-pack-err').textContent='';
-  Q('#ai-pack-modal').classList.add('open');
-}
-
-async function generateAIPack(){
-  const topic = Q('#ai-pack-inp').value.trim();
-  if(!topic){ Q('#ai-pack-err').textContent='موضوع رو بنویس'; return; }
-  const btn = document.querySelector('#ai-pack-modal .btn-p');
-  btn.disabled=true; btn.textContent='در حال ساخت...';
-  Q('#ai-pack-err').textContent='';
-  try{
-    const prompt = `یک لیست ۱۵ لغت آلمانی درباره موضوع "${topic}" بساز.
-فقط JSON برگردون، بدون توضیح. فرمت:
-{"words":[{"de":"لغت آلمانی","fa":"معنی فارسی"}]}
-لغات باید مفید، رایج و مرتبط با موضوع باشن.`;
-    
-    const result = await ai(prompt, 600);
-    const clean = result.replace(/```json|```/g,'').trim();
-    const data = JSON.parse(clean);
-    
-    if(!data.words?.length) throw new Error('خروجی نامعتبر');
-    
-    aiPackWords = data.words;
-    Q('#ai-pack-modal').classList.remove('open');
-    
-    // Show preview in pack modal
-    curPack = {name:`Pack: ${topic}`, emoji:'✨', words:aiPackWords, free:true};
-    Q('#pack-modal-emoji').textContent='✨';
-    Q('#pack-modal-title').textContent=`Pack: ${topic}`;
-    Q('#pack-modal-count').textContent=`${aiPackWords.length} لغت`;
-    const container=Q('#pack-modal-words');
-    container.innerHTML=aiPackWords.map(w=>`
-      <div class="pack-word-row">
-        <span class="pack-word-de">${w.de}</span>
-        <span class="pack-word-fa">${w.fa}</span>
-      </div>
-    `).join('');
-    Q('#pack-modal').classList.add('open');
-    
-  }catch(e){
-    Q('#ai-pack-err').textContent = e.message||'خطا — دوباره امتحان کن';
-  }
-  btn.disabled=false; btn.textContent='ساخت pack';
-}
-
-
-function generateAIPackTab(){
-  if(userPlan==='free'){ showUpgrade(); return; }
-  const topic = Q('#ai-pack-tab-inp').value.trim();
-  if(!topic){ Q('#ai-pack-tab-err').textContent='موضوع رو بنویس'; return; }
-  const btn=Q('#ai-pack-tab-btn');
-  const err=Q('#ai-pack-tab-err');
-  const result=Q('#ai-pack-tab-result');
-  btn.disabled=true; btn.textContent='در حال ساخت...';
-  err.textContent=''; result.innerHTML='';
-
-  const prompt=`یک لیست ۱۵ لغت آلمانی درباره موضوع "${topic}" بساز.
-فقط JSON برگردون، بدون توضیح اضافه. فرمت دقیق:
-{"words":[{"de":"لغت","fa":"معنی"}]}`;
-
-  ai(prompt,600).then(res=>{
-    const clean=res.replace(/\`\`\`json|\`\`\`/g,'').trim();
-    const data=JSON.parse(clean);
-    if(!data.words?.length) throw new Error('خروجی نامعتبر');
-    aiPackWords=data.words;
-    
-    result.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s3)">
-        <div style="font-size:13px;font-weight:600">${data.words.length} لغت ساخته شد</div>
-        <button class="btn btn-p btn-sm" onclick="addAIPackWords()">+ افزودن همه</button>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:var(--s2)">
-        ${data.words.map(w=>`
-          <div class="pack-word-row">
-            <span class="pack-word-de">${w.de}</span>
-            <span class="pack-word-fa">${w.fa}</span>
-          </div>`).join('')}
-      </div>`;
-    btn.disabled=false; btn.textContent='ساخت جدید';
-  }).catch(e=>{
-    err.textContent=e.message||'خطا — دوباره امتحان کن';
-    btn.disabled=false; btn.textContent='ساخت';
-  });
-}
-
-async function addAIPackWords(){
-  if(!aiPackWords.length) return;
-  let added=0;
-  for(const w of aiPackWords){
-    if(words.find(x=>x.de===w.de)) continue;
-    const nw={de:w.de,fa:w.fa,ex:'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
-    words.unshift(nw);
-    if(currentUser) await dbAdd(nw).catch(()=>{});
-    added++;
-  }
-  saveCache(); updateBadges(); updateStats();
-  showToast(`✅ ${added} لغت اضافه شد!`);
-  Q('#ai-pack-tab-result').innerHTML='';
-  Q('#ai-pack-tab-inp').value='';
-  aiPackWords=[];
-}
-
-
-/* ══════════════════════════════
-   PACK LEARN FLOW
-══════════════════════════════ */
-let plPack = null;
-let plWords = [];
-let plIdx = 0;
-let plFlipped = false;
-let plFlashCount = 0;
-let plSaveCount = 0;
-let plSkipCount = 0;
-let plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words')||'[]');
-
-function openPack(id){
-  const pack = PACKS[id];
-  if(!pack) return;
-  if(!pack.free && userPlan==='free'){
-    showUpgrade();
-    return;
-  }
-  if(!pack.free && !pack.words.length){
-    showToast('این pack به‌زودی اضافه میشه 🔜');
-    return;
-  }
-  // Start learning flow
-  plPack = pack;
-  plWords = [...pack.words];
-  plIdx = 0; plFlashCount = 0; plSaveCount = 0; plSkipCount = 0;
-  plFlipped = false;
-
-  Q('#pl-summary').style.display='none';
-  Q('#pack-learn-modal').classList.add('open');
-  plShowCard();
-}
-
-function plShowCard(){
-  if(plIdx >= plWords.length){ plShowSummary(); return; }
-
-  const w = plWords[plIdx];
-  const total = plWords.length;
-  const pct = Math.round((plIdx/total)*100);
-
-  // Reset card
-  plFlipped = false;
-  Q('#pl-front').style.display = 'flex';
-  Q('#pl-back').style.display = 'none';
-  Q('#pl-actions').style.display = 'none';
-  Q('#pl-card').style.cursor = 'pointer';
-
-  // Update header
-  Q('#pl-fill').style.width = pct+'%';
-  Q('#pl-counter').textContent = `${plIdx+1} / ${total}`;
-  Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
-
-  // Set word
-  Q('#pl-word').textContent = w.de;
-
-  // Animate card in
-  Q('#pl-card').style.animation = 'none';
-  requestAnimationFrame(()=>{
-    Q('#pl-card').style.animation = 'cardIn .3s var(--spring)';
-  });
-}
-
-function packLearnFlip(){
-  if(plFlipped) return;
-  plFlipped = true;
-
-  const w = plWords[plIdx];
-
-  // Show back
-  Q('#pl-front').style.display = 'none';
-  Q('#pl-back').style.display = 'flex';
-  Q('#pl-card').style.cursor = 'default';
-
-  Q('#pl-word-back').textContent = w.de;
-  Q('#pl-meaning').textContent = w.fa;
-
-  // Example sentence
-  const exDe = Q('#pl-ex-de');
-  const exFa = Q('#pl-ex-fa');
-  if(w.ex){
-    exDe.textContent = w.ex;
-    exFa.textContent = w.ex_fa||'';
-    Q('#pl-example').style.display = 'block';
-  } else {
-    Q('#pl-example').style.display = 'none';
-  }
-
-  // Tip
-  const tipEl = Q('#pl-tip');
-  if(w.tip){
-    tipEl.textContent = '💡 '+w.tip;
-    tipEl.style.display = 'inline-block';
-  } else {
-    tipEl.style.display = 'none';
-  }
-
-  // Show actions
-  Q('#pl-actions').style.display = 'flex';
-}
-
-function packLearnNext(){
-  // رد کن — skip
-  plSkipCount++;
-  plIdx++;
-  plShowCard();
-}
-
-async function packLearnAddFlash(){
-  const w = plWords[plIdx];
-  const btn = Q('.pl-btn-flash');
-  
-  // Check already exists
-  if(words.find(x=>x.de===w.de)){
-    showToast('قبلاً اضافه شده ✓');
-    plIdx++;
-    plShowCard();
-    return;
-  }
-
-  btn.disabled = true;
-  try{
-    const nw={
-      de:w.de, fa:w.fa, ex:w.ex||'',
-      score:0, seen:0, interval:1, easiness:2.5,
-      next_review:new Date().toISOString()
-    };
-    words.unshift(nw);
-    if(currentUser) await dbAdd(nw);
-    saveCache(); updateBadges(); updateStats();
-    plFlashCount++;
-    Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
-    // Visual feedback
-    btn.textContent = '✓ اضافه شد';
-    btn.style.background = 'var(--okbg)';
-    btn.style.color = 'var(--ok)';
-    setTimeout(()=>{
-      plIdx++;
-      plShowCard();
-      btn.disabled=false;
-      btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>فلش‌کارت';
-      btn.style.background=''; btn.style.color='';
-    }, 600);
-  }catch(e){
-    showToast('خطا در افزودن — دوباره امتحان کن');
-    btn.disabled=false;
-  }
-}
-
-function packLearnSave(){
-  const w = plWords[plIdx];
-  // Save to local saved list
-  if(!plSavedWords.find(x=>x.de===w.de)){
-    plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
-    localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
-  }
-  plSaveCount++;
-  Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
-
-  // Visual feedback on button
-  const btn = Q('.pl-btn-save');
-  btn.textContent = '✓ ذخیره شد';
-  setTimeout(()=>{
-    plIdx++;
-    plShowCard();
-    btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.6 3.2L13 5.8l-2.5 2.4.6 3.4L8 9.8 4.9 11.6l.6-3.4L3 5.8l3.4-.6L8 2z" fill="currentColor"/></svg>ذخیره';
-  }, 500);
-}
-
-function plShowSummary(){
-  Q('#pl-actions').style.display='none';
-
-  const total = plWords.length;
-  const learned = plFlashCount + plSaveCount;
-  const pct = Math.round(learned/total*100);
-
-  // Emoji and message based on performance
-  let emoji, title, msg;
-  if(pct >= 80){
-    emoji='🔥'; title='فوق‌العاده!';
-    msg=`${learned} لغت از ${total} تا رو یاد گرفتی یا ذخیره کردی. دمت گرم!`;
-  } else if(pct >= 50){
-    emoji='🎯'; title='خوب بود!';
-    msg=`${learned} لغت اضافه کردی. با تکرار بقیه رو هم یاد می‌گیری.`;
-  } else {
-    emoji='💪'; title='شروع خوبی بود!';
-    msg=`اشکالی نداره — دوباره مرور کن تا همه رو یاد بگیری.`;
-  }
-
-  Q('#pl-sum-emoji').textContent = emoji;
-  Q('#pl-sum-title').textContent = title;
-  Q('#pl-sum-msg').textContent = msg;
-  Q('#pl-sum-flash').textContent = plFlashCount;
-  Q('#pl-sum-saved').textContent = plSaveCount;
-  Q('#pl-sum-skip').textContent = plSkipCount;
-  Q('#pl-summary').style.display = 'flex';
-  Q('#pl-fill').style.width = '100%';
-}
-
-function packLearnClose(){
-  Q('#pack-learn-modal').classList.remove('open');
-  // Reset for next time
-  Q('#pl-summary').style.display='none';
-}
-
-function packLearnRestart(){
-  plIdx=0; plFlashCount=0; plSaveCount=0; plSkipCount=0;
-  Q('#pl-summary').style.display='none';
-  const ca=Q('#pl-card-area');if(ca)ca.style.display='flex';
-  plShowCard();
-}
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 /* ═══════════════════════════════════
    DESIGN TOKENS
@@ -3047,7 +2628,428 @@ document.addEventListener('keydown',e=>{
 
 init();
 </script>
-<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});</script>
+<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+/* ══════════════════════════════
+   WORD PACKS
+══════════════════════════════ */
+const PACKS = {
+  a1: {
+    name:'پایه A1', emoji:'🌱', free:true,
+    words:[
+      {de:'Hallo',fa:'سلام',ex:'Hallo! Wie geht es dir?',ex_fa:'سلام! حالت چطوره؟',tip:'رسمی‌ترش Guten Tag هست'},
+      {de:'Danke',fa:'ممنون',ex:'Danke schön!',ex_fa:'خیلی ممنون!',tip:'Bitte یعنی خواهش می‌کنم — جواب Danke'},
+      {de:'Bitte',fa:'خواهش می‌کنم',ex:'Bitte sehr!',ex_fa:'خواهش می‌کنم!',tip:'هم "please" هم "you're welcome"'},
+      {de:'Ja',fa:'بله',ex:'Ja, natürlich!',ex_fa:'بله، البته!',tip:'Jawohl خیلی رسمیه'},
+      {de:'Nein',fa:'نه',ex:'Nein, danke.',ex_fa:'نه، ممنون.',tip:'Nö محاوره‌ایه'},
+      {de:'Wasser',fa:'آب',ex:'Ich trinke Wasser.',ex_fa:'آب می‌نوشم.',tip:'das Wasser — خنثی'},
+      {de:'Essen',fa:'غذا / خوردن',ex:'Das Essen ist lecker.',ex_fa:'غذا خوشمزه‌ست.',tip:'هم اسم هم فعل'},
+      {de:'Haus',fa:'خانه',ex:'Ich bin zu Hause.',ex_fa:'خونه‌ام.',tip:'Heim هم خانه است ولی احساسی‌تر'},
+      {de:'Auto',fa:'ماشین',ex:'Das Auto ist neu.',ex_fa:'ماشین نوئه.',tip:'das Auto — خنثی'},
+      {de:'Arbeit',fa:'کار',ex:'Ich gehe zur Arbeit.',ex_fa:'می‌رم سر کار.',tip:'Job هم کار است — انگلیسی'},
+      {de:'Familie',fa:'خانواده',ex:'Meine Familie ist groß.',ex_fa:'خانواده‌ام بزرگه.',tip:'die Familie — مؤنث'},
+      {de:'Freund',fa:'دوست',ex:'Er ist mein Freund.',ex_fa:'اون دوستمه.',tip:'Freundin برای دختر'},
+      {de:'Zeit',fa:'وقت / زمان',ex:'Ich habe keine Zeit.',ex_fa:'وقت ندارم.',tip:'یکی از پرکاربردترین کلمات'},
+      {de:'Tag',fa:'روز',ex:'Guten Tag!',ex_fa:'روز بخیر!',tip:'Tage جمعشه'},
+      {de:'Nacht',fa:'شب',ex:'Gute Nacht!',ex_fa:'شب بخیر!',tip:'die Nacht — مؤنث'},
+      {de:'Geld',fa:'پول',ex:'Ich brauche Geld.',ex_fa:'پول لازم دارم.',tip:'das Geld — خنثی'},
+      {de:'Stadt',fa:'شهر',ex:'Die Stadt ist schön.',ex_fa:'شهر قشنگه.',tip:'Städte جمعشه'},
+      {de:'Land',fa:'کشور / روستا',ex:'Das Land ist groß.',ex_fa:'کشور بزرگه.',tip:'هم country هم countryside'},
+      {de:'Schule',fa:'مدرسه',ex:'Ich gehe zur Schule.',ex_fa:'می‌رم مدرسه.',tip:'die Schule — مؤنث'},
+      {de:'Buch',fa:'کتاب',ex:'Ich lese ein Buch.',ex_fa:'دارم کتاب می‌خونم.',tip:'das Buch — خنثی'},
+      {de:'Kind',fa:'بچه',ex:'Das Kind spielt.',ex_fa:'بچه بازی می‌کنه.',tip:'Kinder جمعشه'},
+      {de:'Mann',fa:'مرد / شوهر',ex:'Der Mann arbeitet.',ex_fa:'مرد کار می‌کنه.',tip:'der Mann — مذکر'},
+      {de:'Frau',fa:'زن / خانم',ex:'Die Frau ist nett.',ex_fa:'خانم مهربونه.',tip:'هم woman هم Mrs'},
+      {de:'groß',fa:'بزرگ',ex:'Er ist sehr groß.',ex_fa:'خیلی بلنده.',tip:'هم tall هم big'},
+      {de:'klein',fa:'کوچک',ex:'Das ist ein kleines Haus.',ex_fa:'اینه یه خونه کوچیکه.',tip:'مخالف groß'},
+      {de:'gut',fa:'خوب',ex:'Das ist gut!',ex_fa:'این خوبه!',tip:'besser=بهتر، best=بهترین'},
+      {de:'schlecht',fa:'بد',ex:'Das Wetter ist schlecht.',ex_fa:'هوا بده.',tip:'schlimm هم بد است — بدتر'},
+      {de:'neu',fa:'جدید',ex:'Ich habe ein neues Auto.',ex_fa:'ماشین جدید دارم.',tip:'مخالف alt'},
+      {de:'alt',fa:'قدیمی / پیر',ex:'Das Haus ist sehr alt.',ex_fa:'خونه خیلی قدیمیه.',tip:'هم old هم elderly'},
+      {de:'kalt',fa:'سرد',ex:'Es ist kalt draußen.',ex_fa:'بیرون سرده.',tip:'مخالف warm'},
+      {de:'warm',fa:'گرم',ex:'Das Wasser ist warm.',ex_fa:'آب گرمه.',tip:'heiß خیلی داغه'},
+      {de:'schnell',fa:'سریع',ex:'Fahr nicht so schnell!',ex_fa:'اینقدر سریع نرو!',tip:'مخالف langsam'},
+      {de:'langsam',fa:'آرام / کند',ex:'Bitte sprechen Sie langsam.',ex_fa:'لطفاً آروم صحبت کنید.',tip:'خیلی کاربردی برای مبتدیا'},
+      {de:'kommen',fa:'آمدن',ex:'Ich komme aus Iran.',ex_fa:'از ایران میام.',tip:'ich komme, du kommst'},
+      {de:'gehen',fa:'رفتن',ex:'Ich gehe nach Hause.',ex_fa:'می‌رم خونه.',tip:'پرکاربردترین فعل'},
+      {de:'sehen',fa:'دیدن',ex:'Ich sehe dich!',ex_fa:'می‌بینمت!',tip:'schauen هم نگاه کردنه'},
+      {de:'sprechen',fa:'صحبت کردن',ex:'Sprechen Sie Deutsch?',ex_fa:'آلمانی بلدید؟',tip:'reden محاوره‌ایه'},
+      {de:'hören',fa:'شنیدن',ex:'Ich höre Musik.',ex_fa:'موزیک گوش می‌دم.',tip:'zuhören = گوش دادن دقیق'},
+      {de:'essen',fa:'خوردن',ex:'Was essen wir heute?',ex_fa:'امروز چی می‌خوریم؟',tip:'ich esse, du isst'},
+      {de:'trinken',fa:'نوشیدن',ex:'Ich trinke Kaffee.',ex_fa:'قهوه می‌نوشم.',tip:'trinken = نوشیدن، essen = خوردن'},
+      {de:'schlafen',fa:'خوابیدن',ex:'Ich schlafe acht Stunden.',ex_fa:'۸ ساعت می‌خوابم.',tip:'ich schlafe, du schläfst'},
+      {de:'kaufen',fa:'خریدن',ex:'Ich kaufe ein Buch.',ex_fa:'یه کتاب می‌خرم.',tip:'verkaufen = فروختن'},
+      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
+      {de:'lesen',fa:'خواندن',ex:'Ich lese jeden Tag.',ex_fa:'هر روز می‌خونم.',tip:'ich lese, du liest'},
+      {de:'schreiben',fa:'نوشتن',ex:'Schreib mir!',ex_fa:'برام بنویس!',tip:'tippen = تایپ کردن'},
+      {de:'Straße',fa:'خیابان',ex:'Die Straße ist lang.',ex_fa:'خیابون بلنده.',tip:'die Straße — مؤنث'},
+      {de:'Bahnhof',fa:'ایستگاه قطار',ex:'Wo ist der Bahnhof?',ex_fa:'ایستگاه کجاست؟',tip:'der Bahnhof — مذکر'},
+      {de:'Supermarkt',fa:'سوپرمارکت',ex:'Ich gehe zum Supermarkt.',ex_fa:'می‌رم سوپرمارکت.',tip:'der Supermarkt — مذکر'},
+      {de:'Arzt',fa:'دکتر',ex:'Ich brauche einen Arzt.',ex_fa:'به دکتر نیاز دارم.',tip:'Ärztin برای دکتر زن'},
+      {de:'Krankenhaus',fa:'بیمارستان',ex:'Er ist im Krankenhaus.',ex_fa:'اون توی بیمارستانه.',tip:'das Krankenhaus — خنثی'}
+    ]
+  },
+  b1:{name:'مکالمه روزمره',emoji:'💬',free:false,words:[]},
+  work:{name:'کار و شغل',emoji:'💼',free:false,words:[]},
+  travel:{name:'سفر',emoji:'✈️',free:false,words:[]},
+  food:{name:'غذا و رستوران',emoji:'🍕',free:false,words:[]},
+};
+
+let curPack = null;
+let aiPackWords = [];
+
+function packClose(){
+  Q('#pack-modal').classList.remove('open');
+  curPack = null;
+}
+
+async function addPackToFlashcards(){
+  if(!curPack) return;
+  const btn = Q('#pack-modal-btn');
+  btn.disabled = true;
+  btn.textContent = 'در حال افزودن...';
+  let added = 0;
+  for(const w of curPack.words){
+    if(words.find(x=>x.de===w.de)) continue; // already have it
+    const newW = {
+      de:w.de, fa:w.fa, ex:'',
+      score:0, seen:0, interval:1, easiness:2.5,
+      next_review:new Date().toISOString()
+    };
+    words.unshift(newW);
+    if(currentUser) await dbAdd(newW).catch(()=>{});
+    added++;
+  }
+  saveCache(); updateBadges(); updateStats();
+  packClose();
+  showToast(`✅ ${added} لغت اضافه شد!`);
+  btn.disabled = false;
+  btn.textContent = '+ افزودن همه به فلش‌کارت‌ها';
+}
+
+function openAIPack(){
+  if(userPlan==='free'){
+    showUpgrade();
+    return;
+  }
+  Q('#ai-pack-inp').value='';
+  Q('#ai-pack-err').textContent='';
+  Q('#ai-pack-modal').classList.add('open');
+}
+
+async function generateAIPack(){
+  const topic = Q('#ai-pack-inp').value.trim();
+  if(!topic){ Q('#ai-pack-err').textContent='موضوع رو بنویس'; return; }
+  const btn = document.querySelector('#ai-pack-modal .btn-p');
+  btn.disabled=true; btn.textContent='در حال ساخت...';
+  Q('#ai-pack-err').textContent='';
+  try{
+    const prompt = `یک لیست ۱۵ لغت آلمانی درباره موضوع "${topic}" بساز.
+فقط JSON برگردون، بدون توضیح. فرمت:
+{"words":[{"de":"لغت آلمانی","fa":"معنی فارسی"}]}
+لغات باید مفید، رایج و مرتبط با موضوع باشن.`;
+    
+    const result = await ai(prompt, 600);
+    const clean = result.replace(/```json|```/g,'').trim();
+    const data = JSON.parse(clean);
+    
+    if(!data.words?.length) throw new Error('خروجی نامعتبر');
+    
+    aiPackWords = data.words;
+    Q('#ai-pack-modal').classList.remove('open');
+    
+    // Show preview in pack modal
+    curPack = {name:`Pack: ${topic}`, emoji:'✨', words:aiPackWords, free:true};
+    Q('#pack-modal-emoji').textContent='✨';
+    Q('#pack-modal-title').textContent=`Pack: ${topic}`;
+    Q('#pack-modal-count').textContent=`${aiPackWords.length} لغت`;
+    const container=Q('#pack-modal-words');
+    container.innerHTML=aiPackWords.map(w=>`
+      <div class="pack-word-row">
+        <span class="pack-word-de">${w.de}</span>
+        <span class="pack-word-fa">${w.fa}</span>
+      </div>
+    `).join('');
+    Q('#pack-modal').classList.add('open');
+    
+  }catch(e){
+    Q('#ai-pack-err').textContent = e.message||'خطا — دوباره امتحان کن';
+  }
+  btn.disabled=false; btn.textContent='ساخت pack';
+}
+
+
+function generateAIPackTab(){
+  if(userPlan==='free'){ showUpgrade(); return; }
+  const topic = Q('#ai-pack-tab-inp').value.trim();
+  if(!topic){ Q('#ai-pack-tab-err').textContent='موضوع رو بنویس'; return; }
+  const btn=Q('#ai-pack-tab-btn');
+  const err=Q('#ai-pack-tab-err');
+  const result=Q('#ai-pack-tab-result');
+  btn.disabled=true; btn.textContent='در حال ساخت...';
+  err.textContent=''; result.innerHTML='';
+
+  const prompt=`یک لیست ۱۵ لغت آلمانی درباره موضوع "${topic}" بساز.
+فقط JSON برگردون، بدون توضیح اضافه. فرمت دقیق:
+{"words":[{"de":"لغت","fa":"معنی"}]}`;
+
+  ai(prompt,600).then(res=>{
+    const clean=res.replace(/\`\`\`json|\`\`\`/g,'').trim();
+    const data=JSON.parse(clean);
+    if(!data.words?.length) throw new Error('خروجی نامعتبر');
+    aiPackWords=data.words;
+    
+    result.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s3)">
+        <div style="font-size:13px;font-weight:600">${data.words.length} لغت ساخته شد</div>
+        <button class="btn btn-p btn-sm" onclick="addAIPackWords()">+ افزودن همه</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:var(--s2)">
+        ${data.words.map(w=>`
+          <div class="pack-word-row">
+            <span class="pack-word-de">${w.de}</span>
+            <span class="pack-word-fa">${w.fa}</span>
+          </div>`).join('')}
+      </div>`;
+    btn.disabled=false; btn.textContent='ساخت جدید';
+  }).catch(e=>{
+    err.textContent=e.message||'خطا — دوباره امتحان کن';
+    btn.disabled=false; btn.textContent='ساخت';
+  });
+}
+
+async function addAIPackWords(){
+  if(!aiPackWords.length) return;
+  let added=0;
+  for(const w of aiPackWords){
+    if(words.find(x=>x.de===w.de)) continue;
+    const nw={de:w.de,fa:w.fa,ex:'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+    words.unshift(nw);
+    if(currentUser) await dbAdd(nw).catch(()=>{});
+    added++;
+  }
+  saveCache(); updateBadges(); updateStats();
+  showToast(`✅ ${added} لغت اضافه شد!`);
+  Q('#ai-pack-tab-result').innerHTML='';
+  Q('#ai-pack-tab-inp').value='';
+  aiPackWords=[];
+}
+
+
+/* ══════════════════════════════
+   PACK LEARN FLOW
+══════════════════════════════ */
+let plPack = null;
+let plWords = [];
+let plIdx = 0;
+let plFlipped = false;
+let plFlashCount = 0;
+let plSaveCount = 0;
+let plSkipCount = 0;
+let plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words')||'[]');
+
+function openPack(id){
+  const pack = PACKS[id];
+  if(!pack) return;
+  if(!pack.free && userPlan==='free'){
+    showUpgrade();
+    return;
+  }
+  if(!pack.free && !pack.words.length){
+    showToast('این pack به‌زودی اضافه میشه 🔜');
+    return;
+  }
+  // Start learning flow
+  plPack = pack;
+  plWords = [...pack.words];
+  plIdx = 0; plFlashCount = 0; plSaveCount = 0; plSkipCount = 0;
+  plFlipped = false;
+
+  Q('#pl-summary').style.display='none';
+  Q('#pack-learn-modal').classList.add('open');
+  plShowCard();
+}
+
+function plShowCard(){
+  if(plIdx >= plWords.length){ plShowSummary(); return; }
+
+  const w = plWords[plIdx];
+  const total = plWords.length;
+  const pct = Math.round((plIdx/total)*100);
+
+  // Reset card
+  plFlipped = false;
+  Q('#pl-front').style.display = 'flex';
+  Q('#pl-back').style.display = 'none';
+  Q('#pl-actions').style.display = 'none';
+  Q('#pl-card').style.cursor = 'pointer';
+
+  // Update header
+  Q('#pl-fill').style.width = pct+'%';
+  Q('#pl-counter').textContent = `${plIdx+1} / ${total}`;
+  Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
+
+  // Set word
+  Q('#pl-word').textContent = w.de;
+
+  // Animate card in
+  Q('#pl-card').style.animation = 'none';
+  requestAnimationFrame(()=>{
+    Q('#pl-card').style.animation = 'cardIn .3s var(--spring)';
+  });
+}
+
+function packLearnFlip(){
+  if(plFlipped) return;
+  plFlipped = true;
+
+  const w = plWords[plIdx];
+
+  // Show back
+  Q('#pl-front').style.display = 'none';
+  Q('#pl-back').style.display = 'flex';
+  Q('#pl-card').style.cursor = 'default';
+
+  Q('#pl-word-back').textContent = w.de;
+  Q('#pl-meaning').textContent = w.fa;
+
+  // Example sentence
+  const exDe = Q('#pl-ex-de');
+  const exFa = Q('#pl-ex-fa');
+  if(w.ex){
+    exDe.textContent = w.ex;
+    exFa.textContent = w.ex_fa||'';
+    Q('#pl-example').style.display = 'block';
+  } else {
+    Q('#pl-example').style.display = 'none';
+  }
+
+  // Tip
+  const tipEl = Q('#pl-tip');
+  if(w.tip){
+    tipEl.textContent = '💡 '+w.tip;
+    tipEl.style.display = 'inline-block';
+  } else {
+    tipEl.style.display = 'none';
+  }
+
+  // Show actions
+  Q('#pl-actions').style.display = 'flex';
+}
+
+function packLearnNext(){
+  // رد کن — skip
+  plSkipCount++;
+  plIdx++;
+  plShowCard();
+}
+
+async function packLearnAddFlash(){
+  const w = plWords[plIdx];
+  const btn = Q('.pl-btn-flash');
+  
+  // Check already exists
+  if(words.find(x=>x.de===w.de)){
+    showToast('قبلاً اضافه شده ✓');
+    plIdx++;
+    plShowCard();
+    return;
+  }
+
+  btn.disabled = true;
+  try{
+    const nw={
+      de:w.de, fa:w.fa, ex:w.ex||'',
+      score:0, seen:0, interval:1, easiness:2.5,
+      next_review:new Date().toISOString()
+    };
+    words.unshift(nw);
+    if(currentUser) await dbAdd(nw);
+    saveCache(); updateBadges(); updateStats();
+    plFlashCount++;
+    Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
+    // Visual feedback
+    btn.textContent = '✓ اضافه شد';
+    btn.style.background = 'var(--okbg)';
+    btn.style.color = 'var(--ok)';
+    setTimeout(()=>{
+      plIdx++;
+      plShowCard();
+      btn.disabled=false;
+      btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>فلش‌کارت';
+      btn.style.background=''; btn.style.color='';
+    }, 600);
+  }catch(e){
+    showToast('خطا در افزودن — دوباره امتحان کن');
+    btn.disabled=false;
+  }
+}
+
+function packLearnSave(){
+  const w = plWords[plIdx];
+  // Save to local saved list
+  if(!plSavedWords.find(x=>x.de===w.de)){
+    plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
+    localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
+  }
+  plSaveCount++;
+  Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
+
+  // Visual feedback on button
+  const btn = Q('.pl-btn-save');
+  btn.textContent = '✓ ذخیره شد';
+  setTimeout(()=>{
+    plIdx++;
+    plShowCard();
+    btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.6 3.2L13 5.8l-2.5 2.4.6 3.4L8 9.8 4.9 11.6l.6-3.4L3 5.8l3.4-.6L8 2z" fill="currentColor"/></svg>ذخیره';
+  }, 500);
+}
+
+function plShowSummary(){
+  Q('#pl-actions').style.display='none';
+
+  const total = plWords.length;
+  const learned = plFlashCount + plSaveCount;
+  const pct = Math.round(learned/total*100);
+
+  // Emoji and message based on performance
+  let emoji, title, msg;
+  if(pct >= 80){
+    emoji='🔥'; title='فوق‌العاده!';
+    msg=`${learned} لغت از ${total} تا رو یاد گرفتی یا ذخیره کردی. دمت گرم!`;
+  } else if(pct >= 50){
+    emoji='🎯'; title='خوب بود!';
+    msg=`${learned} لغت اضافه کردی. با تکرار بقیه رو هم یاد می‌گیری.`;
+  } else {
+    emoji='💪'; title='شروع خوبی بود!';
+    msg=`اشکالی نداره — دوباره مرور کن تا همه رو یاد بگیری.`;
+  }
+
+  Q('#pl-sum-emoji').textContent = emoji;
+  Q('#pl-sum-title').textContent = title;
+  Q('#pl-sum-msg').textContent = msg;
+  Q('#pl-sum-flash').textContent = plFlashCount;
+  Q('#pl-sum-saved').textContent = plSaveCount;
+  Q('#pl-sum-skip').textContent = plSkipCount;
+  Q('#pl-summary').style.display = 'flex';
+  Q('#pl-fill').style.width = '100%';
+}
+
+function packLearnClose(){
+  Q('#pack-learn-modal').classList.remove('open');
+  // Reset for next time
+  Q('#pl-summary').style.display='none';
+}
+
+function packLearnRestart(){
+  plIdx=0; plFlashCount=0; plSaveCount=0; plSkipCount=0;
+  Q('#pl-summary').style.display='none';
+  const ca=Q('#pl-card-area');if(ca)ca.style.display='flex';
+  plShowCard();
+}
+
+
+</script>
 
 <!-- Upgrade Modal -->
 <div class="modal-bg" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('open')">
