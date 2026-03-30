@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const LIMITS = {
   anonymous: 2,    // بدون اکانت
-  free:      10,   // نسخه رایگان
+  free:      30,   // نسخه رایگان
   beta:      500,  // beta users — نامحدود عملاً
   pro:       9999, // Pro
 };
