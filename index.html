@@ -18,23 +18,56 @@ const PACKS = {
   a1: {
     name:'پایه A1', emoji:'🌱', free:true,
     words:[
-      {de:'Hallo',fa:'سلام'},{de:'Danke',fa:'ممنون'},{de:'Bitte',fa:'خواهش می‌کنم'},
-      {de:'Ja',fa:'بله'},{de:'Nein',fa:'نه'},{de:'Wasser',fa:'آب'},
-      {de:'Essen',fa:'غذا / خوردن'},{de:'Haus',fa:'خانه'},{de:'Auto',fa:'ماشین'},
-      {de:'Arbeit',fa:'کار'},{de:'Familie',fa:'خانواده'},{de:'Freund',fa:'دوست'},
-      {de:'Zeit',fa:'زمان'},{de:'Tag',fa:'روز'},{de:'Nacht',fa:'شب'},
-      {de:'Geld',fa:'پول'},{de:'Stadt',fa:'شهر'},{de:'Land',fa:'کشور'},
-      {de:'Schule',fa:'مدرسه'},{de:'Buch',fa:'کتاب'},{de:'Kind',fa:'بچه'},
-      {de:'Mann',fa:'مرد'},{de:'Frau',fa:'زن'},{de:'groß',fa:'بزرگ'},
-      {de:'klein',fa:'کوچک'},{de:'gut',fa:'خوب'},{de:'schlecht',fa:'بد'},
-      {de:'neu',fa:'جدید'},{de:'alt',fa:'قدیمی'},{de:'kalt',fa:'سرد'},
-      {de:'warm',fa:'گرم'},{de:'schnell',fa:'سریع'},{de:'langsam',fa:'آرام'},
-      {de:'kommen',fa:'آمدن'},{de:'gehen',fa:'رفتن'},{de:'sehen',fa:'دیدن'},
-      {de:'sprechen',fa:'صحبت کردن'},{de:'hören',fa:'شنیدن'},{de:'essen',fa:'خوردن'},
-      {de:'trinken',fa:'نوشیدن'},{de:'schlafen',fa:'خوابیدن'},{de:'kaufen',fa:'خریدن'},
-      {de:'lernen',fa:'یاد گرفتن'},{de:'lesen',fa:'خواندن'},{de:'schreiben',fa:'نوشتن'},
-      {de:'Straße',fa:'خیابان'},{de:'Bahnhof',fa:'ایستگاه قطار'},{de:'Supermarkt',fa:'سوپرمارکت'},
-      {de:'Arzt',fa:'دکتر'},{de:'Krankenhaus',fa:'بیمارستان'}
+      {de:'Hallo',fa:'سلام',ex:'Hallo! Wie geht es dir?',ex_fa:'سلام! حالت چطوره؟',tip:'رسمی‌ترش Guten Tag هست'},
+      {de:'Danke',fa:'ممنون',ex:'Danke schön!',ex_fa:'خیلی ممنون!',tip:'Bitte یعنی خواهش می‌کنم — جواب Danke'},
+      {de:'Bitte',fa:'خواهش می‌کنم',ex:'Bitte sehr!',ex_fa:'خواهش می‌کنم!',tip:'هم "please" هم "you're welcome"'},
+      {de:'Ja',fa:'بله',ex:'Ja, natürlich!',ex_fa:'بله، البته!',tip:'Jawohl خیلی رسمیه'},
+      {de:'Nein',fa:'نه',ex:'Nein, danke.',ex_fa:'نه، ممنون.',tip:'Nö محاوره‌ایه'},
+      {de:'Wasser',fa:'آب',ex:'Ich trinke Wasser.',ex_fa:'آب می‌نوشم.',tip:'das Wasser — خنثی'},
+      {de:'Essen',fa:'غذا / خوردن',ex:'Das Essen ist lecker.',ex_fa:'غذا خوشمزه‌ست.',tip:'هم اسم هم فعل'},
+      {de:'Haus',fa:'خانه',ex:'Ich bin zu Hause.',ex_fa:'خونه‌ام.',tip:'Heim هم خانه است ولی احساسی‌تر'},
+      {de:'Auto',fa:'ماشین',ex:'Das Auto ist neu.',ex_fa:'ماشین نوئه.',tip:'das Auto — خنثی'},
+      {de:'Arbeit',fa:'کار',ex:'Ich gehe zur Arbeit.',ex_fa:'می‌رم سر کار.',tip:'Job هم کار است — انگلیسی'},
+      {de:'Familie',fa:'خانواده',ex:'Meine Familie ist groß.',ex_fa:'خانواده‌ام بزرگه.',tip:'die Familie — مؤنث'},
+      {de:'Freund',fa:'دوست',ex:'Er ist mein Freund.',ex_fa:'اون دوستمه.',tip:'Freundin برای دختر'},
+      {de:'Zeit',fa:'وقت / زمان',ex:'Ich habe keine Zeit.',ex_fa:'وقت ندارم.',tip:'یکی از پرکاربردترین کلمات'},
+      {de:'Tag',fa:'روز',ex:'Guten Tag!',ex_fa:'روز بخیر!',tip:'Tage جمعشه'},
+      {de:'Nacht',fa:'شب',ex:'Gute Nacht!',ex_fa:'شب بخیر!',tip:'die Nacht — مؤنث'},
+      {de:'Geld',fa:'پول',ex:'Ich brauche Geld.',ex_fa:'پول لازم دارم.',tip:'das Geld — خنثی'},
+      {de:'Stadt',fa:'شهر',ex:'Die Stadt ist schön.',ex_fa:'شهر قشنگه.',tip:'Städte جمعشه'},
+      {de:'Land',fa:'کشور / روستا',ex:'Das Land ist groß.',ex_fa:'کشور بزرگه.',tip:'هم country هم countryside'},
+      {de:'Schule',fa:'مدرسه',ex:'Ich gehe zur Schule.',ex_fa:'می‌رم مدرسه.',tip:'die Schule — مؤنث'},
+      {de:'Buch',fa:'کتاب',ex:'Ich lese ein Buch.',ex_fa:'دارم کتاب می‌خونم.',tip:'das Buch — خنثی'},
+      {de:'Kind',fa:'بچه',ex:'Das Kind spielt.',ex_fa:'بچه بازی می‌کنه.',tip:'Kinder جمعشه'},
+      {de:'Mann',fa:'مرد / شوهر',ex:'Der Mann arbeitet.',ex_fa:'مرد کار می‌کنه.',tip:'der Mann — مذکر'},
+      {de:'Frau',fa:'زن / خانم',ex:'Die Frau ist nett.',ex_fa:'خانم مهربونه.',tip:'هم woman هم Mrs'},
+      {de:'groß',fa:'بزرگ',ex:'Er ist sehr groß.',ex_fa:'خیلی بلنده.',tip:'هم tall هم big'},
+      {de:'klein',fa:'کوچک',ex:'Das ist ein kleines Haus.',ex_fa:'اینه یه خونه کوچیکه.',tip:'مخالف groß'},
+      {de:'gut',fa:'خوب',ex:'Das ist gut!',ex_fa:'این خوبه!',tip:'besser=بهتر، best=بهترین'},
+      {de:'schlecht',fa:'بد',ex:'Das Wetter ist schlecht.',ex_fa:'هوا بده.',tip:'schlimm هم بد است — بدتر'},
+      {de:'neu',fa:'جدید',ex:'Ich habe ein neues Auto.',ex_fa:'ماشین جدید دارم.',tip:'مخالف alt'},
+      {de:'alt',fa:'قدیمی / پیر',ex:'Das Haus ist sehr alt.',ex_fa:'خونه خیلی قدیمیه.',tip:'هم old هم elderly'},
+      {de:'kalt',fa:'سرد',ex:'Es ist kalt draußen.',ex_fa:'بیرون سرده.',tip:'مخالف warm'},
+      {de:'warm',fa:'گرم',ex:'Das Wasser ist warm.',ex_fa:'آب گرمه.',tip:'heiß خیلی داغه'},
+      {de:'schnell',fa:'سریع',ex:'Fahr nicht so schnell!',ex_fa:'اینقدر سریع نرو!',tip:'مخالف langsam'},
+      {de:'langsam',fa:'آرام / کند',ex:'Bitte sprechen Sie langsam.',ex_fa:'لطفاً آروم صحبت کنید.',tip:'خیلی کاربردی برای مبتدیا'},
+      {de:'kommen',fa:'آمدن',ex:'Ich komme aus Iran.',ex_fa:'از ایران میام.',tip:'ich komme, du kommst'},
+      {de:'gehen',fa:'رفتن',ex:'Ich gehe nach Hause.',ex_fa:'می‌رم خونه.',tip:'پرکاربردترین فعل'},
+      {de:'sehen',fa:'دیدن',ex:'Ich sehe dich!',ex_fa:'می‌بینمت!',tip:'schauen هم نگاه کردنه'},
+      {de:'sprechen',fa:'صحبت کردن',ex:'Sprechen Sie Deutsch?',ex_fa:'آلمانی بلدید؟',tip:'reden محاوره‌ایه'},
+      {de:'hören',fa:'شنیدن',ex:'Ich höre Musik.',ex_fa:'موزیک گوش می‌دم.',tip:'zuhören = گوش دادن دقیق'},
+      {de:'essen',fa:'خوردن',ex:'Was essen wir heute?',ex_fa:'امروز چی می‌خوریم؟',tip:'ich esse, du isst'},
+      {de:'trinken',fa:'نوشیدن',ex:'Ich trinke Kaffee.',ex_fa:'قهوه می‌نوشم.',tip:'trinken = نوشیدن، essen = خوردن'},
+      {de:'schlafen',fa:'خوابیدن',ex:'Ich schlafe acht Stunden.',ex_fa:'۸ ساعت می‌خوابم.',tip:'ich schlafe, du schläfst'},
+      {de:'kaufen',fa:'خریدن',ex:'Ich kaufe ein Buch.',ex_fa:'یه کتاب می‌خرم.',tip:'verkaufen = فروختن'},
+      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
+      {de:'lesen',fa:'خواندن',ex:'Ich lese jeden Tag.',ex_fa:'هر روز می‌خونم.',tip:'ich lese, du liest'},
+      {de:'schreiben',fa:'نوشتن',ex:'Schreib mir!',ex_fa:'برام بنویس!',tip:'tippen = تایپ کردن'},
+      {de:'Straße',fa:'خیابان',ex:'Die Straße ist lang.',ex_fa:'خیابون بلنده.',tip:'die Straße — مؤنث'},
+      {de:'Bahnhof',fa:'ایستگاه قطار',ex:'Wo ist der Bahnhof?',ex_fa:'ایستگاه کجاست؟',tip:'der Bahnhof — مذکر'},
+      {de:'Supermarkt',fa:'سوپرمارکت',ex:'Ich gehe zum Supermarkt.',ex_fa:'می‌رم سوپرمارکت.',tip:'der Supermarkt — مذکر'},
+      {de:'Arzt',fa:'دکتر',ex:'Ich brauche einen Arzt.',ex_fa:'به دکتر نیاز دارم.',tip:'Ärztin برای دکتر زن'},
+      {de:'Krankenhaus',fa:'بیمارستان',ex:'Er ist im Krankenhaus.',ex_fa:'اون توی بیمارستانه.',tip:'das Krankenhaus — خنثی'}
     ]
   },
   b1:{name:'مکالمه روزمره',emoji:'💬',free:false,words:[]},
@@ -45,36 +78,6 @@ const PACKS = {
 
 let curPack = null;
 let aiPackWords = [];
-
-function openPack(id){
-  const pack = PACKS[id];
-  if(!pack) return;
-
-  // Pro packs — check plan
-  if(!pack.free && userPlan==='free'){
-    showUpgrade();
-    return;
-  }
-
-  // Empty pro packs — coming soon
-  if(!pack.free && !pack.words.length){
-    showToast('این pack به‌زودی اضافه میشه 🔜');
-    return;
-  }
-
-  curPack = pack;
-  Q('#pack-modal-emoji').textContent = pack.emoji;
-  Q('#pack-modal-title').textContent = pack.name;
-  Q('#pack-modal-count').textContent = `${pack.words.length} لغت`;
-  const container = Q('#pack-modal-words');
-  container.innerHTML = pack.words.map(w=>`
-    <div class="pack-word-row">
-      <span class="pack-word-de">${w.de}</span>
-      <span class="pack-word-fa">${w.fa}</span>
-    </div>
-  `).join('');
-  Q('#pack-modal').classList.add('open');
-}
 
 function packClose(){
   Q('#pack-modal').classList.remove('open');
@@ -211,6 +214,221 @@ async function addAIPackWords(){
   Q('#ai-pack-tab-result').innerHTML='';
   Q('#ai-pack-tab-inp').value='';
   aiPackWords=[];
+}
+
+
+/* ══════════════════════════════
+   PACK LEARN FLOW
+══════════════════════════════ */
+let plPack = null;
+let plWords = [];
+let plIdx = 0;
+let plFlipped = false;
+let plFlashCount = 0;
+let plSaveCount = 0;
+let plSkipCount = 0;
+let plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words')||'[]');
+
+function openPack(id){
+  const pack = PACKS[id];
+  if(!pack) return;
+  if(!pack.free && userPlan==='free'){
+    showUpgrade();
+    return;
+  }
+  if(!pack.free && !pack.words.length){
+    showToast('این pack به‌زودی اضافه میشه 🔜');
+    return;
+  }
+  // Start learning flow
+  plPack = pack;
+  plWords = [...pack.words];
+  plIdx = 0; plFlashCount = 0; plSaveCount = 0; plSkipCount = 0;
+  plFlipped = false;
+
+  Q('#pl-summary').style.display='none';
+  Q('#pl-card-area') && (Q('#pl-card-area').style.display='flex');
+  Q('#pack-learn-modal').classList.add('open');
+  plShowCard();
+}
+
+function plShowCard(){
+  if(plIdx >= plWords.length){ plShowSummary(); return; }
+
+  const w = plWords[plIdx];
+  const total = plWords.length;
+  const pct = Math.round((plIdx/total)*100);
+
+  // Reset card
+  plFlipped = false;
+  Q('#pl-front').style.display = 'flex';
+  Q('#pl-back').style.display = 'none';
+  Q('#pl-actions').style.display = 'none';
+  Q('#pl-card').style.cursor = 'pointer';
+
+  // Update header
+  Q('#pl-fill').style.width = pct+'%';
+  Q('#pl-counter').textContent = `${plIdx+1} / ${total}`;
+  Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
+
+  // Set word
+  Q('#pl-word').textContent = w.de;
+
+  // Animate card in
+  Q('#pl-card').style.animation = 'none';
+  requestAnimationFrame(()=>{
+    Q('#pl-card').style.animation = 'cardIn .3s var(--spring)';
+  });
+}
+
+function packLearnFlip(){
+  if(plFlipped) return;
+  plFlipped = true;
+
+  const w = plWords[plIdx];
+
+  // Show back
+  Q('#pl-front').style.display = 'none';
+  Q('#pl-back').style.display = 'flex';
+  Q('#pl-card').style.cursor = 'default';
+
+  Q('#pl-word-back').textContent = w.de;
+  Q('#pl-meaning').textContent = w.fa;
+
+  // Example sentence
+  const exDe = Q('#pl-ex-de');
+  const exFa = Q('#pl-ex-fa');
+  if(w.ex){
+    exDe.textContent = w.ex;
+    exFa.textContent = w.ex_fa||'';
+    Q('#pl-example').style.display = 'block';
+  } else {
+    Q('#pl-example').style.display = 'none';
+  }
+
+  // Tip
+  const tipEl = Q('#pl-tip');
+  if(w.tip){
+    tipEl.textContent = '💡 '+w.tip;
+    tipEl.style.display = 'inline-block';
+  } else {
+    tipEl.style.display = 'none';
+  }
+
+  // Show actions
+  Q('#pl-actions').style.display = 'flex';
+}
+
+function packLearnNext(){
+  // رد کن — skip
+  plSkipCount++;
+  plIdx++;
+  plShowCard();
+}
+
+async function packLearnAddFlash(){
+  const w = plWords[plIdx];
+  const btn = Q('.pl-btn-flash');
+  
+  // Check already exists
+  if(words.find(x=>x.de===w.de)){
+    showToast('قبلاً اضافه شده ✓');
+    plIdx++;
+    plShowCard();
+    return;
+  }
+
+  btn.disabled = true;
+  try{
+    const nw={
+      de:w.de, fa:w.fa, ex:w.ex||'',
+      score:0, seen:0, interval:1, easiness:2.5,
+      next_review:new Date().toISOString()
+    };
+    words.unshift(nw);
+    if(currentUser) await dbAdd(nw);
+    saveCache(); updateBadges(); updateStats();
+    plFlashCount++;
+    Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
+    // Visual feedback
+    btn.textContent = '✓ اضافه شد';
+    btn.style.background = 'var(--okbg)';
+    btn.style.color = 'var(--ok)';
+    setTimeout(()=>{
+      plIdx++;
+      plShowCard();
+      btn.disabled=false;
+      btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>فلش‌کارت';
+      btn.style.background=''; btn.style.color='';
+    }, 600);
+  }catch(e){
+    showToast('خطا در افزودن — دوباره امتحان کن');
+    btn.disabled=false;
+  }
+}
+
+function packLearnSave(){
+  const w = plWords[plIdx];
+  // Save to local saved list
+  if(!plSavedWords.find(x=>x.de===w.de)){
+    plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
+    localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
+  }
+  plSaveCount++;
+  Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
+
+  // Visual feedback on button
+  const btn = Q('.pl-btn-save');
+  btn.textContent = '✓ ذخیره شد';
+  setTimeout(()=>{
+    plIdx++;
+    plShowCard();
+    btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.6 3.2L13 5.8l-2.5 2.4.6 3.4L8 9.8 4.9 11.6l.6-3.4L3 5.8l3.4-.6L8 2z" fill="currentColor"/></svg>ذخیره';
+  }, 500);
+}
+
+function plShowSummary(){
+  Q('#pl-card-area') && (Q('#pl-card-area').style.display='none');
+  Q('#pl-actions').style.display='none';
+
+  const total = plWords.length;
+  const learned = plFlashCount + plSaveCount;
+  const pct = Math.round(learned/total*100);
+
+  // Emoji and message based on performance
+  let emoji, title, msg;
+  if(pct >= 80){
+    emoji='🔥'; title='فوق‌العاده!';
+    msg=`${learned} لغت از ${total} تا رو یاد گرفتی یا ذخیره کردی. دمت گرم!`;
+  } else if(pct >= 50){
+    emoji='🎯'; title='خوب بود!';
+    msg=`${learned} لغت اضافه کردی. با تکرار بقیه رو هم یاد می‌گیری.`;
+  } else {
+    emoji='💪'; title='شروع خوبی بود!';
+    msg=`اشکالی نداره — دوباره مرور کن تا همه رو یاد بگیری.`;
+  }
+
+  Q('#pl-sum-emoji').textContent = emoji;
+  Q('#pl-sum-title').textContent = title;
+  Q('#pl-sum-msg').textContent = msg;
+  Q('#pl-sum-flash').textContent = plFlashCount;
+  Q('#pl-sum-saved').textContent = plSaveCount;
+  Q('#pl-sum-skip').textContent = plSkipCount;
+  Q('#pl-summary').style.display = 'flex';
+  Q('#pl-fill').style.width = '100%';
+}
+
+function packLearnClose(){
+  Q('#pack-learn-modal').classList.remove('open');
+  // Reset for next time
+  Q('#pl-summary').style.display='none';
+}
+
+function packLearnRestart(){
+  plIdx=0; plFlashCount=0; plSaveCount=0; plSkipCount=0;
+  Q('#pl-summary').style.display='none';
+  if(Q('#pl-card-area')) Q('#pl-card-area').style.display='flex';
+  plShowCard();
 }
 
 </script>
@@ -1089,6 +1307,93 @@ body.offline .topbar{top:36px}
 .pack-word-de{font-weight:600;color:var(--ink)}
 .pack-word-fa{color:var(--ink2)}
 .ai-pack-tab{padding:0 var(--s5) var(--s8);margin-top:var(--s2)}
+
+/* ─── PACK LEARN MODAL ─── */
+#pack-learn-modal{
+  position:fixed;inset:0;background:var(--bg);z-index:300;
+  display:none;flex-direction:column;
+}
+#pack-learn-modal.open{display:flex}
+.pack-learn-wrap{
+  display:flex;flex-direction:column;height:100%;
+  max-width:600px;margin:0 auto;width:100%;
+}
+.pl-header{
+  display:flex;align-items:center;gap:var(--s3);
+  padding:var(--s4) var(--s5);border-bottom:1px solid var(--bg3);
+  flex-shrink:0;
+}
+.pl-close{
+  background:none;border:none;cursor:pointer;
+  color:var(--ink3);padding:4px;border-radius:var(--r1);
+  flex-shrink:0;
+}
+.pl-close:hover{background:var(--bg2)}
+.pl-progress-wrap{flex:1;display:flex;flex-direction:column;gap:4px}
+.pl-progress-bar{height:4px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.pl-progress-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s var(--ease)}
+.pl-counter{font-size:11px;color:var(--ink3);text-align:left}
+.pl-score{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--warn);flex-shrink:0}
+
+.pl-card-area{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:var(--s5);
+}
+.pl-card{
+  width:100%;max-width:380px;
+  background:var(--card);border:1px solid var(--bg3);
+  border-radius:var(--r5);padding:var(--s8) var(--s6);
+  text-align:center;cursor:pointer;
+  box-shadow:var(--sh3);
+  min-height:280px;display:flex;align-items:center;justify-content:center;
+  transition:transform .15s,box-shadow .15s;
+  animation:cardIn .3s var(--spring);
+}
+.pl-card:active{transform:scale(.98)}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.pl-front,.pl-back{width:100%;display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
+.pl-word{font-family:var(--serif);font-size:36px;font-weight:700;color:var(--ink);line-height:1.1}
+.pl-hint{font-size:13px;color:var(--ink3);margin-top:var(--s2)}
+.pl-tap-icon{font-size:24px;opacity:.3;margin-top:var(--s3);animation:tapPulse 2s infinite}
+@keyframes tapPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.6;transform:scale(1.1)}}
+.pl-meaning{font-size:22px;font-weight:600;color:var(--accent);margin-top:4px}
+.pl-divider{width:40px;height:2px;background:var(--bg3);border-radius:2px;margin:var(--s3) 0}
+.pl-example{background:var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);width:100%;text-align:right}
+.pl-ex-de{font-size:13px;font-style:italic;color:var(--ink2);margin-bottom:4px;direction:ltr;text-align:left}
+.pl-ex-fa{font-size:12px;color:var(--ink3)}
+.pl-tip{font-size:11px;color:var(--accent);background:var(--abl);padding:4px 10px;border-radius:20px}
+
+.pl-actions{
+  display:flex;gap:var(--s3);padding:var(--s4) var(--s5) var(--s6);
+  flex-shrink:0;
+}
+.pl-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:var(--s4) var(--s3);border-radius:var(--r3);border:none;cursor:pointer;
+  font-size:12px;font-weight:600;font-family:var(--sans);
+  transition:transform .15s,background .15s;
+}
+.pl-btn:active{transform:scale(.96)}
+.pl-btn-skip{background:var(--bg2);color:var(--ink2)}
+.pl-btn-skip:hover{background:var(--bg3)}
+.pl-btn-save{background:rgba(245,200,20,.12);color:#b8900a}
+.pl-btn-save:hover{background:rgba(245,200,20,.2)}
+.pl-btn-flash{background:var(--abl);color:var(--accent)}
+.pl-btn-flash:hover{background:rgba(26,58,242,.15)}
+
+/* Summary */
+.pl-summary{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:var(--s8) var(--s6);text-align:center;gap:var(--s5);
+}
+.pl-sum-emoji{font-size:56px}
+.pl-sum-title{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--ink)}
+.pl-sum-stats{display:flex;gap:var(--s4);width:100%;max-width:300px}
+.pl-sum-stat{flex:1;background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);padding:var(--s4)}
+.pl-sum-n{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.pl-sum-l{font-size:11px;color:var(--ink3)}
+.pl-sum-msg{font-size:14px;color:var(--ink2);line-height:1.7;max-width:280px}
+
 </style>
 </head>
 <body>
@@ -2775,5 +3080,107 @@ init();
     </div>
   </div>
 </div>
+
+<!-- Pack Learn Modal -->
+<div class="modal-bg" id="pack-learn-modal">
+  <div class="pack-learn-wrap">
+
+    <!-- Header -->
+    <div class="pl-header">
+      <button class="pl-close" onclick="packLearnClose()">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="pl-progress-wrap">
+        <div class="pl-progress-bar">
+          <div class="pl-progress-fill" id="pl-fill"></div>
+        </div>
+        <div class="pl-counter" id="pl-counter">1 / 50</div>
+      </div>
+      <div class="pl-score">
+        <span id="pl-saved-count">0</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1l1.8 3.6L13 5.4l-3 2.9.7 4.1L7 10.4 3.3 12.4l.7-4.1L1 5.4l4.2-.8L7 1z" fill="currentColor"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Card Area -->
+    <div class="pl-card-area">
+      <div class="pl-card" id="pl-card" onclick="packLearnFlip()">
+
+        <!-- Front -->
+        <div class="pl-front" id="pl-front">
+          <div class="pl-word" id="pl-word">Hallo</div>
+          <div class="pl-hint">برای دیدن معنی کلیک کن</div>
+          <div class="pl-tap-icon">👆</div>
+        </div>
+
+        <!-- Back -->
+        <div class="pl-back" id="pl-back" style="display:none">
+          <div class="pl-word" id="pl-word-back">Hallo</div>
+          <div class="pl-meaning" id="pl-meaning">سلام</div>
+          <div class="pl-divider"></div>
+          <div class="pl-example" id="pl-example">
+            <div class="pl-ex-de" id="pl-ex-de"></div>
+            <div class="pl-ex-fa" id="pl-ex-fa"></div>
+          </div>
+          <div class="pl-tip" id="pl-tip"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="pl-actions" id="pl-actions" style="display:none">
+      <button class="pl-btn pl-btn-skip" onclick="packLearnNext()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        رد کن
+      </button>
+      <button class="pl-btn pl-btn-save" onclick="packLearnSave()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2l1.6 3.2L13 5.8l-2.5 2.4.6 3.4L8 9.8 4.9 11.6l.6-3.4L3 5.8l3.4-.6L8 2z" fill="currentColor"/>
+        </svg>
+        ذخیره
+      </button>
+      <button class="pl-btn pl-btn-flash" onclick="packLearnAddFlash()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        فلش‌کارت
+      </button>
+    </div>
+
+    <!-- Summary Screen -->
+    <div class="pl-summary" id="pl-summary" style="display:none">
+      <div class="pl-sum-emoji" id="pl-sum-emoji">🎉</div>
+      <div class="pl-sum-title" id="pl-sum-title">عالی بود!</div>
+      <div class="pl-sum-stats">
+        <div class="pl-sum-stat">
+          <div class="pl-sum-n" id="pl-sum-flash">0</div>
+          <div class="pl-sum-l">فلش‌کارت</div>
+        </div>
+        <div class="pl-sum-stat">
+          <div class="pl-sum-n" id="pl-sum-saved">0</div>
+          <div class="pl-sum-l">ذخیره‌شده</div>
+        </div>
+        <div class="pl-sum-stat">
+          <div class="pl-sum-n" id="pl-sum-skip">0</div>
+          <div class="pl-sum-l">رد شده</div>
+        </div>
+      </div>
+      <div class="pl-sum-msg" id="pl-sum-msg"></div>
+      <div style="display:flex;flex-direction:column;gap:var(--s3);width:100%">
+        <button class="btn btn-p btn-full" onclick="packLearnClose()">بازگشت به جعبه‌ها</button>
+        <button class="btn btn-full" onclick="packLearnRestart()" id="pl-restart-btn">دوباره از اول</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
