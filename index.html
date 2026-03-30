@@ -147,6 +147,63 @@ async function generateAIPack(){
   btn.disabled=false; btn.textContent='ساخت pack';
 }
 
+
+function generateAIPackTab(){
+  if(userPlan==='free'){ showUpgrade(); return; }
+  const topic = Q('#ai-pack-tab-inp').value.trim();
+  if(!topic){ Q('#ai-pack-tab-err').textContent='موضوع رو بنویس'; return; }
+  const btn=Q('#ai-pack-tab-btn');
+  const err=Q('#ai-pack-tab-err');
+  const result=Q('#ai-pack-tab-result');
+  btn.disabled=true; btn.textContent='در حال ساخت...';
+  err.textContent=''; result.innerHTML='';
+
+  const prompt=`یک لیست ۱۵ لغت آلمانی درباره موضوع "${topic}" بساز.
+فقط JSON برگردون، بدون توضیح اضافه. فرمت دقیق:
+{"words":[{"de":"لغت","fa":"معنی"}]}`;
+
+  ai(prompt,600).then(res=>{
+    const clean=res.replace(/\`\`\`json|\`\`\`/g,'').trim();
+    const data=JSON.parse(clean);
+    if(!data.words?.length) throw new Error('خروجی نامعتبر');
+    aiPackWords=data.words;
+    
+    result.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s3)">
+        <div style="font-size:13px;font-weight:600">${data.words.length} لغت ساخته شد</div>
+        <button class="btn btn-p btn-sm" onclick="addAIPackWords()">+ افزودن همه</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:var(--s2)">
+        ${data.words.map(w=>`
+          <div class="pack-word-row">
+            <span class="pack-word-de">${w.de}</span>
+            <span class="pack-word-fa">${w.fa}</span>
+          </div>`).join('')}
+      </div>`;
+    btn.disabled=false; btn.textContent='ساخت جدید';
+  }).catch(e=>{
+    err.textContent=e.message||'خطا — دوباره امتحان کن';
+    btn.disabled=false; btn.textContent='ساخت';
+  });
+}
+
+async function addAIPackWords(){
+  if(!aiPackWords.length) return;
+  let added=0;
+  for(const w of aiPackWords){
+    if(words.find(x=>x.de===w.de)) continue;
+    const nw={de:w.de,fa:w.fa,ex:'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+    words.unshift(nw);
+    if(currentUser) await dbAdd(nw).catch(()=>{});
+    added++;
+  }
+  saveCache(); updateBadges(); updateStats();
+  showToast(`✅ ${added} لغت اضافه شد!`);
+  Q('#ai-pack-tab-result').innerHTML='';
+  Q('#ai-pack-tab-inp').value='';
+  aiPackWords=[];
+}
+
 </script>
 <style>
 /* ═══════════════════════════════════
@@ -1021,6 +1078,7 @@ body.offline .topbar{top:36px}
   padding:var(--s2) var(--s3);background:var(--bg2);border-radius:var(--r2);font-size:13px}
 .pack-word-de{font-weight:600;color:var(--ink)}
 .pack-word-fa{color:var(--ink2)}
+.ai-pack-tab{padding:0 var(--s5) var(--s8);margin-top:var(--s2)}
 </style>
 </head>
 <body>
@@ -1170,6 +1228,7 @@ body.offline .topbar{top:36px}
 
 
 <!-- Word Packs Section -->
+<div id="pane-packs" class="pane">
 <div class="packs-section" id="packs-section">
   <div class="packs-header">
     <div class="packs-title">📦 جعبه لغت‌ها</div>
@@ -1246,20 +1305,17 @@ body.offline .topbar{top:36px}
   </div>
 </div>
 
-<!-- AI Pack Modal -->
-<div class="modal-bg" id="ai-pack-modal" onclick="if(event.target===this)Q('#ai-pack-modal').classList.remove('open')">
-  <div class="modal" style="max-width:360px">
-    <div class="modal-title">✨ ساخت pack با AI</div>
-    <p style="font-size:13px;color:var(--ink2);margin-bottom:var(--s4);line-height:1.7">
-      موضوع مورد نظرت رو بنویس — AI یه pack ۲۰ لغتی آماده می‌کنه
-    </p>
-    <input class="inp" id="ai-pack-inp" placeholder="مثلاً: لغات پزشکی، ورزش، تکنولوژی...">
-    <div id="ai-pack-err" style="font-size:12px;color:var(--err);min-height:16px;margin-top:var(--s2)"></div>
-    <div class="modal-acts" style="margin-top:var(--s4)">
-      <button class="btn btn-p" style="flex:1" onclick="generateAIPack()">ساخت pack</button>
-      <button class="btn" onclick="Q('#ai-pack-modal').classList.remove('open')">انصراف</button>
-    </div>
+<!-- AI Pack Tab -->
+<div class="ai-pack-tab">
+  <div class="packs-title" style="margin-bottom:var(--s2)">✨ ساخت Pack با AI</div>
+  <div style="font-size:13px;color:var(--ink2);margin-bottom:var(--s4);line-height:1.7">موضوع مورد نظرت رو بنویس — AI یه pack ۱۵ لغتی آماده می‌کنه</div>
+  <div style="display:flex;gap:var(--s2)">
+    <input class="inp ltr" id="ai-pack-tab-inp" placeholder="مثلاً: پزشکی، ورزش..." style="margin:0;flex:1">
+    <button class="btn btn-p btn-sm" onclick="generateAIPackTab()" id="ai-pack-tab-btn">ساخت</button>
   </div>
+  <div id="ai-pack-tab-err" style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px"></div>
+  <div id="ai-pack-tab-result" style="margin-top:var(--s4)"></div>
+</div>
 </div>
 
 <!-- Edit modal -->
@@ -1552,6 +1608,16 @@ body.offline .topbar{top:36px}
     </svg>
     <span class="nav-label">خانه</span>
   </button>
+  <button class="nav-item" id="t-packs" onclick="go('packs')">
+    <div class="nav-dot" id="nd-packs"></div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <span class="nav-label">جعبه‌ها</span>
+  </button>
   <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
     <div class="nav-dot" id="nd-cards"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -1568,6 +1634,7 @@ body.offline .topbar{top:36px}
     <span class="nav-label">لیست</span>
   </button>
 </nav>
+
 
 <script>
 'use strict';
@@ -1957,7 +2024,7 @@ function setThemeIc(d){
    NAV
 ══════════════════════════════ */
 function go(t){
-  ['home','list'].forEach(id=>{
+  ['home','list','packs'].forEach(id=>{
     const pane=Q('#pane-'+id);
     if(pane) pane.classList.toggle('on',id===t);
     const tab=Q('#t-'+id);
