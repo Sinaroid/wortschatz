@@ -1378,8 +1378,6 @@ async function dbAdd(w){
     }).select().single();
     if(error)throw error;
     if(data)w.id=data.id;
-    userWordCount++;
-    updateFreeBanner();
   }catch(e){console.error(e);}
 }
 
