@@ -2860,9 +2860,17 @@ function openPack(id){
     showToast('این pack به‌زودی اضافه میشه 🔜');
     return;
   }
-  // Start learning flow
+  // Start learning flow — لغات قبلاً اضافه‌شده رو فیلتر کن
   plPack = pack;
-  plWords = [...pack.words];
+  const seen = new Set(words.map(w=>w.de));
+  const saved = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+  plWords = pack.words.filter(w => !seen.has(w.de) && !saved.has(w.de));
+
+  if(!plWords.length){
+    showToast('همه لغات این pack رو قبلاً خوندی! 🎉');
+    return;
+  }
+
   plIdx = 0; plFlashCount = 0; plSaveCount = 0; plSkipCount = 0;
   plFlipped = false;
 
@@ -2936,6 +2944,12 @@ function packLearnFlip(){
 
   // Show actions
   Q('#pl-actions').style.display = 'flex';
+
+  // Encouraging message every 3 cards
+  if(plIdx > 0 && plIdx % 3 === 0){
+    const msgs = ['عالیه! ادامه بده 💪','آفرین! یکی دیگه 🔥','خوبه! بریم بعدی ⚡','دمت گرم! 🌟','به همین شکل ادامه بده 🚀','عالی! یاد می\u0027گیری 🧠','محشره! 💥','فوق\u0027العاده! 🎯'];
+    showToast(msgs[Math.floor(Math.random()*msgs.length)], 2000);
+  }
 }
 
 function packLearnNext(){
@@ -2979,6 +2993,12 @@ async function packLearnAddFlash(){
       btn.disabled=false;
       btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>فلش‌کارت';
       btn.style.background=''; btn.style.color='';
+      // نشون بده که می‌تونه save هم بکنه
+      const saveBtn=Q('.pl-btn-save');
+      if(saveBtn && !saveBtn.disabled){
+        saveBtn.style.animation='pulse .4s ease';
+      }
+      setTimeout(()=>{ plIdx++; plShowCard(); }, 1200);
     }, 600);
   }catch(e){
     showToast('خطا در افزودن — دوباره امتحان کن');
@@ -2988,22 +3008,38 @@ async function packLearnAddFlash(){
 
 function packLearnSave(){
   const w = plWords[plIdx];
-  // Save to local saved list
-  if(!plSavedWords.find(x=>x.de===w.de)){
-    plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
-    localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
+  const btn = Q('.pl-btn-save');
+
+  // Already saved?
+  if(plSavedWords.find(x=>x.de===w.de)){
+    // Just go next
+    plIdx++; plShowCard(); return;
   }
+
+  plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
+  localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
   plSaveCount++;
   Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
 
-  // Visual feedback on button
-  const btn = Q('.pl-btn-save');
   btn.textContent = '✓ ذخیره شد';
-  setTimeout(()=>{
+  btn.disabled = true;
+
+  // Let user also add to flash — don't auto-advance
+  const flashBtn = Q('.pl-btn-flash');
+  if(flashBtn && !words.find(x=>x.de===w.de)){
+    flashBtn.style.background = 'var(--abl)';
+    flashBtn.style.border = '2px solid var(--accent)';
+  }
+
+  // Auto-advance after 1.5s if user doesn't press flash
+  const advanceTimer = setTimeout(()=>{
     plIdx++;
     plShowCard();
     btn.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.6 3.2L13 5.8l-2.5 2.4.6 3.4L8 9.8 4.9 11.6l.6-3.4L3 5.8l3.4-.6L8 2z" fill="currentColor"/></svg>ذخیره';
-  }, 500);
+    btn.disabled = false;
+    if(flashBtn){ flashBtn.style.border=''; flashBtn.style.background=''; }
+  }, 1500);
+  btn._advanceTimer = advanceTimer;
 }
 
 function plShowSummary(){
