@@ -1368,6 +1368,7 @@ async function dbLoad(){
     setSdot('ok');
   }catch(e){setSdot('');console.error(e);}
 }
+}
 
 async function dbAdd(w){
   try{
@@ -1411,10 +1412,17 @@ async function loadProfile(){
       userPlan = data.is_beta ? 'beta' : (data.plan||'free');
       userWordCount = data.word_count||0;
       userSearchCount = data.search_count||0;
-      updateFreeBanner();
-      updateDrawerPlan();
+    } else {
+      // profile نداره — بساز
+      await sb.from('profiles').upsert({
+        id:currentUser.id, plan:'free', word_count:0, search_count:0, is_beta:false
+      });
+      userPlan='free'; userWordCount=0; userSearchCount=0;
     }
   }catch(e){console.error('loadProfile:',e);}
+  // همیشه بعد از load، banner رو آپدیت کن
+  updateFreeBanner();
+  updateDrawerPlan();
 }
 
 function canAddMore(){
@@ -1518,11 +1526,36 @@ function updateDrawerStats(){
    AI (no API key from user)
 ══════════════════════════════ */
 async function ai(prompt,tokens=900){
-  const r=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
-  if(!r.ok)throw new Error('HTTP '+r.status);
+  const headers={'Content-Type':'application/json'};
+  if(currentUser?.id) headers['x-user-id']=currentUser.id;
+
+  const r=await fetch('/api',{
+    method:'POST',
+    headers,
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})
+  });
+
+  if(r.status===429){
+    const d=await r.json().catch(()=>({}));
+    userSearchCount=FREE_LIMIT;
+    updateFreeBanner();
+    throw new Error(d.message||`${FREE_LIMIT} جستجوی رایگان تموم شد`);
+  }
+  if(!r.ok) throw new Error('HTTP '+r.status);
+
   const d=await r.json();
-  if(d.error)throw new Error(d.error);
+  if(d.error) throw new Error(d.error);
+
+  // آپدیت search count از header
+  const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
+  if(used>0){
+    userSearchCount=used;
+    updateFreeBanner();
+  }
+  const remaining=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
+  if(remaining===3) showToast('⚠ فقط ۳ جستجو تا سقف مونده');
+  else if(remaining===0) showToast('جستجوی رایگان تموم شد 😔');
+
   return d.content.map(b=>b.text||'').join('').trim();
 }
 
@@ -1552,14 +1585,6 @@ async function logout(){
   localStorage.clear(); sessionStorage.clear();
   window.location.reload();
 }
-async function logout_OLD(){
-  await sb.auth.signOut();
-  currentUser=null;
-  words=[];
-  drawerClose();
-  showGate();
-}
-
 function showGate(){
   if(currentUser) return;
   Q('#gate').classList.add('open');
