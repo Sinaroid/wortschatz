@@ -1121,13 +1121,7 @@ body.offline .topbar{top:36px}
       <p>لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
     </div>
 
-    <div class="free-banner" id="free-banner" style="display:none">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M7 4v3.5L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <span id="free-banner-text"></span>
-    </div>
+    <div id="free-banner" style="display:none"></div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
         placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
@@ -1311,7 +1305,7 @@ const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
 const { createClient } = window.supabase;
 const sb = createClient(SB_URL, SB_KEY);
 
-const FREE_LIMIT = 10;
+const FREE_LIMIT = 30;
 const BETA_LIMIT = 500;
 
 /* ══════════════════════════════
@@ -1423,22 +1417,18 @@ function canAddMore(){
 }
 
 function updateFreeBanner(){
-  const b=Q('#free-banner'),t=Q('#free-banner-text');
-  if(!b||!t)return;
-  if(userPlan==='pro'||userPlan==='beta'){b.style.display='none';return;}
+  const b=Q('#free-banner');
+  if(b) b.style.display='none';
+  if(userPlan==='pro'||userPlan==='beta') return;
   const used=userSearchCount;
   const left=FREE_LIMIT-used;
   if(left<=0){
-    b.className='free-banner warn';
-    t.innerHTML=`${FREE_LIMIT} جستجوی رایگان تموم شد. <a onclick="showUpgrade()">Pro — €4.99/ماه ←</a>`;
-  } else if(left<=3){
-    b.className='free-banner warn';
-    t.innerHTML=`${used}/${FREE_LIMIT} جستجو — فقط ${left} تا مونده! <a onclick="showUpgrade()">Pro ←</a>`;
-  } else {
-    b.className='free-banner';
-    t.innerHTML=`نسخه رایگان: ${used} از ${FREE_LIMIT} جستجو استفاده شده`;
+    showUpgrade();
+  } else if(left===1){
+    showToast('⚠ فقط ۱ جستجو رایگان مونده!');
+  } else if(left===3){
+    showToast('⚠ ۳ جستجو تا سقف رایگان مونده');
   }
-  b.style.display='flex';
   updateDrawerPlan();
 }
 
