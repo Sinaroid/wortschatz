@@ -1236,77 +1236,6 @@ body.offline .topbar{top:36px}
   </div>
 </div>
 
-
-<!-- Word Packs Section -->
-<div id="pane-packs" class="pane" style="padding-top:0">
-
-  <!-- Header -->
-  <div style="padding:var(--s6) var(--s5) var(--s4);border-bottom:1px solid var(--bg3);margin-bottom:var(--s5)">
-    <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px">📦 جعبه لغت‌ها</div>
-    <div style="font-size:13px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
-  </div>
-
-  <!-- Pack Grid -->
-  <div style="padding:0 var(--s5);display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-bottom:var(--s6)">
-
-    <!-- A1 FREE -->
-    <div class="pack-card" onclick="openPack('a1')">
-      <div class="pack-emoji">🌱</div>
-      <div class="pack-name">پایه A1</div>
-      <div class="pack-count">۵۰ لغت</div>
-      <div class="pack-badge free">رایگان</div>
-    </div>
-
-    <!-- Conversation PRO -->
-    <div class="pack-card" onclick="openPack('b1')">
-      <div class="pack-emoji">💬</div>
-      <div class="pack-name">مکالمه روزمره</div>
-      <div class="pack-count">۸۰ لغت</div>
-      <div class="pack-badge pro">Pro 🔒</div>
-    </div>
-
-    <!-- Work PRO -->
-    <div class="pack-card" onclick="openPack('work')">
-      <div class="pack-emoji">💼</div>
-      <div class="pack-name">کار و شغل</div>
-      <div class="pack-count">۶۰ لغت</div>
-      <div class="pack-badge pro">Pro 🔒</div>
-    </div>
-
-    <!-- Travel PRO -->
-    <div class="pack-card" onclick="openPack('travel')">
-      <div class="pack-emoji">✈️</div>
-      <div class="pack-name">سفر</div>
-      <div class="pack-count">۵۰ لغت</div>
-      <div class="pack-badge pro">Pro 🔒</div>
-    </div>
-
-  </div>
-
-  <!-- AI Pack Section -->
-  <div style="padding:0 var(--s5) var(--s8)">
-    <div style="background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.08));border:1px solid rgba(26,58,242,.15);border-radius:var(--r4);padding:var(--s5)">
-      <div style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s2)">
-        <span style="font-size:20px">✨</span>
-        <div>
-          <div style="font-size:15px;font-weight:700;color:var(--ink)">ساخت Pack با AI</div>
-          <div style="font-size:12px;color:var(--ink3)">فقط برای کاربران Pro</div>
-        </div>
-      </div>
-      <div style="font-size:13px;color:var(--ink2);margin-bottom:var(--s4);line-height:1.7">
-        موضوع مورد نظرت رو بنویس — AI یه pack ۱۵ لغتی آماده می‌کنه
-      </div>
-      <div style="display:flex;gap:var(--s2)">
-        <input class="inp" id="ai-pack-tab-inp" placeholder="مثلاً: پزشکی، ورزش، تکنولوژی..." style="margin:0;flex:1;font-size:13px">
-        <button class="btn btn-p btn-sm" onclick="generateAIPackTab()" id="ai-pack-tab-btn" style="white-space:nowrap">ساخت</button>
-      </div>
-      <div id="ai-pack-tab-err" style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px"></div>
-      <div id="ai-pack-tab-result" style="margin-top:var(--s3)"></div>
-    </div>
-  </div>
-
-</div>
-
 <!-- Edit modal -->
 <div class="modal-bg" id="edit-modal" onclick="if(event.target===this)editClose()">
   <div class="modal">
@@ -1322,6 +1251,11 @@ body.offline .topbar{top:36px}
   </div>
 </div>
 
+
+
+
+  <!-- PACKS -->
+<!-- Word Packs Section -->
 <!-- Session -->
 <!-- Session Intro -->
 <div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
@@ -1582,6 +1516,78 @@ body.offline .topbar{top:36px}
       <input class="list-s" id="list-q" placeholder="جستجو در لغات..." oninput="renderList()">
     </div>
     <div id="wlist"></div>
+  </div>
+
+
+  <!-- PACKS -->
+  <div id="pane-packs" class="pane" style="padding-top:0">
+
+  <!-- Header -->
+  <div style="padding:var(--s6) var(--s5) var(--s4);border-bottom:1px solid var(--bg3);margin-bottom:var(--s5)">
+    <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px">📦 جعبه لغت‌ها</div>
+    <div style="font-size:13px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
+  </div>
+
+  <!-- Pack Grid -->
+  <div style="padding:0 var(--s5);display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-bottom:var(--s6)">
+
+    <!-- A1 FREE -->
+    <div class="pack-card" onclick="openPack('a1')">
+      <div class="pack-emoji">🌱</div>
+      <div class="pack-name">پایه A1</div>
+      <div class="pack-count">۵۰ لغت</div>
+      <div class="pack-badge free">رایگان</div>
+    </div>
+
+    <!-- Conversation PRO -->
+    <div class="pack-card" onclick="openPack('b1')">
+      <div class="pack-emoji">💬</div>
+      <div class="pack-name">مکالمه روزمره</div>
+      <div class="pack-count">۸۰ لغت</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+    <!-- Work PRO -->
+    <div class="pack-card" onclick="openPack('work')">
+      <div class="pack-emoji">💼</div>
+      <div class="pack-name">کار و شغل</div>
+      <div class="pack-count">۶۰ لغت</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+    <!-- Travel PRO -->
+    <div class="pack-card" onclick="openPack('travel')">
+      <div class="pack-emoji">✈️</div>
+      <div class="pack-name">سفر</div>
+      <div class="pack-count">۵۰ لغت</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+  </div>
+
+  <!-- AI Pack Section -->
+  <div style="padding:0 var(--s5) var(--s8)">
+    <div style="background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.08));border:1px solid rgba(26,58,242,.15);border-radius:var(--r4);padding:var(--s5)">
+      <div style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s2)">
+        <span style="font-size:20px">✨</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--ink)">ساخت Pack با AI</div>
+          <div style="font-size:12px;color:var(--ink3)">فقط برای کاربران Pro</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--ink2);margin-bottom:var(--s4);line-height:1.7">
+        موضوع مورد نظرت رو بنویس — AI یه pack ۱۵ لغتی آماده می‌کنه
+      </div>
+      <div style="display:flex;gap:var(--s2)">
+        <input class="inp" id="ai-pack-tab-inp" placeholder="مثلاً: پزشکی، ورزش، تکنولوژی..." style="margin:0;flex:1;font-size:13px">
+        <button class="btn btn-p btn-sm" onclick="generateAIPackTab()" id="ai-pack-tab-btn" style="white-space:nowrap">ساخت</button>
+      </div>
+      <div id="ai-pack-tab-err" style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px"></div>
+      <div id="ai-pack-tab-result" style="margin-top:var(--s3)"></div>
+    </div>
+  </div>
+
+
   </div>
 
 
