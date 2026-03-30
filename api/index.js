@@ -1,13 +1,13 @@
-// api/index.js — Claude proxy
+// api/index.js — Claude proxy with daily search limiting
 // ENV: ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
 
 import { createClient } from '@supabase/supabase-js';
 
 const LIMITS = {
-  anonymous: 2,    // بدون اکانت
-  free:      30,   // نسخه رایگان
-  beta:      500,  // beta users — نامحدود عملاً
-  pro:       9999, // Pro
+  anonymous: 2,
+  free:      10,   // روزانه — reset هر شب
+  beta:      500,
+  pro:       9999,
 };
 
 export default async function handler(req, res) {
@@ -28,48 +28,69 @@ export default async function handler(req, res) {
 
   const userId = (req.headers['x-user-id'] || '').trim() || null;
 
-  // ── Get profile ──
   let plan = userId ? 'free' : 'anonymous';
   let searchCount = 0;
 
   if (userId) {
     const { data: profile } = await sb
       .from('profiles')
-      .select('plan, search_count, is_beta')
+      .select('plan, search_count, is_beta, search_reset_at')
       .eq('id', userId)
       .single();
 
     if (profile) {
-      // beta users → plan=beta
       plan = profile.is_beta ? 'beta' : (profile.plan || 'free');
-      searchCount = profile.search_count || 0;
+
+      // بررسی daily reset
+      const now = new Date();
+      const resetAt = profile.search_reset_at ? new Date(profile.search_reset_at) : null;
+
+      if (!resetAt || now >= resetAt) {
+        // روز جدید — reset
+        searchCount = 0;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        await sb.from('profiles').update({
+          search_count: 0,
+          search_reset_at: tomorrow.toISOString()
+        }).eq('id', userId);
+      } else {
+        searchCount = profile.search_count || 0;
+      }
     } else {
-      // profile نداره → بساز
+      // profile نداره
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
       await sb.from('profiles').upsert({
-        id: userId, plan: 'free', word_count: 0, search_count: 0, is_beta: false
+        id: userId, plan: 'free', word_count: 0,
+        search_count: 0, is_beta: false,
+        search_reset_at: tomorrow.toISOString()
       });
     }
   }
 
   const limit = LIMITS[plan] ?? LIMITS.free;
 
-  // ── Check limit ──
   if (searchCount >= limit) {
-    const isPro = plan === 'pro';
-    const msg = plan === 'free'
-      ? `${limit} جستجوی رایگان تموم شد. برای ادامه Pro بگیر — فقط €4.99 در ماه.`
-      : `سقف جستجو تموم شد.`;
+    // محاسبه ساعت تا reset
+    const { data: p } = userId ? await sb.from('profiles')
+      .select('search_reset_at').eq('id', userId).single() : { data: null };
+    const resetAt = p?.search_reset_at ? new Date(p.search_reset_at) : new Date();
+    const hoursLeft = Math.ceil((resetAt - new Date()) / 3_600_000);
+
     return res.status(429).json({
-      error: 'rate_limit', plan, limit, used: searchCount, remaining: 0, message: msg,
+      error: 'rate_limit', plan, limit, used: searchCount, remaining: 0,
+      reset_hours: hoursLeft,
+      message: `${limit} جستجوی امروز تموم شد. ${hoursLeft} ساعت دیگه reset میشه — یا Pro بگیر 🚀`,
     });
   }
 
-  // ── Validate ──
   const { model, max_tokens, messages } = req.body || {};
   if (!Array.isArray(messages) || !messages.length)
     return res.status(400).json({ error: 'messages required' });
 
-  // ── Call Anthropic ──
   try {
     const upstream = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -86,13 +107,12 @@ export default async function handler(req, res) {
     });
 
     if (!upstream.ok) {
-      const err = await upstream.text();
-      return res.status(upstream.status).json({ error: err });
+      return res.status(upstream.status).json({ error: await upstream.text() });
     }
 
     const data = await upstream.json();
 
-    // ── Increment ──
+    // Increment
     if (userId) {
       await sb.from('profiles')
         .update({ search_count: searchCount + 1 })
