@@ -10,7 +10,144 @@
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+/* ══════════════════════════════
+   WORD PACKS
+══════════════════════════════ */
+const PACKS = {
+  a1: {
+    name:'پایه A1', emoji:'🌱', free:true,
+    words:[
+      {de:'Hallo',fa:'سلام'},{de:'Danke',fa:'ممنون'},{de:'Bitte',fa:'خواهش می‌کنم'},
+      {de:'Ja',fa:'بله'},{de:'Nein',fa:'نه'},{de:'Wasser',fa:'آب'},
+      {de:'Essen',fa:'غذا / خوردن'},{de:'Haus',fa:'خانه'},{de:'Auto',fa:'ماشین'},
+      {de:'Arbeit',fa:'کار'},{de:'Familie',fa:'خانواده'},{de:'Freund',fa:'دوست'},
+      {de:'Zeit',fa:'زمان'},{de:'Tag',fa:'روز'},{de:'Nacht',fa:'شب'},
+      {de:'Geld',fa:'پول'},{de:'Stadt',fa:'شهر'},{de:'Land',fa:'کشور'},
+      {de:'Schule',fa:'مدرسه'},{de:'Buch',fa:'کتاب'},{de:'Kind',fa:'بچه'},
+      {de:'Mann',fa:'مرد'},{de:'Frau',fa:'زن'},{de:'groß',fa:'بزرگ'},
+      {de:'klein',fa:'کوچک'},{de:'gut',fa:'خوب'},{de:'schlecht',fa:'بد'},
+      {de:'neu',fa:'جدید'},{de:'alt',fa:'قدیمی'},{de:'kalt',fa:'سرد'},
+      {de:'warm',fa:'گرم'},{de:'schnell',fa:'سریع'},{de:'langsam',fa:'آرام'},
+      {de:'kommen',fa:'آمدن'},{de:'gehen',fa:'رفتن'},{de:'sehen',fa:'دیدن'},
+      {de:'sprechen',fa:'صحبت کردن'},{de:'hören',fa:'شنیدن'},{de:'essen',fa:'خوردن'},
+      {de:'trinken',fa:'نوشیدن'},{de:'schlafen',fa:'خوابیدن'},{de:'kaufen',fa:'خریدن'},
+      {de:'lernen',fa:'یاد گرفتن'},{de:'lesen',fa:'خواندن'},{de:'schreiben',fa:'نوشتن'},
+      {de:'Straße',fa:'خیابان'},{de:'Bahnhof',fa:'ایستگاه قطار'},{de:'Supermarkt',fa:'سوپرمارکت'},
+      {de:'Arzt',fa:'دکتر'},{de:'Krankenhaus',fa:'بیمارستان'}
+    ]
+  },
+  b1:{name:'مکالمه روزمره',emoji:'💬',free:false,words:[]},
+  work:{name:'کار و شغل',emoji:'💼',free:false,words:[]},
+  travel:{name:'سفر',emoji:'✈️',free:false,words:[]},
+  food:{name:'غذا و رستوران',emoji:'🍕',free:false,words:[]},
+};
+
+let curPack = null;
+let aiPackWords = [];
+
+function openPack(id){
+  const pack = PACKS[id];
+  if(!pack) return;
+  if(!pack.free && userPlan==='free'){
+    showUpgrade();
+    return;
+  }
+  curPack = pack;
+  Q('#pack-modal-emoji').textContent = pack.emoji;
+  Q('#pack-modal-title').textContent = pack.name;
+  Q('#pack-modal-count').textContent = `${pack.words.length} لغت`;
+  const container = Q('#pack-modal-words');
+  container.innerHTML = pack.words.map(w=>`
+    <div class="pack-word-row">
+      <span class="pack-word-de">${w.de}</span>
+      <span class="pack-word-fa">${w.fa}</span>
+    </div>
+  `).join('');
+  Q('#pack-modal').classList.add('open');
+}
+
+function packClose(){
+  Q('#pack-modal').classList.remove('open');
+  curPack = null;
+}
+
+async function addPackToFlashcards(){
+  if(!curPack) return;
+  const btn = Q('#pack-modal-btn');
+  btn.disabled = true;
+  btn.textContent = 'در حال افزودن...';
+  let added = 0;
+  for(const w of curPack.words){
+    if(words.find(x=>x.de===w.de)) continue; // already have it
+    const newW = {
+      de:w.de, fa:w.fa, ex:'',
+      score:0, seen:0, interval:1, easiness:2.5,
+      next_review:new Date().toISOString()
+    };
+    words.unshift(newW);
+    if(currentUser) await dbAdd(newW).catch(()=>{});
+    added++;
+  }
+  saveCache(); updateBadges(); updateStats();
+  packClose();
+  showToast(`✅ ${added} لغت اضافه شد!`);
+  btn.disabled = false;
+  btn.textContent = '+ افزودن همه به فلش‌کارت‌ها';
+}
+
+function openAIPack(){
+  if(userPlan==='free'){
+    showUpgrade();
+    return;
+  }
+  Q('#ai-pack-inp').value='';
+  Q('#ai-pack-err').textContent='';
+  Q('#ai-pack-modal').classList.add('open');
+}
+
+async function generateAIPack(){
+  const topic = Q('#ai-pack-inp').value.trim();
+  if(!topic){ Q('#ai-pack-err').textContent='موضوع رو بنویس'; return; }
+  const btn = document.querySelector('#ai-pack-modal .btn-p');
+  btn.disabled=true; btn.textContent='در حال ساخت...';
+  Q('#ai-pack-err').textContent='';
+  try{
+    const prompt = `یک لیست ۱۵ لغت آلمانی درباره موضوع "${topic}" بساز.
+فقط JSON برگردون، بدون توضیح. فرمت:
+{"words":[{"de":"لغت آلمانی","fa":"معنی فارسی"}]}
+لغات باید مفید، رایج و مرتبط با موضوع باشن.`;
+    
+    const result = await ai(prompt, 600);
+    const clean = result.replace(/```json|```/g,'').trim();
+    const data = JSON.parse(clean);
+    
+    if(!data.words?.length) throw new Error('خروجی نامعتبر');
+    
+    aiPackWords = data.words;
+    Q('#ai-pack-modal').classList.remove('open');
+    
+    // Show preview in pack modal
+    curPack = {name:`Pack: ${topic}`, emoji:'✨', words:aiPackWords, free:true};
+    Q('#pack-modal-emoji').textContent='✨';
+    Q('#pack-modal-title').textContent=`Pack: ${topic}`;
+    Q('#pack-modal-count').textContent=`${aiPackWords.length} لغت`;
+    const container=Q('#pack-modal-words');
+    container.innerHTML=aiPackWords.map(w=>`
+      <div class="pack-word-row">
+        <span class="pack-word-de">${w.de}</span>
+        <span class="pack-word-fa">${w.fa}</span>
+      </div>
+    `).join('');
+    Q('#pack-modal').classList.add('open');
+    
+  }catch(e){
+    Q('#ai-pack-err').textContent = e.message||'خطا — دوباره امتحان کن';
+  }
+  btn.disabled=false; btn.textContent='ساخت pack';
+}
+
+</script>
 <style>
 /* ═══════════════════════════════════
    DESIGN TOKENS
@@ -857,6 +994,33 @@ body.offline .topbar{top:36px}
 @keyframes confettiFall{
   to{transform:translateY(110vh) rotate(720deg);opacity:0}
 }
+
+/* ─── PACKS ─── */
+.packs-section{padding:var(--s5) var(--s5) var(--s6);margin-top:var(--s2)}
+.packs-header{margin-bottom:var(--s4)}
+.packs-title{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.packs-sub{font-size:13px;color:var(--ink3)}
+.packs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3)}
+.pack-card{
+  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
+  padding:var(--s4) var(--s3);text-align:center;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;position:relative;
+}
+.pack-card:active{transform:scale(.97)}
+.pack-card:hover{box-shadow:var(--sh2)}
+.pack-card.pro-lock{opacity:.8}
+.pack-card.pro-lock::after{content:'';position:absolute;inset:0;border-radius:var(--r3)}
+.pack-emoji{font-size:28px;margin-bottom:var(--s2)}
+.pack-name{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.3}
+.pack-count{font-size:11px;color:var(--ink3);margin-bottom:var(--s2)}
+.pack-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;display:inline-block}
+.pack-badge.free{background:rgba(18,110,53,.12);color:var(--ok)}
+.pack-badge.pro{background:rgba(26,58,242,.1);color:var(--accent)}
+.pack-ai{background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.08));border-color:rgba(26,58,242,.2)}
+.pack-word-row{display:flex;justify-content:space-between;align-items:center;
+  padding:var(--s2) var(--s3);background:var(--bg2);border-radius:var(--r2);font-size:13px}
+.pack-word-de{font-weight:600;color:var(--ink)}
+.pack-word-fa{color:var(--ink2)}
 </style>
 </head>
 <body>
@@ -1001,6 +1165,100 @@ body.offline .topbar{top:36px}
       <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
     </div>
 
+  </div>
+</div>
+
+
+<!-- Word Packs Section -->
+<div class="packs-section" id="packs-section">
+  <div class="packs-header">
+    <div class="packs-title">📦 جعبه لغت‌ها</div>
+    <div class="packs-sub">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
+  </div>
+
+  <div class="packs-grid" id="packs-grid">
+
+    <!-- A1 — FREE -->
+    <div class="pack-card" onclick="openPack('a1')">
+      <div class="pack-emoji">🌱</div>
+      <div class="pack-name">پایه A1</div>
+      <div class="pack-count">۵۰ لغت</div>
+      <div class="pack-badge free">رایگان</div>
+    </div>
+
+    <!-- B1 — PRO -->
+    <div class="pack-card pro-lock" onclick="openPack('b1')">
+      <div class="pack-emoji">💬</div>
+      <div class="pack-name">مکالمه روزمره</div>
+      <div class="pack-count">۸۰ لغت</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+    <!-- Work — PRO -->
+    <div class="pack-card pro-lock" onclick="openPack('work')">
+      <div class="pack-emoji">💼</div>
+      <div class="pack-name">کار و شغل</div>
+      <div class="pack-count">۶۰ لغت</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+    <!-- Travel — PRO -->
+    <div class="pack-card pro-lock" onclick="openPack('travel')">
+      <div class="pack-emoji">✈️</div>
+      <div class="pack-name">سفر</div>
+      <div class="pack-count">۵۰ لغت</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+    <!-- Food — PRO -->
+    <div class="pack-card pro-lock" onclick="openPack('food')">
+      <div class="pack-emoji">🍕</div>
+      <div class="pack-name">غذا و رستوران</div>
+      <div class="pack-count">۴۰ لغت</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+    <!-- AI Generator — PRO -->
+    <div class="pack-card pack-ai pro-lock" onclick="openAIPack()">
+      <div class="pack-emoji">✨</div>
+      <div class="pack-name">ساخت با AI</div>
+      <div class="pack-count">هر موضوعی</div>
+      <div class="pack-badge pro">Pro 🔒</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Pack Modal -->
+<div class="modal-bg" id="pack-modal" onclick="if(event.target===this)packClose()">
+  <div class="modal" style="max-width:400px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
+      <div style="font-size:32px" id="pack-modal-emoji">📦</div>
+      <div>
+        <div class="modal-title" style="margin:0" id="pack-modal-title">پک لغت</div>
+        <div style="font-size:12px;color:var(--ink3)" id="pack-modal-count"></div>
+      </div>
+    </div>
+    <div id="pack-modal-words" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:var(--s2);margin-bottom:var(--s4)"></div>
+    <button class="btn btn-p btn-full" id="pack-modal-btn" onclick="addPackToFlashcards()">
+      + افزودن همه به فلش‌کارت‌ها
+    </button>
+  </div>
+</div>
+
+<!-- AI Pack Modal -->
+<div class="modal-bg" id="ai-pack-modal" onclick="if(event.target===this)Q('#ai-pack-modal').classList.remove('open')">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title">✨ ساخت pack با AI</div>
+    <p style="font-size:13px;color:var(--ink2);margin-bottom:var(--s4);line-height:1.7">
+      موضوع مورد نظرت رو بنویس — AI یه pack ۲۰ لغتی آماده می‌کنه
+    </p>
+    <input class="inp" id="ai-pack-inp" placeholder="مثلاً: لغات پزشکی، ورزش، تکنولوژی...">
+    <div id="ai-pack-err" style="font-size:12px;color:var(--err);min-height:16px;margin-top:var(--s2)"></div>
+    <div class="modal-acts" style="margin-top:var(--s4)">
+      <button class="btn btn-p" style="flex:1" onclick="generateAIPack()">ساخت pack</button>
+      <button class="btn" onclick="Q('#ai-pack-modal').classList.remove('open')">انصراف</button>
+    </div>
   </div>
 </div>
 
