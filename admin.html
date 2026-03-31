@@ -190,6 +190,32 @@ tr:hover td{background:var(--bg3)}
 .err-msg{font-size:12px;color:var(--err);margin-bottom:6px}
 .err-meta{font-size:10px;color:var(--ink3)}
 .empty-state{text-align:center;padding:60px 20px;color:var(--ink3);font-size:12px}
+
+/* Insight badges */
+.ins{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;
+  border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.3px;margin-right:3px}
+.ins.churn{background:rgba(248,113,113,.12);color:var(--err)}
+.ins.convert{background:rgba(74,222,128,.12);color:var(--accent)}
+.ins.stuck{background:rgba(251,146,60,.12);color:var(--warn)}
+.ins.new{background:rgba(96,165,250,.12);color:var(--blue)}
+
+/* Row highlight */
+tr.risk td{background:rgba(248,113,113,.04)}
+tr.hot td{background:rgba(74,222,128,.04)}
+
+/* Filters */
+.filter-bar{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.filter-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--ink3);font-family:var(--sans);font-size:11px;
+  cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:rgba(74,222,128,.1);border-color:var(--accent);color:var(--accent)}
+
+/* Stats mini */
+.user-insights{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 20px;border-bottom:1px solid var(--border)}
+.ui-card{background:var(--bg3);border-radius:6px;padding:10px 12px;text-align:center}
+.ui-n{font-size:20px;font-weight:600;color:var(--ink);line-height:1}
+.ui-l{font-size:9px;color:var(--ink3);margin-top:3px;letter-spacing:.3px}
 </style>
 </head>
 <body>
@@ -432,17 +458,80 @@ async function loadUsers(){
   }catch(e){console.error(e)}
 }
 
+let currentFilter='all';
+
 function renderUsers(users){
   document.getElementById('users-count').textContent=users.length+' نفر';
   if(!users.length){
     document.getElementById('users-table-wrap').innerHTML='<div class="empty-state">هیچ کاربری یافت نشد</div>';
     return;
   }
+
+  // Classify users
+  const classified = users.map(u=>{
+    const days = u.last_seen_at
+      ? Math.floor((Date.now()-new Date(u.last_seen_at))/(1000*60*60*24))
+      : null;
+    const words = u.word_count||0;
+    const sessions = u.session_count||0;
+    const insights=[];
+    let rowClass='';
+
+    if(days!==null && days>7){
+      insights.push('<span class="ins churn">⚠ چرن</span>');
+      rowClass='risk';
+    }
+    if(words>=10 && (u.plan==='free'||u.plan==='beta')){
+      insights.push('<span class="ins convert">💰 Pro candidate</span>');
+      rowClass='hot';
+    }
+    if(sessions>=3 && words<3){
+      insights.push('<span class="ins stuck">🔄 Onboarding مشکل</span>');
+    }
+    if(days!==null && days<=1 && sessions<=1){
+      insights.push('<span class="ins new">✨ جدید</span>');
+    }
+
+    return {...u, days, insights, rowClass};
+  });
+
+  // Filter
+  const filtered = currentFilter==='all' ? classified
+    : currentFilter==='churn' ? classified.filter(u=>u.days!==null&&u.days>7)
+    : currentFilter==='convert' ? classified.filter(u=>(u.word_count||0)>=10&&u.plan==='free')
+    : currentFilter==='stuck' ? classified.filter(u=>(u.session_count||0)>=3&&(u.word_count||0)<3)
+    : classified;
+
+  // Mini stats
+  const churnCount = classified.filter(u=>u.days!==null&&u.days>7).length;
+  const convertCount = classified.filter(u=>(u.word_count||0)>=10&&u.plan==='free').length;
+  const stuckCount = classified.filter(u=>(u.session_count||0)>=3&&(u.word_count||0)<3).length;
+  const activeCount = classified.filter(u=>u.days!==null&&u.days<=3).length;
+
   document.getElementById('users-table-wrap').innerHTML=`
+    <div class="user-insights">
+      <div class="ui-card" style="cursor:pointer" onclick="setFilter('all')">
+        <div class="ui-n">${users.length}</div>
+        <div class="ui-l">همه</div>
+      </div>
+      <div class="ui-card" style="cursor:pointer;border:1px solid rgba(248,113,113,.2)" onclick="setFilter('churn')">
+        <div class="ui-n" style="color:var(--err)">${churnCount}</div>
+        <div class="ui-l">⚠ چرن احتمالی</div>
+      </div>
+      <div class="ui-card" style="cursor:pointer;border:1px solid rgba(74,222,128,.2)" onclick="setFilter('convert')">
+        <div class="ui-n" style="color:var(--accent)">${convertCount}</div>
+        <div class="ui-l">💰 Pro candidate</div>
+      </div>
+      <div class="ui-card" style="cursor:pointer;border:1px solid rgba(251,146,60,.2)" onclick="setFilter('stuck')">
+        <div class="ui-n" style="color:var(--warn)">${stuckCount}</div>
+        <div class="ui-l">🔄 Onboarding مشکل</div>
+      </div>
+    </div>
     <table>
       <thead>
         <tr>
           <th>ایمیل</th>
+          <th>Insights</th>
           <th>پلن</th>
           <th>لغت</th>
           <th>session</th>
@@ -452,34 +541,37 @@ function renderUsers(users){
         </tr>
       </thead>
       <tbody>
-        ${users.map(u=>{
-        const daysSince = u.last_seen_at
-          ? Math.floor((Date.now()-new Date(u.last_seen_at))/(1000*60*60*24))
-          : null;
-        const activity = daysSince===null ? '—'
-          : daysSince===0 ? '<span style="color:var(--accent)">امروز</span>'
-          : daysSince<=3 ? `<span style="color:var(--blue)">${daysSince} روز پیش</span>`
-          : daysSince<=7 ? `<span style="color:var(--warn)">${daysSince} روز پیش</span>`
-          : `<span style="color:var(--err)">${daysSince} روز پیش</span>`;
-        return `<tr>
-            <td class="email-cell">${u.email||'—'}</td>
-            <td><span class="badge ${u.plan||'free'}">${u.plan||'free'}</span></td>
-            <td>${u.word_count||0}</td>
-            <td>${u.session_count||0}</td>
-            <td>${activity}</td>
-            <td class="date-cell">${formatDate(u.created_at)}</td>
+        ${filtered.map(u=>{
+        const activity = u.days===null ? '—'
+          : u.days===0 ? '<span style="color:var(--accent)">امروز</span>'
+          : u.days<=3 ? \`<span style="color:var(--blue)">\${u.days} روز پیش</span>\`
+          : u.days<=7 ? \`<span style="color:var(--warn)">\${u.days} روز پیش</span>\`
+          : \`<span style="color:var(--err)">\${u.days} روز پیش</span>\`;
+        return \`<tr class="\${u.rowClass}">
+            <td class="email-cell">\${u.email||'—'}</td>
+            <td>\${u.insights.join('')||'<span style="color:var(--ink3);font-size:10px">—</span>'}</td>
+            <td><span class="badge \${u.plan||'free'}">\${u.plan||'free'}</span></td>
+            <td>\${u.word_count||0}</td>
+            <td>\${u.session_count||0}</td>
+            <td>\${activity}</td>
+            <td class="date-cell">\${formatDate(u.created_at)}</td>
             <td>
-              <select class="plan-sel" onchange="updatePlan('${u.id}',this.value)">
-                <option value="free" ${u.plan==='free'?'selected':''}>Free</option>
-                <option value="beta" ${u.plan==='beta'?'selected':''}>Beta</option>
-                <option value="pro" ${u.plan==='pro'?'selected':''}>Pro</option>
+              <select class="plan-sel" onchange="updatePlan('\${u.id}',this.value)">
+                <option value="free" \${u.plan==='free'?'selected':''}>Free</option>
+                <option value="beta" \${u.plan==='beta'?'selected':''}>Beta</option>
+                <option value="pro" \${u.plan==='pro'?'selected':''}>Pro</option>
               </select>
             </td>
-          </tr>`;
+          </tr>\`;
       }).join('')}
       </tbody>
     </table>
   `;
+}
+
+function setFilter(f){
+  currentFilter=f;
+  renderUsers(allUsers);
 }
 
 function filterUsers(q){
