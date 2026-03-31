@@ -525,7 +525,7 @@ function renderUsers(users){
       + '<td>'+(u.session_count||0)+'</td>'
       + '<td>'+act+'</td>'
       + '<td class="date-cell">'+formatDate(u.created_at)+'</td>'
-      + '<td><select class="plan-sel" onchange="updatePlan(''+u.id+'',this.value)">'
+      + '<td><select class="plan-sel" onchange="updatePlan(\"'+u.id+'\",this.value)">' 
       + '<option value="free" '+(u.plan==='free'?'selected':'')+'>Free</option>'
       + '<option value="beta" '+(u.plan==='beta'?'selected':'')+'>Beta</option>'
       + '<option value="pro" '+(u.plan==='pro'?'selected':'')+'>Pro</option>'
@@ -534,13 +534,13 @@ function renderUsers(users){
   });
 
   var insHtml = '<div class="user-insights">'
-    + '<div class="ui-card" style="cursor:pointer" onclick="setFilter('all')">'
+    + '<div class="ui-card" style="cursor:pointer" onclick="setFilter(&quot;all&quot;)">'
     + '<div class="ui-n">'+users.length+'</div><div class="ui-l">همه</div></div>'
-    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(248,113,113,.2)" onclick="setFilter('churn')">'
+    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(248,113,113,.2)" onclick="setFilter(&quot;churn&quot;)">'
     + '<div class="ui-n" style="color:var(--err)">'+churnCount+'</div><div class="ui-l">⚠ چرن احتمالی</div></div>'
-    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(74,222,128,.2)" onclick="setFilter('convert')">'
+    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(74,222,128,.2)" onclick="setFilter(&quot;convert&quot;)">'
     + '<div class="ui-n" style="color:var(--accent)">'+convertCount+'</div><div class="ui-l">💰 Pro candidate</div></div>'
-    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(251,146,60,.2)" onclick="setFilter('stuck')">'
+    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(251,146,60,.2)" onclick="setFilter(&quot;stuck&quot;)">'
     + '<div class="ui-n" style="color:var(--warn)">'+stuckCount+'</div><div class="ui-l">🔄 Onboarding مشکل</div></div>'
     + '</div>';
 
