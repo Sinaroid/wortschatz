@@ -42,6 +42,11 @@
   --prog-h:4px; --prog-r:4px;
   --warnbg:rgba(168,72,0,.07);
 }
+/* ═══════════════════════════════════
+   TYPOGRAPHY DESIGN SYSTEM
+   --serif (Fraunces): Latin words only — German/English vocabulary, app name
+   --sans  (IRANYekan): ALL Farsi text, numbers, UI labels
+═══════════════════════════════════ */
 body.dark{
   --bg:#0d0d0c;--bg2:#161614;--bg3:#202020;--bg4:#2c2c2a;
   --card:#161614;--ink:#f2efe8;--ink2:#9a9a90;--ink3:#585850;--ink4:#363630;
@@ -304,7 +309,7 @@ body.offline .topbar{top:36px}
   padding:var(--s6);width:100%;max-width:360px;box-shadow:var(--sh3);
   animation:up .28s var(--spring);
 }
-.modal-title{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:var(--s5);color:var(--ink)}
+.modal-title{font-family:var(--sans);font-size:17px;font-weight:700;margin-bottom:var(--s5);color:var(--ink)}
 .modal-err{font-size:12px;color:var(--err);min-height:16px;margin-bottom:var(--s2)}
 .modal-acts{display:flex;gap:var(--s2)}
 
@@ -391,14 +396,14 @@ body.offline .topbar{top:36px}
 }
 .ses-end.show{display:flex;animation:up .4s var(--spring)}
 .end-icon{font-size:56px}
-.end-title{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ink)}
+.end-title{font-family:var(--sans);font-size:26px;font-weight:700;color:var(--ink)}
 .end-msg{font-size:14px;color:var(--ink2);line-height:1.7}
 .end-stats{
   display:flex;gap:var(--s3);background:var(--bg2);border:1px solid var(--bg3);
   border-radius:var(--r4);padding:var(--s5);width:100%;max-width:280px;
 }
 .es{flex:1;text-align:center}
-.es-n{font-family:var(--serif);font-size:32px;color:var(--ink);line-height:1;margin-bottom:4px}
+.es-n{font-family:var(--sans);font-size:32px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:4px}
 .es-n.g{color:var(--ok)}.es-n.b{color:var(--err)}
 .es-l{font-size:11px;color:var(--ink3)}
 .end-btns{display:flex;gap:var(--s2);flex-wrap:wrap;justify-content:center}
@@ -407,7 +412,7 @@ body.offline .topbar{top:36px}
   justify-content:center;padding:var(--s8) var(--s5);text-align:center;gap:var(--s4);
 }
 .ses-confirm.show{display:flex;animation:up .28s var(--spring)}
-.con-title{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--ink)}
+.con-title{font-family:var(--sans);font-size:24px;font-weight:700;color:var(--ink)}
 .con-sub{font-size:14px;color:var(--ink2);line-height:1.7}
 .con-btns{display:flex;gap:var(--s2)}
 
@@ -649,7 +654,7 @@ body.offline .topbar{top:36px}
   margin-bottom:var(--s4);
 }
 .sum-title{
-  font-size:13px;font-weight:600;color:var(--ink2);letter-spacing:.2px;
+  font-size:13px;font-weight:600;color:var(--ink2);letter-spacing:.2px;font-family:var(--sans);
 }
 .sum-streak{
   display:flex;align-items:center;gap:5px;
@@ -715,7 +720,7 @@ body.offline .topbar{top:36px}
 }
 .reminder.show{display:block}
 .rem-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s3);position:relative;z-index:1}
-.rem-title{font-family:var(--serif);font-size:17px;font-weight:600;color:#fff;margin-bottom:2px}
+.rem-title{font-family:var(--sans);font-size:16px;font-weight:700;color:#fff;margin-bottom:2px}
 .rem-sub{font-size:12px;color:rgba(255,255,255,.65)}
 .rem-x{
   width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);
@@ -746,7 +751,7 @@ body.offline .topbar{top:36px}
 }
 .ses-intro.show{display:flex;animation:up .35s var(--spring)}
 .si-icon{font-size:52px}
-.si-title{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--ink)}
+.si-title{font-family:var(--sans);font-size:22px;font-weight:700;color:var(--ink)}
 .si-chips{display:flex;gap:var(--s2);flex-wrap:wrap;justify-content:center;margin-bottom:var(--s1)}
 .si-chip{display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid}
 .si-chip.due{background:var(--errbg);border-color:rgba(204,32,32,.25);color:var(--err)}
@@ -906,7 +911,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .drw-plan-beta{background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.05));border-color:rgba(26,58,242,.2)}
 .drw-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-top:0}
 .drw-stat{text-align:center;padding:var(--s3) var(--s2);background:var(--bg2);border-radius:var(--r2);border:1px solid var(--bg3)}
-.drw-stat-n{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:3px}
+.drw-stat-n{font-family:var(--sans);font-size:22px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:3px}
 .drw-stat-n.accent{color:var(--accent)}
 .drw-stat-n.err{color:var(--err)}
 .drw-stat-l{font-size:10px;color:var(--ink3)}
@@ -929,7 +934,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
    LIST
 ═══════════════════════════════════ */
 .list-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
-.list-title{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink)}
+.list-title{font-family:var(--sans);font-size:24px;font-weight:700;color:var(--ink)}
 .list-count{font-size:12px;color:var(--ink3);background:var(--bg2);border:1px solid var(--bg3);padding:3px 10px;border-radius:20px}
 .due-banner{
   background:var(--warnbg);border:1px solid rgba(168,72,0,.18);
@@ -938,7 +943,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 }
 .due-banner.show{display:block;animation:up .3s var(--spring)}
 .due-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
-.due-label{font-family:var(--serif);font-size:15px;color:var(--warn);font-weight:600}
+.due-label{font-family:var(--sans);font-size:14px;color:var(--warn);font-weight:700}
 .due-btn{
   padding:6px 14px;border-radius:20px;
   background:var(--warn);border:none;
@@ -1081,7 +1086,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 /* ─── PACKS ─── */
 .packs-section{padding:var(--s5) var(--s5) var(--s4);margin-top:var(--s2)}
 .packs-header{margin-bottom:var(--s4)}
-.packs-title{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.packs-title{font-family:var(--sans);font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px}
 .packs-sub{font-size:13px;color:var(--ink3)}
 .packs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s3)}
 .pack-card{
@@ -1198,10 +1203,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   justify-content:center;padding:var(--s8) var(--s6);text-align:center;gap:var(--s5);
 }
 .pl-sum-emoji{font-size:56px}
-.pl-sum-title{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--ink)}
+.pl-sum-title{font-family:var(--sans);font-size:24px;font-weight:700;color:var(--ink)}
 .pl-sum-stats{display:flex;gap:var(--s4);width:100%;max-width:300px}
 .pl-sum-stat{flex:1;background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);padding:var(--s4)}
-.pl-sum-n{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.pl-sum-n{font-family:var(--sans);font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px}
 .pl-sum-l{font-size:11px;color:var(--ink3)}
 .pl-sum-msg{font-size:14px;color:var(--ink2);line-height:1.7;max-width:280px}
 
@@ -1290,7 +1295,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
             <div style="font-family:'Fraunces',serif;font-size:10px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
             <div style="font-size:7px;color:#4a4843;margin:2px 0 3px">مهلت فسخ قرارداد</div>
             <div style="font-size:6px;color:#8a8780;font-style:italic;direction:ltr;background:white;border-radius:3px;padding:2px 4px;margin-bottom:4px">...beträgt drei Monate</div>
-            <button id="lp-addbtn" style="width:100%;background:#1a3af2;color:white;border:none;border-radius:4px;padding:4px;font-size:7px;font-weight:600;cursor:pointer;font-family:'Vazirmatn',sans-serif">+ فلش‌کارت</button>
+            <button id="lp-addbtn" style="width:100%;background:#1a3af2;color:white;border:none;border-radius:4px;padding:4px;font-size:7px;font-weight:600;cursor:pointer;font-family:var(--sans)">+ فلش‌کارت</button>
           </div>
         </div>
 
@@ -1301,8 +1306,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
             <div style="font-size:6px;color:#8a8780;margin-top:2px">کلیک برای معنی</div>
           </div>
           <div style="display:flex;gap:3px;opacity:.35">
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:'Vazirmatn',sans-serif">بلدم</button>
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:'Vazirmatn',sans-serif">یاد می‌گیرم</button>
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">بلدم</button>
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
           </div>
         </div>
 
@@ -1314,8 +1319,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
             <div style="font-size:6px;color:#1a3af2;opacity:.7;margin-top:2px">فردا مرور کن</div>
           </div>
           <div style="display:flex;gap:3px">
-            <button id="lp-knowbtn" style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:'Vazirmatn',sans-serif">✓ بلدم</button>
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:'Vazirmatn',sans-serif">یاد می‌گیرم</button>
+            <button id="lp-knowbtn" style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">✓ بلدم</button>
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
           </div>
         </div>
 
@@ -1346,7 +1351,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       </div>
       <!-- Dynamic description per slide -->
       <div id="lp-slide-desc" style="min-height:40px;transition:opacity .3s">
-        <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:white;line-height:1.3">لغت جستجو کن</div>
+        <div style="font-family:var(--sans);font-size:15px;font-weight:700;color:white;line-height:1.3">لغت جستجو کن</div>
         <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">فارسی، آلمانی یا انگلیسی — AI توضیح میده</div>
       </div>
     </div>
@@ -1491,7 +1496,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 <!-- Session Intro -->
 <div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
   <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
-  <div style="font-family:var(--serif);font-size:28px;font-weight:600;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
+  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
   <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
   <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
     <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">شروع مرور →</button>
@@ -1784,7 +1789,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
   <!-- Header -->
   <div style="padding:var(--s6) var(--s5) var(--s4);border-bottom:1px solid var(--bg3);margin-bottom:var(--s5)">
-    <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px">📦 جعبه لغت‌ها</div>
+    <div style="font-family:var(--sans);font-size:20px;font-weight:700;color:var(--ink);margin-bottom:4px">📦 جعبه لغت‌ها</div>
     <div style="font-size:13px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
   </div>
 
