@@ -10,48 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-function wordDetail(idx){
-  const w = words[idx];
-  if(!w) return;
-  const now = new Date();
-  const nr = new Date(w.next_review||0);
-  const diff = Math.round((nr-now)/(1000*60*60*24));
-  const nextStr = !w.seen?'هنوز مرور نشده':diff<=0?'سررسیده':diff===1?'فردا':diff+' روز دیگه';
-  const level = Math.min(5,Math.max(0,w.seen||0));
-  const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
-
-  const html = `<div style="text-align:right">
-    <div style="font-family:var(--serif);font-size:28px;font-weight:700;color:var(--ink);direction:ltr;text-align:left;margin-bottom:4px">${w.de}</div>
-    <div style="font-size:16px;color:var(--ink2);margin-bottom:var(--s4)">${w.fa}</div>
-    ${w.ex?`<div style="background:var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s4)">
-      <div style="font-size:13px;font-style:italic;color:var(--ink2);direction:ltr;text-align:left">${w.ex}</div>
-    </div>`:''}
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">پیشرفت</span>
-      <div>${dots}</div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">مرور بعدی</span>
-      <span style="font-size:12px;font-weight:600;color:var(--ink)">${nextStr}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">تعداد مرور</span>
-      <span style="font-size:12px;font-weight:600;color:var(--ink)">${w.seen||0} بار</span>
-    </div>
-    <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
-      <button class="btn btn-p" style="flex:1" onclick="editOpen(${idx});Q('#word-detail-modal').classList.remove('open')">ویرایش</button>
-      <button class="btn" onclick="Q('#word-detail-modal').classList.remove('open')">بستن</button>
-    </div>
-  </div>`;
-
-  Q('#word-detail-body').innerHTML = html;
-  Q('#word-detail-modal').classList.add('open');
-}
-
-
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 /* ═══════════════════════════════════
    DESIGN TOKENS
@@ -1097,7 +1056,7 @@ body.offline .topbar{top:36px}
 <!-- Auth Gate -->
 <div id="gate">
 
-  <div class="fw" style="font-size:48px;top:15%;right:8%;animation:float2 10s ease-in-out infinite 1s">Wörter
+  <div class="fw" style="font-size:48px;top:15%;right:8%;animation:float2 10s ease-in-out infinite 1s">Wörter</div>
   <div class="fw" style="font-size:56px;bottom:25%;left:3%;animation:float3 9s ease-in-out infinite 2s">Sprache</div>
   <div class="fw" style="font-size:40px;bottom:10%;right:5%;animation:float1 11s ease-in-out infinite 3s">Deutsch</div>
   <div class="fw" style="font-size:72px;top:45%;left:50%;transform:translateX(-50%);animation:float2 12s ease-in-out infinite 1.5s;opacity:.04">Wortschatz</div>
@@ -1211,7 +1170,6 @@ body.offline .topbar{top:36px}
 
 </div>
 </div>
-
 
 <!-- Drawer -->
 <div class="drawer-bg" id="drawer" onclick="if(event.target===this)drawerClose()">
@@ -1686,6 +1644,48 @@ body.offline .topbar{top:36px}
 
 
 <script>
+function wordDetail(idx){
+  const w = words[idx];
+  if(!w) return;
+  const now = new Date();
+  const nr = new Date(w.next_review||0);
+  const diff = Math.round((nr-now)/(1000*60*60*24));
+  const nextStr = !w.seen?'هنوز مرور نشده':diff<=0?'سررسیده':diff===1?'فردا':diff+' روز دیگه';
+  const level = Math.min(5,Math.max(0,w.seen||0));
+  const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
+
+  const html = `<div style="text-align:right">
+    <div style="font-family:var(--serif);font-size:28px;font-weight:700;color:var(--ink);direction:ltr;text-align:left;margin-bottom:4px">${w.de}</div>
+    <div style="font-size:16px;color:var(--ink2);margin-bottom:var(--s4)">${w.fa}</div>
+    ${w.ex?`<div style="background:var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s4)">
+      <div style="font-size:13px;font-style:italic;color:var(--ink2);direction:ltr;text-align:left">${w.ex}</div>
+    </div>`:''}
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
+      <span style="font-size:12px;color:var(--ink3)">پیشرفت</span>
+      <div>${dots}</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
+      <span style="font-size:12px;color:var(--ink3)">مرور بعدی</span>
+      <span style="font-size:12px;font-weight:600;color:var(--ink)">${nextStr}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
+      <span style="font-size:12px;color:var(--ink3)">تعداد مرور</span>
+      <span style="font-size:12px;font-weight:600;color:var(--ink)">${w.seen||0} بار</span>
+    </div>
+    <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
+      <button class="btn btn-p" style="flex:1" onclick="editOpen(${idx});Q('#word-detail-modal').classList.remove('open')">ویرایش</button>
+      <button class="btn" onclick="Q('#word-detail-modal').classList.remove('open')">بستن</button>
+    </div>
+  </div>`;
+
+  Q('#word-detail-body').innerHTML = html;
+  Q('#word-detail-modal').classList.add('open');
+}
+
+
+
+
+
 'use strict';
 /* WORTSCHATZ_BUILD_v2_PACKS_FIXED */
 /* ══════════════════════════════
@@ -2910,8 +2910,7 @@ document.addEventListener('keydown',e=>{
 });
 
 init();
-</script>
-<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
 
 /* ══════════════════════════════
    WORD PACKS
@@ -3739,6 +3738,9 @@ function packLearnRestart(){
     if(gate.classList.contains('open')) setTimeout(run,300);
   }
 })();
+
+</script>
+<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 
 <!-- Upgrade Modal -->
