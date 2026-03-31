@@ -50,70 +50,6 @@ function wordDetail(idx){
 }
 
 
-/* ══════════════════════════════
-   RENDER PACKS GRID
-══════════════════════════════ */
-function renderPackGrid(){
-  const container = Q('#packs-grid-container');
-  if(!container) return;
-
-  const packList = [
-    { id:'a1',     emoji:'🌱', name:'پایه A1',        count:50, free:true,  level:'A1', desc:'لغات پایه برای شروع' },
-    { id:'b1',     emoji:'💬', name:'مکالمه روزمره',  count:80, free:false, level:'A2', desc:'گفتگوی روزانه' },
-    { id:'work',   emoji:'💼', name:'کار و شغل',      count:60, free:false, level:'B1', desc:'محیط کاری' },
-    { id:'travel', emoji:'✈️', name:'سفر',            count:50, free:false, level:'A2', desc:'سفر و گردشگری' },
-  ];
-
-  const savedWords = new Set(words.map(w=>w.de));
-  const savedList  = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
-
-  const html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">' +
-    packList.map(pack => {
-      const packWords = PACKS[pack.id]?.words || [];
-      const total = packWords.length;
-      const learned = packWords.filter(w => savedWords.has(w.de) || savedList.has(w.de)).length;
-      const pct = total > 0 ? Math.round(learned/total*100) : 0;
-      const isDone = pct === 100;
-      const isLocked = !pack.free && userPlan === 'free';
-      const isStarted = learned > 0 && !isDone;
-
-      // Status badge
-      let badge = '';
-      if(isDone) badge = '<div class="pack-badge" style="background:rgba(18,110,53,.12);color:var(--ok)">✓ تکمیل</div>';
-      else if(isLocked) badge = '<div class="pack-badge pro">Pro 🔒</div>';
-      else if(pack.free) badge = '<div class="pack-badge free">رایگان</div>';
-      else badge = '<div class="pack-badge pro">Pro</div>';
-
-      // CTA label
-      let cta = '';
-      if(isDone) cta = '<div style="font-size:10px;color:var(--ok);margin-top:2px">مرور دوباره ←</div>';
-      else if(isStarted) cta = `<div style="font-size:10px;color:var(--accent);margin-top:2px">${total-learned} لغت مونده ←</div>`;
-      else if(!isLocked) cta = '<div style="font-size:10px;color:var(--ink3);margin-top:2px">شروع یادگیری ←</div>';
-
-      // Progress bar
-      const progress = total > 0 ? `
-        <div class="pack-progress" style="margin-top:6px">
-          <div class="pack-progress-fill${isDone?' done':''}" style="width:${pct}%"></div>
-        </div>
-        <div style="font-size:10px;color:var(--ink3);margin-top:2px">${learned}/${total} لغت</div>` : '';
-
-      return `<button class="pack-card${isDone?' pack-done':isLocked?' pack-locked':''}"
-                onclick="openPack('${pack.id}')" type="button">
-        <div style="font-size:30px">${pack.emoji}</div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink)">${pack.name}</div>
-        <div style="font-size:11px;color:var(--ink3)">${pack.desc}</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
-          ${badge}
-          <div style="font-size:10px;color:var(--ink3);background:var(--bg2);padding:2px 6px;border-radius:10px">${pack.level}</div>
-        </div>
-        ${progress}
-        ${cta}
-      </button>`;
-    }).join('') + '</div>';
-
-  container.innerHTML = html;
-}
-
 </script>
 <style>
 /* ═══════════════════════════════════
@@ -2896,6 +2832,72 @@ const PACKS = {
   travel:{name:'سفر',emoji:'✈️',free:false,words:[]},
   food:{name:'غذا و رستوران',emoji:'🍕',free:false,words:[]},
 };
+
+
+/* ══════════════════════════════
+   RENDER PACKS GRID
+══════════════════════════════ */
+function renderPackGrid(){
+  const container = Q('#packs-grid-container');
+  if(!container) return;
+
+  const packList = [
+    { id:'a1',     emoji:'🌱', name:'پایه A1',        count:50, free:true,  level:'A1', desc:'لغات پایه برای شروع' },
+    { id:'b1',     emoji:'💬', name:'مکالمه روزمره',  count:80, free:false, level:'A2', desc:'گفتگوی روزانه' },
+    { id:'work',   emoji:'💼', name:'کار و شغل',      count:60, free:false, level:'B1', desc:'محیط کاری' },
+    { id:'travel', emoji:'✈️', name:'سفر',            count:50, free:false, level:'A2', desc:'سفر و گردشگری' },
+  ];
+
+  const savedWords = new Set(words.map(w=>w.de));
+  const savedList  = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+
+  const html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">' +
+    packList.map(pack => {
+      const packWords = PACKS[pack.id]?.words || [];
+      const total = packWords.length;
+      const learned = packWords.filter(w => savedWords.has(w.de) || savedList.has(w.de)).length;
+      const pct = total > 0 ? Math.round(learned/total*100) : 0;
+      const isDone = pct === 100;
+      const isLocked = !pack.free && userPlan === 'free';
+      const isStarted = learned > 0 && !isDone;
+
+      // Status badge
+      let badge = '';
+      if(isDone) badge = '<div class="pack-badge" style="background:rgba(18,110,53,.12);color:var(--ok)">✓ تکمیل</div>';
+      else if(isLocked) badge = '<div class="pack-badge pro">Pro 🔒</div>';
+      else if(pack.free) badge = '<div class="pack-badge free">رایگان</div>';
+      else badge = '<div class="pack-badge pro">Pro</div>';
+
+      // CTA label
+      let cta = '';
+      if(isDone) cta = '<div style="font-size:10px;color:var(--ok);margin-top:2px">مرور دوباره ←</div>';
+      else if(isStarted) cta = `<div style="font-size:10px;color:var(--accent);margin-top:2px">${total-learned} لغت مونده ←</div>`;
+      else if(!isLocked) cta = '<div style="font-size:10px;color:var(--ink3);margin-top:2px">شروع یادگیری ←</div>';
+
+      // Progress bar
+      const progress = total > 0 ? `
+        <div class="pack-progress" style="margin-top:6px">
+          <div class="pack-progress-fill${isDone?' done':''}" style="width:${pct}%"></div>
+        </div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:2px">${learned}/${total} لغت</div>` : '';
+
+      return `<button class="pack-card${isDone?' pack-done':isLocked?' pack-locked':''}"
+                onclick="openPack('${pack.id}')" type="button">
+        <div style="font-size:30px">${pack.emoji}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--ink)">${pack.name}</div>
+        <div style="font-size:11px;color:var(--ink3)">${pack.desc}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
+          ${badge}
+          <div style="font-size:10px;color:var(--ink3);background:var(--bg2);padding:2px 6px;border-radius:10px">${pack.level}</div>
+        </div>
+        ${progress}
+        ${cta}
+      </button>`;
+    }).join('') + '</div>';
+
+  container.innerHTML = html;
+}
+
 
 let curPack = null;
 let aiPackWords = [];
