@@ -3047,6 +3047,7 @@ async function addAIPackWords(){
    PACK LEARN FLOW
 ══════════════════════════════ */
 let plPack = null;
+let plPackId = null;
 let plWords = [];
 let plIdx = 0;
 let plFlipped = false;
@@ -3054,6 +3055,15 @@ let plFlashCount = 0;
 let plSaveCount = 0;
 let plSkipCount = 0;
 let plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words')||'[]');
+
+function getSeenPackWords(packId){
+  return new Set(JSON.parse(localStorage.getItem('ws_seen_'+packId)||'[]'));
+}
+function markPackWordSeen(packId, word){
+  const seen = getSeenPackWords(packId);
+  seen.add(word);
+  localStorage.setItem('ws_seen_'+packId, JSON.stringify([...seen]));
+}
 
 function openPack(id){
   const pack = PACKS[id];
@@ -3068,9 +3078,11 @@ function openPack(id){
   }
   // Start learning flow — لغات قبلاً اضافه‌شده رو فیلتر کن
   plPack = pack;
-  const seen = new Set(words.map(w=>w.de));
-  const saved = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
-  plWords = pack.words.filter(w => !seen.has(w.de) && !saved.has(w.de));
+  plPackId = id;
+  const inFlash = new Set(words.map(w=>w.de));
+  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+  const inSeen  = getSeenPackWords(id);
+  plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
 
   if(!plWords.length){
     showToast('همه لغات این pack رو قبلاً خوندی! 🎉');
@@ -3166,7 +3178,9 @@ function packLearnNext(){
 }
 
 function packLearnKnow(){
-  // بلدم — skip می‌کنه، به عنوان "دیده شده" count میشه
+  // بلدم — mark as seen so it won't appear again
+  const w = plWords[plIdx];
+  if(w && plPackId) markPackWordSeen(plPackId, w.de);
   plSkipCount++;
   Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
   plIdx++;
@@ -3195,6 +3209,7 @@ async function packLearnAddFlash(){
     words.unshift(nw);
     if(currentUser) await dbAdd(nw);
     saveCache(); updateBadges(); updateStats();
+    if(plPackId) markPackWordSeen(plPackId, w.de);
     plFlashCount++;
     Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
     // Visual feedback
