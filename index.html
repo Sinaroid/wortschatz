@@ -425,10 +425,10 @@ body.offline .topbar{top:36px}
   color:var(--accent);margin-bottom:var(--s3);opacity:.8;
 }
 .hero h1{
-  font-family:var(--serif);font-size:clamp(30px,7vw,42px);font-weight:600;
-  color:var(--ink);line-height:1.06;letter-spacing:-.5px;margin-bottom:var(--s2);
+  font-family:var(--sans);font-size:clamp(28px,7vw,40px);font-weight:700;
+  color:var(--ink);line-height:1.15;letter-spacing:0;margin-bottom:var(--s2);
 }
-.hero h1 em{font-style:italic;font-weight:300}
+.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.75}
 .hero p{font-size:13px;color:var(--ink3);line-height:1.6}
 
 /* ═══════════════════════════════════
@@ -470,10 +470,10 @@ body.offline .topbar{top:36px}
 .ac-tag{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600;flex-shrink:0}
 .ac-tag.s{background:var(--abl);color:var(--accent)}
 .ac-tag.c{background:var(--bg2);color:var(--ink3)}
-.s-msg{min-height:16px;font-size:12px;text-align:center;margin-bottom:var(--s2);color:transparent}
+.s-msg{font-size:12px;text-align:center;margin-bottom:0;color:transparent}
 .s-msg.info{color:var(--ink3)}.s-msg.err{color:var(--err)}
 .search-tip{
-  display:none;text-align:center;padding:var(--s2) var(--s4);margin-bottom:var(--s2);
+  display:none;text-align:center;padding:var(--s2) var(--s4);margin-bottom:0;
   background:var(--abl);border-radius:var(--r2);border:1px solid rgba(26,58,242,.12);
   font-size:13px;color:var(--accent);animation:up .3s var(--spring);
 }
@@ -2478,9 +2478,17 @@ function updateLangUI(){
   const heroTitle = document.getElementById('hero-title');
   const heroSub   = document.getElementById('hero-sub');
   if(heroLabel) heroLabel.textContent = isDE ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
-  if(heroTitle) heroTitle.innerHTML   = isDE
-    ? 'لغت یاد بگیر،<br><em>نه حفظ کنی</em>'
-    : 'Words stick,<br><em>not memorized</em>';
+  if(heroTitle){
+    if(isDE){
+      heroTitle.style.fontFamily = 'var(--sans)';
+      heroTitle.style.letterSpacing = '0';
+      heroTitle.innerHTML = 'لغت یاد بگیر،<br><em>نه حفظ کنی</em>';
+    } else {
+      heroTitle.style.fontFamily = 'var(--serif)';
+      heroTitle.style.letterSpacing = '-.5px';
+      heroTitle.innerHTML = 'Words stick,<br><em>not memorized</em>';
+    }
+  }
   if(heroSub) heroSub.textContent = isDE
     ? 'لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی'
     : 'لغت، جمله یا اصطلاح — فارسی، انگلیسی یا آلمانی';
