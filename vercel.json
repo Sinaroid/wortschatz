@@ -9,6 +9,7 @@
     { "src": "/api/checkout", "dest": "/api/checkout.js" },
     { "src": "/api/upgrade", "dest": "/api/upgrade.js" },
     { "src": "/api/admin-auth", "dest": "/api/admin-auth.js" },
+    { "src": "/api/admin-update", "dest": "/api/admin-update.js" },
     { "src": "/api", "dest": "/api/index.js" },
     { "src": "/admin", "dest": "/admin.html" },
     { "src": "/(.*)", "dest": "/index.html" }
