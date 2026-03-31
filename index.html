@@ -3126,18 +3126,19 @@ function _doGenerateAIPack(topic, forceNew=false){
             ${data.words.map((w,i)=>`
               <div id="ai-word-row-${i}" style="
                 background:var(--card);border:1px solid var(--bg3);
-                border-radius:var(--r3);padding:var(--s3) var(--s3) var(--s2);
-                display:flex;flex-direction:column;gap:4px;
-                transition:border-color .15s,background .15s;
-                position:relative;overflow:hidden;
+                border-radius:var(--r3);padding:var(--s3);
+                display:flex;align-items:center;gap:var(--s2);
+                transition:border-color .15s;
               ">
-                <div style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ink);direction:ltr">${w.de}</div>
-                <div style="font-size:11px;color:var(--ink2)">${w.fa}</div>
-                ${w.ex ? `<div style="font-size:10px;color:var(--ink3);font-style:italic;direction:ltr;margin-top:2px">${w.ex}</div>` : ''}
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--ink);direction:ltr">${w.de}</div>
+                  <div style="font-size:11px;color:var(--ink2);margin-top:2px">${w.fa}</div>
+                  ${w.ex ? `<div style="font-size:10px;color:var(--ink3);font-style:italic;direction:ltr;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w.ex}</div>` : ''}
+                </div>
                 <button id="ai-add-btn-${i}" onclick="addSingleAIWord(${i})"
-                  style="position:absolute;top:6px;left:6px;width:24px;height:24px;
+                  style="flex-shrink:0;width:28px;height:28px;
                     background:var(--abl);color:var(--accent);border:none;
-                    border-radius:50%;cursor:pointer;font-size:16px;line-height:1;
+                    border-radius:var(--r2);cursor:pointer;font-size:18px;
                     display:flex;align-items:center;justify-content:center;
                     transition:all .15s">+</button>
               </div>`).join('')}
