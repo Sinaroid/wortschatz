@@ -3525,10 +3525,19 @@ function _doGenerateAIPack(topic, forceNew=false){
     <div style="font-size:13px;margin-top:var(--s3)">AI داره لغات رو انتخاب می‌کنه...</div>
   </div>`;
 
-  const prompt = `تو یک متخصص آموزش زبان آلمانی هستی.
-برای موضوع "${topic}"، دقیقاً ۱۵ لغت مهم آلمانی انتخاب کن.
-فقط JSON برگردون، هیچ توضیحی نده:
-{"words":[{"de":"لغت","fa":"معنی فارسی","ex":"یک جمله نمونه آلمانی","ex_fa":"ترجمه فارسی جمله"}]}`;
+  const isDE = targetLang === 'de';
+  const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
+  const exInstruct = isDE
+    ? '"ex":"یک جمله نمونه به زبان آلمانی"'
+    : '"ex":"one short example sentence in English"';
+  const wordInstruct = isDE
+    ? '"word":"لغت آلمانی (با article برای اسم)"'
+    : '"word":"the English word or phrase"';
+  const prompt = `You are a ${isDE ? 'German' : 'English'} language teaching expert.\nFor the topic "${topic}", select exactly 15 important ${isDE ? 'German' : 'English'} vocabulary words.\nReturn ONLY pure JSON, no explanation, no markdown:\n{"words":[{${wordInstruct},"fa":"معنی فارسی",${exInstruct},"ex_fa":"ترجمه فارسی جمله نمونه"}]}`;
+
+
+
+
 
   ai(prompt, 1800)
     .then(txt=>{
@@ -3546,7 +3555,7 @@ function _doGenerateAIPack(topic, forceNew=false){
           <!-- Header -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)">
             <div>
-              <div style="font-size:14px;font-weight:700;color:var(--ink)">✨ ${data.words.length} لغت آماده شد</div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink)">✨ ${data.words.length} لغت ${targetLang==='de' ? 'آلمانی' : 'انگلیسی'} آماده شد</div>
               <div style="font-size:11px;color:var(--ink3)">موضوع: ${topic}</div>
             </div>
             <button class="btn btn-p btn-sm" onclick="addAllAIPackWords()" 
@@ -3564,7 +3573,7 @@ function _doGenerateAIPack(topic, forceNew=false){
                 transition:border-color .15s;
               ">
                 <div style="flex:1;min-width:0">
-                  <div style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--ink);direction:ltr">${w.de}</div>
+                  <div style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--ink);direction:ltr">${w.word||w.de}</div>
                   <div style="font-size:11px;color:var(--ink2);margin-top:2px">${w.fa}</div>
                   ${w.ex ? `<div style="font-size:10px;color:var(--ink3);font-style:italic;direction:ltr;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w.ex}</div>` : ''}
                 </div>
@@ -3577,6 +3586,9 @@ function _doGenerateAIPack(topic, forceNew=false){
               </div>`).join('')}
           </div>
         </div>`;
+
+      // Normalize: map w.word → w.de for compatibility
+      data.words = data.words.map(w=>({...w, de: w.word||w.de||''}));
 
       // Store words for later use
       window._aiPackWords = data.words;
@@ -3609,7 +3621,7 @@ function addSingleAIWord(idx){
   const w = window._aiPackWords?.[idx];
   if(!w) return;
   if(words.find(x=>x.de===w.de)){ showToast('قبلاً اضافه شده'); return; }
-  const nw={de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  const nw={de:w.de,fa:w.fa,ex:w.ex||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
   words.unshift(nw);
   if(currentUser) dbAdd(nw).catch(()=>{});
   saveCache(); updateBadges(); updateStats();
@@ -3623,7 +3635,7 @@ function addAllAIPackWords(){
   let added=0;
   allWords.forEach((w,i)=>{
     if(!words.find(x=>x.de===w.de)){
-      const nw={de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+      const nw={de:w.de,fa:w.fa,ex:w.ex||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
       words.unshift(nw);
       if(currentUser) dbAdd(nw).catch(()=>{});
       added++;
