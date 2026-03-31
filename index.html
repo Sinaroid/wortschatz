@@ -718,21 +718,48 @@ body.offline .topbar{top:36px}
 
 
 
-/* ─── DRAWER REDESIGN ─── */
-.drw-profile{
-  display:flex;align-items:center;gap:var(--s3);
-  padding:var(--s4);background:var(--bg2);border-radius:var(--r3);
-  margin-bottom:var(--s4);
+/* ─── DRAWER REDESIGN v2 ─── */
+
+/* Hero profile block */
+.drw-hero{
+  position:relative;border-radius:var(--r4);overflow:hidden;
+  margin-bottom:var(--s4);padding:var(--s5) var(--s4) var(--s4);
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
 }
+.drw-hero-top{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)}
 .drw-avatar{
-  width:44px;height:44px;border-radius:50%;background:var(--accent);
+  width:52px;height:52px;border-radius:50%;
+  background:rgba(255,255,255,.22);border:2px solid rgba(255,255,255,.4);
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;
+  font-size:22px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;
 }
 .drw-avatar img{width:100%;height:100%;object-fit:cover}
 .drw-profile-info{flex:1;min-width:0}
-.drw-profile-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.drw-profile-email{font-size:12px;color:var(--ink3);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drw-profile-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drw-profile-email{font-size:11px;color:rgba(255,255,255,.7);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drw-plan-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+  border-radius:20px;padding:3px 10px 3px 6px;
+  font-size:11px;font-weight:700;color:#fff;
+}
+
+/* Stats inside hero */
+.drw-hero-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+}
+.drw-hstat{
+  background:rgba(255,255,255,.14);border-radius:10px;
+  padding:8px 4px;text-align:center;
+}
+.drw-hstat-n{
+  font-family:var(--serif);font-size:20px;font-weight:600;
+  color:#fff;line-height:1;margin-bottom:2px;
+}
+.drw-hstat-n.fire{color:#ffd166}
+.drw-hstat-l{font-size:9px;color:rgba(255,255,255,.65);letter-spacing:.3px}
+
+/* Plan cards */
 .drw-plan-card{
   background:var(--bg2);border-radius:var(--r3);
   padding:var(--s4);margin-bottom:var(--s4);
@@ -750,15 +777,48 @@ body.offline .topbar{top:36px}
 .drw-plan-fill{height:100%;background:var(--accent);border-radius:5px;transition:width .4s var(--ease)}
 .drw-plan-count{font-size:11px;color:var(--ink3);white-space:nowrap;flex-shrink:0}
 .drw-upgrade-btn{
-  width:100%;padding:9px;border-radius:var(--r2);
+  width:100%;padding:11px;border-radius:var(--r2);
   background:var(--accent);color:#fff;border:none;
   font-family:var(--sans);font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .18s;
+  cursor:pointer;transition:all .18s;letter-spacing:.2px;
 }
 .drw-upgrade-btn:hover{background:var(--accent2)}
 .drw-upgrade-btn.hidden{display:none}
+
+/* Lang switcher inside drawer — compact toggle */
+.drw-lang-toggle{
+  display:flex;background:var(--bg2);border:1px solid var(--bg3);
+  border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:var(--s4);
+}
+.drw-lang-opt{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px;border-radius:8px;border:none;background:transparent;
+  font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink2);
+  cursor:pointer;transition:all .18s;
+}
+.drw-lang-opt.active{
+  background:var(--card);color:var(--accent);font-weight:700;
+  box-shadow:var(--sh1);
+}
+
+/* Action row */
+.drw-actions{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s4)}
+.drw-action-row{display:flex;gap:var(--s2)}
+.drw-action-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px;border-radius:var(--r2);border:1px solid var(--bg3);
+  background:var(--bg2);font-family:var(--sans);font-size:12px;font-weight:500;
+  color:var(--ink2);cursor:pointer;transition:all .15s;
+}
+.drw-action-btn:hover{background:var(--bg3)}
+.drw-action-btn.danger{color:var(--err);border-color:rgba(204,32,32,.2)}
+.drw-action-btn.danger:hover{background:var(--errbg)}
+
 .drw-divider{height:1px;background:var(--bg3);margin:var(--s4) 0}
 .drw-section-title{font-size:11px;font-weight:700;color:var(--ink4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:var(--s3)}
+
+/* Dark mode hero */
+body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
 /* ─── FREEMIUM BANNER ─── */
 .free-banner{
@@ -1172,24 +1232,45 @@ body.offline .topbar{top:36px}
   <div class="drawer">
     <div class="drw-handle"></div>
 
-    <!-- Profile -->
-    <div class="drw-profile" id="drw-profile">
-      <div class="drw-avatar" id="drw-avatar-big">?</div>
-      <div class="drw-profile-info">
-        <div class="drw-profile-name" id="drw-profile-name">—</div>
-        <div class="drw-profile-email" id="drw-email">—</div>
+    <!-- Hero: Profile + Stats -->
+    <div class="drw-hero" id="drw-profile">
+      <div class="drw-hero-top">
+        <div class="drw-avatar" id="drw-avatar-big">?</div>
+        <div class="drw-profile-info">
+          <div class="drw-profile-name" id="drw-profile-name">—</div>
+          <div class="drw-profile-email" id="drw-email">—</div>
+        </div>
+        <div id="drw-plan-pill-wrap">
+          <span class="drw-plan-pill" id="drw-hero-plan-badge">Free</span>
+        </div>
+      </div>
+      <div class="drw-hero-stats">
+        <div class="drw-hstat">
+          <div class="drw-hstat-n" id="drw-stat-total">—</div>
+          <div class="drw-hstat-l">کل لغت</div>
+        </div>
+        <div class="drw-hstat">
+          <div class="drw-hstat-n" id="drw-stat-learned">—</div>
+          <div class="drw-hstat-l">یاد گرفتم</div>
+        </div>
+        <div class="drw-hstat">
+          <div class="drw-hstat-n fire" id="drw-stat-streak">—</div>
+          <div class="drw-hstat-l">🔥 streak</div>
+        </div>
+        <div class="drw-hstat">
+          <div class="drw-hstat-n" id="drw-stat-due">—</div>
+          <div class="drw-hstat-l">سررسید</div>
+        </div>
       </div>
     </div>
 
-    <!-- Language Target -->
-    <div style="display:flex;gap:8px;margin-bottom:var(--s4)">
-      <button onclick="setTargetLang('de');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;transition:all .2s" id="btn-lang-de">
-        <span>🇩🇪</span> آلمانی
-        <span id="lang-de-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);transition:background .2s;margin-right:2px"></span>
+    <!-- Language Toggle -->
+    <div class="drw-lang-toggle">
+      <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle()">
+        🇩🇪 آلمانی
       </button>
-      <button onclick="setTargetLang('en');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;transition:all .2s" id="btn-lang-en">
-        <span>🇬🇧</span> انگلیسی
-        <span id="lang-en-dot" style="width:6px;height:6px;border-radius:50%;background:var(--bg3);transition:background .2s;margin-right:2px"></span>
+      <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle()">
+        🇬🇧 انگلیسی
       </button>
     </div>
 
@@ -1228,37 +1309,18 @@ body.offline .topbar{top:36px}
       <div style="font-size:13px;color:var(--ink2)">جستجو و لغت نامحدود ✅</div>
     </div>
 
-    <div class="drw-divider"></div>
-
-    <!-- Stats -->
-    <div class="drw-stats-row">
-      <div class="drw-stat">
-        <div class="drw-stat-n" id="drw-stat-total">—</div>
-        <div class="drw-stat-l">کل لغت</div>
-      </div>
-      <div class="drw-stat">
-        <div class="drw-stat-n" id="drw-stat-learned">—</div>
-        <div class="drw-stat-l">یاد گرفتم</div>
-      </div>
-      <div class="drw-stat">
-        <div class="drw-stat-n accent" id="drw-stat-streak">—</div>
-        <div class="drw-stat-l">روز streak</div>
-      </div>
-      <div class="drw-stat">
-        <div class="drw-stat-n err" id="drw-stat-due">—</div>
-        <div class="drw-stat-l">سررسید</div>
-      </div>
-    </div>
-
     <!-- Actions -->
-    <div style="display:flex;flex-direction:column;gap:var(--s2)">
-      <button class="btn btn-full btn-sm" onclick="logout()">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="opacity:.5">
-          <path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        خروج از حساب
-      </button>
-      <button class="btn btn-danger btn-full btn-sm" onclick="clearAll()">پاک کردن همه لغات</button>
+    <div class="drw-actions">
+      <div class="drw-action-row">
+        <button class="drw-action-btn" onclick="logout()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="opacity:.5"><path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          خروج
+        </button>
+        <button class="drw-action-btn danger" onclick="clearAll()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="opacity:.7"><path d="M2 4h10M5 4V3h4v1M6 7v3M8 7v3M3 4l1 8h6l1-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          پاک کردن لغات
+        </button>
+      </div>
     </div>
 
   </div>
@@ -1932,6 +1994,14 @@ function updateDrawerPlan(){
   if(betaCard) betaCard.style.display = isBeta  ? 'block' : 'none';
   if(proCard)  proCard.style.display  = isPro   ? 'block' : 'none';
 
+  // Hero plan pill
+  const pill = Q('#drw-hero-plan-badge');
+  if(pill){
+    if(isPro) { pill.textContent='Pro ✨'; pill.style.background='rgba(255,255,255,.25)'; }
+    else if(isBeta){ pill.textContent='Beta 🚀'; pill.style.background='rgba(255,255,255,.25)'; }
+    else { pill.textContent='Free'; pill.style.background='rgba(255,255,255,.15)'; }
+  }
+
   if(isFree){
     const used = userSearchCount;
     const left = FREE_LIMIT - used;
@@ -2241,18 +2311,25 @@ function setTargetLang(lang){
 }
 
 function updateLangUI(){
-  const deDot = document.getElementById('lang-de-dot');
-  const enDot = document.getElementById('lang-en-dot');
-  if(deDot) deDot.style.background = targetLang==='de' ? 'var(--accent)' : 'var(--bg3)';
-  if(enDot) enDot.style.background = targetLang==='en' ? 'var(--accent)' : 'var(--bg3)';
-  // Update home badge
+  const isDE = targetLang === 'de';
+  // Home badge
   const flag = document.getElementById('home-lang-flag');
   const label = document.getElementById('home-lang-label');
-  if(flag) flag.textContent = targetLang==='de' ? '🇩🇪' : '🇬🇧';
-  if(label) label.textContent = targetLang==='de' ? 'آلمانی' : 'انگلیسی';
-  // Update home subtitle
+  if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
+  if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
+  // Home subtitle
   const sub = document.querySelector('.home-sub');
-  if(sub) sub.textContent = targetLang==='de' ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
+  if(sub) sub.textContent = isDE ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
+  // Drawer lang toggle
+  drawerUpdateLangToggle();
+}
+
+function drawerUpdateLangToggle(){
+  const isDE = targetLang === 'de';
+  const de = document.getElementById('btn-lang-de');
+  const en = document.getElementById('btn-lang-en');
+  if(de){ de.classList.toggle('active', isDE); }
+  if(en){ en.classList.toggle('active', !isDE); }
 }
 
 function toggleDark(){const d=document.body.classList.toggle('dark');localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
