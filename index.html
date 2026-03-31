@@ -2102,7 +2102,7 @@ async function loadProfile(){
   if(!currentUser)return;
   try{
     const{data}=await sb.from('profiles')
-      .select('plan,word_count,is_beta,search_count,search_reset_at')
+      .select('plan,word_count,is_beta,search_count,search_reset_at,last_seen_at,session_count')
       .eq('id',currentUser.id).single();
     if(data){
       userPlan = data.is_beta ? 'beta' : (data.plan||'free');
@@ -2116,9 +2116,26 @@ async function loadProfile(){
       } else {
         userSearchCount=data.search_count||0;
       }
+
+      // ── Analytics: آپدیت last_seen_at و session_count ──
+      const lastSeen = data.last_seen_at ? new Date(data.last_seen_at) : null;
+      const isNewSession = !lastSeen || (now - lastSeen) > 30*60*1000; // بیشتر از ۳۰ دقیقه
+      if(isNewSession){
+        sb.from('profiles').update({
+          last_seen_at: now.toISOString(),
+          session_count: (data.session_count||0) + 1
+        }).eq('id',currentUser.id).catch(()=>{});
+      }
+
     } else {
       const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
-      await sb.from('profiles').upsert({id:currentUser.id,plan:'free',word_count:0,search_count:0,is_beta:false,search_reset_at:tomorrow.toISOString()});
+      await sb.from('profiles').upsert({
+        id:currentUser.id,plan:'free',word_count:0,
+        search_count:0,is_beta:false,
+        search_reset_at:tomorrow.toISOString(),
+        last_seen_at:new Date().toISOString(),
+        session_count:1
+      });
       userPlan='free';userWordCount=0;userSearchCount=0;
     }
   }catch(e){console.error('loadProfile:',e);}
