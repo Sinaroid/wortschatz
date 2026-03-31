@@ -641,26 +641,43 @@ body.offline .topbar{top:36px}
   padding:var(--s5);margin-top:var(--s3);margin-bottom:0;box-shadow:var(--sh1);
   display:none;animation:up .35s .15s var(--ease) both;overflow:hidden;position:relative;
 }
-.sum-card::before{
-  content:'';position:absolute;top:-30px;left:-30px;width:120px;height:120px;
-  border-radius:50%;background:var(--abl);pointer-events:none;
-}
 .sum-card.show{display:block}
-.sum-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
-.sum-title{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink)}
+
+/* header row */
+.sum-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:var(--s4);
+}
+.sum-title{
+  font-size:13px;font-weight:600;color:var(--ink2);letter-spacing:.2px;
+}
 .sum-streak{
-  display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;
-  color:var(--accent);background:var(--abl);border-radius:20px;padding:4px 10px;
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:700;color:var(--warn);
+  background:var(--warnbg);border-radius:20px;padding:4px 10px;
 }
+
+/* stats row — 3 items */
 .sum-nums{
-  display:flex;gap:0;background:var(--bg2);border:1px solid var(--bg3);
-  border-radius:var(--r3);overflow:hidden;margin-bottom:var(--s4);
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:var(--s2);margin-bottom:var(--s4);
 }
-.sum-nb{flex:1;padding:var(--s3) var(--s4);text-align:center;border-left:1px solid var(--bg3)}
-.sum-nb:last-child{border-left:none}
-.sum-n{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:3px}
+.sum-nb{
+  background:var(--bg2);border:1px solid var(--bg3);
+  border-radius:var(--r3);padding:var(--s3) var(--s2);
+  text-align:center;transition:background .15s;
+}
+.sum-nb:hover{background:var(--bg3)}
+.sum-n{
+  font-size:26px;font-weight:700;color:var(--ink);
+  line-height:1;margin-bottom:3px;
+  font-variant-numeric:tabular-nums;
+}
 .sum-nb.ok .sum-n{color:var(--ok)}
-.sum-l{font-size:11px;color:var(--ink3);font-weight:400;letter-spacing:.2px}
+.sum-nb.warn .sum-n{color:var(--warn)}
+.sum-l{font-size:10px;color:var(--ink3);font-weight:400;letter-spacing:.2px}
+
+/* dots */
 .sum-dots{display:flex;gap:4px;align-items:flex-end;margin-bottom:var(--s4)}
 .sd{display:flex;flex-direction:column;align-items:center;gap:3px}
 .sd-c{width:7px;height:7px;border-radius:50%;background:var(--bg3);transition:all .3s}
@@ -668,6 +685,8 @@ body.offline .topbar{top:36px}
 .sd-c.today{background:var(--accent);transform:scale(1.4);box-shadow:0 0 0 2px var(--aglow)}
 .sd-l{font-size:8px;color:var(--ink4)}
 .sd-l.t{color:var(--accent);font-weight:700}
+
+/* action buttons */
 .sum-acts{display:flex;gap:var(--s2)}
 .sum-review{
   flex:1;display:flex;align-items:center;justify-content:center;gap:var(--s2);
@@ -1696,21 +1715,22 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <div class="sum-header">
         <div class="sum-title">پیشرفت تو</div>
         <div class="sum-streak">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M6 1l.9 2.7h2.8L7.4 5.4l.9 2.7L6 6.4l-2.3 1.7.9-2.7-2.3-1.7h2.8z" fill="currentColor"/>
-          </svg>
-          <span id="sn-streak">0</span> روز
+          🔥 <span id="sn-streak">0</span> روز
         </div>
       </div>
       <div class="sum-nums">
         <div class="sum-nb">
           <div class="sum-n" id="sn-total">0</div>
-          <div class="sum-l">لغت</div>
-          <div id="sn-lang-split" style="font-size:10px;color:var(--ink3);margin-top:3px;display:none"></div>
+          <div class="sum-l">کل لغت</div>
+          <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:2px;display:none"></div>
         </div>
         <div class="sum-nb ok">
           <div class="sum-n" id="sn-learned">0</div>
           <div class="sum-l">یاد گرفتم</div>
+        </div>
+        <div class="sum-nb warn" id="sn-due-wrap">
+          <div class="sum-n" id="sn-due">0</div>
+          <div class="sum-l">سررسید</div>
         </div>
       </div>
       <div class="sum-dots" id="sum-dots"></div>
@@ -2598,6 +2618,11 @@ function updateStats(){
     }
   }
   Q('#sn-learned').textContent=learned.length;
+  // due count
+  const dueEl=Q('#sn-due');
+  const dueWrap=Q('#sn-due-wrap');
+  if(dueEl) dueEl.textContent=due.length;
+  if(dueWrap) dueWrap.classList.toggle('warn', due.length>0);
   // streak
   const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
   const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
