@@ -1963,13 +1963,53 @@ async function loginGoogle(){
 }
 
 async function loginMagicLink(){
-  const email=Q('#gate-email').value.trim();
-  if(!email||!email.includes('@')){Q('#gate-err').textContent='ایمیل معتبر وارد کن';return;}
-  Q('#gate-err').textContent='';
-  const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
-  if(error){Q('#gate-err').textContent=error.message;return;}
-  Q('#gate-email-section').style.display='none';
-  Q('#gate-sent').style.display='block';
+  const email = Q('#gate-email').value.trim();
+  if(!email || !email.includes('@')){
+    Q('#gate-err').textContent = 'ایمیل معتبر وارد کن';
+    Q('#gate-err').style.color = 'var(--err)';
+    return;
+  }
+
+  const btn = Q('#gate-btn');
+  const errEl = Q('#gate-err');
+  btn.disabled = true;
+  btn.textContent = '⏳ در حال ارسال...';
+  errEl.textContent = '';
+
+  const {error} = await sb.auth.signInWithOtp({
+    email,
+    options: {emailRedirectTo: window.location.origin}
+  });
+
+  if(error){
+    errEl.textContent = error.message;
+    errEl.style.color = 'var(--err)';
+    btn.disabled = false;
+    btn.textContent = 'ارسال لینک ورود';
+    return;
+  }
+
+  // Success UI
+  btn.textContent = '✓ لینک ارسال شد!';
+  btn.style.background = 'var(--ok)';
+  errEl.style.color = 'var(--ok)';
+
+  let secs = 60;
+  errEl.textContent = `لینک به ${email} ارسال شد ✓`;
+
+  const timer = setInterval(()=>{
+    secs--;
+    if(secs > 0){
+      btn.textContent = `ارسال دوباره (${secs}s)`;
+    } else {
+      clearInterval(timer);
+      btn.disabled = false;
+      btn.textContent = 'ارسال دوباره 🔁';
+      btn.style.background = '';
+      errEl.textContent = 'لینک دریافت نکردی؟ دوباره امتحان کن';
+      errEl.style.color = 'var(--ink3)';
+    }
+  }, 1000);
 }
 
 
