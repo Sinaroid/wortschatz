@@ -2119,12 +2119,13 @@ async function loadProfile(){
 
       // ── Analytics: آپدیت last_seen_at و session_count ──
       const lastSeen = data.last_seen_at ? new Date(data.last_seen_at) : null;
-      const isNewSession = !lastSeen || (now - lastSeen) > 30*60*1000; // بیشتر از ۳۰ دقیقه
+      const isNewSession = !lastSeen || (now - lastSeen) > 30*60*1000;
       if(isNewSession){
-        sb.from('profiles').update({
+        const {error:updErr} = await sb.from('profiles').update({
           last_seen_at: now.toISOString(),
           session_count: (data.session_count||0) + 1
-        }).eq('id',currentUser.id).catch(()=>{});
+        }).eq('id',currentUser.id);
+        if(updErr) console.warn('last_seen update error:',updErr.message);
       }
 
     } else {
