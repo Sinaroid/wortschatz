@@ -421,10 +421,10 @@ async function loadUsers(){
     if(error){
       // fallback: profiles بدون email
       const {data:p} = await sb.from('profiles')
-        .select('id,plan,created_at,word_count,search_count')
+        .select('id,plan,created_at,word_count,search_count,last_seen_at,session_count')
         .order('created_at',{ascending:false})
         .limit(500);
-      allUsers=(p||[]).map(u=>({...u,email:'(view نساختی)'}));
+      allUsers=(p||[]).map(u=>({...u,email:'—'}));
     } else {
       allUsers=data||[];
     }
@@ -445,18 +445,28 @@ function renderUsers(users){
           <th>ایمیل</th>
           <th>پلن</th>
           <th>لغت</th>
-          <th>سرچ امروز</th>
-          <th>تاریخ ثبت‌نام</th>
+          <th>session</th>
+          <th>آخرین بازدید</th>
+          <th>ثبت‌نام</th>
           <th>تغییر پلن</th>
         </tr>
       </thead>
       <tbody>
-        ${users.map(u=>`
-          <tr>
+        ${users.map(u=>{
+        const daysSince = u.last_seen_at
+          ? Math.floor((Date.now()-new Date(u.last_seen_at))/(1000*60*60*24))
+          : null;
+        const activity = daysSince===null ? '—'
+          : daysSince===0 ? '<span style="color:var(--accent)">امروز</span>'
+          : daysSince<=3 ? `<span style="color:var(--blue)">${daysSince} روز پیش</span>`
+          : daysSince<=7 ? `<span style="color:var(--warn)">${daysSince} روز پیش</span>`
+          : `<span style="color:var(--err)">${daysSince} روز پیش</span>`;
+        return `<tr>
             <td class="email-cell">${u.email||'—'}</td>
             <td><span class="badge ${u.plan||'free'}">${u.plan||'free'}</span></td>
             <td>${u.word_count||0}</td>
-            <td>${u.search_count||0}</td>
+            <td>${u.session_count||0}</td>
+            <td>${activity}</td>
             <td class="date-cell">${formatDate(u.created_at)}</td>
             <td>
               <select class="plan-sel" onchange="updatePlan('${u.id}',this.value)">
@@ -465,8 +475,8 @@ function renderUsers(users){
                 <option value="pro" ${u.plan==='pro'?'selected':''}>Pro</option>
               </select>
             </td>
-          </tr>
-        `).join('')}
+          </tr>`;
+      }).join('')}
       </tbody>
     </table>
   `;
