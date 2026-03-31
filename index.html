@@ -977,6 +977,7 @@ body.offline .topbar{top:36px}
   animation:cardIn .3s var(--spring);
 }
 .pl-card:active{transform:scale(.98)}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .pl-front,.pl-back{width:100%;display:flex;flex-direction:column;align-items:center;gap:var(--s3)}
 .pl-word{font-family:var(--serif);font-size:36px;font-weight:700;color:var(--ink);line-height:1.1}
@@ -1049,6 +1050,15 @@ body.offline .topbar{top:36px}
 .wr-status.soon{background:rgba(168,72,0,.1);color:var(--warn)}
 .wr-status.ok{background:rgba(18,110,53,.1);color:var(--ok)}
 .wr2-actions{display:flex;gap:4px;flex-shrink:0}
+
+
+.ai-preset-btn{
+  background:var(--card);border:1px solid var(--bg3);border-radius:20px;
+  padding:5px 12px;font-size:12px;font-family:var(--sans);
+  color:var(--ink2);cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.ai-preset-btn:hover{background:var(--abl);color:var(--accent);border-color:var(--accent)}
+.ai-preset-btn:active{transform:scale(.96)}
 
 </style>
 </head>
@@ -1495,24 +1505,47 @@ body.offline .topbar{top:36px}
 
   <!-- AI Pack Section -->
   <div style="padding:0 var(--s5) var(--s8)">
-    <div style="background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.08));border:1px solid rgba(26,58,242,.15);border-radius:var(--r4);padding:var(--s5)">
-      <div style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s2)">
-        <span style="font-size:20px">✨</span>
-        <div>
-          <div style="font-size:15px;font-weight:700;color:var(--ink)">ساخت Pack با AI</div>
-          <div style="font-size:12px;color:var(--ink3)">فقط برای کاربران Pro</div>
-        </div>
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✨</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink)">ساخت Pack با AI</div>
+        <div style="font-size:11px;color:var(--ink3)">از کتاب، سریال یا هر موضوعی</div>
       </div>
-      <div style="font-size:13px;color:var(--ink2);margin-bottom:var(--s4);line-height:1.7">
-        موضوع مورد نظرت رو بنویس — AI یه pack ۱۵ لغتی آماده می‌کنه
-      </div>
-      <div style="display:flex;gap:var(--s2)">
-        <input class="inp" id="ai-pack-tab-inp" placeholder="مثلاً: پزشکی، ورزش، تکنولوژی..." style="margin:0;flex:1;font-size:13px">
-        <button class="btn btn-p btn-sm" onclick="generateAIPackTab()" id="ai-pack-tab-btn" style="white-space:nowrap">ساخت</button>
-      </div>
-      <div id="ai-pack-tab-err" style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px"></div>
-      <div id="ai-pack-tab-result" style="margin-top:var(--s3)"></div>
+      <div style="margin-right:auto;font-size:10px;background:var(--abl);color:var(--accent);padding:3px 8px;border-radius:20px;font-weight:600">Pro</div>
     </div>
+
+    <!-- Book Presets -->
+    <div style="margin-bottom:var(--s4)">
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600">📚 کتاب‌های محبوب آلمانی:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--s2)">
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Nicos Weg سطح A1')">Nicos Weg A1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Menschen A1 آلمانی')">Menschen A1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Schritte Plus A2')">Schritte Plus A2</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Sicher B1 آلمانی')">Sicher B1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Aspekte B2 آلمانی')">Aspekte B2</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('سریال Dark آلمانی')">Dark 🎬</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات پزشکی آلمانی')">پزشکی 🏥</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات حقوقی آلمانی')">حقوق ⚖️</button>
+      </div>
+    </div>
+
+    <!-- Custom Input -->
+    <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s4);border:1px solid var(--bg3)">
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600">یا خودت بنویس:</div>
+      <div style="display:flex;gap:var(--s2)">
+        <input class="inp" id="ai-pack-tab-inp" placeholder="مثلاً: Sicher B2، لغات فوتبال، محیط زیست..." style="margin:0;flex:1;font-size:13px">
+        <button class="btn btn-p" onclick="generateAIPackTab()" id="ai-pack-tab-btn" style="white-space:nowrap;padding:0 var(--s4)">
+          <span id="ai-pack-btn-txt">ساخت ✨</span>
+        </button>
+      </div>
+      <div id="ai-pack-tab-err" style="font-size:11px;color:var(--err);margin-top:var(--s2);min-height:14px"></div>
+    </div>
+
+    <!-- Result -->
+    <div id="ai-pack-tab-result" style="margin-top:var(--s4)"></div>
+
   </div>
 
 
@@ -2996,43 +3029,127 @@ async function generateAIPack(){
 }
 
 
+function setAIPackPreset(text){
+  const inp = Q('#ai-pack-tab-inp');
+  if(!inp) return;
+  inp.value = text;
+  inp.focus();
+  // highlight
+  inp.style.borderColor = 'var(--accent)';
+  setTimeout(()=>inp.style.borderColor='', 1000);
+}
+
 function generateAIPackTab(){
-  if(userPlan==='free'){ showUpgrade(); return; }
-  const topic = Q('#ai-pack-tab-inp').value.trim();
+  if(userPlan==='free'){
+    showUpgrade(); return;
+  }
+  const inp = Q('#ai-pack-tab-inp');
+  const topic = inp?.value.trim();
   if(!topic){ Q('#ai-pack-tab-err').textContent='موضوع رو بنویس'; return; }
-  const btn=Q('#ai-pack-tab-btn');
-  const err=Q('#ai-pack-tab-err');
-  const result=Q('#ai-pack-tab-result');
-  btn.disabled=true; btn.textContent='در حال ساخت...';
-  err.textContent=''; result.innerHTML='';
 
-  const prompt=`یک لیست ۱۵ لغت آلمانی درباره موضوع "${topic}" بساز.
-فقط JSON برگردون، بدون توضیح اضافه. فرمت دقیق:
-{"words":[{"de":"لغت","fa":"معنی"}]}`;
+  const btn = Q('#ai-pack-tab-btn');
+  const btnTxt = Q('#ai-pack-btn-txt');
+  const err = Q('#ai-pack-tab-err');
+  const result = Q('#ai-pack-tab-result');
 
-  ai(prompt,600).then(res=>{
-    const clean=res.replace(/\`\`\`json|\`\`\`/g,'').trim();
-    const data=JSON.parse(clean);
-    if(!data.words?.length) throw new Error('خروجی نامعتبر');
-    aiPackWords=data.words;
-    
-    result.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s3)">
-        <div style="font-size:13px;font-weight:600">${data.words.length} لغت ساخته شد</div>
-        <button class="btn btn-p btn-sm" onclick="addAIPackWords()">+ افزودن همه</button>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:var(--s2)">
-        ${data.words.map(w=>`
-          <div class="pack-word-row">
-            <span class="pack-word-de">${w.de}</span>
-            <span class="pack-word-fa">${w.fa}</span>
-          </div>`).join('')}
-      </div>`;
-    btn.disabled=false; btn.textContent='ساخت جدید';
-  }).catch(e=>{
-    err.textContent=e.message||'خطا — دوباره امتحان کن';
-    btn.disabled=false; btn.textContent='ساخت';
+  btn.disabled=true;
+  btnTxt.textContent='در حال ساخت...';
+  err.textContent='';
+  result.innerHTML=`<div style="text-align:center;padding:var(--s6);color:var(--ink3)">
+    <div style="font-size:28px;animation:spin 1s linear infinite;display:inline-block">⚙️</div>
+    <div style="font-size:13px;margin-top:var(--s3)">AI داره لغات رو انتخاب می‌کنه...</div>
+  </div>`;
+
+  const prompt = `تو یک متخصص آموزش زبان آلمانی هستی.
+برای موضوع "${topic}"، دقیقاً ۱۵ لغت مهم آلمانی انتخاب کن.
+فقط JSON برگردون، هیچ توضیحی نده:
+{"words":[{"de":"لغت","fa":"معنی فارسی","ex":"یک جمله نمونه آلمانی","ex_fa":"ترجمه فارسی جمله"}]}`;
+
+  ai([{role:'user',content:prompt}])
+    .then(txt=>{
+      const clean = txt.replace(/\`\`\`json|\`\`\`/g,'').trim();
+      const data = JSON.parse(clean);
+      if(!data.words?.length) throw new Error('فرمت نادرست');
+
+      // Show result as cards
+      result.innerHTML=`
+        <div style="animation:cardIn .3s var(--spring)">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink)">✨ ${data.words.length} لغت آماده شد</div>
+              <div style="font-size:11px;color:var(--ink3)">موضوع: ${topic}</div>
+            </div>
+            <button class="btn btn-p btn-sm" onclick="addAllAIPackWords()" 
+              style="font-size:11px;padding:6px 12px;border-radius:20px">
+              + همه به فلش‌کارت
+            </button>
+          </div>
+          <!-- Word Cards Grid -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)" id="ai-pack-words-list">
+            ${data.words.map((w,i)=>`
+              <div id="ai-word-row-${i}" style="
+                background:var(--card);border:1px solid var(--bg3);
+                border-radius:var(--r3);padding:var(--s3) var(--s3) var(--s2);
+                display:flex;flex-direction:column;gap:4px;
+                transition:border-color .15s,background .15s;
+                position:relative;overflow:hidden;
+              ">
+                <div style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ink);direction:ltr">${w.de}</div>
+                <div style="font-size:11px;color:var(--ink2)">${w.fa}</div>
+                ${w.ex ? `<div style="font-size:10px;color:var(--ink3);font-style:italic;direction:ltr;margin-top:2px">${w.ex}</div>` : ''}
+                <button id="ai-add-btn-${i}" onclick="addSingleAIWord(${i})"
+                  style="position:absolute;top:6px;left:6px;width:24px;height:24px;
+                    background:var(--abl);color:var(--accent);border:none;
+                    border-radius:50%;cursor:pointer;font-size:16px;line-height:1;
+                    display:flex;align-items:center;justify-content:center;
+                    transition:all .15s">+</button>
+              </div>`).join('')}
+          </div>
+        </div>`;
+
+      // Store words for later use
+      window._aiPackWords = data.words;
+      window._aiPackTopic = topic;
+    })
+    .catch(e=>{
+      result.innerHTML='';
+      err.textContent = 'خطا: '+e.message;
+    })
+    .finally(()=>{
+      btn.disabled=false;
+      btnTxt.textContent='ساخت ✨';
+    });
+}
+
+function addSingleAIWord(idx){
+  const w = window._aiPackWords?.[idx];
+  if(!w) return;
+  if(words.find(x=>x.de===w.de)){ showToast('قبلاً اضافه شده'); return; }
+  const nw={de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  words.unshift(nw);
+  if(currentUser) dbAdd(nw).catch(()=>{});
+  saveCache(); updateBadges(); updateStats();
+  const btn = Q('#ai-add-btn-'+idx);
+  if(btn){ btn.innerHTML='✓'; btn.style.background='var(--okbg)'; btn.style.color='var(--ok)'; btn.disabled=true; }
+  showToast(w.de+' اضافه شد ✓');
+}
+
+function addAllAIPackWords(){
+  const allWords = window._aiPackWords||[];
+  let added=0;
+  allWords.forEach((w,i)=>{
+    if(!words.find(x=>x.de===w.de)){
+      const nw={de:w.de,fa:w.fa,ex:w.ex||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+      words.unshift(nw);
+      if(currentUser) dbAdd(nw).catch(()=>{});
+      added++;
+      const btn=Q('#ai-add-btn-'+i);
+      if(btn){btn.innerHTML='✓';btn.style.background='var(--okbg)';btn.style.color='var(--ok)';btn.disabled=true;}
+    }
   });
+  saveCache(); updateBadges(); updateStats();
+  showToast(added+' لغت به فلش‌کارت اضافه شد 🎉');
 }
 
 async function addAIPackWords(){
