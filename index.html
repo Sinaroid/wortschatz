@@ -1239,6 +1239,21 @@ body.offline .topbar{top:36px}
 
     <div class="drw-divider"></div>
 
+    <!-- Language Target -->
+    <div style="margin-bottom:var(--s4)">
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;font-weight:500">زبان یادگیری</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="setTargetLang('de');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;transition:all .2s" id="btn-lang-de">
+          <span style="font-size:16px">🇩🇪</span> آلمانی
+          <span id="lang-de-dot" style="width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:2px;transition:background .2s"></span>
+        </button>
+        <button onclick="setTargetLang('en');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;transition:all .2s" id="btn-lang-en">
+          <span style="font-size:16px">🇬🇧</span> انگلیسی
+          <span id="lang-en-dot" style="width:7px;height:7px;border-radius:50%;background:var(--bg3);margin-right:2px;transition:background .2s"></span>
+        </button>
+      </div>
+    </div>
+
     <!-- Actions -->
     <div style="display:flex;flex-direction:column;gap:var(--s2)">
       <button class="btn btn-full btn-sm" onclick="logout()">
@@ -1707,6 +1722,7 @@ let currentUser=null;
 let userPlan='free';
 let userWordCount=0;
 let userSearchCount=0;
+let targetLang='de'; // 'de' = German, 'en' = English
 
 /* ══════════════════════════════
    HELPERS
@@ -2098,6 +2114,8 @@ function setUserUI(user){
    INIT
 ══════════════════════════════ */
 async function init(){
+  targetLang = localStorage.getItem('ws_target_lang')||'de';
+  updateLangUI();
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
 
   // Handle Stripe redirect
@@ -2185,6 +2203,26 @@ async function clearAll(){
 /* ══════════════════════════════
    DARK MODE
 ══════════════════════════════ */
+function setTargetLang(lang){
+  targetLang = lang;
+  localStorage.setItem('ws_target_lang', lang);
+  updateLangUI();
+  // Clear word cache when switching language
+  Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>localStorage.removeItem(k));
+  showToast(lang==='de' ? '🇩🇪 زبان هدف: آلمانی' : '🇬🇧 زبان هدف: انگلیسی');
+  const inp = Q('#s-inp');
+  if(inp) inp.placeholder = lang==='de'
+    ? 'جستجو — آلمانی، فارسی یا انگلیسی'
+    : 'جستجو — انگلیسی، فارسی یا آلمانی';
+}
+
+function updateLangUI(){
+  const deDot = document.getElementById('lang-de-dot');
+  const enDot = document.getElementById('lang-en-dot');
+  if(deDot) deDot.style.background = targetLang==='de' ? 'var(--accent)' : 'var(--bg3)';
+  if(enDot) enDot.style.background = targetLang==='en' ? 'var(--accent)' : 'var(--bg3)';
+}
+
 function toggleDark(){const d=document.body.classList.toggle('dark');localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
@@ -2290,21 +2328,28 @@ async function doSearch(){
 function setMsg(t,cls){const e=Q('#s-msg');e.textContent=t;e.className='s-msg'+(cls?' '+cls:'');}
 
 async function searchWord(q){
-  const ck='wc_'+q.toLowerCase();
+  const ck='wc_'+targetLang+'_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
-  const schema='{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","usage_pattern":"الگوی استفاده مثل sich engagieren fur+Akk یا ein Praktikum absolvieren — null اگه ندارد","preposition":"حرف اضافه مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی و طبیعی","fa":"ترجمه فارسی"}],"grammar_tip":"نکته گرامری مهم یا null","priority":{"score":3,"reason":"چرا مهمه — یه جمله کوتاه"}}';
-  const p='ورودی: "'+q+'"\n'
-   +'ممکنه آلمانی، فارسی یا انگلیسی باشه.\n'
-   +'آلمانی یا تایپ انگلیسی: تصحیح کن (ae→ä, oe→ö, ue→ü, ss→ß)\n'
-   +'فارسی یا انگلیسی: معادل آلمانی پیدا کن\n\n'
+
+  const isDE = targetLang === 'de';
+  const schema = isDE
+    ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","usage_pattern":"الگوی استفاده مثل sich engagieren fur+Akk یا null","preposition":"حرف اضافه مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"نکته گرامری مهم یا null","priority":{"score":3,"reason":"چرا مهمه"}}'
+    : '{"word":"word without article","corrected_from":"null or original word","article":"null (English has no grammatical gender)","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs only: past tense and past participle e.g. go – went – gone","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"important grammar note or null","priority":{"score":3,"reason":"why important"}}';
+
+  const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
+  const p = 'ورودی: "'+q+'"\n'
+   +'ممکنه '+langLabel+'، فارسی یا انگلیسی باشه.\n'
+   +(isDE ? 'آلمانی یا تایپ انگلیسی: تصحیح کن (ae→ä, oe→ö, ue→ü, ss→ß)\n' : '')
+   +'فارسی: معادل '+langLabel+' پیدا کن\n\n'
    +'JSON خالص:\n'+schema+'\n\n'
    +'قوانین:\n'
-   +'- principal_parts: فقط برای Verb، فقط ۲ شکل Präteritum و Perfekt (بدون Infinitiv)\n'
-   +'- synonyms: حداکثر ۲ تا، هر کدام {de, fa}\n'
-   +'- examples: دقیقاً ۱ جمله — طبیعی، کاربردی، مرتبط با usage_pattern\n'
-   +'- priority.score: 5=روزمره، 4=خیلی مهم(B1/B2)، 3=مهم، 2=متوسط، 1=نادر\n'
+   +(isDE ? '- principal_parts: فقط برای Verb، فقط ۲ شکل Präteritum و Perfekt\n' : '- principal_parts: only for irregular verbs, 3 forms\n')
+   +'- synonyms: حداکثر ۲ تا\n'
+   +'- examples: دقیقاً ۱ جمله\n'
+   +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
    +'فقط JSON.';
+
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
   curWord=JSON.parse(raw);
   try{
@@ -2423,13 +2468,14 @@ async function addWord(){
 }
 
 async function searchPhrase(q){
+  const isDE = targetLang === 'de';
+  const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
   setMsg('در حال تحلیل اصطلاح...','info');
-  const p=`اصطلاح یا جمله: "${q}"
-معنی کامل اصطلاح رو به فارسی بده — نه لغت به لغت.
-JSON خالص:
-{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"مترادف یا عبارت مشابه آلمانی یا null","example_de":"یه جمله نمونه کوتاه یا null","priority":{"score":1,"reason":"چرا این اصطلاح مهمه — یه جمله فارسی"}}
-برای score: 5=خیلی رایج، 4=مهم، 3=متوسط، 2=کمتر رایج، 1=نادر
-فقط JSON.`;
+  const p = (isDE
+    ? `اصطلاح یا جمله آلمانی: "${q}"\nمعنی کامل اصطلاح رو به فارسی بده — نه لغت به لغت.\nJSON خالص:\n{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"مترادف یا عبارت مشابه آلمانی یا null","example_de":"یه جمله نمونه کوتاه یا null","priority":{"score":1,"reason":"چرا این اصطلاح مهمه — یه جمله فارسی"}}`
+    : `English phrase or sentence: "${q}"\nExplain the full meaning in Persian (Farsi). Not word by word.\nJSON only:\n{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"similar English phrase or null","example_de":"a short natural example sentence in English or null","priority":{"score":1,"reason":"why this phrase matters — one sentence in Persian"}}`
+  ) + '\nبرای score: 5=خیلی رایج، 4=مهم، 3=متوسط، 2=کمتر رایج، 1=نادر\nفقط JSON.';
+
   const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
   curPhrase=JSON.parse(raw);
   Q('#ph-orig').textContent=curPhrase.original;
