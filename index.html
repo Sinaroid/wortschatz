@@ -3047,10 +3047,42 @@ function generateAIPackTab(){
   const topic = inp?.value.trim();
   if(!topic){ Q('#ai-pack-tab-err').textContent='موضوع رو بنویس'; return; }
 
+  // Check if already generated this topic
+  const aiHistory = JSON.parse(localStorage.getItem('ws_ai_history')||'[]');
+  const prev = aiHistory.find(h => h.topic.toLowerCase() === topic.toLowerCase());
+  if(prev){
+    Q('#ai-pack-tab-err').textContent = '';
+    // Show confirmation dialog
+    const result = Q('#ai-pack-tab-result');
+    result.innerHTML = `<div style="background:var(--abl);border:1px solid rgba(26,58,242,.2);border-radius:var(--r3);padding:var(--s4);animation:cardIn .2s var(--spring)">
+      <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:var(--s2)">
+        قبلاً این رو ساختی 🔁
+      </div>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:var(--s4)">
+        ${prev.count} لغت از «${topic}» — ${prev.date}
+      </div>
+      <div style="display:flex;gap:var(--s2)">
+        <button class="btn btn-p btn-sm" onclick="forceGenerateAIPack()" style="flex:1">لغات جدید بساز ✨</button>
+        <button class="btn btn-sm" onclick="Q('#ai-pack-tab-result').innerHTML=''" style="flex:1">بستن</button>
+      </div>
+    </div>`;
+    return;
+  }
+  _doGenerateAIPack(topic);
+}
+
+function forceGenerateAIPack(){
+  const inp = Q('#ai-pack-tab-inp');
+  const topic = inp?.value.trim();
+  if(topic) _doGenerateAIPack(topic, true);
+}
+
+function _doGenerateAIPack(topic, forceNew=false){
   const btn = Q('#ai-pack-tab-btn');
   const btnTxt = Q('#ai-pack-btn-txt');
   const err = Q('#ai-pack-tab-err');
   const result = Q('#ai-pack-tab-result');
+  err.textContent = '';
 
   btn.disabled=true;
   btnTxt.textContent='در حال ساخت...';
@@ -3115,6 +3147,19 @@ function generateAIPackTab(){
       // Store words for later use
       window._aiPackWords = data.words;
       window._aiPackTopic = topic;
+
+      // Save to history
+      const hist = JSON.parse(localStorage.getItem('ws_ai_history')||'[]');
+      const existing = hist.findIndex(h=>h.topic.toLowerCase()===topic.toLowerCase());
+      const entry = {
+        topic, count: data.words.length,
+        date: new Date().toLocaleDateString('fa-IR'),
+        words: data.words.map(w=>w.de)
+      };
+      if(existing>=0 && forceNew) hist[existing]=entry;
+      else if(existing<0) hist.unshift(entry);
+      if(hist.length>20) hist.pop();
+      localStorage.setItem('ws_ai_history', JSON.stringify(hist));
     })
     .catch(e=>{
       result.innerHTML='';
