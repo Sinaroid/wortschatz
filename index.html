@@ -928,74 +928,79 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 /* ═══════════════════════════════════
    EMPTY STATES
 ═══════════════════════════════════ */
-/* ── Empty State ────────────────── */
-@keyframes emptyFadeUp{
-  from{opacity:0;transform:translateY(20px)}
+/* ── Hint / Empty State ─────────── */
+@keyframes hintIn{
+  from{opacity:0;transform:translateY(12px)}
   to{opacity:1;transform:translateY(0)}
 }
-@keyframes floatBob{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
+@keyframes drawLine{
+  from{stroke-dashoffset:1}
+  to{stroke-dashoffset:0}
 }
-.empty{
-  padding:var(--s6) var(--s4) var(--s8);
+
+/* shared hint wrapper */
+.hint{
   display:flex;flex-direction:column;align-items:center;
-}
-.empty-box{
-  width:100%;max-width:380px;
-  background:var(--card);border:1px solid var(--bg3);
-  border-radius:var(--r4);padding:var(--s8) var(--s6);
   text-align:center;
-  box-shadow:var(--sh2);
-  animation:emptyFadeUp .45s var(--spring) both;
+  animation:hintIn .5s var(--spring) both;
 }
-.empty-ic{
-  font-size:52px;display:block;
-  margin-bottom:var(--s5);
-  animation:floatBob 3s ease-in-out infinite, emptyFadeUp .4s var(--spring) .05s both;
+.hint-illo{
+  width:72px;height:72px;margin-bottom:var(--s4);
+  opacity:.55;
 }
-.empty h3{
-  font-family:var(--serif);font-size:22px;font-weight:600;
-  color:var(--ink);margin-bottom:var(--s2);
-  animation:emptyFadeUp .4s var(--spring) .1s both;
+.hint-illo svg{width:100%;height:100%}
+.hint-title{
+  font-family:var(--serif);font-size:18px;font-weight:600;
+  color:var(--ink);margin-bottom:var(--s1);
+  animation:hintIn .4s var(--spring) .08s both;
 }
-.empty p{
-  font-size:14px;color:var(--ink3);line-height:1.8;
-  margin-bottom:var(--s5);
-  animation:emptyFadeUp .4s var(--spring) .15s both;
+.hint-sub{
+  font-size:13px;color:var(--ink3);line-height:1.7;
+  margin-bottom:var(--s4);
+  animation:hintIn .4s var(--spring) .14s both;
 }
-.empty-btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  background:var(--accent);color:#fff;border:none;
-  border-radius:var(--r5);padding:13px 28px;width:100%;
-  font-family:var(--sans);font-size:14px;font-weight:600;
-  cursor:pointer;transition:all .2s var(--spring);
-  animation:emptyFadeUp .4s var(--spring) .2s both;
-  position:relative;overflow:hidden;
-}
-.empty-btn::after{
-  content:'';position:absolute;inset:0;
-  background:rgba(255,255,255,.12);
-  transform:translateX(-100%);transition:transform .3s var(--ease);
-}
-.empty-btn:hover::after{transform:translateX(0)}
-.empty-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--aglow)}
-.empty-btn:active{transform:translateY(0)}
-.empty-chips{
+.hint-chips{
   display:flex;flex-wrap:wrap;gap:var(--s2);
-  justify-content:center;margin-top:var(--s4);
-  animation:emptyFadeUp .4s var(--spring) .25s both;
+  justify-content:center;
+  animation:hintIn .4s var(--spring) .2s both;
 }
-.empty-chip{
-  background:var(--bg2);border:1px solid var(--bg3);
+.hint-chip{
+  background:transparent;
+  border:1px solid var(--bg3);
   border-radius:20px;padding:5px 14px;
   font-size:12px;font-weight:500;cursor:pointer;
-  color:var(--ink2);transition:all .18s var(--ease);
+  color:var(--ink3);transition:all .18s var(--ease);
   font-family:var(--sans);
 }
-.empty-chip:hover{
+.hint-chip:hover{
   border-color:var(--accent);color:var(--accent);
-  background:var(--abl);transform:translateY(-1px);
+  background:var(--abl);
+}
+
+/* list empty — slightly more prominent */
+.hint-action{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--bg2);border:1px solid var(--bg3);
+  border-radius:var(--r5);padding:9px 20px;
+  font-family:var(--sans);font-size:13px;font-weight:500;
+  color:var(--ink2);cursor:pointer;transition:all .18s;
+  margin-bottom:var(--s4);
+  animation:hintIn .4s var(--spring) .18s both;
+}
+.hint-action:hover{border-color:var(--accent);color:var(--accent);background:var(--abl)}
+
+/* legacy compat */
+.empty{padding:var(--s6) var(--s4) var(--s8);display:flex;flex-direction:column;align-items:center;}
+.empty-box{width:100%;max-width:380px;text-align:center;}
+.empty-chips,.hint-chips{display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center}
+.empty-chip,.hint-chip{
+  background:transparent;border:1px solid var(--bg3);
+  border-radius:20px;padding:5px 14px;
+  font-size:12px;font-weight:500;cursor:pointer;
+  color:var(--ink3);transition:all .18s var(--ease);font-family:var(--sans);
+}
+.empty-chip:hover,.hint-chip:hover{
+  border-color:var(--accent);color:var(--accent);background:var(--abl);
 }
 
 /* ─── RESPONSIVE ─────────────────── */
@@ -1686,9 +1691,26 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Home empty state -->
     <div id="home-empty">
-      <div style="text-align:center;padding:var(--s4) 0 calc(var(--nav-h) + var(--s4));animation:up .4s var(--spring)">
-        <div style="font-size:13px;color:var(--ink4);margin-bottom:var(--s3)">یه لغت سرچ کن تا شروع بشه</div>
-        <div class="empty-chips" id="home-empty-chips"></div>
+      <div class="hint" style="padding:var(--s2) 0 calc(var(--nav-h) + var(--s4))">
+        <div class="hint-illo">
+          <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- search circle -->
+            <circle cx="32" cy="32" r="16" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="4 3" opacity=".5"/>
+            <!-- magnifier handle -->
+            <line x1="44" y1="44" x2="56" y2="56" stroke="var(--ink3)" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
+            <!-- sparkle -->
+            <path d="M54 14 L55.5 18 L59 19.5 L55.5 21 L54 25 L52.5 21 L49 19.5 L52.5 18 Z" fill="var(--accent)" opacity=".7"/>
+            <!-- small star -->
+            <path d="M14 22 L14.8 24.2 L17 25 L14.8 25.8 L14 28 L13.2 25.8 L11 25 L13.2 24.2 Z" fill="var(--accent)" opacity=".4"/>
+            <!-- word lines inside circle -->
+            <line x1="25" y1="29" x2="39" y2="29" stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="25" y1="33" x2="36" y2="33" stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="25" y1="37" x2="38" y2="37" stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="hint-title">اولین لغتت رو جستجو کن</div>
+        <div class="hint-sub">آلمانی، فارسی یا انگلیسی — AI کامل توضیح میده</div>
+        <div class="hint-chips" id="home-empty-chips"></div>
       </div>
     </div>
   </div>
@@ -3188,21 +3210,34 @@ function renderList(){
   const el=Q('#wlist');
   const fw=filteredWords();
   if(!fw.length){
-    el.innerHTML=`<div class="empty">
-      <div class="empty-box">
-        <span class="empty-ic">🌱</span>
-        <h3>هنوز لغتی نداری</h3>
-        <p>یه کلمه آلمانی، فارسی یا انگلیسی سرچ کن<br>AI کامل توضیح میده — بعد save کن</p>
-        <button class="empty-btn" onclick="navTo('home');setTimeout(()=>{Q('#s-inp')?.focus();Q('#s-inp')?.scrollIntoView({behavior:'smooth',block:'center'})},250)">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          اولین لغتت رو سرچ کن
-        </button>
-        <div class="empty-chips">
-          ${(targetLang==='de'
-            ? ['Arbeit','Freundschaft','Reise','Glück']
-            : ['happiness','freedom','journey','grateful']
-          ).map(w=>`<span class="empty-chip" onclick="navTo('home');setTimeout(()=>qs('${w}'),300)">${w}</span>`).join('')}
-        </div>
+    el.innerHTML=`<div class="hint" style="padding:var(--s8) var(--s5) var(--s8)">
+      <div class="hint-illo">
+        <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- stack of cards -->
+          <rect x="18" y="28" width="36" height="24" rx="5" stroke="var(--ink4)" stroke-width="1.8" opacity=".3"/>
+          <rect x="21" y="24" width="36" height="24" rx="5" stroke="var(--ink4)" stroke-width="1.8" opacity=".5"/>
+          <rect x="24" y="20" width="36" height="24" rx="5" fill="var(--card)" stroke="var(--ink3)" stroke-width="1.8"/>
+          <!-- lines on top card -->
+          <line x1="31" y1="28" x2="52" y2="28" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="31" y1="33" x2="48" y2="33" stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- plus badge -->
+          <circle cx="22" cy="50" r="9" fill="var(--accent)" opacity=".15"/>
+          <circle cx="22" cy="50" r="9" stroke="var(--accent)" stroke-width="1.5" opacity=".6"/>
+          <line x1="22" y1="46" x2="22" y2="54" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".8"/>
+          <line x1="18" y1="50" x2="26" y2="50" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity=".8"/>
+        </svg>
+      </div>
+      <div class="hint-title">لیستت خالیه</div>
+      <div class="hint-sub">یه لغت سرچ کن و save کن<br>اینجا نگهداری میشه</div>
+      <button class="hint-action" onclick="navTo('home');setTimeout(()=>{Q('#s-inp')?.focus()},250)">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        برو سرچ کن
+      </button>
+      <div class="hint-chips">
+        ${(targetLang==='de'
+          ? ['Arbeit','Freundschaft','Reise','Glück']
+          : ['happiness','freedom','journey','grateful']
+        ).map(w=>`<span class="hint-chip" onclick="navTo('home');setTimeout(()=>qs('${w}'),300)">${w}</span>`).join('')}
       </div>
     </div>`;
     Q('#list-count').textContent='';Q('#due-banner').classList.remove('show');return;
