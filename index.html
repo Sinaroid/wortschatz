@@ -2210,6 +2210,7 @@ function setTargetLang(lang){
   // Clear word cache when switching language
   Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>localStorage.removeItem(k));
   showToast(lang==='de' ? '🇩🇪 زبان هدف: آلمانی' : '🇬🇧 زبان هدف: انگلیسی');
+  if(Q('#pane-packs')?.classList.contains('on')) renderPackGrid();
   const inp = Q('#s-inp');
   if(inp) inp.placeholder = lang==='de'
     ? 'جستجو — آلمانی، فارسی یا انگلیسی'
@@ -3061,13 +3062,77 @@ const PACKS = {
   work:{name:'کار و شغل',emoji:'💼',free:false,words:[]},
   travel:{name:'سفر',emoji:'✈️',free:false,words:[]},
   food:{name:'غذا و رستوران',emoji:'🍕',free:false,words:[]},
+}
+
+const EN_PACKS = {
+  basics: {
+    name:'Everyday Basics', emoji:'🌱', free:true,
+    words:[
+      {de:'Hello',fa:'سلام',ex:'Hello! How are you?',ex_fa:'سلام! حالت چطوره؟',tip:'Hi is more casual'},
+      {de:'Thank you',fa:'ممنون',ex:'Thank you so much!',ex_fa:'خیلی ممنون!',tip:'You're welcome is the reply'},
+      {de:'Please',fa:'لطفاً',ex:'Can you help me, please?',ex_fa:'می‌تونی کمکم کنی، لطفاً؟',tip:'Also used in requests'},
+      {de:'Sorry',fa:'ببخشید / متأسفم',ex:'Sorry, I didn't mean that.',ex_fa:'ببخشید، منظورم اون نبود.',tip:'Excuse me = ببخشید برای گذر کردن'},
+      {de:'Yes / No',fa:'بله / نه',ex:'Yes, I agree. No, thank you.',ex_fa:'بله، موافقم. نه، ممنون.',tip:'Yeah is informal for Yes'},
+      {de:'Good morning',fa:'صبح بخیر',ex:'Good morning! Did you sleep well?',ex_fa:'صبح بخیر! خوب خوابیدی؟',tip:'Good night = شب بخیر'},
+      {de:'How are you?',fa:'حالت چطوره؟',ex:'How are you? I'm fine, thanks.',ex_fa:'حالت چطوره؟ خوبم، ممنون.',tip:'Fine, thanks is the common reply'},
+      {de:'My name is...',fa:'اسمم ... هست',ex:'My name is Sara. Nice to meet you.',ex_fa:'اسمم ساراست. خوشوقتم.',tip:'What's your name? = اسمت چیه؟'},
+    ]
+  },
+  work: {
+    name:'Work & Office', emoji:'💼', free:false,
+    words:[
+      {de:'deadline',fa:'مهلت / ددلاین',ex:'The deadline is Friday.',ex_fa:'مهلت جمعه‌ست.',tip:'Miss the deadline = از مهلت جا موندن'},
+      {de:'meeting',fa:'جلسه',ex:'We have a meeting at 10.',ex_fa:'ساعت ۱۰ جلسه داریم.',tip:'Schedule a meeting = جلسه تنظیم کردن'},
+      {de:'feedback',fa:'بازخورد',ex:'Can I get your feedback on this?',ex_fa:'می‌تونم بازخوردت رو بدونم؟',tip:'Constructive feedback = بازخورد سازنده'},
+      {de:'remote work',fa:'کار از راه دور',ex:'I work remotely three days a week.',ex_fa:'سه روز در هفته از خونه کار می‌کنم.',tip:'Work from home = کار از خونه'},
+      {de:'promote',fa:'ترفیع دادن',ex:'She was promoted to manager.',ex_fa:'اون به مدیر ترفیع گرفت.',tip:'Promotion = ترفیع'},
+      {de:'resign',fa:'استعفا دادن',ex:'He resigned from his position.',ex_fa:'اون از سمتش استعفا داد.',tip:'Notice period = دوره اطلاع‌رسانی'},
+      {de:'negotiate',fa:'مذاکره کردن',ex:'We need to negotiate the salary.',ex_fa:'باید حقوق رو مذاکره کنیم.',tip:'Negotiation = مذاکره'},
+      {de:'brainstorm',fa:'طوفان فکری',ex:'Let's brainstorm some ideas.',ex_fa:'بیا چند ایده طرح کنیم.',tip:'Out-of-the-box thinking = تفکر خلاق'},
+    ]
+  },
+  travel: {
+    name:'Travel & Places', emoji:'✈️', free:false,
+    words:[
+      {de:'boarding pass',fa:'کارت پرواز',ex:'Please show your boarding pass.',ex_fa:'لطفاً کارت پروازتون رو نشون بدید.',tip:'Gate = دروازه پرواز'},
+      {de:'customs',fa:'گمرک',ex:'You must declare items at customs.',ex_fa:'باید اجناستون رو در گمرک اعلام کنید.',tip:'Duty-free = بدون عوارض گمرکی'},
+      {de:'check in',fa:'چک‌این کردن',ex:'Check-in opens 2 hours before departure.',ex_fa:'چک‌این ۲ ساعت قبل از پرواز باز میشه.',tip:'Check out = تسویه حساب هتل'},
+      {de:'delay',fa:'تأخیر',ex:'The flight is delayed by one hour.',ex_fa:'پرواز یک ساعت تأخیر داره.',tip:'On time = به موقع'},
+      {de:'accommodation',fa:'اقامتگاه / محل اقامت',ex:'We booked accommodation in the city center.',ex_fa:'اقامتگاه در مرکز شهر رزرو کردیم.',tip:'Book in advance = از قبل رزرو کردن'},
+      {de:'exchange rate',fa:'نرخ ارز',ex:'What's the exchange rate today?',ex_fa:'نرخ ارز امروز چقدره؟',tip:'Currency = واحد پولی'},
+    ]
+  },
+  idioms: {
+    name:'Common Idioms', emoji:'💬', free:false,
+    words:[
+      {de:'break the ice',fa:'یخ رو شکستن / شروع به صحبت کردن',ex:'He told a joke to break the ice.',ex_fa:'یه جوک گفت تا یخ رو بشکنه.',tip:'Used when meeting strangers'},
+      {de:'hit the nail on the head',fa:'دقیقاً درست گفتن',ex:'You hit the nail on the head with that suggestion.',ex_fa:'با اون پیشنهاد دقیقاً درست گفتی.',tip:'Be spot on = کاملاً درست بودن'},
+      {de:'under the weather',fa:'حالم خوب نیست',ex:'I'm feeling under the weather today.',ex_fa:'امروز حالم خوب نیست.',tip:'Also: feel off = حال خوبی نداشتن'},
+      {de:'once in a blue moon',fa:'هر چند وقت یه بار / به ندرت',ex:'We only meet once in a blue moon.',ex_fa:'هر از گاهی همدیگه رو می‌بینیم.',tip:'Rarely = به ندرت'},
+      {de:'bite the bullet',fa:'دندون رو جگر گذاشتن',ex:'Just bite the bullet and do it.',ex_fa:'فقط دندون رو جگر بذار و انجامش بده.',tip:'Face the pain bravely'},
+      {de:'cost an arm and a leg',fa:'خیلی گرون بودن',ex:'That car cost an arm and a leg.',ex_fa:'اون ماشین خیلی گرون بود.',tip:'Pricey = گرون‌قیمت (informal)'},
+    ]
+  },
+  academic: {
+    name:'Academic English', emoji:'📚', free:false,
+    words:[
+      {de:'analyze',fa:'تحلیل کردن',ex:'We need to analyze the data carefully.',ex_fa:'باید داده‌ها رو با دقت تحلیل کنیم.',tip:'Analysis = تحلیل (noun)'},
+      {de:'hypothesis',fa:'فرضیه',ex:'The hypothesis was proven correct.',ex_fa:'فرضیه درست بود.',tip:'Hypothesize = فرضیه دادن'},
+      {de:'significant',fa:'قابل توجه / معنادار',ex:'The results are statistically significant.',ex_fa:'نتایج از نظر آماری معنادار هستن.',tip:'Significance = اهمیت / معناداری'},
+      {de:'furthermore',fa:'علاوه بر این',ex:'Furthermore, the study shows...',ex_fa:'علاوه بر این، مطالعه نشان می‌دهد...',tip:'Moreover / In addition = همین معنا'},
+      {de:'conclude',fa:'نتیجه گرفتن',ex:'We can conclude that the method works.',ex_fa:'می‌تونیم نتیجه بگیریم که روش کار می‌کنه.',tip:'Conclusion = نتیجه‌گیری'},
+      {de:'cite',fa:'ارجاع دادن / استناد کردن',ex:'Always cite your sources.',ex_fa:'همیشه منابعت رو ارجاع بده.',tip:'Citation = ارجاع / استناد'},
+    ]
+  },
 };
+;
 
 
 /* ══════════════════════════════
    RENDER PACKS GRID
 ══════════════════════════════ */
 function renderPackGrid(){
+  const activePacks = targetLang === 'en' ? EN_PACKS : PACKS;
   const container = Q('#packs-grid-container');
   if(!container) return;
 
@@ -3083,7 +3148,7 @@ function renderPackGrid(){
 
   const html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">' +
     packList.map(pack => {
-      const packWords = PACKS[pack.id]?.words || [];
+      const packWords = activePacks[pack.id]?.words || [];
       const total = packWords.length;
       const seenSet = getSeenPackWords(pack.id);
       // همه کارت‌هایی که به هر روشی دیده شدن
@@ -3431,7 +3496,8 @@ function markPackWordSeen(packId, word){
 }
 
 function openPack(id){
-  const pack = PACKS[id];
+  const activePacks = targetLang==='en'?EN_PACKS:PACKS;
+  const pack = activePacks[id];
   if(!pack) return;
   if(!pack.free && userPlan==='free'){
     showUpgrade();
