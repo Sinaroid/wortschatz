@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wortschatz Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
+  --card:#141414;--border:#2a2a2a;
+  --ink:#f0ede6;--ink2:#888;--ink3:#555;
+  --accent:#4ade80;--accent2:#22c55e;
+  --err:#f87171;--warn:#fb923c;--blue:#60a5fa;
+  --sans:'JetBrains Mono',monospace;
+  --serif:'Fraunces',serif;
+  --r:8px;
+}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px}
+
+/* ── Login ── */
+#login{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);z-index:100;
+}
+.login-box{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:40px;width:100%;max-width:340px;text-align:center;
+}
+.login-logo{font-family:var(--serif);font-size:28px;color:var(--ink);margin-bottom:4px}
+.login-sub{font-size:11px;color:var(--ink3);margin-bottom:32px;letter-spacing:1px}
+.login-inp{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px 16px;color:var(--ink);
+  font-family:var(--sans);font-size:14px;margin-bottom:12px;
+  outline:none;transition:border .2s;
+}
+.login-inp:focus{border-color:var(--accent)}
+.login-btn{
+  width:100%;padding:12px;border-radius:var(--r);
+  background:var(--accent);color:#000;border:none;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .18s;
+}
+.login-btn:hover{background:var(--accent2)}
+.login-err{font-size:11px;color:var(--err);margin-top:8px;min-height:16px}
+
+/* ── App ── */
+#app{display:none;height:100%;flex-direction:column}
+#app.show{display:flex}
+
+/* Topbar */
+.topbar{
+  display:flex;align-items:center;gap:16px;padding:14px 24px;
+  border-bottom:1px solid var(--border);background:var(--card);flex-shrink:0;
+}
+.topbar-logo{font-family:var(--serif);font-size:16px;color:var(--ink)}
+.topbar-badge{font-size:10px;color:var(--accent);background:rgba(74,222,128,.1);
+  border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:2px 8px;letter-spacing:1px}
+.topbar-right{margin-right:auto;display:flex;align-items:center;gap:12px}
+.sync-btn{
+  padding:6px 14px;border-radius:var(--r);border:1px solid var(--border);
+  background:transparent;color:var(--ink2);font-family:var(--sans);font-size:12px;
+  cursor:pointer;transition:all .15s;
+}
+.sync-btn:hover{border-color:var(--accent);color:var(--accent)}
+.last-sync{font-size:10px;color:var(--ink3)}
+
+/* Layout */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar */
+.sidebar{
+  width:200px;border-left:1px solid var(--border);background:var(--card);
+  padding:16px 0;flex-shrink:0;overflow-y:auto;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 20px;
+  font-size:12px;color:var(--ink2);cursor:pointer;transition:all .15s;
+  border-right:2px solid transparent;
+}
+.nav-item:hover{color:var(--ink);background:var(--bg3)}
+.nav-item.active{color:var(--accent);border-right-color:var(--accent);background:rgba(74,222,128,.05)}
+.nav-icon{font-size:14px;width:18px;text-align:center}
+
+/* Main */
+.main{flex:1;overflow-y:auto;padding:24px}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px;
+}
+.stat-n{font-size:28px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:4px}
+.stat-n.green{color:var(--accent)}
+.stat-n.blue{color:var(--blue)}
+.stat-n.orange{color:var(--warn)}
+.stat-n.red{color:var(--err)}
+.stat-l{font-size:10px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
+
+/* Table */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.table-header{
+  display:flex;align-items:center;gap:12px;padding:14px 20px;
+  border-bottom:1px solid var(--border);
+}
+.table-title{font-size:13px;font-weight:600;color:var(--ink)}
+.table-count{font-size:10px;color:var(--ink3);background:var(--bg3);padding:2px 8px;border-radius:20px}
+.search-inp{
+  margin-right:auto;background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:6px 12px;color:var(--ink);font-family:var(--sans);
+  font-size:12px;outline:none;transition:border .2s;width:200px;
+}
+.search-inp:focus{border-color:var(--accent)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;text-align:right;font-size:10px;color:var(--ink3);
+  letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);
+  font-weight:400;white-space:nowrap}
+td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--ink2);
+  font-size:12px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
+  border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.3px}
+.badge.free{background:rgba(255,255,255,.06);color:var(--ink3)}
+.badge.beta{background:rgba(96,165,250,.12);color:var(--blue)}
+.badge.pro{background:rgba(74,222,128,.1);color:var(--accent)}
+.plan-sel{
+  background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  padding:4px 8px;color:var(--ink);font-family:var(--sans);font-size:11px;
+  cursor:pointer;outline:none;
+}
+.plan-sel:focus{border-color:var(--accent)}
+.email-cell{color:var(--ink);direction:ltr;font-size:11px}
+.date-cell{font-size:10px;color:var(--ink3)}
+
+/* Beta codes */
+.codes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.code-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;display:flex;align-items:center;justify-content:space-between;
+}
+.code-val{font-size:13px;color:var(--accent);letter-spacing:2px}
+.code-status{font-size:10px;padding:2px 8px;border-radius:20px}
+.code-status.used{background:rgba(248,113,113,.1);color:var(--err)}
+.code-status.free{background:rgba(74,222,128,.1);color:var(--accent)}
+.gen-btn{
+  padding:8px 16px;border-radius:var(--r);background:var(--accent);
+  color:#000;border:none;font-family:var(--sans);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;
+}
+.gen-btn:hover{background:var(--accent2)}
+.del-btn{
+  padding:4px 10px;border-radius:6px;background:transparent;
+  border:1px solid rgba(248,113,113,.3);color:var(--err);
+  font-family:var(--sans);font-size:10px;cursor:pointer;transition:all .15s;
+}
+.del-btn:hover{background:rgba(248,113,113,.1)}
+
+/* Pane visibility */
+.pane{display:none}
+.pane.active{display:block}
+
+/* Loading */
+.loading{text-align:center;padding:40px;color:var(--ink3)}
+.loading-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--accent);animation:pulse2 1s ease-in-out infinite}
+.loading-dot:nth-child(2){animation-delay:.15s}
+.loading-dot:nth-child(3){animation-delay:.3s}
+@keyframes pulse2{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);
+  background:var(--accent);color:#000;font-size:12px;font-weight:600;
+  padding:8px 20px;border-radius:20px;opacity:0;transition:all .2s;
+  pointer-events:none;z-index:999;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Errors */
+.err-item{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px;margin-bottom:10px;
+}
+.err-msg{font-size:12px;color:var(--err);margin-bottom:6px}
+.err-meta{font-size:10px;color:var(--ink3)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--ink3);font-size:12px}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login">
+  <div class="login-box">
+    <div class="login-logo">Wortschatz</div>
+    <div class="login-sub">ADMIN PANEL</div>
+    <input class="login-inp" type="password" id="pwd-inp" placeholder="رمز عبور" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">ورود</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">Wortschatz</div>
+    <div class="topbar-badge">ADMIN</div>
+    <div class="topbar-right">
+      <span class="last-sync" id="last-sync">—</span>
+      <button class="sync-btn" onclick="loadAll()">↻ بروزرسانی</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="nav-item active" onclick="switchTab('stats')" id="nav-stats">
+        <span class="nav-icon">📊</span> آمار کلی
+      </div>
+      <div class="nav-item" onclick="switchTab('users')" id="nav-users">
+        <span class="nav-icon">👥</span> کاربران
+      </div>
+      <div class="nav-item" onclick="switchTab('beta')" id="nav-beta">
+        <span class="nav-icon">🔑</span> کدهای بتا
+      </div>
+      <div class="nav-item" onclick="switchTab('errors')" id="nav-errors">
+        <span class="nav-icon">⚠️</span> خطاها
+      </div>
+    </div>
+
+    <div class="main">
+
+      <!-- Stats -->
+      <div class="pane active" id="pane-stats">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-n green" id="s-total">—</div>
+            <div class="stat-l">کل کاربر</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-n blue" id="s-active">—</div>
+            <div class="stat-l">فعال (۷ روز)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-n orange" id="s-beta">—</div>
+            <div class="stat-l">بتا</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-n" id="s-pro">—</div>
+            <div class="stat-l">Pro</div>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-n" id="s-words">—</div>
+            <div class="stat-l">کل لغت ذخیره شده</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-n" id="s-codes-free">—</div>
+            <div class="stat-l">کد بتا باقی‌مونده</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-n" id="s-codes-used">—</div>
+            <div class="stat-l">کد بتا استفاده شده</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-n green" id="s-today">—</div>
+            <div class="stat-l">ثبت‌نام امروز</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="pane" id="pane-users">
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">کاربران</div>
+            <span class="table-count" id="users-count">—</span>
+            <input class="search-inp" placeholder="🔍 جستجو با ایمیل..." oninput="filterUsers(this.value)" id="user-search">
+          </div>
+          <div id="users-table-wrap">
+            <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beta codes -->
+      <div class="pane" id="pane-beta">
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-title">کدهای بتا</div>
+            <span class="table-count" id="beta-count">—</span>
+            <div style="margin-right:auto;display:flex;gap:8px">
+              <input id="gen-count" type="number" value="5" min="1" max="50"
+                style="width:60px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--ink);font-family:var(--sans);font-size:12px;outline:none">
+              <button class="gen-btn" onclick="generateCodes()">+ ساخت کد جدید</button>
+            </div>
+          </div>
+          <div id="beta-codes-wrap" style="padding:16px">
+            <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Errors -->
+      <div class="pane" id="pane-errors">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">خطاهای ثبت شده</div>
+          <button class="del-btn" onclick="clearErrors()" style="font-size:11px">پاک کردن همه</button>
+        </div>
+        <div id="errors-wrap">
+          <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const SB_URL='https://ekogfglcsftpwmithxbi.supabase.co';
+const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
+// password از API چک میشه — توی Vercel env بذار: ADMIN_PASSWORD
+
+const {createClient}=window.supabase;
+const sb=createClient(SB_URL,SB_KEY);
+
+let allUsers=[];
+
+// ── Login ──────────────────────────────
+async function doLogin(){
+  const pwd=document.getElementById('pwd-inp').value.trim();
+  if(!pwd) return;
+  const btn=document.querySelector('.login-btn');
+  btn.textContent='...';btn.disabled=true;
+  try{
+    const r=await fetch('/api/admin-auth',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pwd})
+    });
+    const d=await r.json();
+    if(r.ok && d.token){
+      sessionStorage.setItem('ws_admin_token',d.token);
+      document.getElementById('login').style.display='none';
+      document.getElementById('app').classList.add('show');
+      loadAll();
+    } else {
+      document.getElementById('login-err').textContent='رمز اشتباهه';
+      document.getElementById('pwd-inp').value='';
+    }
+  }catch(e){
+    document.getElementById('login-err').textContent='خطای شبکه';
+  }
+  btn.textContent='ورود';btn.disabled=false;
+}
+
+// ── Tab switch ─────────────────────────
+function switchTab(name){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('pane-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+}
+
+// ── Load all data ──────────────────────
+async function loadAll(){
+  document.getElementById('last-sync').textContent='در حال بارگذاری...';
+  await Promise.all([loadStats(), loadUsers(), loadBetaCodes(), loadErrors()]);
+  document.getElementById('last-sync').textContent='آخرین sync: '+new Date().toLocaleTimeString('fa-IR');
+}
+
+// ── Stats ──────────────────────────────
+async function loadStats(){
+  try{
+    const {data:profiles} = await sb.from('profiles').select('plan,created_at,search_count');
+    const {data:words} = await sb.from('words').select('id',{count:'exact',head:true});
+    const {data:codes} = await sb.from('beta_codes').select('used');
+
+    if(!profiles) return;
+
+    const total=profiles.length;
+    const beta=profiles.filter(p=>p.plan==='beta').length;
+    const pro=profiles.filter(p=>p.plan==='pro').length;
+
+    const sevenDaysAgo=new Date(Date.now()-7*24*60*60*1000).toISOString();
+    const active=profiles.filter(p=>p.created_at>sevenDaysAgo).length;
+
+    const today=new Date().toDateString();
+    const todayUsers=profiles.filter(p=>new Date(p.created_at).toDateString()===today).length;
+
+    const freeC=codes?.filter(c=>!c.used).length||0;
+    const usedC=codes?.filter(c=>c.used).length||0;
+
+    document.getElementById('s-total').textContent=total;
+    document.getElementById('s-active').textContent=active;
+    document.getElementById('s-beta').textContent=beta;
+    document.getElementById('s-pro').textContent=pro;
+    document.getElementById('s-words').textContent=words?.length||'—';
+    document.getElementById('s-codes-free').textContent=freeC;
+    document.getElementById('s-codes-used').textContent=usedC;
+    document.getElementById('s-today').textContent=todayUsers;
+  }catch(e){console.error(e)}
+}
+
+// ── Users ──────────────────────────────
+async function loadUsers(){
+  try{
+    const {data} = await sb.from('profiles')
+      .select('id,email,plan,created_at,word_count,search_count,is_beta')
+      .order('created_at',{ascending:false})
+      .limit(500);
+
+    allUsers=data||[];
+    renderUsers(allUsers);
+  }catch(e){console.error(e)}
+}
+
+function renderUsers(users){
+  document.getElementById('users-count').textContent=users.length+' نفر';
+  if(!users.length){
+    document.getElementById('users-table-wrap').innerHTML='<div class="empty-state">هیچ کاربری یافت نشد</div>';
+    return;
+  }
+  document.getElementById('users-table-wrap').innerHTML=`
+    <table>
+      <thead>
+        <tr>
+          <th>ایمیل</th>
+          <th>پلن</th>
+          <th>لغت</th>
+          <th>سرچ امروز</th>
+          <th>تاریخ ثبت‌نام</th>
+          <th>تغییر پلن</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${users.map(u=>`
+          <tr>
+            <td class="email-cell">${u.email||'—'}</td>
+            <td><span class="badge ${u.plan||'free'}">${u.plan||'free'}</span></td>
+            <td>${u.word_count||0}</td>
+            <td>${u.search_count||0}</td>
+            <td class="date-cell">${formatDate(u.created_at)}</td>
+            <td>
+              <select class="plan-sel" onchange="updatePlan('${u.id}',this.value)">
+                <option value="free" ${u.plan==='free'?'selected':''}>Free</option>
+                <option value="beta" ${u.plan==='beta'?'selected':''}>Beta</option>
+                <option value="pro" ${u.plan==='pro'?'selected':''}>Pro</option>
+              </select>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function filterUsers(q){
+  const f=allUsers.filter(u=>(u.email||'').toLowerCase().includes(q.toLowerCase()));
+  renderUsers(f);
+}
+
+async function updatePlan(userId,plan){
+  try{
+    await sb.from('profiles').update({plan}).eq('id',userId);
+    toast('پلن آپدیت شد ✓');
+    loadStats();
+  }catch(e){toast('خطا: '+e.message,true)}
+}
+
+// ── Beta Codes ─────────────────────────
+async function loadBetaCodes(){
+  try{
+    const {data}=await sb.from('beta_codes').select('*').order('created_at',{ascending:false});
+    renderBetaCodes(data||[]);
+  }catch(e){
+    document.getElementById('beta-codes-wrap').innerHTML='<div class="empty-state">جدول beta_codes وجود نداره — توی Supabase بساز</div>';
+  }
+}
+
+function renderBetaCodes(codes){
+  document.getElementById('beta-count').textContent=codes.length+' کد';
+  if(!codes.length){
+    document.getElementById('beta-codes-wrap').innerHTML='<div class="empty-state">هنوز کدی نساختی</div>';
+    return;
+  }
+  document.getElementById('beta-codes-wrap').innerHTML=`
+    <div class="codes-grid">
+      ${codes.map(c=>`
+        <div class="code-card">
+          <div>
+            <div class="code-val">${c.code}</div>
+            <div style="font-size:10px;color:var(--ink3);margin-top:4px">${c.used_by||'آزاد'}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <span class="code-status ${c.used?'used':'free'}">${c.used?'استفاده شد':'آزاد'}</span>
+            ${!c.used?`<button class="del-btn" onclick="deleteCode('${c.id}')">حذف</button>`:''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function generateCodes(){
+  const count=parseInt(document.getElementById('gen-count').value)||5;
+  const codes=[];
+  for(let i=0;i<count;i++){
+    codes.push({
+      code:'BETA-'+Math.random().toString(36).slice(2,6).toUpperCase(),
+      used:false,created_at:new Date().toISOString()
+    });
+  }
+  try{
+    await sb.from('beta_codes').insert(codes);
+    toast(count+' کد جدید ساخته شد ✓');
+    loadBetaCodes();
+    loadStats();
+  }catch(e){toast('خطا — جدول beta_codes رو توی Supabase بساز',true)}
+}
+
+async function deleteCode(id){
+  await sb.from('beta_codes').delete().eq('id',id);
+  toast('کد حذف شد');
+  loadBetaCodes();
+}
+
+// ── Errors ─────────────────────────────
+async function loadErrors(){
+  const errors=JSON.parse(localStorage.getItem('ws_admin_errors')||'[]');
+  const wrap=document.getElementById('errors-wrap');
+  if(!errors.length){
+    wrap.innerHTML='<div class="empty-state">✓ هیچ خطایی ثبت نشده</div>';
+    return;
+  }
+  wrap.innerHTML=errors.slice(0,50).map(e=>`
+    <div class="err-item">
+      <div class="err-msg">${e.message}</div>
+      <div class="err-meta">${e.url||''} — ${formatDate(e.time)}</div>
+    </div>
+  `).join('');
+}
+
+function clearErrors(){
+  localStorage.removeItem('ws_admin_errors');
+  loadErrors();
+  toast('خطاها پاک شدن');
+}
+
+// ── Helpers ────────────────────────────
+function formatDate(iso){
+  if(!iso) return '—';
+  return new Date(iso).toLocaleDateString('fa-IR',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+let _toastT;
+function toast(msg,err=false){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.style.background=err?'#f87171':'#4ade80';
+  el.style.color=err?'#fff':'#000';
+  el.classList.add('show');
+  clearTimeout(_toastT);
+  _toastT=setTimeout(()=>el.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
