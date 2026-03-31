@@ -2223,11 +2223,42 @@ function updateDrawerStats(){
 /* ══════════════════════════════
    AI (no API key from user)
 ══════════════════════════════ */
+/* ── Error classification ─────── */
+function classifyError(e){
+  const m = (e?.message||'').toLowerCase();
+  if(!navigator.onLine || m.includes('failed to fetch') || m.includes('networkerror'))
+    return {fa:'اتصال اینترنت قطعه — دوباره امتحان کن', type:'offline'};
+  if(m.includes('timeout') || m.includes('aborted'))
+    return {fa:'زمان جستجو تموم شد — دوباره امتحان کن', type:'timeout'};
+  if(m.includes('429') || m.includes('rate limit') || m.includes('جستجوی امروز'))
+    return {fa: e.message, type:'limit'};
+  if(m.includes('json') || m.includes('parse') || m.includes('unexpected'))
+    return {fa:'پاسخ AI نامعتبر بود — دوباره امتحان کن', type:'parse'};
+  if(m.includes('500') || m.includes('503') || m.includes('502'))
+    return {fa:'سرور موقتاً در دسترس نیست — چند لحظه صبر کن', type:'server'};
+  if(m.includes('401') || m.includes('403'))
+    return {fa:'لطفاً دوباره وارد شو', type:'auth'};
+  return {fa: e.message||'خطای ناشناخته — دوباره امتحان کن', type:'unknown'};
+}
+
 async function ai(prompt,tokens=900){
   const headers={'Content-Type':'application/json'};
   if(currentUser?.id) headers['x-user-id']=currentUser.id;
-  const r=await fetch('/api',{method:'POST',headers,
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
+
+  // Timeout after 20s
+  const ctrl = new AbortController();
+  const timeout = setTimeout(()=>ctrl.abort(), 20000);
+
+  let r;
+  try{
+    r = await fetch('/api',{method:'POST',headers,signal:ctrl.signal,
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
+  } catch(e){
+    clearTimeout(timeout);
+    throw new Error(e.name==='AbortError' ? 'timeout' : 'failed to fetch');
+  }
+  clearTimeout(timeout);
+
   if(r.status===429){
     const d=await r.json().catch(()=>({}));
     userSearchCount=FREE_LIMIT; updateFreeBanner();
@@ -2235,14 +2266,20 @@ async function ai(prompt,tokens=900){
     throw new Error(d.message||`جستجوی امروز تموم شد. ${hours} ساعت دیگه reset میشه`);
   }
   if(!r.ok) throw new Error('HTTP '+r.status);
-  const d=await r.json();
+
+  let d;
+  try{ d=await r.json(); } catch(e){ throw new Error('parse error'); }
   if(d.error) throw new Error(d.error);
+
   const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
   if(used>0){userSearchCount=used;updateFreeBanner();}
   const rem=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
   if(rem===3) showToast('⚠ فقط ۳ جستجو مونده',2800,'warn');
   else if(rem===0) showToast('جستجوی رایگان تموم شد 😔',3000,'warn');
-  return d.content.map(b=>b.text||'').join('').trim();
+
+  const txt = d.content?.map(b=>b.text||'').join('').trim();
+  if(!txt) throw new Error('empty response');
+  return txt;
 }
 
 /* ══════════════════════════════
@@ -2714,17 +2751,22 @@ function detectMode(q){
 }
 async function doSearch(){
   const q=Q('#s-inp').value.trim();if(!q)return;
-  if(!navigator.onLine){setMsg('📡 آفلاین','err');return;}
+  if(!navigator.onLine){setMsg('📡 آفلاین — اتصال اینترنت نداری','err');return;}
   acClose();
   Q('#search-tip').classList.remove('show');
   const btn=Q('#s-btn');btn.disabled=true;btn.classList.add('busy');
   setMsg('در حال جستجو...','info');
   Q('#res').style.display='none';Q('#ph-res').style.display='none';
   try{
-    if(detectMode(q)==='word')await searchWord(q);
+    if(detectMode(q)==='word') await searchWord(q);
     else await searchPhrase(q);
     setMsg('','');Q('#s-inp').value='';
-  }catch(e){setMsg('✗ '+e.message,'err');}
+  }catch(e){
+    const {fa,type} = classifyError(e);
+    setMsg('✗ '+fa,'err');
+    if(type==='limit') showUpgrade();
+    if(type==='auth'){showGate();}
+  }
   btn.disabled=false;btn.classList.remove('busy');
 }
 function setMsg(t,cls){const e=Q('#s-msg');e.textContent=t;e.className='s-msg'+(cls?' '+cls:'');}
@@ -2753,7 +2795,9 @@ async function searchWord(q){
    +'فقط JSON.';
 
   const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
-  curWord=JSON.parse(raw);
+  const jsonMatch=raw.match(/\{[\s\S]*\}/);
+  if(!jsonMatch) throw new Error('parse error');
+  try{ curWord=JSON.parse(jsonMatch[0]); } catch(e){ throw new Error('parse error'); }
   try{
     const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
     if(keys.length>100)localStorage.removeItem(keys[0]);
@@ -2879,7 +2923,9 @@ async function searchPhrase(q){
   ) + '\nبرای score: 5=خیلی رایج، 4=مهم، 3=متوسط، 2=کمتر رایج، 1=نادر\nفقط JSON.';
 
   const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
-  curPhrase=JSON.parse(raw);
+  const pm=raw.match(/\{[\s\S]*\}/);
+  if(!pm) throw new Error('parse error');
+  try{ curPhrase=JSON.parse(pm[0]); } catch(e){ throw new Error('parse error'); }
   Q('#ph-orig').textContent=curPhrase.original;
   Q('#ph-meaning').textContent=curPhrase.meaning_fa;
   const phpEl=Q('#ph-priority');
@@ -3797,10 +3843,10 @@ function _doGenerateAIPack(topic, forceNew=false){
     .then(txt=>{
       // Clean and extract JSON
       let clean = txt.replace(/```json|```/g,'').trim();
-      // Extract JSON object if wrapped in text
       const jsonMatch = clean.match(/\{[\s\S]*\}/);
-      if(jsonMatch) clean = jsonMatch[0];
-      const data = JSON.parse(clean);
+      if(!jsonMatch) throw new Error('parse error');
+      let data;
+      try{ data=JSON.parse(jsonMatch[0]); } catch(e){ throw new Error('پاسخ AI نامعتبر بود — دوباره امتحان کن'); }
       if(!data.words?.length) throw new Error('فرمت نادرست');
 
       // Show result as cards
@@ -3863,7 +3909,8 @@ function _doGenerateAIPack(topic, forceNew=false){
     })
     .catch(e=>{
       result.innerHTML='';
-      err.textContent = 'خطا: '+e.message;
+      const {fa} = classifyError(e);
+      err.textContent = fa;
     })
     .finally(()=>{
       btn.disabled=false;
@@ -4534,5 +4581,16 @@ document.addEventListener('click', function(e){
     const chev = document.getElementById('lang-badge-chevron');
     if(chev) chev.style.transform = '';
   }
+});
+</script>
+<script>
+// ── Global error safety net ──────────────────
+window.addEventListener('unhandledrejection', e => {
+  const err = e.reason;
+  if(!err) return;
+  const m = (err.message||'').toLowerCase();
+  // Silence non-critical DB/sync errors
+  if(m.includes('supabase') || m.includes('postgrest') || m.includes('fetch') && !m.includes('api')) return;
+  console.warn('[Wortschatz] unhandled:', err.message);
 });
 </script>
