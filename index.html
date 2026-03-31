@@ -1106,9 +1106,136 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-</style>
+/* ═══════════════════════════════════
+   ONBOARDING
+═══════════════════════════════════ */
+#onboarding{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:var(--s6);
+  transition:opacity .4s var(--ease),transform .4s var(--ease);
+}
+#onboarding.hide{
+  opacity:0;transform:scale(.97);pointer-events:none;
+}
+.ob-slides{
+  width:100%;max-width:360px;
+  overflow:hidden;position:relative;
+  flex:1;display:flex;align-items:center;
+}
+.ob-track{
+  display:flex;width:100%;
+  transition:transform .38s cubic-bezier(.4,0,.2,1);
+}
+.ob-slide{
+  min-width:100%;display:flex;flex-direction:column;
+  align-items:center;text-align:center;padding:0 var(--s2);
+}
+.ob-emoji{
+  font-size:64px;margin-bottom:var(--s6);
+  animation:pop .5s var(--spring);
+}
+.ob-title{
+  font-family:var(--serif);font-size:26px;font-weight:600;
+  color:var(--ink);margin-bottom:var(--s3);line-height:1.3;
+}
+.ob-desc{
+  font-size:14px;color:var(--ink2);line-height:1.8;
+  margin-bottom:var(--s4);
+}
+.ob-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--abl);color:var(--accent);
+  border-radius:20px;padding:5px 14px;
+  font-size:12px;font-weight:600;margin-bottom:var(--s6);
+}
+/* dots */
+.ob-dots{
+  display:flex;gap:6px;margin-bottom:var(--s5);
+}
+.ob-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--bg3);transition:all .25s var(--ease);
+}
+.ob-dot.active{
+  width:20px;border-radius:4px;background:var(--accent);
+}
+/* buttons */
+.ob-actions{width:100%;max-width:360px;display:flex;flex-direction:column;gap:var(--s2)}
+.ob-btn-main{
+  width:100%;padding:14px;border-radius:var(--r3);
+  background:var(--accent);color:#fff;border:none;
+  font-family:var(--sans);font-size:15px;font-weight:600;
+  cursor:pointer;transition:all .18s;
+}
+.ob-btn-main:hover{background:var(--accent2)}
+.ob-btn-skip{
+  width:100%;padding:10px;border-radius:var(--r3);
+  background:transparent;color:var(--ink3);border:none;
+  font-family:var(--sans);font-size:13px;
+  cursor:pointer;transition:color .15s;
+}
+.ob-btn-skip:hover{color:var(--ink)}
+
+
 </head>
 <body>
+
+<!-- ═══ ONBOARDING ═══ -->
+<div id="onboarding">
+  <div class="ob-slides">
+    <div class="ob-track" id="ob-track">
+
+      <!-- Slide 1 -->
+      <div class="ob-slide">
+        <div class="ob-emoji">🇩🇪</div>
+        <div class="ob-tag">Wortschatz</div>
+        <div class="ob-title">لغت یاد بگیر،<br>نه حفظ کنی</div>
+        <div class="ob-desc">
+          دستیار هوشمند یادگیری زبان —<br>
+          هر لغتی که سرچ کنی، AI کامل توضیح میده.<br>
+          بعد با فلش‌کارت تکرار میکنی تا بمونه.
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="ob-slide">
+        <div class="ob-emoji">🔍</div>
+        <div class="ob-title">سرچ کن،<br>ذخیره کن</div>
+        <div class="ob-desc">
+          یه لغت، جمله یا اصطلاح بنویس.<br>
+          AI معنی، مثال، و ریشه‌اش رو بهت میده.<br>
+          با یه کلیک به فلش‌کارت‌هات اضافه‌اش کن.
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="ob-slide">
+        <div class="ob-emoji">🧠</div>
+        <div class="ob-title">مرور هوشمند<br>با SM-2</div>
+        <div class="ob-desc">
+          الگوریتم spaced repetition تصمیم میگیره<br>
+          کِی هر لغت رو دوباره ببینی —<br>
+          دقیقاً قبل از اینکه فراموشش کنی.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="ob-dots">
+    <div class="ob-dot active" id="ob-dot-0"></div>
+    <div class="ob-dot" id="ob-dot-1"></div>
+    <div class="ob-dot" id="ob-dot-2"></div>
+  </div>
+
+  <div class="ob-actions">
+    <button class="ob-btn-main" id="ob-main-btn" onclick="obNext()">بعدی ←</button>
+    <button class="ob-btn-skip" onclick="obFinish()">رد کردن</button>
+  </div>
+</div>
 
 <div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
 
@@ -4264,4 +4391,43 @@ document.addEventListener('click', function(e){
     if(chev) chev.style.transform = '';
   }
 });
+</script>
+<script>
+// ═══ ONBOARDING ═══
+(function(){
+  // اگه قبلاً دیده → مخفی کن
+  if(localStorage.getItem('ws_onboarded')){
+    const el = document.getElementById('onboarding');
+    if(el) el.style.display = 'none';
+    return;
+  }
+
+  let obStep = 0;
+  const TOTAL = 3;
+
+  window.obNext = function(){
+    obStep++;
+    if(obStep >= TOTAL){ obFinish(); return; }
+    obGoto(obStep);
+  };
+
+  window.obFinish = function(){
+    localStorage.setItem('ws_onboarded','1');
+    const el = document.getElementById('onboarding');
+    if(el){ el.classList.add('hide'); setTimeout(()=>el.style.display='none', 420); }
+  };
+
+  function obGoto(step){
+    const track = document.getElementById('ob-track');
+    if(track) track.style.transform = `translateX(${step * -100}%)`;
+    // dots
+    for(let i=0;i<TOTAL;i++){
+      const d = document.getElementById('ob-dot-'+i);
+      if(d) d.classList.toggle('active', i===step);
+    }
+    // button text
+    const btn = document.getElementById('ob-main-btn');
+    if(btn) btn.textContent = step === TOTAL-1 ? 'شروع کن 🚀' : 'بعدی ←';
+  }
+})();
 </script>
