@@ -2102,7 +2102,9 @@ async function loadProfile(){
       .select('plan,word_count,is_beta,search_count,search_reset_at,last_seen_at,session_count')
       .eq('id',currentUser.id).single();
     if(data){
-      userPlan = data.is_beta ? 'beta' : (data.plan||'free');
+      userPlan = data.plan === 'pro' ? 'pro'
+               : data.plan === 'beta' || data.is_beta ? 'beta'
+               : 'free';
       userWordCount = data.word_count||0;
       const now=new Date();
       const resetAt=data.search_reset_at?new Date(data.search_reset_at):null;
