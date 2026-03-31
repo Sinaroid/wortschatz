@@ -908,36 +908,74 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 /* ═══════════════════════════════════
    EMPTY STATES
 ═══════════════════════════════════ */
+/* ── Empty State ────────────────── */
+@keyframes emptyFadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes floatBob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
 .empty{
-  text-align:center;padding:var(--s10) var(--s6) var(--s8);
-  animation:up .35s var(--spring);
+  padding:var(--s6) var(--s4) var(--s8);
+  display:flex;flex-direction:column;align-items:center;
+}
+.empty-box{
+  width:100%;max-width:380px;
+  background:var(--card);border:1px solid var(--bg3);
+  border-radius:var(--r4);padding:var(--s8) var(--s6);
+  text-align:center;
+  box-shadow:var(--sh2);
+  animation:emptyFadeUp .45s var(--spring) both;
 }
 .empty-ic{
-  font-size:52px;display:block;margin-bottom:var(--s5);
-  animation:pop .5s var(--spring);
+  font-size:52px;display:block;
+  margin-bottom:var(--s5);
+  animation:floatBob 3s ease-in-out infinite, emptyFadeUp .4s var(--spring) .05s both;
 }
 .empty h3{
   font-family:var(--serif);font-size:22px;font-weight:600;
   color:var(--ink);margin-bottom:var(--s2);
+  animation:emptyFadeUp .4s var(--spring) .1s both;
 }
 .empty p{
-  font-size:14px;color:var(--ink3);line-height:1.75;
-  margin-bottom:var(--s6);
+  font-size:14px;color:var(--ink3);line-height:1.8;
+  margin-bottom:var(--s5);
+  animation:emptyFadeUp .4s var(--spring) .15s both;
 }
 .empty-btn{
-  display:inline-flex;align-items:center;gap:6px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
   background:var(--accent);color:#fff;border:none;
-  border-radius:var(--r5);padding:12px 24px;
+  border-radius:var(--r5);padding:13px 28px;width:100%;
   font-family:var(--sans);font-size:14px;font-weight:600;
-  cursor:pointer;transition:all .18s;
+  cursor:pointer;transition:all .2s var(--spring);
+  animation:emptyFadeUp .4s var(--spring) .2s both;
+  position:relative;overflow:hidden;
 }
-.empty-btn:hover{background:var(--accent2);transform:translateY(-1px)}
-.empty-hint{
-  display:flex;align-items:center;gap:6px;
+.empty-btn::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.12);
+  transform:translateX(-100%);transition:transform .3s var(--ease);
+}
+.empty-btn:hover::after{transform:translateX(0)}
+.empty-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--aglow)}
+.empty-btn:active{transform:translateY(0)}
+.empty-chips{
+  display:flex;flex-wrap:wrap;gap:var(--s2);
+  justify-content:center;margin-top:var(--s4);
+  animation:emptyFadeUp .4s var(--spring) .25s both;
+}
+.empty-chip{
   background:var(--bg2);border:1px solid var(--bg3);
-  border-radius:var(--r2);padding:10px var(--s4);
-  font-size:12px;color:var(--ink3);margin-top:var(--s3);
-  justify-content:center;
+  border-radius:20px;padding:5px 14px;
+  font-size:12px;font-weight:500;cursor:pointer;
+  color:var(--ink2);transition:all .18s var(--ease);
+  font-family:var(--sans);
+}
+.empty-chip:hover{
+  border-color:var(--accent);color:var(--accent);
+  background:var(--abl);transform:translateY(-1px);
 }
 
 /* ─── RESPONSIVE ─────────────────── */
@@ -1628,15 +1666,17 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Home empty state -->
     <div id="home-empty" style="display:none">
-      <div class="empty" style="padding-top:var(--s6)">
-        <span class="empty-ic">✨</span>
-        <h3>اولین لغتت رو یاد بگیر</h3>
-        <p>یه کلمه توی کادر بالا سرچ کن<br>AI معنی، مثال و ریشه‌اش رو بهت میده</p>
-        <button class="empty-btn" onclick="Q('#s-inp')?.focus()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          شروع کن
-        </button>
-        <div id="home-empty-chips" style="display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap"></div>
+      <div class="empty">
+        <div class="empty-box">
+          <span class="empty-ic">✨</span>
+          <h3>اولین لغتت رو یاد بگیر</h3>
+          <p>یه کلمه توی کادر بالا سرچ کن<br>AI معنی، مثال و ریشه‌اش رو بهت میده</p>
+          <button class="empty-btn" onclick="Q('#s-inp')?.focus();Q('#s-inp')?.scrollIntoView({behavior:'smooth',block:'center'})">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            شروع کن
+          </button>
+          <div class="empty-chips" id="home-empty-chips"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2385,7 +2425,7 @@ function updateHomeEmptyChips(){
     ? ['Arbeit','Freundschaft','Reise','Glück']
     : ['happiness','freedom','journey','grateful'];
   wrap.innerHTML = chips.map(w=>
-    `<span onclick="qs('${w}')" style="background:var(--bg2);border:1px solid var(--bg3);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink2);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--bg3)'">${w}</span>`
+    `<span class="empty-chip" onclick="qs('${w}')">${w}</span>`
   ).join('');
 }
 
@@ -3137,14 +3177,21 @@ function renderList(){
   const fw=filteredWords();
   if(!fw.length){
     el.innerHTML=`<div class="empty">
-      <span class="empty-ic">🌱</span>
-      <h3>هنوز لغتی نداری</h3>
-      <p>یه کلمه آلمانی، فارسی یا انگلیسی سرچ کن<br>AI کامل توضیح میده — بعد save کن</p>
-      <button class="empty-btn" onclick="navTo('home');setTimeout(()=>Q('#s-inp')?.focus(),200)">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        اولین لغتت رو سرچ کن
-      </button>
-      <div class="empty-hint">💡 مثلاً بنویس <strong>Arbeit</strong> یا <strong>کار</strong></div>
+      <div class="empty-box">
+        <span class="empty-ic">🌱</span>
+        <h3>هنوز لغتی نداری</h3>
+        <p>یه کلمه آلمانی، فارسی یا انگلیسی سرچ کن<br>AI کامل توضیح میده — بعد save کن</p>
+        <button class="empty-btn" onclick="navTo('home');setTimeout(()=>{Q('#s-inp')?.focus();Q('#s-inp')?.scrollIntoView({behavior:'smooth',block:'center'})},250)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          اولین لغتت رو سرچ کن
+        </button>
+        <div class="empty-chips">
+          ${(targetLang==='de'
+            ? ['Arbeit','Freundschaft','Reise','Glück']
+            : ['happiness','freedom','journey','grateful']
+          ).map(w=>`<span class="empty-chip" onclick="navTo('home');setTimeout(()=>qs('${w}'),300)">${w}</span>`).join('')}
+        </div>
+      </div>
     </div>`;
     Q('#list-count').textContent='';Q('#due-banner').classList.remove('show');return;
   }
