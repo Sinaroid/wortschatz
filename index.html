@@ -1266,10 +1266,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Language Toggle -->
     <div class="drw-lang-toggle">
-      <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle()">
+      <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle();updatePackPresets()">
         🇩🇪 آلمانی
       </button>
-      <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle()">
+      <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle();updatePackPresets()">
         🇬🇧 انگلیسی
       </button>
     </div>
@@ -1658,8 +1658,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Book Presets -->
     <div style="margin-bottom:var(--s4)">
-      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600">📚 کتاب‌های محبوب آلمانی:</div>
-      <div style="display:flex;flex-wrap:wrap;gap:var(--s2)">
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600" id="pack-presets-label">📚 کتاب‌های محبوب آلمانی:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--s2)" id="pack-presets-wrap">
         <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Nicos Weg سطح A1')">Nicos Weg A1</button>
         <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Menschen A1 آلمانی')">Menschen A1</button>
         <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Schritte Plus A2')">Schritte Plus A2</button>
@@ -2330,6 +2330,53 @@ function updateLangUI(){
     : 'لغت، جمله یا اصطلاح — فارسی، انگلیسی یا آلمانی';
   // Drawer lang toggle
   drawerUpdateLangToggle();
+  // Pack presets
+  updatePackPresets();
+}
+
+const PACK_PRESETS = {
+  de: {
+    label: '📚 کتاب‌های محبوب آلمانی:',
+    placeholder: 'مثلاً: Sicher B2، لغات فوتبال، محیط زیست...',
+    items: [
+      { label: 'Nicos Weg A1',   prompt: 'کتاب Nicos Weg سطح A1' },
+      { label: 'Menschen A1',    prompt: 'کتاب Menschen A1 آلمانی' },
+      { label: 'Schritte Plus A2', prompt: 'کتاب Schritte Plus A2' },
+      { label: 'Sicher B1',      prompt: 'کتاب Sicher B1 آلمانی' },
+      { label: 'Aspekte B2',     prompt: 'کتاب Aspekte B2 آلمانی' },
+      { label: 'Dark 🎬',        prompt: 'سریال Dark آلمانی' },
+      { label: 'پزشکی 🏥',      prompt: 'لغات پزشکی آلمانی' },
+      { label: 'حقوق ⚖️',       prompt: 'لغات حقوقی آلمانی' },
+    ]
+  },
+  en: {
+    label: '📚 منابع محبوب انگلیسی:',
+    placeholder: 'e.g. Business English, Sherlock Holmes, medical terms...',
+    items: [
+      { label: 'Top Notch A1',   prompt: 'کتاب Top Notch A1 انگلیسی' },
+      { label: 'Interchange A2', prompt: 'کتاب Interchange A2 انگلیسی' },
+      { label: 'Headway B1',     prompt: 'کتاب Headway B1 انگلیسی' },
+      { label: 'Cutting Edge B2',prompt: 'کتاب Cutting Edge B2 انگلیسی' },
+      { label: 'Friends 🎬',     prompt: 'سریال Friends انگلیسی' },
+      { label: 'Business 💼',    prompt: 'لغات Business English' },
+      { label: 'پزشکی 🏥',      prompt: 'لغات پزشکی انگلیسی' },
+      { label: 'IELTS 📝',       prompt: 'لغات ضروری IELTS' },
+    ]
+  }
+};
+
+function updatePackPresets(){
+  const cfg = PACK_PRESETS[targetLang] || PACK_PRESETS.de;
+  const labelEl = document.getElementById('pack-presets-label');
+  const wrap    = document.getElementById('pack-presets-wrap');
+  const inp     = document.getElementById('ai-pack-tab-inp');
+  if(labelEl) labelEl.textContent = cfg.label;
+  if(inp) inp.placeholder = cfg.placeholder;
+  if(wrap){
+    wrap.innerHTML = cfg.items.map(it =>
+      `<button class="ai-preset-btn" onclick="setAIPackPreset('${it.prompt}')">${it.label}</button>`
+    ).join('');
+  }
 }
 
 function drawerUpdateLangToggle(){
