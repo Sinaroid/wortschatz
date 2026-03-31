@@ -2851,14 +2851,18 @@ function renderPackGrid(){
     { id:'travel', emoji:'✈️', name:'سفر',            count:50, free:false, level:'A2', desc:'سفر و گردشگری' },
   ];
 
-  const savedWords = new Set(words.map(w=>w.de));
-  const savedList  = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+  const inFlashcard = new Set(words.map(w=>w.de));
+  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
 
   const html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">' +
     packList.map(pack => {
       const packWords = PACKS[pack.id]?.words || [];
       const total = packWords.length;
-      const learned = packWords.filter(w => savedWords.has(w.de) || savedList.has(w.de)).length;
+      const seenSet = getSeenPackWords(pack.id);
+      // همه کارت‌هایی که به هر روشی دیده شدن
+      const learned = packWords.filter(w =>
+        inFlashcard.has(w.de) || inSavedList.has(w.de) || seenSet.has(w.de)
+      ).length;
       const pct = total > 0 ? Math.round(learned/total*100) : 0;
       const isDone = pct === 100;
       const isLocked = !pack.free && userPlan === 'free';
