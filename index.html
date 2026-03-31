@@ -1982,7 +1982,12 @@ async function loginMagicLink(){
   });
 
   if(error){
-    errEl.textContent = error.message;
+    const msg = error.message;
+    const fa = msg.includes('rate limit') ? 'تعداد درخواست زیاده — چند دقیقه صبر کن' :
+                msg.includes('invalid email') ? 'ایمیل معتبر نیست' :
+                msg.includes('network') ? 'خطای شبکه — دوباره امتحان کن' :
+                msg;
+    errEl.textContent = fa;
     errEl.style.color = 'var(--err)';
     btn.disabled = false;
     btn.textContent = 'ارسال لینک ورود';
