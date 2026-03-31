@@ -1,6 +1,3 @@
-// api/checkout.js — Create Stripe checkout session
-// ENV: STRIPE_SECRET_KEY, STRIPE_PRICE_ID
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -27,8 +24,8 @@ export default async function handler(req, res) {
         'mode': 'subscription',
         'line_items[0][price]': priceId,
         'line_items[0][quantity]': '1',
-        'success_url': `https://wortschatz-one.vercel.app/?upgrade=success&user_id=${userId}`,
-        'cancel_url':  `https://wortschatz-one.vercel.app/?upgrade=cancel`,
+        'success_url': `https://wortschatz.space/?upgrade=success&user_id=${userId}`,
+        'cancel_url':  `https://wortschatz.space/?upgrade=cancel`,
         'client_reference_id': userId,
         'metadata[user_id]': userId,
       }),
@@ -36,7 +33,6 @@ export default async function handler(req, res) {
 
     const session = await r.json();
     if (session.error) return res.status(400).json({ error: session.error.message });
-
     return res.status(200).json({ url: session.url });
   } catch (err) {
     return res.status(500).json({ error: err.message });
