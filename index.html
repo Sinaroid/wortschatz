@@ -3482,7 +3482,7 @@ function generateAIPackTab(){
 
   // Check if already generated this topic
   const aiHistory = JSON.parse(localStorage.getItem('ws_ai_history')||'[]');
-  const prev = aiHistory.find(h => h.topic.toLowerCase() === topic.toLowerCase());
+  const prev = aiHistory.find(h => h.topic.toLowerCase() === topic.toLowerCase() && (h.lang||'de') === targetLang);
   if(prev){
     Q('#ai-pack-tab-err').textContent = '';
     // Show confirmation dialog
@@ -3596,9 +3596,9 @@ function _doGenerateAIPack(topic, forceNew=false){
 
       // Save to history
       const hist = JSON.parse(localStorage.getItem('ws_ai_history')||'[]');
-      const existing = hist.findIndex(h=>h.topic.toLowerCase()===topic.toLowerCase());
+      const existing = hist.findIndex(h=>h.topic.toLowerCase()===topic.toLowerCase() && (h.lang||'de')===targetLang);
       const entry = {
-        topic, count: data.words.length,
+        topic, lang: targetLang, count: data.words.length,
         date: new Date().toLocaleDateString('fa-IR'),
         words: data.words.map(w=>w.de)
       };
