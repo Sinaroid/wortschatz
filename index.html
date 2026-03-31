@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Wortschatz</title>
+<title></title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0d0d0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1096,12 +1096,7 @@ body.offline .topbar{top:36px}
 
 <!-- Auth Gate -->
 <div id="gate">
-
-  <div class="fw" style="font-size:48px;top:15%;right:8%;animation:float2 10s ease-in-out infinite 1s">Wörter
-  <div class="fw" style="font-size:56px;bottom:25%;left:3%;animation:float3 9s ease-in-out infinite 2s">Sprache</div>
-  <div class="fw" style="font-size:40px;bottom:10%;right:5%;animation:float1 11s ease-in-out infinite 3s">Deutsch</div>
-  <div class="fw" style="font-size:72px;top:45%;left:50%;transform:translateX(-50%);animation:float2 12s ease-in-out infinite 1.5s;opacity:.04">Wortschatz</div>
-</div>
+  </div>
 <div style="position:relative;z-index:1;width:100%;max-width:360px;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3)">
 
   <!-- TOP: Blue section -->
@@ -1115,7 +1110,7 @@ body.offline .topbar{top:36px}
       <div style="background:#f5f3ee;padding:15px 9px 6px;display:flex;align-items:center;border-bottom:1px solid #eceae3">
         <div style="display:flex;align-items:center;gap:3px">
           <div style="width:11px;height:11px;background:#1a3af2;border-radius:2px;color:white;font-size:6px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif">W</div>
-          <span style="font-family:'Fraunces',serif;font-size:8px;font-weight:700;color:#1a1916">Wortschatz</span>
+          <span style="font-family:'Fraunces',serif;font-size:8px;font-weight:700;color:#1a1916"></span>
         </div>
       </div>
       <div style="padding:8px;height:130px;overflow:hidden;position:relative">
@@ -1210,7 +1205,7 @@ body.offline .topbar{top:36px}
   </div>
 
 </div>
-</div>
+
 
 
 <!-- Drawer -->
@@ -1413,7 +1408,7 @@ body.offline .topbar{top:36px}
           <path d="M2 5L5.5 13L8 7.5L10.5 13L14 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="logo-name">Wortschatz</span>
+      <span class="logo-name"></span>
     </a>
     <div class="top-r">
       <div class="sync-dot" id="sync-dot"></div>
@@ -1971,10 +1966,40 @@ async function loginMagicLink(){
   const email=Q('#gate-email').value.trim();
   if(!email||!email.includes('@')){Q('#gate-err').textContent='ایمیل معتبر وارد کن';return;}
   Q('#gate-err').textContent='';
-  const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
-  if(error){Q('#gate-err').textContent=error.message;return;}
-  Q('#gate-email-section').style.display='none';
-  Q('#gate-sent').style.display='block';
+  const btn=Q('#gate-btn');
+  btn.disabled=true;
+  btn.textContent='در حال ارسال...';
+  try{
+    const{error}=await sb.auth.signInWithOtp({
+      email,
+      options:{emailRedirectTo:window.location.origin}
+    });
+    if(error) throw error;
+    // Show success + countdown
+    btn.textContent='✓ لینک ارسال شد!';
+    btn.style.background='var(--ok)';
+    Q('#gate-err').style.color='var(--ok)';
+    let secs=60;
+    Q('#gate-err').textContent=`لینک به ${email} ارسال شد — ${secs} ثانیه تا ارسال مجدد`;
+    const t=setInterval(()=>{
+      secs--;
+      if(secs>0){
+        Q('#gate-err').textContent=`لینک به ${email} ارسال شد — ${secs} ثانیه تا ارسال مجدد`;
+      } else {
+        clearInterval(t);
+        btn.disabled=false;
+        btn.textContent='ارسال دوباره';
+        btn.style.background='';
+        Q('#gate-err').textContent='لینک دریافت نکردی؟ دوباره امتحان کن';
+        Q('#gate-err').style.color='var(--ink3)';
+      }
+    },1000);
+  }catch(e){
+    Q('#gate-err').textContent=e.message||'خطا در ارسال';
+    Q('#gate-err').style.color='var(--err)';
+    btn.disabled=false;
+    btn.textContent='ارسال لینک ورود';
+  }
 }
 
 
@@ -2956,13 +2981,13 @@ const PACKS = {
       {de:'kommen',fa:'آمدن',ex:'Ich komme aus Iran.',ex_fa:'از ایران میام.',tip:'ich komme, du kommst'},
       {de:'gehen',fa:'رفتن',ex:'Ich gehe nach Hause.',ex_fa:'می‌رم خونه.',tip:'پرکاربردترین فعل'},
       {de:'sehen',fa:'دیدن',ex:'Ich sehe dich!',ex_fa:'می‌بینمت!',tip:'schauen هم نگاه کردنه'},
-      {de:'sprechen',fa:'صحبت کردن',ex:'Sprechen Sie Deutsch?',ex_fa:'آلمانی بلدید؟',tip:'reden محاوره‌ایه'},
+      {de:'sprechen',fa:'صحبت کردن',ex:'Sprechen Sie ?',ex_fa:'آلمانی بلدید؟',tip:'reden محاوره‌ایه'},
       {de:'hören',fa:'شنیدن',ex:'Ich höre Musik.',ex_fa:'موزیک گوش می‌دم.',tip:'zuhören = گوش دادن دقیق'},
       {de:'essen',fa:'خوردن',ex:'Was essen wir heute?',ex_fa:'امروز چی می‌خوریم؟',tip:'ich esse, du isst'},
       {de:'trinken',fa:'نوشیدن',ex:'Ich trinke Kaffee.',ex_fa:'قهوه می‌نوشم.',tip:'trinken = نوشیدن، essen = خوردن'},
       {de:'schlafen',fa:'خوابیدن',ex:'Ich schlafe acht Stunden.',ex_fa:'۸ ساعت می‌خوابم.',tip:'ich schlafe, du schläfst'},
       {de:'kaufen',fa:'خریدن',ex:'Ich kaufe ein Buch.',ex_fa:'یه کتاب می‌خرم.',tip:'verkaufen = فروختن'},
-      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
+      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne .',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
       {de:'lesen',fa:'خواندن',ex:'Ich lese jeden Tag.',ex_fa:'هر روز می‌خونم.',tip:'ich lese, du liest'},
       {de:'schreiben',fa:'نوشتن',ex:'Schreib mir!',ex_fa:'برام بنویس!',tip:'tippen = تایپ کردن'},
       {de:'Straße',fa:'خیابان',ex:'Die Straße ist lang.',ex_fa:'خیابون بلنده.',tip:'die Straße — مؤنث'},
