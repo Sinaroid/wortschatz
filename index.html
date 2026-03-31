@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -47,6 +47,71 @@ function wordDetail(idx){
 
   Q('#word-detail-body').innerHTML = html;
   Q('#word-detail-modal').classList.add('open');
+}
+
+
+/* ══════════════════════════════
+   RENDER PACKS GRID
+══════════════════════════════ */
+function renderPackGrid(){
+  const container = Q('#packs-grid-container');
+  if(!container) return;
+
+  const packList = [
+    { id:'a1',     emoji:'🌱', name:'پایه A1',        count:50, free:true,  level:'A1', desc:'لغات پایه برای شروع' },
+    { id:'b1',     emoji:'💬', name:'مکالمه روزمره',  count:80, free:false, level:'A2', desc:'گفتگوی روزانه' },
+    { id:'work',   emoji:'💼', name:'کار و شغل',      count:60, free:false, level:'B1', desc:'محیط کاری' },
+    { id:'travel', emoji:'✈️', name:'سفر',            count:50, free:false, level:'A2', desc:'سفر و گردشگری' },
+  ];
+
+  const savedWords = new Set(words.map(w=>w.de));
+  const savedList  = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+
+  const html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)">' +
+    packList.map(pack => {
+      const packWords = PACKS[pack.id]?.words || [];
+      const total = packWords.length;
+      const learned = packWords.filter(w => savedWords.has(w.de) || savedList.has(w.de)).length;
+      const pct = total > 0 ? Math.round(learned/total*100) : 0;
+      const isDone = pct === 100;
+      const isLocked = !pack.free && userPlan === 'free';
+      const isStarted = learned > 0 && !isDone;
+
+      // Status badge
+      let badge = '';
+      if(isDone) badge = '<div class="pack-badge" style="background:rgba(18,110,53,.12);color:var(--ok)">✓ تکمیل</div>';
+      else if(isLocked) badge = '<div class="pack-badge pro">Pro 🔒</div>';
+      else if(pack.free) badge = '<div class="pack-badge free">رایگان</div>';
+      else badge = '<div class="pack-badge pro">Pro</div>';
+
+      // CTA label
+      let cta = '';
+      if(isDone) cta = '<div style="font-size:10px;color:var(--ok);margin-top:2px">مرور دوباره ←</div>';
+      else if(isStarted) cta = `<div style="font-size:10px;color:var(--accent);margin-top:2px">${total-learned} لغت مونده ←</div>`;
+      else if(!isLocked) cta = '<div style="font-size:10px;color:var(--ink3);margin-top:2px">شروع یادگیری ←</div>';
+
+      // Progress bar
+      const progress = total > 0 ? `
+        <div class="pack-progress" style="margin-top:6px">
+          <div class="pack-progress-fill${isDone?' done':''}" style="width:${pct}%"></div>
+        </div>
+        <div style="font-size:10px;color:var(--ink3);margin-top:2px">${learned}/${total} لغت</div>` : '';
+
+      return `<button class="pack-card${isDone?' pack-done':isLocked?' pack-locked':''}"
+                onclick="openPack('${pack.id}')" type="button">
+        <div style="font-size:30px">${pack.emoji}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--ink)">${pack.name}</div>
+        <div style="font-size:11px;color:var(--ink3)">${pack.desc}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
+          ${badge}
+          <div style="font-size:10px;color:var(--ink3);background:var(--bg2);padding:2px 6px;border-radius:10px">${pack.level}</div>
+        </div>
+        ${progress}
+        ${cta}
+      </button>`;
+    }).join('') + '</div>';
+
+  container.innerHTML = html;
 }
 
 </script>
@@ -904,11 +969,19 @@ body.offline .topbar{top:36px}
 .packs-sub{font-size:13px;color:var(--ink3)}
 .packs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s3)}
 .pack-card{
-  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
-  padding:var(--s4) var(--s3);text-align:center;cursor:pointer;
-  transition:transform .15s,box-shadow .15s;position:relative;
-  min-width:0;width:100%;font-family:var(--sans);
+  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
+  padding:var(--s5) var(--s4);text-align:center;cursor:pointer;
+  transition:transform .15s,box-shadow .15s,border-color .15s;
+  position:relative;width:100%;font-family:var(--sans);
+  display:flex;flex-direction:column;align-items:center;gap:var(--s2);
 }
+.pack-card:hover{box-shadow:var(--sh2);border-color:var(--accent);transform:translateY(-2px)}
+.pack-card:active{transform:scale(.97)}
+.pack-card.pack-done{border-color:var(--ok);background:rgba(18,110,53,.04)}
+.pack-card.pack-locked{opacity:.75}
+.pack-progress{width:100%;height:4px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:4px}
+.pack-progress-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s}
+.pack-progress-fill.done{background:var(--ok)}
 .pack-card:active{transform:scale(.97)}
 .pack-card:hover{box-shadow:var(--sh2)}
 .pack-card.pro-lock{opacity:.8}
@@ -1478,41 +1551,8 @@ body.offline .topbar{top:36px}
   </div>
 
   <!-- Pack Grid -->
-  <div style="padding:0 var(--s5);display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-bottom:var(--s6)">
+  <div id="packs-grid-container" style="padding:0 var(--s5);margin-bottom:var(--s6)"></div>
 
-    <!-- A1 FREE -->
-    <button class="pack-card" onclick="openPack('a1')" type="button">
-      <div class="pack-emoji">🌱</div>
-      <div class="pack-name">پایه A1</div>
-      <div class="pack-count">۵۰ لغت</div>
-      <div class="pack-badge free">رایگان</div>
-    </button>
-
-    <!-- Conversation PRO -->
-    <button class="pack-card" onclick="openPack('b1')" type="button">
-      <div class="pack-emoji">💬</div>
-      <div class="pack-name">مکالمه روزمره</div>
-      <div class="pack-count">۸۰ لغت</div>
-      <div class="pack-badge pro">Pro 🔒</div>
-    </button>
-
-    <!-- Work PRO -->
-    <button class="pack-card" onclick="openPack('work')" type="button">
-      <div class="pack-emoji">💼</div>
-      <div class="pack-name">کار و شغل</div>
-      <div class="pack-count">۶۰ لغت</div>
-      <div class="pack-badge pro">Pro 🔒</div>
-    </button>
-
-    <!-- Travel PRO -->
-    <button class="pack-card" onclick="openPack('travel')" type="button">
-      <div class="pack-emoji">✈️</div>
-      <div class="pack-name">سفر</div>
-      <div class="pack-count">۵۰ لغت</div>
-      <div class="pack-badge pro">Pro 🔒</div>
-    </button>
-
-  </div>
 
   <!-- AI Pack Section -->
   <div style="padding:0 var(--s5) var(--s8)">
@@ -2044,6 +2084,7 @@ function go(t){
   Q('#t-cards').classList.remove('on');
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='list') renderList();
+  if(t==='packs') renderPackGrid();
 }
 function updateBadges(){
   const has=words.length>0;
