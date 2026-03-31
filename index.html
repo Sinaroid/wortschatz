@@ -3065,9 +3065,13 @@ function generateAIPackTab(){
 فقط JSON برگردون، هیچ توضیحی نده:
 {"words":[{"de":"لغت","fa":"معنی فارسی","ex":"یک جمله نمونه آلمانی","ex_fa":"ترجمه فارسی جمله"}]}`;
 
-  ai(prompt)
+  ai(prompt, 1800)
     .then(txt=>{
-      const clean = txt.replace(/\`\`\`json|\`\`\`/g,'').trim();
+      // Clean and extract JSON
+      let clean = txt.replace(/```json|```/g,'').trim();
+      // Extract JSON object if wrapped in text
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      if(jsonMatch) clean = jsonMatch[0];
       const data = JSON.parse(clean);
       if(!data.words?.length) throw new Error('فرمت نادرست');
 
