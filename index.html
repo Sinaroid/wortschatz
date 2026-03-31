@@ -3178,13 +3178,14 @@ function packLearnNext(){
 }
 
 function packLearnKnow(){
-  // بلدم — mark as seen so it won't appear again
   const w = plWords[plIdx];
   if(w && plPackId) markPackWordSeen(plPackId, w.de);
   plSkipCount++;
   Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
   plIdx++;
   plShowCard();
+  // آپدیت progress bar پشت‌صحنه
+  setTimeout(renderPackGrid, 100);
 }
 
 async function packLearnAddFlash(){
