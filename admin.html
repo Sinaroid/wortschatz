@@ -7,340 +7,154 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=JetBrains+Mono:wght@400;600&display=swap');
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
-  --card:#141414;--border:#2a2a2a;
-  --ink:#f0ede6;--ink2:#888;--ink3:#555;
-  --accent:#4ade80;--accent2:#22c55e;
-  --err:#f87171;--warn:#fb923c;--blue:#60a5fa;
-  --sans:'JetBrains Mono',monospace;
-  --serif:'Fraunces',serif;
-  --r:8px;
-}
+:root{--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--card:#141414;--border:#2a2a2a;--ink:#f0ede6;--ink2:#888;--ink3:#555;--accent:#4ade80;--err:#f87171;--warn:#fb923c;--blue:#60a5fa;--sans:'JetBrains Mono',monospace;--serif:'Fraunces',serif;--r:8px}
 html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13px}
-
-/* ── Login ── */
-#login{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  background:var(--bg);z-index:100;
-}
-.login-box{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:40px;width:100%;max-width:340px;text-align:center;
-}
-.login-logo{font-family:var(--serif);font-size:28px;color:var(--ink);margin-bottom:4px}
-.login-sub{font-size:11px;color:var(--ink3);margin-bottom:32px;letter-spacing:1px}
-.login-inp{
-  width:100%;background:var(--bg3);border:1px solid var(--border);
-  border-radius:var(--r);padding:12px 16px;color:var(--ink);
-  font-family:var(--sans);font-size:14px;margin-bottom:12px;
-  outline:none;transition:border .2s;
-}
-.login-inp:focus{border-color:var(--accent)}
-.login-btn{
-  width:100%;padding:12px;border-radius:var(--r);
-  background:var(--accent);color:#000;border:none;
-  font-family:var(--sans);font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .18s;
-}
-.login-btn:hover{background:var(--accent2)}
-.login-err{font-size:11px;color:var(--err);margin-top:8px;min-height:16px}
-
-/* ── App ── */
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:100}
+.lbox{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;width:340px;text-align:center}
+.llogo{font-family:var(--serif);font-size:28px;margin-bottom:4px}
+.lsub{font-size:11px;color:var(--ink3);margin-bottom:32px;letter-spacing:1px}
+.linp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;color:var(--ink);font-family:var(--sans);font-size:14px;margin-bottom:12px;outline:none}
+.linp:focus{border-color:var(--accent)}
+.lbtn{width:100%;padding:12px;border-radius:var(--r);background:var(--accent);color:#000;border:none;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer}
+.lerr{font-size:11px;color:var(--err);margin-top:8px;min-height:16px}
 #app{display:none;height:100%;flex-direction:column}
 #app.show{display:flex}
-
-/* Topbar */
-.topbar{
-  display:flex;align-items:center;gap:16px;padding:14px 24px;
-  border-bottom:1px solid var(--border);background:var(--card);flex-shrink:0;
-}
-.topbar-logo{font-family:var(--serif);font-size:16px;color:var(--ink)}
-.topbar-badge{font-size:10px;color:var(--accent);background:rgba(74,222,128,.1);
-  border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:2px 8px;letter-spacing:1px}
-.topbar-right{margin-right:auto;display:flex;align-items:center;gap:12px}
-.sync-btn{
-  padding:6px 14px;border-radius:var(--r);border:1px solid var(--border);
-  background:transparent;color:var(--ink2);font-family:var(--sans);font-size:12px;
-  cursor:pointer;transition:all .15s;
-}
-.sync-btn:hover{border-color:var(--accent);color:var(--accent)}
-.last-sync{font-size:10px;color:var(--ink3)}
-
-/* Layout */
+.topbar{display:flex;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--card);flex-shrink:0}
+.tlogo{font-family:var(--serif);font-size:16px}
+.tbadge{font-size:10px;color:var(--accent);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:2px 8px}
+.tright{margin-right:auto;display:flex;align-items:center;gap:12px}
+.sbtn{padding:6px 14px;border-radius:var(--r);border:1px solid var(--border);background:transparent;color:var(--ink2);font-family:var(--sans);font-size:12px;cursor:pointer}
 .layout{display:flex;flex:1;overflow:hidden}
-
-/* Sidebar */
-.sidebar{
-  width:200px;border-left:1px solid var(--border);background:var(--card);
-  padding:16px 0;flex-shrink:0;overflow-y:auto;
-}
-.nav-item{
-  display:flex;align-items:center;gap:10px;padding:10px 20px;
-  font-size:12px;color:var(--ink2);cursor:pointer;transition:all .15s;
-  border-right:2px solid transparent;
-}
-.nav-item:hover{color:var(--ink);background:var(--bg3)}
-.nav-item.active{color:var(--accent);border-right-color:var(--accent);background:rgba(74,222,128,.05)}
-.nav-icon{font-size:14px;width:18px;text-align:center}
-
-/* Main */
+.sidebar{width:200px;border-left:1px solid var(--border);background:var(--card);padding:16px 0;flex-shrink:0}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:12px;color:var(--ink2);cursor:pointer;border-right:2px solid transparent}
+.nav:hover{color:var(--ink);background:var(--bg3)}
+.nav.on{color:var(--accent);border-right-color:var(--accent);background:rgba(74,222,128,.05)}
 .main{flex:1;overflow-y:auto;padding:24px}
-
-/* Stats row */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.stat-card{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:16px;
-}
-.stat-n{font-size:28px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:4px}
-.stat-n.green{color:var(--accent)}
-.stat-n.blue{color:var(--blue)}
-.stat-n.orange{color:var(--warn)}
-.stat-n.red{color:var(--err)}
-.stat-l{font-size:10px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
-
-/* Table */
-.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.table-header{
-  display:flex;align-items:center;gap:12px;padding:14px 20px;
-  border-bottom:1px solid var(--border);
-}
-.table-title{font-size:13px;font-weight:600;color:var(--ink)}
-.table-count{font-size:10px;color:var(--ink3);background:var(--bg3);padding:2px 8px;border-radius:20px}
-.search-inp{
-  margin-right:auto;background:var(--bg3);border:1px solid var(--border);
-  border-radius:6px;padding:6px 12px;color:var(--ink);font-family:var(--sans);
-  font-size:12px;outline:none;transition:border .2s;width:200px;
-}
-.search-inp:focus{border-color:var(--accent)}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.sn{font-size:28px;font-weight:600;line-height:1;margin-bottom:4px}
+.sl{font-size:10px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
+.tw{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.th{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border)}
+.tt{font-size:13px;font-weight:600}
+.tc{font-size:10px;color:var(--ink3);background:var(--bg3);padding:2px 8px;border-radius:20px}
+.si{margin-right:auto;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--ink);font-family:var(--sans);font-size:12px;outline:none;width:200px}
 table{width:100%;border-collapse:collapse}
-th{padding:10px 16px;text-align:right;font-size:10px;color:var(--ink3);
-  letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);
-  font-weight:400;white-space:nowrap}
-td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--ink2);
-  font-size:12px;vertical-align:middle}
+th{padding:10px 16px;text-align:right;font-size:10px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);font-weight:400;white-space:nowrap}
+td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--ink2);font-size:12px;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg3)}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
-  border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.3px}
+tr.risk td{background:rgba(248,113,113,.04)}
+tr.hot td{background:rgba(74,222,128,.04)}
+.badge{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
 .badge.free{background:rgba(255,255,255,.06);color:var(--ink3)}
 .badge.beta{background:rgba(96,165,250,.12);color:var(--blue)}
 .badge.pro{background:rgba(74,222,128,.1);color:var(--accent)}
-.plan-sel{
-  background:var(--bg3);border:1px solid var(--border);border-radius:6px;
-  padding:4px 8px;color:var(--ink);font-family:var(--sans);font-size:11px;
-  cursor:pointer;outline:none;
-}
-.plan-sel:focus{border-color:var(--accent)}
-.email-cell{color:var(--ink);direction:ltr;font-size:11px}
-.date-cell{font-size:10px;color:var(--ink3)}
-
-/* Beta codes */
-.codes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
-.code-card{
-  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
-  padding:14px;display:flex;align-items:center;justify-content:space-between;
-}
-.code-val{font-size:13px;color:var(--accent);letter-spacing:2px}
-.code-status{font-size:10px;padding:2px 8px;border-radius:20px}
-.code-status.used{background:rgba(248,113,113,.1);color:var(--err)}
-.code-status.free{background:rgba(74,222,128,.1);color:var(--accent)}
-.gen-btn{
-  padding:8px 16px;border-radius:var(--r);background:var(--accent);
-  color:#000;border:none;font-family:var(--sans);font-size:12px;font-weight:600;
-  cursor:pointer;transition:all .15s;
-}
-.gen-btn:hover{background:var(--accent2)}
-.del-btn{
-  padding:4px 10px;border-radius:6px;background:transparent;
-  border:1px solid rgba(248,113,113,.3);color:var(--err);
-  font-family:var(--sans);font-size:10px;cursor:pointer;transition:all .15s;
-}
-.del-btn:hover{background:rgba(248,113,113,.1)}
-
-/* Pane visibility */
-.pane{display:none}
-.pane.active{display:block}
-
-/* Loading */
-.loading{text-align:center;padding:40px;color:var(--ink3)}
-.loading-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--accent);animation:pulse2 1s ease-in-out infinite}
-.loading-dot:nth-child(2){animation-delay:.15s}
-.loading-dot:nth-child(3){animation-delay:.3s}
-@keyframes pulse2{0%,100%{opacity:.2}50%{opacity:1}}
-
-/* Toast */
-#toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);
-  background:var(--accent);color:#000;font-size:12px;font-weight:600;
-  padding:8px 20px;border-radius:20px;opacity:0;transition:all .2s;
-  pointer-events:none;z-index:999;
-}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* Errors */
-.err-item{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:16px;margin-bottom:10px;
-}
-.err-msg{font-size:12px;color:var(--err);margin-bottom:6px}
-.err-meta{font-size:10px;color:var(--ink3)}
-.empty-state{text-align:center;padding:60px 20px;color:var(--ink3);font-size:12px}
-
-/* Insight badges */
-.ins{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;
-  border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.3px;margin-right:3px}
+.ins{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;margin-left:2px}
 .ins.churn{background:rgba(248,113,113,.12);color:var(--err)}
 .ins.convert{background:rgba(74,222,128,.12);color:var(--accent)}
 .ins.stuck{background:rgba(251,146,60,.12);color:var(--warn)}
 .ins.new{background:rgba(96,165,250,.12);color:var(--blue)}
-
-/* Row highlight */
-tr.risk td{background:rgba(248,113,113,.04)}
-tr.hot td{background:rgba(74,222,128,.04)}
-
-/* Filters */
-.filter-bar{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.filter-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--ink3);font-family:var(--sans);font-size:11px;
-  cursor:pointer;transition:all .15s}
-.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
-.filter-btn.active{background:rgba(74,222,128,.1);border-color:var(--accent);color:var(--accent)}
-
-/* Stats mini */
-.user-insights{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 20px;border-bottom:1px solid var(--border)}
-.ui-card{background:var(--bg3);border-radius:6px;padding:10px 12px;text-align:center}
-.ui-n{font-size:20px;font-weight:600;color:var(--ink);line-height:1}
-.ui-l{font-size:9px;color:var(--ink3);margin-top:3px;letter-spacing:.3px}
+.pb{padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:var(--bg3);color:var(--ink3);font-family:var(--sans);font-size:10px;cursor:pointer}
+.pb.af{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pb.ab{background:var(--warn);color:#000;border-color:var(--warn)}
+.pb.ap{background:var(--accent);color:#000;border-color:var(--accent)}
+.irow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.ic{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;text-align:center;cursor:pointer}
+.ic.on{border-color:var(--accent)}
+.in2{font-size:20px;font-weight:600;line-height:1}
+.il{font-size:9px;color:var(--ink3);margin-top:3px}
+.ecell{color:var(--ink);direction:ltr;font-size:11px}
+.dcell{font-size:10px;color:var(--ink3)}
+.pane{display:none}.pane.on{display:block}
+.empty{text-align:center;padding:60px;color:var(--ink3);font-size:12px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px}
+.cc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;align-items:center;justify-content:space-between}
+.cv{font-size:13px;color:var(--accent);letter-spacing:2px}
+.genbtn{padding:8px 16px;border-radius:var(--r);background:var(--accent);color:#000;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer}
+.delbtn{padding:4px 10px;border-radius:6px;background:transparent;border:1px solid rgba(248,113,113,.3);color:var(--err);font-family:var(--sans);font-size:10px;cursor:pointer}
+.ei{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--accent);color:#000;font-size:12px;font-weight:600;padding:8px 20px;border-radius:20px;opacity:0;transition:all .2s;pointer-events:none;z-index:999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
-<!-- Login -->
 <div id="login">
-  <div class="login-box">
-    <div class="login-logo">Wortschatz</div>
-    <div class="login-sub">ADMIN PANEL</div>
-    <input class="login-inp" type="password" id="pwd-inp" placeholder="رمز عبور" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">ورود</button>
-    <div class="login-err" id="login-err"></div>
+  <div class="lbox">
+    <div class="llogo">Wortschatz</div>
+    <div class="lsub">ADMIN PANEL</div>
+    <input class="linp" type="password" id="pinp" placeholder="رمز عبور" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" onclick="doLogin()">ورود</button>
+    <div class="lerr" id="lerr"></div>
   </div>
 </div>
 
-<!-- App -->
 <div id="app">
   <div class="topbar">
-    <div class="topbar-logo">Wortschatz</div>
-    <div class="topbar-badge">ADMIN</div>
-    <div class="topbar-right">
-      <span class="last-sync" id="last-sync">—</span>
-      <button class="sync-btn" onclick="loadAll()">↻ بروزرسانی</button>
+    <div class="tlogo">Wortschatz</div>
+    <div class="tbadge">ADMIN</div>
+    <div class="tright">
+      <span style="font-size:10px;color:var(--ink3)" id="lsync">—</span>
+      <button class="sbtn" onclick="loadAll()">↻ بروزرسانی</button>
     </div>
   </div>
-
   <div class="layout">
     <div class="sidebar">
-      <div class="nav-item active" onclick="switchTab('stats')" id="nav-stats">
-        <span class="nav-icon">📊</span> آمار کلی
-      </div>
-      <div class="nav-item" onclick="switchTab('users')" id="nav-users">
-        <span class="nav-icon">👥</span> کاربران
-      </div>
-      <div class="nav-item" onclick="switchTab('beta')" id="nav-beta">
-        <span class="nav-icon">🔑</span> کدهای بتا
-      </div>
-      <div class="nav-item" onclick="switchTab('errors')" id="nav-errors">
-        <span class="nav-icon">⚠️</span> خطاها
-      </div>
+      <div class="nav on" id="nav-stats" onclick="tab('stats')">📊 آمار کلی</div>
+      <div class="nav" id="nav-users" onclick="tab('users')">👥 کاربران</div>
+      <div class="nav" id="nav-beta" onclick="tab('beta')">🔑 کدهای بتا</div>
+      <div class="nav" id="nav-errors" onclick="tab('errors')">⚠️ خطاها</div>
     </div>
-
     <div class="main">
 
-      <!-- Stats -->
-      <div class="pane active" id="pane-stats">
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-n green" id="s-total">—</div>
-            <div class="stat-l">کل کاربر</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-n blue" id="s-active">—</div>
-            <div class="stat-l">فعال (۷ روز)</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-n orange" id="s-beta">—</div>
-            <div class="stat-l">بتا</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-n" id="s-pro">—</div>
-            <div class="stat-l">Pro</div>
-          </div>
+      <div class="pane on" id="pane-stats">
+        <div class="sgrid">
+          <div class="sc"><div class="sn" style="color:var(--accent)" id="s-total">—</div><div class="sl">کل کاربر</div></div>
+          <div class="sc"><div class="sn" style="color:var(--blue)" id="s-active">—</div><div class="sl">فعال ۷ روز</div></div>
+          <div class="sc"><div class="sn" style="color:var(--warn)" id="s-beta">—</div><div class="sl">بتا</div></div>
+          <div class="sc"><div class="sn" id="s-pro">—</div><div class="sl">Pro</div></div>
         </div>
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-n" id="s-words">—</div>
-            <div class="stat-l">کل لغت ذخیره شده</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-n" id="s-codes-free">—</div>
-            <div class="stat-l">کد بتا باقی‌مونده</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-n" id="s-codes-used">—</div>
-            <div class="stat-l">کد بتا استفاده شده</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-n green" id="s-today">—</div>
-            <div class="stat-l">ثبت‌نام امروز</div>
-          </div>
+        <div class="sgrid">
+          <div class="sc"><div class="sn" id="s-words">—</div><div class="sl">کل لغت</div></div>
+          <div class="sc"><div class="sn" id="s-cf">—</div><div class="sl">کد بتا آزاد</div></div>
+          <div class="sc"><div class="sn" id="s-cu">—</div><div class="sl">کد بتا استفاده شده</div></div>
+          <div class="sc"><div class="sn" style="color:var(--accent)" id="s-today">—</div><div class="sl">امروز</div></div>
         </div>
       </div>
 
-      <!-- Users -->
       <div class="pane" id="pane-users">
-        <div class="table-wrap">
-          <div class="table-header">
-            <div class="table-title">کاربران</div>
-            <span class="table-count" id="users-count">—</span>
-            <input class="search-inp" placeholder="🔍 جستجو با ایمیل..." oninput="filterUsers(this.value)" id="user-search">
+        <div class="tw">
+          <div class="th">
+            <div class="tt">کاربران</div>
+            <span class="tc" id="ucnt">—</span>
+            <input class="si" placeholder="🔍 ایمیل..." oninput="filterUsers(this.value)">
           </div>
-          <div id="users-table-wrap">
-            <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
-          </div>
+          <div id="ubody"><div class="empty">در حال بارگذاری...</div></div>
         </div>
       </div>
 
-      <!-- Beta codes -->
       <div class="pane" id="pane-beta">
-        <div class="table-wrap">
-          <div class="table-header">
-            <div class="table-title">کدهای بتا</div>
-            <span class="table-count" id="beta-count">—</span>
+        <div class="tw">
+          <div class="th">
+            <div class="tt">کدهای بتا</div>
+            <span class="tc" id="bcnt">—</span>
             <div style="margin-right:auto;display:flex;gap:8px">
-              <input id="gen-count" type="number" value="5" min="1" max="50"
-                style="width:60px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--ink);font-family:var(--sans);font-size:12px;outline:none">
-              <button class="gen-btn" onclick="generateCodes()">+ ساخت کد جدید</button>
+              <input id="gcnt" type="number" value="5" min="1" max="50" style="width:60px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--ink);font-family:var(--sans);font-size:12px;outline:none">
+              <button class="genbtn" onclick="genCodes()">+ ساخت کد</button>
             </div>
           </div>
-          <div id="beta-codes-wrap" style="padding:16px">
-            <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
-          </div>
+          <div id="bbody" class="cgrid"><div class="empty">در حال بارگذاری...</div></div>
         </div>
       </div>
 
-      <!-- Errors -->
       <div class="pane" id="pane-errors">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">خطاهای ثبت شده</div>
-          <button class="del-btn" onclick="clearErrors()" style="font-size:11px">پاک کردن همه</button>
+          <div style="font-size:13px;font-weight:600">خطاها</div>
+          <button class="delbtn" onclick="clearErrs()">پاک کردن همه</button>
         </div>
-        <div id="errors-wrap">
-          <div class="loading"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
-        </div>
+        <div id="ebody"><div class="empty">در حال بارگذاری...</div></div>
       </div>
 
     </div>
@@ -350,338 +164,224 @@ tr.hot td{background:rgba(74,222,128,.04)}
 <div id="toast"></div>
 
 <script>
-const SB_URL='https://ekogfglcsftpwmithxbi.supabase.co';
-const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
-// password از API چک میشه — توی Vercel env بذار: ADMIN_PASSWORD
+var SB_URL='https://ekogfglcsftpwmithxbi.supabase.co';
+var SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
+var sb=window.supabase.createClient(SB_URL,SB_KEY);
+var allUsers=[];
+var curFilter='all';
+var adminPwd='';
 
-const {createClient}=window.supabase;
-const sb=createClient(SB_URL,SB_KEY);
-
-let allUsers=[];
-
-// ── Login ──────────────────────────────
 async function doLogin(){
-  const pwd=document.getElementById('pwd-inp').value.trim();
-  if(!pwd) return;
-  const btn=document.querySelector('.login-btn');
+  var pwd=document.getElementById('pinp').value.trim();
+  if(!pwd)return;
+  var btn=document.querySelector('.lbtn');
   btn.textContent='...';btn.disabled=true;
   try{
-    const r=await fetch('/api/admin-auth',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:pwd})
-    });
-    const d=await r.json();
-    if(r.ok && d.token){
-      sessionStorage.setItem('ws_admin_token',d.token);
+    var r=await fetch('/api/admin-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd})});
+    var d=await r.json();
+    if(r.ok&&d.token){
+      adminPwd=pwd;
       document.getElementById('login').style.display='none';
       document.getElementById('app').classList.add('show');
       loadAll();
-    } else {
-      document.getElementById('login-err').textContent='رمز اشتباهه';
-      document.getElementById('pwd-inp').value='';
+    }else{
+      document.getElementById('lerr').textContent='رمز اشتباهه';
+      document.getElementById('pinp').value='';
     }
-  }catch(e){
-    document.getElementById('login-err').textContent='خطای شبکه';
-  }
+  }catch(e){document.getElementById('lerr').textContent='خطای شبکه';}
   btn.textContent='ورود';btn.disabled=false;
 }
 
-// ── Tab switch ─────────────────────────
-function switchTab(name){
-  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('pane-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
+function tab(name){
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.nav').forEach(function(n){n.classList.remove('on');});
+  document.getElementById('pane-'+name).classList.add('on');
+  document.getElementById('nav-'+name).classList.add('on');
 }
 
-// ── Load all data ──────────────────────
 async function loadAll(){
-  document.getElementById('last-sync').textContent='در حال بارگذاری...';
-  await Promise.all([loadStats(), loadUsers(), loadBetaCodes(), loadErrors()]);
-  document.getElementById('last-sync').textContent='آخرین sync: '+new Date().toLocaleTimeString('fa-IR');
+  document.getElementById('lsync').textContent='در حال بارگذاری...';
+  await Promise.all([loadStats(),loadUsers(),loadBeta(),loadErrs()]);
+  document.getElementById('lsync').textContent='sync: '+new Date().toLocaleTimeString('fa-IR');
 }
 
-// ── Stats ──────────────────────────────
 async function loadStats(){
   try{
-    const {data:profiles} = await sb.from('profiles').select('plan,created_at,search_count');
-    const {data:words} = await sb.from('words').select('id',{count:'exact',head:true});
-    const {data:codes} = await sb.from('beta_codes').select('used');
-
-    if(!profiles) return;
-
-    const total=profiles.length;
-    const beta=profiles.filter(p=>p.plan==='beta').length;
-    const pro=profiles.filter(p=>p.plan==='pro').length;
-
-    const sevenDaysAgo=new Date(Date.now()-7*24*60*60*1000).toISOString();
-    const active=profiles.filter(p=>p.created_at>sevenDaysAgo).length;
-
-    const today=new Date().toDateString();
-    const todayUsers=profiles.filter(p=>new Date(p.created_at).toDateString()===today).length;
-
-    const freeC=codes?.filter(c=>!c.used).length||0;
-    const usedC=codes?.filter(c=>c.used).length||0;
-
-    document.getElementById('s-total').textContent=total;
-    document.getElementById('s-active').textContent=active;
-    document.getElementById('s-beta').textContent=beta;
-    document.getElementById('s-pro').textContent=pro;
-    document.getElementById('s-words').textContent=words?.length||'—';
-    document.getElementById('s-codes-free').textContent=freeC;
-    document.getElementById('s-codes-used').textContent=usedC;
-    document.getElementById('s-today').textContent=todayUsers;
-  }catch(e){console.error(e)}
+    var p=(await sb.from('profiles').select('plan,created_at,word_count')).data||[];
+    var c=(await sb.from('beta_codes').select('used')).data||[];
+    var ago=new Date(Date.now()-7*24*60*60*1000).toISOString();
+    var td=new Date().toDateString();
+    document.getElementById('s-total').textContent=p.length;
+    document.getElementById('s-active').textContent=p.filter(function(x){return x.created_at>ago;}).length;
+    document.getElementById('s-beta').textContent=p.filter(function(x){return x.plan==='beta';}).length;
+    document.getElementById('s-pro').textContent=p.filter(function(x){return x.plan==='pro';}).length;
+    document.getElementById('s-words').textContent=p.reduce(function(a,x){return a+(x.word_count||0);},0);
+    document.getElementById('s-cf').textContent=c.filter(function(x){return !x.used;}).length;
+    document.getElementById('s-cu').textContent=c.filter(function(x){return x.used;}).length;
+    document.getElementById('s-today').textContent=p.filter(function(x){return new Date(x.created_at).toDateString()===td;}).length;
+  }catch(e){console.error(e);}
 }
 
-// ── Users ──────────────────────────────
 async function loadUsers(){
   try{
-    // profiles join با auth.users از طریق view
-    const {data,error} = await sb.from('admin_users_view')
-      .select('*')
-      .order('created_at',{ascending:false})
-      .limit(500);
-
-    if(error){
-      // fallback: profiles بدون email
-      const {data:p} = await sb.from('profiles')
-        .select('id,plan,created_at,word_count,search_count,last_seen_at,session_count')
-        .order('created_at',{ascending:false})
-        .limit(500);
-      allUsers=(p||[]).map(u=>({...u,email:'—'}));
-    } else {
-      allUsers=data||[];
+    var res=await sb.from('admin_users_view').select('*').order('created_at',{ascending:false}).limit(500);
+    if(res.error){
+      var r2=await sb.from('profiles').select('id,plan,created_at,word_count,search_count,last_seen_at,session_count').order('created_at',{ascending:false}).limit(500);
+      allUsers=(r2.data||[]).map(function(u){return Object.assign({email:'—'},u);});
+    }else{
+      allUsers=res.data||[];
     }
     renderUsers(allUsers);
-  }catch(e){console.error(e)}
-}
-
-let currentFilter='all';
-
-function renderUsers(users){
-  document.getElementById('users-count').textContent=users.length+' نفر';
-  if(!users.length){
-    document.getElementById('users-table-wrap').innerHTML='<div class="empty-state">هیچ کاربری یافت نشد</div>';
-    return;
-  }
-
-  // Classify users
-  const classified = users.map(u=>{
-    const days = u.last_seen_at
-      ? Math.floor((Date.now()-new Date(u.last_seen_at))/(1000*60*60*24))
-      : null;
-    const words = u.word_count||0;
-    const sessions = u.session_count||0;
-    const insights=[];
-    let rowClass='';
-
-    if(days!==null && days>7){
-      insights.push('<span class="ins churn">⚠ چرن</span>');
-      rowClass='risk';
-    }
-    if(words>=10 && (u.plan==='free'||u.plan==='beta')){
-      insights.push('<span class="ins convert">💰 Pro candidate</span>');
-      rowClass='hot';
-    }
-    if(sessions>=3 && words<3){
-      insights.push('<span class="ins stuck">🔄 Onboarding مشکل</span>');
-    }
-    if(days!==null && days<=1 && sessions<=1){
-      insights.push('<span class="ins new">✨ جدید</span>');
-    }
-
-    return {...u, days, insights, rowClass};
-  });
-
-  // Filter
-  const filtered = currentFilter==='all' ? classified
-    : currentFilter==='churn' ? classified.filter(u=>u.days!==null&&u.days>7)
-    : currentFilter==='convert' ? classified.filter(u=>(u.word_count||0)>=10&&u.plan==='free')
-    : currentFilter==='stuck' ? classified.filter(u=>(u.session_count||0)>=3&&(u.word_count||0)<3)
-    : classified;
-
-  // Mini stats
-  const churnCount = classified.filter(u=>u.days!==null&&u.days>7).length;
-  const convertCount = classified.filter(u=>(u.word_count||0)>=10&&u.plan==='free').length;
-  const stuckCount = classified.filter(u=>(u.session_count||0)>=3&&(u.word_count||0)<3).length;
-  const activeCount = classified.filter(u=>u.days!==null&&u.days<=3).length;
-
-  // Build HTML manually (no template literal nesting)
-  let rows = '';
-  filtered.forEach(function(u){
-    var act = u.days===null ? '—'
-      : u.days===0 ? '<span style="color:var(--accent)">امروز</span>'
-      : u.days<=3 ? '<span style="color:var(--blue)">'+u.days+' روز پیش</span>'
-      : u.days<=7 ? '<span style="color:var(--warn)">'+u.days+' روز پیش</span>'
-      : '<span style="color:var(--err)">'+u.days+' روز پیش</span>';
-    var ins = u.insights.join('')||'<span style="color:var(--ink3);font-size:10px">—</span>';
-    rows += '<tr class="'+u.rowClass+'">'
-      + '<td class="email-cell">'+(u.email||'—')+'</td>'
-      + '<td>'+ins+'</td>'
-      + '<td><span class="badge '+(u.plan||'free')+'">'+(u.plan||'free')+'</span></td>'
-      + '<td>'+(u.word_count||0)+'</td>'
-      + '<td>'+(u.session_count||0)+'</td>'
-      + '<td>'+act+'</td>'
-      + '<td class="date-cell">'+formatDate(u.created_at)+'</td>'
-      + '<td><select class="plan-sel" onchange="updatePlan(\"'+u.id+'\",this.value)">' 
-      + '<option value="free" '+(u.plan==='free'?'selected':'')+'>Free</option>'
-      + '<option value="beta" '+(u.plan==='beta'?'selected':'')+'>Beta</option>'
-      + '<option value="pro" '+(u.plan==='pro'?'selected':'')+'>Pro</option>'
-      + '</select></td>'
-      + '</tr>';
-  });
-
-  var insHtml = '<div class="user-insights">'
-    + '<div class="ui-card" style="cursor:pointer" onclick="setFilter(&quot;all&quot;)">'
-    + '<div class="ui-n">'+users.length+'</div><div class="ui-l">همه</div></div>'
-    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(248,113,113,.2)" onclick="setFilter(&quot;churn&quot;)">'
-    + '<div class="ui-n" style="color:var(--err)">'+churnCount+'</div><div class="ui-l">⚠ چرن احتمالی</div></div>'
-    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(74,222,128,.2)" onclick="setFilter(&quot;convert&quot;)">'
-    + '<div class="ui-n" style="color:var(--accent)">'+convertCount+'</div><div class="ui-l">💰 Pro candidate</div></div>'
-    + '<div class="ui-card" style="cursor:pointer;border:1px solid rgba(251,146,60,.2)" onclick="setFilter(&quot;stuck&quot;)">'
-    + '<div class="ui-n" style="color:var(--warn)">'+stuckCount+'</div><div class="ui-l">🔄 Onboarding مشکل</div></div>'
-    + '</div>';
-
-  var tableHtml = '<table><thead><tr>'
-    + '<th>ایمیل</th><th>Insights</th><th>پلن</th><th>لغت</th>'
-    + '<th>session</th><th>آخرین بازدید</th><th>ثبت‌نام</th><th>تغییر پلن</th>'
-    + '</tr></thead><tbody>'+rows+'</tbody></table>';
-
-  document.getElementById('users-table-wrap').innerHTML = insHtml + tableHtml;
-}
-
-function setFilter(f){
-  currentFilter=f;
-  renderUsers(allUsers);
+  }catch(e){console.error(e);}
 }
 
 function filterUsers(q){
-  const f=allUsers.filter(u=>(u.email||'').toLowerCase().includes(q.toLowerCase()));
+  var f=allUsers.filter(function(u){return (u.email||'').toLowerCase().indexOf(q.toLowerCase())>-1;});
   renderUsers(f);
 }
 
-async function updatePlan(userId,plan){
-  const pwd = sessionStorage.getItem('ws_admin_token');
+function setFilter(f){
+  curFilter=f;
+  renderUsers(allUsers);
+}
+
+function dc(d){
+  if(d===null)return 'var(--ink3)';
+  if(d===0)return 'var(--accent)';
+  if(d<=3)return 'var(--blue)';
+  if(d<=7)return 'var(--warn)';
+  return 'var(--err)';
+}
+
+function dt(d){
+  if(d===null)return '—';
+  if(d===0)return 'امروز';
+  return d+' روز پیش';
+}
+
+function fd(iso){
+  if(!iso)return '—';
+  return new Date(iso).toLocaleDateString('fa-IR',{year:'numeric',month:'short',day:'numeric'});
+}
+
+function renderUsers(users){
+  document.getElementById('ucnt').textContent=users.length+' نفر';
+  var cls=users.map(function(u){
+    var d=u.last_seen_at?Math.floor((Date.now()-new Date(u.last_seen_at))/86400000):null;
+    var w=u.word_count||0,s=u.session_count||0,ins=[],rc='';
+    if(d!==null&&d>7){ins.push('<span class="ins churn">⚠ چرن</span>');rc='risk';}
+    if(w>=10&&u.plan!=='pro'){ins.push('<span class="ins convert">💰 Pro</span>');if(!rc)rc='hot';}
+    if(s>=3&&w<3)ins.push('<span class="ins stuck">🔄 Stuck</span>');
+    if(d!==null&&d<=1&&s<=1)ins.push('<span class="ins new">✨ جدید</span>');
+    return Object.assign({},u,{_d:d,_ins:ins,_rc:rc});
+  });
+  var flt=curFilter==='all'?cls:cls.filter(function(u){
+    return curFilter==='churn'?(u._d!==null&&u._d>7)
+      :curFilter==='convert'?((u.word_count||0)>=10&&u.plan!=='pro')
+      :curFilter==='stuck'?((u.session_count||0)>=3&&(u.word_count||0)<3)
+      :true;
+  });
+  var cn=cls.filter(function(u){return u._d!==null&&u._d>7;}).length;
+  var cv=cls.filter(function(u){return (u.word_count||0)>=10&&u.plan!=='pro';}).length;
+  var st=cls.filter(function(u){return (u.session_count||0)>=3&&(u.word_count||0)<3;}).length;
+
+  var h='<div class="irow">';
+  h+='<div class="ic'+(curFilter==='all'?' on':'')+'" onclick="setFilter(\'all\')"><div class="in2">'+users.length+'</div><div class="il">همه</div></div>';
+  h+='<div class="ic'+(curFilter==='churn'?' on':'')+'" onclick="setFilter(\'churn\')" style="border-color:rgba(248,113,113,.3)"><div class="in2" style="color:var(--err)">'+cn+'</div><div class="il">⚠ چرن</div></div>';
+  h+='<div class="ic'+(curFilter==='convert'?' on':'')+'" onclick="setFilter(\'convert\')" style="border-color:rgba(74,222,128,.3)"><div class="in2" style="color:var(--accent)">'+cv+'</div><div class="il">💰 Pro candidate</div></div>';
+  h+='<div class="ic'+(curFilter==='stuck'?' on':'')+'" onclick="setFilter(\'stuck\')" style="border-color:rgba(251,146,60,.3)"><div class="in2" style="color:var(--warn)">'+st+'</div><div class="il">🔄 Onboarding</div></div>';
+  h+='</div>';
+  h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>لغت</th><th>session</th><th>بازدید</th><th>ثبت‌نام</th><th>تغییر پلن</th></tr></thead><tbody>';
+  for(var i=0;i<flt.length;i++){
+    var u=flt[i];
+    h+='<tr class="'+u._rc+'">';
+    h+='<td class="ecell">'+(u.email||'—')+'</td>';
+    h+='<td>'+(u._ins.length?u._ins.join(''):'—')+'</td>';
+    h+='<td><span class="badge '+(u.plan||'free')+'">'+(u.plan||'free')+'</span></td>';
+    h+='<td>'+(u.word_count||0)+'</td>';
+    h+='<td>'+(u.session_count||0)+'</td>';
+    h+='<td style="color:'+dc(u._d)+'">'+dt(u._d)+'</td>';
+    h+='<td class="dcell">'+fd(u.created_at)+'</td>';
+    h+='<td style="display:flex;gap:4px">';
+    h+='<button class="pb'+(u.plan==='free'?' af':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="free">Free</button>';
+    h+='<button class="pb'+(u.plan==='beta'?' ab':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="beta">Beta</button>';
+    h+='<button class="pb'+(u.plan==='pro'?' ap':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="pro">Pro</button>';
+    h+='</td></tr>';
+  }
+  h+='</tbody></table>';
+  document.getElementById('ubody').innerHTML=h;
+}
+
+function clickPlan(btn){
+  updatePlan(btn.getAttribute('data-uid'),btn.getAttribute('data-plan'));
+}
+
+async function updatePlan(uid,plan){
+  console.log('updatePlan',uid,plan,'pwd set:',!!adminPwd);
   try{
-    const token = atob(pwd);
-    const adminPass = token.split(':').slice(1).join(':');
-    console.log('Updating plan:', userId, plan);
-    const r = await fetch('/api/admin-update',{
+    var r=await fetch('/api/admin-update',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-admin-password': adminPass
-      },
-      body:JSON.stringify({userId,plan})
+      headers:{'Content-Type':'application/json','x-admin-password':adminPwd},
+      body:JSON.stringify({userId:uid,plan:plan})
     });
-    const d = await r.json();
-    console.log('API response:', r.status, d);
-    if(!r.ok) throw new Error(d.error||'خطا');
-    toast('پلن آپدیت شد ✓ — user باید logout/login کنه');
+    var d=await r.json();
+    console.log('result',r.status,d);
+    if(!r.ok)throw new Error(d.error||'خطا');
+    toast('پلن آپدیت شد ✓');
     await loadUsers();
     await loadStats();
-  }catch(e){
-    console.error('updatePlan error:', e);
-    toast('خطا: '+e.message,true);
-  }
+  }catch(e){console.error(e);toast('خطا: '+e.message,true);}
 }
 
-// ── Beta Codes ─────────────────────────
-async function loadBetaCodes(){
+async function loadBeta(){
   try{
-    const {data}=await sb.from('beta_codes').select('*').order('created_at',{ascending:false});
-    renderBetaCodes(data||[]);
-  }catch(e){
-    document.getElementById('beta-codes-wrap').innerHTML='<div class="empty-state">جدول beta_codes وجود نداره — توی Supabase بساز</div>';
-  }
+    var res=await sb.from('beta_codes').select('*').order('created_at',{ascending:false});
+    var codes=res.data||[];
+    document.getElementById('bcnt').textContent=codes.length+' کد';
+    if(!codes.length){document.getElementById('bbody').innerHTML='<div class="empty">هنوز کدی نساختی</div>';return;}
+    var h='';
+    for(var i=0;i<codes.length;i++){
+      var c=codes[i];
+      h+='<div class="cc"><div><div class="cv">'+c.code+'</div><div style="font-size:10px;color:var(--ink3);margin-top:4px">'+(c.used_by||'آزاد')+'</div></div>';
+      h+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">';
+      h+='<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:'+(c.used?'rgba(248,113,113,.1)':'rgba(74,222,128,.1)')+';color:'+(c.used?'var(--err)':'var(--accent)')+'">'+( c.used?'استفاده شد':'آزاد')+'</span>';
+      if(!c.used)h+='<button class="delbtn" onclick="delCode(this)" data-cid="'+c.id+'">حذف</button>';
+      h+='</div></div>';
+    }
+    document.getElementById('bbody').innerHTML=h;
+  }catch(e){document.getElementById('bbody').innerHTML='<div class="empty">جدول beta_codes رو بساز</div>';}
 }
 
-function renderBetaCodes(codes){
-  document.getElementById('beta-count').textContent=codes.length+' کد';
-  if(!codes.length){
-    document.getElementById('beta-codes-wrap').innerHTML='<div class="empty-state">هنوز کدی نساختی</div>';
-    return;
-  }
-  document.getElementById('beta-codes-wrap').innerHTML=`
-    <div class="codes-grid">
-      ${codes.map(c=>`
-        <div class="code-card">
-          <div>
-            <div class="code-val">${c.code}</div>
-            <div style="font-size:10px;color:var(--ink3);margin-top:4px">${c.used_by||'آزاد'}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-            <span class="code-status ${c.used?'used':'free'}">${c.used?'استفاده شد':'آزاد'}</span>
-            ${!c.used?`<button class="del-btn" onclick="deleteCode('${c.id}')">حذف</button>`:''}
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
+function delCode(btn){deleteCode(btn.getAttribute('data-cid'));}
 
-async function generateCodes(){
-  const count=parseInt(document.getElementById('gen-count').value)||5;
-  const codes=[];
-  for(let i=0;i<count;i++){
-    codes.push({
-      code:'BETA-'+Math.random().toString(36).slice(2,6).toUpperCase(),
-      used:false,created_at:new Date().toISOString()
-    });
-  }
-  try{
-    await sb.from('beta_codes').insert(codes);
-    toast(count+' کد جدید ساخته شد ✓');
-    loadBetaCodes();
-    loadStats();
-  }catch(e){toast('خطا — جدول beta_codes رو توی Supabase بساز',true)}
+async function genCodes(){
+  var n=parseInt(document.getElementById('gcnt').value)||5;
+  var arr=[];
+  for(var i=0;i<n;i++)arr.push({code:'BETA-'+Math.random().toString(36).slice(2,6).toUpperCase(),used:false,created_at:new Date().toISOString()});
+  try{await sb.from('beta_codes').insert(arr);toast(n+' کد ساخته شد ✓');loadBeta();loadStats();}
+  catch(e){toast('خطا',true);}
 }
 
 async function deleteCode(id){
   await sb.from('beta_codes').delete().eq('id',id);
-  toast('کد حذف شد');
-  loadBetaCodes();
+  toast('کد حذف شد');loadBeta();
 }
 
-// ── Errors ─────────────────────────────
-async function loadErrors(){
-  const errors=JSON.parse(localStorage.getItem('ws_admin_errors')||'[]');
-  const wrap=document.getElementById('errors-wrap');
-  if(!errors.length){
-    wrap.innerHTML='<div class="empty-state">✓ هیچ خطایی ثبت نشده</div>';
-    return;
-  }
-  wrap.innerHTML=errors.slice(0,50).map(e=>`
-    <div class="err-item">
-      <div class="err-msg">${e.message}</div>
-      <div class="err-meta">${e.url||''} — ${formatDate(e.time)}</div>
-    </div>
-  `).join('');
+async function loadErrs(){
+  var errs=JSON.parse(localStorage.getItem('ws_admin_errors')||'[]');
+  if(!errs.length){document.getElementById('ebody').innerHTML='<div class="empty">✓ خطایی نیست</div>';return;}
+  var h='';
+  for(var i=0;i<Math.min(errs.length,50);i++){var e=errs[i];h+='<div class="ei"><div style="font-size:12px;color:var(--err)">'+(e.message||'')+'</div><div style="font-size:10px;color:var(--ink3);margin-top:6px">'+(e.url||'')+'</div></div>';}
+  document.getElementById('ebody').innerHTML=h;
 }
 
-function clearErrors(){
-  localStorage.removeItem('ws_admin_errors');
-  loadErrors();
-  toast('خطاها پاک شدن');
-}
+function clearErrs(){localStorage.removeItem('ws_admin_errors');loadErrs();toast('پاک شد');}
 
-// ── Helpers ────────────────────────────
-function formatDate(iso){
-  if(!iso) return '—';
-  return new Date(iso).toLocaleDateString('fa-IR',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-}
-
-let _toastT;
-function toast(msg,err=false){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.style.background=err?'#f87171':'#4ade80';
-  el.style.color=err?'#fff':'#000';
-  el.classList.add('show');
-  clearTimeout(_toastT);
-  _toastT=setTimeout(()=>el.classList.remove('show'),2500);
+var _tt;
+function toast(msg,err){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.style.background=err?'#f87171':'#4ade80';el.style.color=err?'#fff':'#000';
+  el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},2500);
 }
 </script>
 </body>
