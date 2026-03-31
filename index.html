@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -3249,74 +3249,42 @@ function packLearnRestart(){
 </script>
 
 <!-- Upgrade Modal -->
-<div class="modal-bg" <div class="modal-bg" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="modal" style="max-width:380px">
+<div class="modal-bg" <div class="modal-bg" <div class="modal-bg" id="upgrade-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:360px;padding:var(--s6)">
 
     <!-- Header -->
     <div style="text-align:center;margin-bottom:var(--s5)">
-      <div style="font-size:44px;margin-bottom:var(--s3)">✨</div>
-      <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--ink);margin-bottom:var(--s2)">Wortschatz Pro</div>
-      <div style="font-size:32px;font-weight:800;color:var(--accent)">€4.99<span style="font-size:14px;font-weight:400;color:var(--ink3)">/ماه</span></div>
+      <div style="font-size:36px;margin-bottom:var(--s2)">✨</div>
+      <div style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--ink)">Wortschatz Pro</div>
+      <div style="font-size:26px;font-weight:800;color:var(--accent);margin-top:4px">€4.99<span style="font-size:13px;font-weight:400;color:var(--ink3)">/ماه</span></div>
     </div>
 
-    <!-- Features -->
-    <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s5)">
-      <div style="display:flex;flex-direction:column;gap:var(--s3)">
-        <div style="display:flex;align-items:center;gap:var(--s3);font-size:14px;color:var(--ink2)">
-          <span style="color:var(--ok);font-size:16px">✅</span>
-          <span>جستجوی <b>نامحدود</b> با AI</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:var(--s3);font-size:14px;color:var(--ink2)">
-          <span style="color:var(--ok);font-size:16px">✅</span>
-          <span>دسترسی به همه pack های لغت</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:var(--s3);font-size:14px;color:var(--ink2)">
-          <span style="color:var(--ok);font-size:16px">✅</span>
-          <span>ساخت pack با AI — هر موضوعی</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:var(--s3);font-size:14px;color:var(--ink2)">
-          <span style="color:var(--ok);font-size:16px">✅</span>
-          <span>sync روی همه دستگاه‌ها</span>
-        </div>
-      </div>
+    <!-- Features — compact -->
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:var(--s5)">
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2)"><span style="color:var(--ok)">✓</span> جستجوی نامحدود با AI</div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2)"><span style="color:var(--ok)">✓</span> همه pack های لغت + ساخت با AI</div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2)"><span style="color:var(--ok)">✓</span> sync روی همه دستگاه‌ها</div>
     </div>
 
-    <!-- CTA message -->
-    <div style="background:linear-gradient(135deg,var(--abl),rgba(85,112,255,.08));border:1px solid rgba(26,58,242,.15);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s4);text-align:center">
-      <div style="font-size:13px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s3)">
-        برای دسترسی به نسخه Pro از طریق تلگرام با ما در تماس باشید.<br>
-        <span style="font-size:12px;color:var(--ink3)">بعد از پرداخت، اکانتت در کمتر از ۵ دقیقه فعال میشه ⚡</span>
-      </div>
-      <a href="https://t.me/cinuxx" target="_blank"
-        style="display:flex;align-items:center;justify-content:center;gap:10px;
-               background:#229ED9;color:white;border-radius:var(--r3);
-               padding:14px 20px;font-size:15px;font-weight:600;
-               text-decoration:none;transition:opacity .15s"
-        onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/>
-        </svg>
-        تماس از طریق تلگرام
-      </a>
-    </div>
+    <!-- Telegram CTA -->
+    <a href="https://t.me/cinuxx" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#229ED9;color:white;border-radius:var(--r3);padding:14px;font-size:15px;font-weight:600;text-decoration:none;margin-bottom:10px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg>
+      خرید از طریق تلگرام
+    </a>
+    <div style="font-size:11px;color:var(--ink3);text-align:center;margin-bottom:var(--s5)">⚡ فعال‌سازی در کمتر از ۵ دقیقه</div>
 
     <!-- Beta code -->
-    <div class="drw-divider"></div>
-    <div style="margin-top:var(--s4)">
-      <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:var(--s2);text-align:right">کد بتا داری؟</div>
+    <div style="border-top:1px solid var(--bg3);padding-top:var(--s4)">
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:var(--s2);text-align:right">کد بتا داری؟</div>
       <div style="display:flex;gap:var(--s2)">
-        <input class="inp ltr" id="beta-code-inp" placeholder="BETA-XXXX" style="margin:0;flex:1;text-transform:uppercase">
-        <button class="btn btn-p btn-sm" onclick="redeemBeta()">فعال کن</button>
+        <input class="inp ltr" id="beta-code-inp" placeholder="BETA-XXXX" style="margin:0;flex:1;font-size:13px;text-transform:uppercase">
+        <button class="btn btn-p btn-sm" onclick="redeemBeta()">فعال</button>
       </div>
-      <div style="font-size:12px;color:var(--err);margin-top:var(--s2);min-height:16px" id="beta-code-err"></div>
+      <div style="font-size:11px;color:var(--err);margin-top:6px;min-height:14px" id="beta-code-err"></div>
     </div>
 
-    <!-- Close -->
-    <button class="btn btn-full" style="margin-top:var(--s4)" onclick="Q('#upgrade-modal').classList.remove('open')">
-      بستن
-    </button>
-
   </div>
+</div>
 </div>
 </div>
 
