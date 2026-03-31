@@ -735,37 +735,44 @@ body.offline .topbar{top:36px}
    REMINDER
 ═══════════════════════════════════ */
 .reminder{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border-radius:var(--r4);padding:var(--s5);margin-bottom:var(--s4);
-  display:none;animation:up .3s var(--spring);overflow:hidden;position:relative;
+  background:var(--abl);border:1px solid rgba(26,58,242,.2);
+  border-radius:var(--r3);padding:var(--s3) var(--s4);
+  margin-top:var(--s3);margin-bottom:0;
+  display:none;animation:up .3s var(--spring);
+  position:relative;overflow:hidden;
 }
-.reminder::after{
-  content:'';position:absolute;top:-20px;left:-20px;width:100px;height:100px;
-  border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none;
+.reminder::before{
+  content:'';position:absolute;right:-20px;top:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(26,58,242,.06);pointer-events:none;
 }
 .reminder.show{display:block}
-.rem-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s3);position:relative;z-index:1}
-.rem-title{font-family:var(--sans);font-size:16px;font-weight:700;color:#fff;margin-bottom:2px}
-.rem-sub{font-size:12px;color:rgba(255,255,255,.65)}
+.rem-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2);position:relative;z-index:1}
+.rem-title{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--accent)}
+.rem-sub{font-size:11px;color:var(--ink3);margin-top:1px}
 .rem-x{
-  width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);
-  border:none;color:rgba(255,255,255,.7);cursor:pointer;display:flex;align-items:center;
-  justify-content:center;font-size:14px;flex-shrink:0;transition:background .15s;
+  width:22px;height:22px;border-radius:50%;background:transparent;
+  border:none;color:var(--ink4);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:12px;flex-shrink:0;transition:background .15s;
 }
-.rem-x:hover{background:rgba(255,255,255,.25)}
-.rem-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--s4);position:relative;z-index:1}
+.rem-x:hover{background:var(--bg3);color:var(--ink)}
+.rem-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:var(--s3);position:relative;z-index:1}
 .rem-chip{
-  padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.15);
-  border:1px solid rgba(255,255,255,.2);font-size:13px;color:#fff;
-  font-family:var(--serif);cursor:pointer;transition:background .15s;
+  padding:3px 10px;border-radius:20px;
+  background:rgba(26,58,242,.08);border:1px solid rgba(26,58,242,.15);
+  font-size:12px;color:var(--accent);
+  font-family:var(--serif);cursor:pointer;transition:all .15s;
+}
+.rem-chip:hover{background:var(--abl);border-color:var(--accent)}
 }
 .rem-chip:hover{background:rgba(255,255,255,.25)}
 .rem-btn{
-  width:100%;padding:11px;border-radius:var(--r2);background:rgba(255,255,255,.16);
-  color:#fff;border:1px solid rgba(255,255,255,.22);font-family:var(--sans);
-  font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;position:relative;z-index:1;
+  width:100%;padding:9px;border-radius:var(--r2);
+  background:var(--accent);color:#fff;border:none;
+  font-family:var(--sans);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .18s;position:relative;z-index:1;
 }
-.rem-btn:hover{background:rgba(255,255,255,.26)}
+.rem-btn:hover{background:var(--accent2);transform:translateY(-1px)}
 
 /* ═══════════════════════════════════
    SESSION INTRO + CARD TYPE
@@ -3038,18 +3045,27 @@ document.addEventListener('click',e=>{if(!e.target.closest('.s-wrap'))acClose();
 ══════════════════════════════ */
 function checkReminder(){
   const fw=filteredWords();
-  if(!fw.length)return;
-  const h=new Date().getHours();const today=new Date().toDateString();
-  if(h<20||localStorage.getItem('ws_rem_d')===today)return;
-  const due=fw.filter(w=>new Date(w.next_review||0)<=new Date());
-  if(!due.length)return;
-  Q('#rem-title').textContent=`${due.length} لغت سررسید داره 📚`;
-  Q('#rem-sub').textContent='کلیک کن تا مرور شروع بشه';
+  if(!fw.length) return;
+  const now=new Date();
+  const lastDismiss=localStorage.getItem('ws_rem_d');
+  if(lastDismiss && (now-new Date(lastDismiss)) < 4*60*60*1000) return;
+  const due=fw.filter(w=>new Date(w.next_review||0)<=now);
+  if(!due.length) return;
+  const pts=due.length*10;
+  const msgs=[
+    {title:`🔥 ${due.length} لغت منتظرته`,sub:`مرور کن ${pts} امتیاز بگیر`},
+    {title:`⏰ وقت مرور رسیده`,sub:`${due.length} لغت — فقط چند دقیقه`},
+    {title:`🧠 یادته این لغت‌ها رو؟`,sub:`مرور کن تا فراموش نشن`},
+    {title:`💪 ${due.length} لغت آماده مروره`,sub:`streak رو حفظ کن!`},
+  ];
+  const msg=msgs[Math.floor(Math.random()*msgs.length)];
+  Q('#rem-title').textContent=msg.title;
+  Q('#rem-sub').textContent=msg.sub;
   Q('#rem-chips').innerHTML=due.slice(0,5).map(w=>`<span class="rem-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`).join('');
   Q('#reminder').classList.add('show');
 }
-function remDismiss(){localStorage.setItem('ws_rem_d',new Date().toDateString());Q('#reminder').classList.remove('show');}
-function remStart(){remDismiss();sesOpen();}
+function remDismiss(){localStorage.setItem('ws_rem_d',new Date().toISOString());Q('#reminder').classList.remove('show');}
+function remStart(){remDismiss();sesOpenDue();}
 setInterval(checkReminder,60000);
 
 /* ══════════════════════════════
