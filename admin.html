@@ -563,13 +563,19 @@ function filterUsers(q){
 }
 
 async function updatePlan(userId,plan){
+  const pwd = sessionStorage.getItem('ws_admin_token');
   try{
-    await sb.from('profiles').update({
-      plan,
-      is_beta: plan === 'beta'
-    }).eq('id',userId);
+    const r = await fetch('/api/admin-update',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-admin-password': atob(pwd).split(':')[1]
+      },
+      body:JSON.stringify({userId,plan})
+    });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'خطا');
     toast('پلن آپدیت شد ✓ — user باید logout/login کنه');
-    // reload از Supabase نه از cache
     await loadUsers();
     await loadStats();
   }catch(e){toast('خطا: '+e.message,true)}
