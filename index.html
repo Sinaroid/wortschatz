@@ -9,7 +9,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'IRANYekan';src:url('https://cdn.jsdelivr.net/gh/rastikerdar/iranyekan@v9.3.1/fonts/woff2/IRANYekanWebRegular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'IRANYekan';src:url('https://cdn.jsdelivr.net/gh/rastikerdar/iranyekan@v9.3.1/fonts/woff2/IRANYekanWebMedium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'IRANYekan';src:url('https://cdn.jsdelivr.net/gh/rastikerdar/iranyekan@v9.3.1/fonts/woff2/IRANYekanWebBold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'IRANYekan';src:url('https://cdn.jsdelivr.net/gh/rastikerdar/iranyekan@v9.3.1/fonts/woff2/IRANYekanWebLight.woff2') format('woff2');font-weight:300;font-style:normal;font-display:swap}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 /* ═══════════════════════════════════
@@ -24,7 +30,7 @@
   --err:#cc2020; --errbg:rgba(204,32,32,.07);
   --warn:#a84800; --warnbg:rgba(168,72,0,.07);
   --serif:'Fraunces',Georgia,serif;
-  --sans:'Vazirmatn',system-ui,sans-serif;
+  --sans:'IRANYekan','Vazirmatn',system-ui,sans-serif;
   --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;
   --r1:4px;--r2:10px;--r3:14px;--r4:20px;--r5:28px;--r6:40px;
   --sh1:0 1px 2px rgba(0,0,0,.04),0 3px 8px rgba(0,0,0,.05);
@@ -151,7 +157,7 @@ body.offline .topbar{top:36px}
   min-height:calc(100dvh - var(--nav-h));
   display:none;
   flex-direction:column;
-  padding:var(--s4) var(--s5) 0 !important;
+  padding:var(--s4) var(--s5) calc(var(--nav-h) + var(--s5)) !important;
 }
 #pane-home.on{
   display:flex;
@@ -408,7 +414,7 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s3) 0 var(--s3);animation:up .4s var(--ease) both}
+.hero{padding:var(--s2) 0 var(--s2);animation:up .4s var(--ease) both}
 .hero-eye{
   font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
   color:var(--accent);margin-bottom:var(--s3);opacity:.8;
@@ -632,7 +638,7 @@ body.offline .topbar{top:36px}
 ═══════════════════════════════════ */
 .sum-card{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
-  padding:var(--s5);margin-top:var(--s4);margin-bottom:0;box-shadow:var(--sh1);
+  padding:var(--s5);margin-top:var(--s3);margin-bottom:0;box-shadow:var(--sh1);
   display:none;animation:up .35s .15s var(--ease) both;overflow:hidden;position:relative;
 }
 .sum-card::before{
