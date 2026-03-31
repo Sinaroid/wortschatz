@@ -564,9 +564,18 @@ function filterUsers(q){
 
 async function updatePlan(userId,plan){
   try{
-    await sb.from('profiles').update({plan}).eq('id',userId);
-    toast('پلن آپدیت شد ✓');
+    // is_beta رو هم آپدیت کن
+    const updates = {
+      plan,
+      is_beta: plan === 'beta'
+    };
+    await sb.from('profiles').update(updates).eq('id',userId);
+    // آپدیت local data
+    const u = allUsers.find(u=>u.id===userId);
+    if(u) u.plan = plan;
+    toast('پلن آپدیت شد ✓ — user باید logout/login کنه');
     loadStats();
+    renderUsers(allUsers);
   }catch(e){toast('خطا: '+e.message,true)}
 }
 
