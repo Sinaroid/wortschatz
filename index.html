@@ -965,16 +965,18 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   animation:hintIn .4s var(--spring) .2s both;
 }
 .hint-chip{
-  background:transparent;
+  background:var(--card);
   border:1px solid var(--bg3);
-  border-radius:20px;padding:5px 14px;
-  font-size:12px;font-weight:500;cursor:pointer;
-  color:var(--ink3);transition:all .18s var(--ease);
+  border-radius:20px;padding:6px 16px;
+  font-size:13px;font-weight:500;cursor:pointer;
+  color:var(--ink2);transition:all .18s var(--ease);
   font-family:var(--sans);
+  box-shadow:var(--sh1);
 }
 .hint-chip:hover{
   border-color:var(--accent);color:var(--accent);
-  background:var(--abl);
+  background:var(--abl);transform:translateY(-1px);
+  box-shadow:0 4px 12px var(--aglow);
 }
 
 /* list empty — slightly more prominent */
@@ -1692,24 +1694,6 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     <!-- Home empty state -->
     <div id="home-empty">
       <div class="hint" style="padding:var(--s2) 0 calc(var(--nav-h) + var(--s4))">
-        <div class="hint-illo">
-          <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- search circle -->
-            <circle cx="32" cy="32" r="16" stroke="var(--ink3)" stroke-width="2" stroke-dasharray="4 3" opacity=".5"/>
-            <!-- magnifier handle -->
-            <line x1="44" y1="44" x2="56" y2="56" stroke="var(--ink3)" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
-            <!-- sparkle -->
-            <path d="M54 14 L55.5 18 L59 19.5 L55.5 21 L54 25 L52.5 21 L49 19.5 L52.5 18 Z" fill="var(--accent)" opacity=".7"/>
-            <!-- small star -->
-            <path d="M14 22 L14.8 24.2 L17 25 L14.8 25.8 L14 28 L13.2 25.8 L11 25 L13.2 24.2 Z" fill="var(--accent)" opacity=".4"/>
-            <!-- word lines inside circle -->
-            <line x1="25" y1="29" x2="39" y2="29" stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="25" y1="33" x2="36" y2="33" stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="25" y1="37" x2="38" y2="37" stroke="var(--ink4)" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="hint-title">اولین لغتت رو جستجو کن</div>
-        <div class="hint-sub">آلمانی، فارسی یا انگلیسی — AI کامل توضیح میده</div>
         <div class="hint-chips" id="home-empty-chips"></div>
       </div>
     </div>
@@ -2455,12 +2439,18 @@ function updateLangUI(){
 function updateHomeEmptyChips(){
   const wrap = document.getElementById('home-empty-chips');
   if(!wrap) return;
-  const chips = targetLang === 'de'
-    ? ['Arbeit','Freundschaft','Reise','Glück']
-    : ['happiness','freedom','journey','grateful'];
-  wrap.innerHTML = chips.map(w=>
-    `<span class="empty-chip" onclick="qs('${w}')">${w}</span>`
-  ).join('');
+  const isDE = targetLang === 'de';
+  const chips = isDE
+    ? ['Arbeit','Freundschaft','Reise','Glück','Heimweh','Sehnsucht']
+    : ['happiness','freedom','journey','grateful','melancholy','serendipity'];
+  wrap.innerHTML = `
+    <div style="font-size:11px;color:var(--ink4);margin-bottom:var(--s3);letter-spacing:.3px">
+      ${isDE ? 'مثلاً امتحان کن:' : 'try searching:'}
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center">
+      ${chips.map(w=>`<span class="hint-chip" onclick="qs('${w}')">${w}</span>`).join('')}
+    </div>
+  `;
 }
 
 const PACK_PRESETS = {
