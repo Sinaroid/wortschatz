@@ -60,6 +60,7 @@ button,input{font-family:var(--sans)}
 /* ═══════════════════════════════════
    ANIMATIONS
 ═══════════════════════════════════ */
+@keyframes popIn{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:none}}
 @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes down{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -1404,12 +1405,25 @@ body.offline .topbar{top:36px}
     </div>
 
     <div id="free-banner" style="display:none"></div>
-    <div style="display:flex;align-items:center;margin-bottom:10px">
-      <button onclick="drawerOpen()" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'">
+    <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
+      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'">
         <span id="home-lang-flag">🇩🇪</span>
         <span id="home-lang-label">آلمانی</span>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
+      <!-- Lang mini popover -->
+      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
+        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇩🇪</span>
+          <span>آلمانی</span>
+          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+        </button>
+        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇬🇧</span>
+          <span>انگلیسی</span>
+          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+        </button>
+      </div>
     </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
@@ -4073,3 +4087,37 @@ function packLearnRestart(){
 </div>
 </body>
 </html>
+<script>
+// ── Lang Popover ──────────────────────────────
+function langPopoverToggle(e){
+  e.stopPropagation();
+  const pop = document.getElementById('lang-popover');
+  const chev = document.getElementById('lang-badge-chevron');
+  const open = pop.style.display === 'block';
+  pop.style.display = open ? 'none' : 'block';
+  chev.style.transform = open ? '' : 'rotate(180deg)';
+  langPopoverUpdateChecks();
+}
+function langPopoverPick(lang){
+  setTargetLang(lang);
+  document.getElementById('lang-popover').style.display = 'none';
+  document.getElementById('lang-badge-chevron').style.transform = '';
+  langPopoverUpdateChecks();
+}
+function langPopoverUpdateChecks(){
+  const isDE = (typeof targetLang !== 'undefined' ? targetLang : 'de') === 'de';
+  const deCheck = document.getElementById('pop-de-check');
+  const enCheck = document.getElementById('pop-en-check');
+  if(deCheck) deCheck.style.visibility = isDE ? 'visible' : 'hidden';
+  if(enCheck) enCheck.style.visibility = isDE ? 'hidden' : 'visible';
+}
+document.addEventListener('click', function(e){
+  const pop = document.getElementById('lang-popover');
+  const badge = document.getElementById('home-lang-badge');
+  if(pop && badge && !pop.contains(e.target) && !badge.contains(e.target)){
+    pop.style.display = 'none';
+    const chev = document.getElementById('lang-badge-chevron');
+    if(chev) chev.style.transform = '';
+  }
+});
+</script>
