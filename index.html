@@ -146,7 +146,7 @@ body.offline .topbar{top:36px}
   min-height:calc(100dvh - var(--nav-h));
   display:none;
   flex-direction:column;
-  padding-bottom:0 !important;
+  padding:var(--s4) var(--s5) 0 !important;
 }
 #pane-home.on{
   display:flex;
@@ -157,7 +157,7 @@ body.offline .topbar{top:36px}
   display:none;
   align-items:center;
   justify-content:center;
-  padding:var(--s4) var(--s5) calc(var(--nav-h) + var(--s4));
+  padding:0 0 calc(var(--nav-h) + var(--s3));
 }
 #home-empty.show{display:flex}
 
@@ -403,7 +403,7 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s6) 0 var(--s5);animation:up .4s var(--ease) both}
+.hero{padding:var(--s3) 0 var(--s3);animation:up .4s var(--ease) both}
 .hero-eye{
   font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
   color:var(--accent);margin-bottom:var(--s3);opacity:.8;
@@ -418,7 +418,7 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    SEARCH
 ═══════════════════════════════════ */
-.s-wrap{position:relative;margin-bottom:var(--s3);animation:up .35s .06s var(--ease) both}
+.s-wrap{position:relative;margin-bottom:var(--s2);animation:up .35s .06s var(--ease) both}
 .s-field{
   width:100%;padding:13px var(--s5) 13px 56px;border-radius:var(--r6);
   border:1.5px solid var(--bg3);background:var(--card);color:var(--ink);
@@ -627,7 +627,7 @@ body.offline .topbar{top:36px}
 ═══════════════════════════════════ */
 .sum-card{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
-  padding:var(--s5);margin-bottom:var(--s4);box-shadow:var(--sh1);
+  padding:var(--s5);margin-top:var(--s4);margin-bottom:0;box-shadow:var(--sh1);
   display:none;animation:up .35s .15s var(--ease) both;overflow:hidden;position:relative;
 }
 .sum-card::before{
