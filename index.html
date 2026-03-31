@@ -51,126 +51,6 @@ function wordDetail(idx){
 
 
 
-/* ── GATE ANIMATION ── */
-(function(){
-  const WORD = 'Kündigungsfrist';
-  let cur=0, running=false, started=false;
-
-  function setStep(n){
-    document.querySelectorAll('.lp-step').forEach((s,i)=>s.classList.toggle('active',i===n));
-    document.querySelectorAll('.lp-dot').forEach((d,i)=>d.classList.toggle('active',i===n));
-    cur=n;
-  }
-
-  function getPos(id){
-    const el=document.getElementById(id);
-    const phone=document.getElementById('lp-phone');
-    if(!el||!phone) return {x:110,y:120};
-    const pr=phone.getBoundingClientRect();
-    const er=el.getBoundingClientRect();
-    return {x:er.left-pr.left+er.width/2, y:er.top-pr.top+er.height/2};
-  }
-
-  function mv(x,y,delay){
-    return new Promise(r=>{
-      setTimeout(()=>{
-        const m=document.getElementById('lp-mouse');
-        if(m){m.style.left=x+'px';m.style.top=y+'px';}
-        setTimeout(r,560);
-      },delay);
-    });
-  }
-
-  function showM(v){
-    const m=document.getElementById('lp-mouse');
-    if(m) m.style.opacity=v?'1':'0';
-  }
-
-  function click(x,y){
-    return new Promise(r=>{
-      const rp=document.getElementById('lp-ripple');
-      if(rp){
-        rp.style.left=(x-8)+'px';rp.style.top=(y-8)+'px';
-        rp.style.transform='scale(0)';rp.style.opacity='1';
-        void rp.offsetWidth;
-        rp.style.transform='scale(1)';rp.style.opacity='0';
-      }
-      setTimeout(r,260);
-    });
-  }
-
-  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
-  async function type(){
-    const el=document.getElementById('lp-typetext');
-    if(!el) return;
-    el.textContent='';
-    for(let i=0;i<WORD.length;i++){
-      el.textContent=WORD.slice(0,i+1);
-      await sleep(60);
-    }
-  }
-
-  async function run(){
-    if(running||!document.getElementById('lp-phone')) return;
-    running=true;
-    setStep(0);
-    await sleep(700);
-    showM(true);
-
-    const sb=getPos('lp-searchbox');
-    await mv(sb.x,sb.y,200);
-    await click(sb.x,sb.y);
-    await type();
-    await sleep(500);
-
-    setStep(1);
-    await sleep(900);
-    const ab=getPos('lp-addbtn');
-    await mv(ab.x,ab.y,300);
-    await click(ab.x,ab.y);
-    const btn=document.getElementById('lp-addbtn');
-    if(btn){btn.textContent='✓ اضافه شد';btn.style.background='#639922';}
-    await sleep(500);
-
-    setStep(2);
-    await sleep(900);
-    const fc=getPos('lp-flashcard');
-    await mv(fc.x,fc.y,300);
-    await click(fc.x,fc.y);
-    const card=document.getElementById('lp-flashcard');
-    if(card){
-      card.style.background='var(--abl)';
-      card.innerHTML='<div style="font-size:10px;color:var(--accent);font-weight:600">مهلت فسخ قرارداد</div><div style="font-family:var(--serif);font-size:14px;font-weight:700;direction:ltr;color:var(--ink)">Kündigungsfrist</div>';
-    }
-    await sleep(700);
-
-    setStep(3);
-    await sleep(900);
-    const kb=getPos('lp-knowbtn');
-    await mv(kb.x,kb.y,300);
-    await click(kb.x,kb.y);
-    await sleep(400);
-    showM(false);
-    setStep(4);
-    await sleep(2800);
-    running=false;
-    run();
-  }
-
-  function tryStart(){
-    if(!started && document.getElementById('gate')?.classList.contains('open')){
-      started=true;
-      setTimeout(run,400);
-    }
-  }
-
-  const gate=document.getElementById('gate');
-  if(gate){
-    new MutationObserver(tryStart).observe(gate,{attributes:true,attributeFilter:['class']});
-    if(gate.classList.contains('open')) setTimeout(run,400);
-  }
-})();
 </script>
 <style>
 /* ═══════════════════════════════════
@@ -315,15 +195,16 @@ body.offline .topbar{top:36px}
 
 /* ── GATE ── */
 #gate{
-  position:fixed;inset:0;background:var(--bg);display:none;
-  align-items:center;justify-content:center;z-index:400;
-  overflow-y:auto;padding:20px 16px;
+  position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;
+  align-items:center;justify-content:center;
+  z-index:400;padding:20px;
+  backdrop-filter:blur(4px);
 }
 #gate.open{display:flex}
 .lp-step{display:none}
 .lp-step.active{display:block;animation:fadeUp .3s var(--ease)}
 .lp-dot{width:5px;height:5px;border-radius:50%;background:var(--bg3);transition:background .3s,transform .3s;display:inline-block}
-.lp-dot.active{background:var(--accent);transform:scale(1.3)}
+.lp-dot.active{background:white;transform:scale(1.3)}
 #login-panel.open{display:flex}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
@@ -338,17 +219,17 @@ body.offline .topbar{top:36px}
 
 .gate-box{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r5);
-  padding:var(--s8) var(--s6);width:100%;max-width:360px;
+  padding:20px;width:100%;max-width:360px;
   box-shadow:var(--sh3);animation:up .4s var(--spring);
 }
-.gate-brand{display:flex;align-items:center;gap:10px;margin-bottom:var(--s6)}
+.gate-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .gate-icon{
   width:40px;height:40px;background:var(--accent);border-radius:12px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .gate-brand-name{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink)}
 .gate-headline{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px}
-.gate-sub{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:var(--s6)}
+.gate-sub{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:16px}
 .btn-google{
   width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
   padding:12px;border-radius:var(--r2);border:1.5px solid var(--bg3);
@@ -1203,7 +1084,7 @@ body.offline .topbar{top:36px}
 
 .lp-step{display:none}
 .lp-step.active{display:block;animation:fadeUp .3s var(--ease)}
-.lp-dot{width:4px;height:4px;border-radius:50%;background:var(--bg3);transition:background .3s,transform .3s;display:inline-block}
+.lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
 </style>
@@ -1214,84 +1095,90 @@ body.offline .topbar{top:36px}
 
 <!-- Auth Gate -->
 <div id="gate">
-  <div style="display:flex;width:100%;height:100%;max-width:480px;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:0">
+<div class="gate-box" style="padding:0;overflow:hidden;max-width:360px">
 
-    <!-- Phone Animation -->
-    <div id="lp-phone" style="width:220px;background:var(--card);border-radius:18px;border:0.5px solid var(--bg3);overflow:hidden;position:relative;flex-shrink:0;box-shadow:0 8px 24px rgba(0,0,0,.07)">
-      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:50px;height:14px;background:var(--ink);border-radius:0 0 8px 8px;z-index:10"></div>
-      <div style="background:var(--bg2);padding:20px 11px 7px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--bg3)">
-        <div style="display:flex;align-items:center;gap:4px">
-          <div style="width:13px;height:13px;background:var(--accent);border-radius:3px;display:flex;align-items:center;justify-content:center;color:white;font-size:7px;font-weight:700;font-family:var(--serif)">W</div>
-          <span style="font-family:var(--serif);font-size:9px;font-weight:700;color:var(--ink)">Wortschatz</span>
+  <!-- Top colored section - like reference -->
+  <div style="background:linear-gradient(135deg,#1a3af2 0%,#3d5af5 100%);padding:24px;position:relative;overflow:hidden">
+    <!-- decorative circle -->
+    <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08)"></div>
+    <div style="position:absolute;bottom:-30px;left:-10px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
+
+    <!-- Phone mockup -->
+    <div id="lp-phone" style="width:180px;margin:0 auto;background:rgba(255,255,255,.95);border-radius:16px;overflow:hidden;position:relative;box-shadow:0 12px 40px rgba(0,0,0,.25)">
+      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:42px;height:12px;background:#1a1916;border-radius:0 0 8px 8px;z-index:10"></div>
+      <div style="background:#f5f3ee;padding:16px 10px 6px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eceae3">
+        <div style="display:flex;align-items:center;gap:3px">
+          <div style="width:12px;height:12px;background:#1a3af2;border-radius:3px;color:white;font-size:6px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif">W</div>
+          <span style="font-family:'Fraunces',serif;font-size:9px;font-weight:700;color:#1a1916">Wortschatz</span>
         </div>
       </div>
-      <div style="padding:10px;height:175px;overflow:hidden;position:relative">
+      <div style="padding:8px;height:155px;overflow:hidden;position:relative">
 
         <div class="lp-step active" id="lps0">
-          <div style="font-size:7px;color:var(--ink3);text-align:center;margin-bottom:4px">جستجوی هوشمند</div>
-          <div style="height:2px;background:var(--bg2);border-radius:2px;margin-bottom:7px;overflow:hidden"><div style="height:100%;width:15%;background:var(--accent);border-radius:2px"></div></div>
-          <div id="lp-searchbox" style="background:var(--bg2);border:0.5px solid var(--bg3);border-radius:10px;padding:5px 8px;display:flex;align-items:center;gap:4px;margin-bottom:5px">
-            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><circle cx="3" cy="3" r="2" stroke="var(--ink3)" stroke-width=".8"/><path d="M4.5 4.5L6.5 6.5" stroke="var(--ink3)" stroke-width=".8" stroke-linecap="round"/></svg>
-            <span style="font-size:9px;direction:ltr;color:var(--ink)" id="lp-typetext"></span><span style="display:inline-block;width:1px;height:8px;background:var(--accent);animation:blink .7s infinite;flex-shrink:0"></span>
+          <div style="font-size:6px;color:#8a8780;text-align:center;margin-bottom:3px">جستجوی هوشمند</div>
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:15%;background:#1a3af2;border-radius:2px"></div></div>
+          <div id="lp-searchbox" style="background:#eceae3;border-radius:8px;padding:4px 7px;display:flex;align-items:center;gap:4px;margin-bottom:5px">
+            <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><circle cx="2.8" cy="2.8" r="1.8" stroke="#8a8780" stroke-width=".7"/><path d="M4 4L5.8 5.8" stroke="#8a8780" stroke-width=".7" stroke-linecap="round"/></svg>
+            <span style="font-size:8px;direction:ltr;color:#1a1916" id="lp-typetext"></span><span style="width:1px;height:8px;background:#1a3af2;animation:blink .7s infinite;display:inline-block;flex-shrink:0"></span>
           </div>
-          <div style="font-size:8px;color:var(--ink3);text-align:center;padding:10px 0">در حال تایپ...</div>
+          <div style="font-size:7px;color:#8a8780;text-align:center;padding:8px 0">در حال تایپ...</div>
         </div>
 
         <div class="lp-step" id="lps1">
-          <div style="font-size:7px;color:var(--ink3);text-align:center;margin-bottom:4px">نتیجه AI</div>
-          <div style="height:2px;background:var(--bg2);border-radius:2px;margin-bottom:7px;overflow:hidden"><div style="height:100%;width:40%;background:var(--accent);border-radius:2px"></div></div>
-          <div style="background:var(--bg2);border-radius:8px;padding:7px">
-            <div style="font-family:var(--serif);font-size:11px;font-weight:700;direction:ltr;color:var(--ink)">Kündigungsfrist</div>
-            <div style="font-size:8px;color:var(--ink2);margin:2px 0">مهلت فسخ قرارداد</div>
-            <div style="font-size:7px;color:var(--ink3);font-style:italic;direction:ltr;margin-bottom:4px">...beträgt drei Monate</div>
-            <button id="lp-addbtn" style="width:100%;background:var(--accent);color:white;border:none;border-radius:5px;padding:4px;font-size:8px;font-weight:600;cursor:pointer;font-family:var(--sans)">+ فلش‌کارت</button>
+          <div style="font-size:6px;color:#8a8780;text-align:center;margin-bottom:3px">نتیجه AI</div>
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:40%;background:#1a3af2;border-radius:2px"></div></div>
+          <div style="background:#eceae3;border-radius:7px;padding:7px">
+            <div style="font-family:'Fraunces',serif;font-size:10px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
+            <div style="font-size:7px;color:#4a4843;margin:2px 0 4px">مهلت فسخ قرارداد</div>
+            <div style="font-size:6px;color:#8a8780;font-style:italic;direction:ltr;background:white;border-radius:4px;padding:2px 4px;margin-bottom:4px">...beträgt drei Monate</div>
+            <button id="lp-addbtn" style="width:100%;background:#1a3af2;color:white;border:none;border-radius:4px;padding:4px;font-size:7px;font-weight:600;cursor:pointer;font-family:'Vazirmatn',sans-serif">+ فلش‌کارت</button>
           </div>
         </div>
 
         <div class="lp-step" id="lps2">
-          <div style="font-size:7px;color:var(--ink3);text-align:center;margin-bottom:4px">فلش‌کارت</div>
-          <div style="height:2px;background:var(--bg2);border-radius:2px;margin-bottom:7px;overflow:hidden"><div style="height:100%;width:65%;background:var(--accent);border-radius:2px"></div></div>
-          <div id="lp-flashcard" style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center;margin-bottom:6px;height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center">
-            <div style="font-family:var(--serif);font-size:15px;font-weight:700;direction:ltr;color:var(--ink)">Kündigungsfrist</div>
-            <div style="font-size:7px;color:var(--ink3);margin-top:2px">کلیک برای معنی</div>
+          <div style="font-size:6px;color:#8a8780;text-align:center;margin-bottom:3px">فلش‌کارت ساخته شد</div>
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:65%;background:#1a3af2;border-radius:2px"></div></div>
+          <div id="lp-flashcard" style="background:#eceae3;border-radius:7px;padding:10px;text-align:center;height:65px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
+            <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
+            <div style="font-size:6px;color:#8a8780;margin-top:2px">کلیک برای معنی</div>
           </div>
-          <div style="display:flex;gap:4px;opacity:.4">
-            <button style="flex:1;padding:4px;border-radius:5px;border:none;font-size:7px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">بلدم</button>
-            <button style="flex:1;padding:4px;border-radius:5px;border:none;font-size:7px;font-weight:600;background:var(--accent);color:white;font-family:var(--sans)">یاد می‌گیرم</button>
+          <div style="display:flex;gap:3px;opacity:.35">
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:'Vazirmatn',sans-serif">بلدم</button>
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:'Vazirmatn',sans-serif">یاد می‌گیرم</button>
           </div>
         </div>
 
         <div class="lp-step" id="lps3">
-          <div style="font-size:7px;color:var(--ink3);text-align:center;margin-bottom:4px">مرور SM-2</div>
-          <div style="height:2px;background:var(--bg2);border-radius:2px;margin-bottom:7px;overflow:hidden"><div style="height:100%;width:85%;background:var(--accent);border-radius:2px"></div></div>
-          <div style="background:var(--abl);border-radius:8px;padding:10px;text-align:center;margin-bottom:6px;height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center">
-            <div style="font-size:10px;color:var(--accent);font-weight:600">مهلت فسخ قرارداد</div>
-            <div style="font-family:var(--serif);font-size:12px;font-weight:700;direction:ltr;color:var(--ink)">Kündigungsfrist</div>
-            <div style="font-size:7px;color:var(--accent);opacity:.7;margin-top:2px">فردا مرور کن</div>
+          <div style="font-size:6px;color:#8a8780;text-align:center;margin-bottom:3px">مرور SM-2</div>
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:85%;background:#1a3af2;border-radius:2px"></div></div>
+          <div style="background:#e6ebff;border-radius:7px;padding:10px;text-align:center;height:65px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
+            <div style="font-size:9px;color:#1a3af2;font-weight:600">مهلت فسخ قرارداد</div>
+            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
+            <div style="font-size:6px;color:#1a3af2;opacity:.7;margin-top:2px">فردا مرور کن</div>
           </div>
-          <div style="display:flex;gap:4px">
-            <button id="lp-knowbtn" style="flex:1;padding:4px;border-radius:5px;border:none;font-size:7px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">✓ بلدم</button>
-            <button style="flex:1;padding:4px;border-radius:5px;border:none;font-size:7px;font-weight:600;background:var(--accent);color:white;font-family:var(--sans)">یاد می‌گیرم</button>
+          <div style="display:flex;gap:3px">
+            <button id="lp-knowbtn" style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:'Vazirmatn',sans-serif">✓ بلدم</button>
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:'Vazirmatn',sans-serif">یاد می‌گیرم</button>
           </div>
         </div>
 
         <div class="lp-step" id="lps4">
-          <div style="text-align:center;padding:20px 0 0">
-            <div style="font-size:28px">🎉</div>
-            <div style="font-family:var(--serif);font-size:13px;font-weight:700;color:var(--ink);margin-top:6px">یاد گرفتی!</div>
-            <div style="font-size:8px;color:var(--ink3);margin-top:3px;line-height:1.6">SM-2 بهترین زمان مرور رو یادت میاره</div>
+          <div style="text-align:center;padding:18px 0">
+            <div style="font-size:22px">🎉</div>
+            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;color:#1a1916;margin-top:4px">یاد گرفتی!</div>
+            <div style="font-size:7px;color:#8a8780;margin-top:2px;line-height:1.6">SM-2 بهترین وقت مرور رو یادت میاره</div>
           </div>
         </div>
 
       </div>
       <div id="lp-mouse" style="position:absolute;pointer-events:none;z-index:50;opacity:0;transition:left .5s cubic-bezier(.4,0,.2,1),top .5s cubic-bezier(.4,0,.2,1),opacity .3s">
-        <svg width="13" height="16" viewBox="0 0 13 16" fill="none"><path d="M1 1l4 11.5 2-4 4-1L1 1z" fill="white" stroke="#1a1916" stroke-width=".9" stroke-linejoin="round"/></svg>
+        <svg width="12" height="15" viewBox="0 0 12 15" fill="none"><path d="M1 1l3.8 10.5 1.8-3.8 3.8-1L1 1z" fill="white" stroke="#1a1916" stroke-width=".8" stroke-linejoin="round"/></svg>
       </div>
-      <div id="lp-ripple" style="position:absolute;width:16px;height:16px;border-radius:50%;background:rgba(26,58,242,.2);transform:scale(0);pointer-events:none;z-index:49;transition:transform .3s,opacity .3s"></div>
+      <div id="lp-ripple" style="position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(26,58,242,.25);transform:scale(0);pointer-events:none;z-index:49;transition:transform .3s,opacity .3s"></div>
     </div>
 
     <!-- Dots -->
-    <div style="display:flex;gap:4px;justify-content:center;margin:10px 0 16px">
+    <div style="display:flex;gap:4px;justify-content:center;margin-top:12px">
       <div class="lp-dot active" id="lpd0"></div>
       <div class="lp-dot" id="lpd1"></div>
       <div class="lp-dot" id="lpd2"></div>
@@ -1299,29 +1186,54 @@ body.offline .topbar{top:36px}
       <div class="lp-dot" id="lpd4"></div>
     </div>
 
-    <!-- Login Card -->
-    <div style="width:100%;background:var(--card);border-radius:20px;border:0.5px solid var(--bg3);padding:24px">
-      <div class="gate-brand" style="margin-bottom:12px">
-        <div class="gate-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10.5C4 7 6.5 4 10 4s6 3 6 6.5-2.5 6.5-6 6.5S4 14 4 10.5z" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 10.5h5M10 8v5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
-        <div class="gate-title">Wortschatz</div>
-      </div>
-      <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px;text-align:right">خوش اومدی 👋</div>
-      <div style="font-size:12px;color:var(--ink3);margin-bottom:16px;text-align:right">برای شروع وارد شو</div>
-
-      <button onclick="authGoogle()" class="gate-google">
-        <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
-        ورود با Google
-      </button>
-
-      <div class="gate-divider"><span>یا با ایمیل</span></div>
-      <input class="inp ltr" id="magic-email" type="email" placeholder="your@email.com" style="margin-bottom:10px">
-      <button class="btn btn-p btn-full" onclick="authMagic()" id="magic-btn">ارسال لینک ورود</button>
-      <div id="magic-msg" style="font-size:12px;color:var(--ok);text-align:center;margin-top:8px;min-height:16px"></div>
+    <!-- Tag line in blue section -->
+    <div style="text-align:center;margin-top:14px">
+      <div style="font-family:var(--serif);font-size:18px;font-weight:700;color:white;line-height:1.2">لغت یاد بگیر،<br><em style="font-style:italic;opacity:.85">نه حفظ کنی</em></div>
     </div>
-
   </div>
+
+  <!-- Bottom white section - login -->
+  <div style="padding:20px">
+    <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px;text-align:right">خوش اومدی 👋</div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:16px;text-align:right">برای شروع وارد شو</div>
+
+    <button onclick="authGoogle()" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
+      ورود با Google
+    </button>
+
+    <div class="gate-or">یا با ایمیل</div>
+    <input class="inp ltr" id="magic-email" type="email" placeholder="your@email.com">
+    <div class="gate-err" id="magic-msg"></div>
+    <button class="btn btn-p btn-full" onclick="authMagic()" id="magic-btn" style="margin-top:10px">ارسال لینک ورود</button>
+
+    <!-- How it works - inspired by reference -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bg2)">
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">چطور کار می‌کنه:</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)">
+          <div style="width:22px;height:22px;background:var(--abl);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="4.5" cy="4.5" r="3" stroke="var(--accent)" stroke-width="1"/><path d="M7 7L9.5 9.5" stroke="var(--accent)" stroke-width="1" stroke-linecap="round"/></svg>
+          </div>
+          لغت رو جستجو کن — AI توضیح میده
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)">
+          <div style="width:22px;height:22px;background:#eaf3de;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="2" y="1.5" width="7" height="8" rx="1.5" stroke="#3b6d11" stroke-width="1"/><path d="M4 4.5h3M4 6.5h2" stroke="#3b6d11" stroke-width=".8" stroke-linecap="round"/></svg>
+          </div>
+          فلش‌کارت بساز و هوشمند مرور کن
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)">
+          <div style="width:22px;height:22px;background:rgba(245,200,20,.12);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1.5l1.2 2.4L9.5 4.4l-2 1.9.5 2.7L5.5 7.8 3 9l.5-2.7-2-1.9 2.8-.5L5.5 1.5z" stroke="#b8900a" stroke-width=".9" stroke-linejoin="round"/></svg>
+          </div>
+          Streak بساز — هر روز پیشرفت کن
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
 </div>
 
 <!-- Drawer -->
@@ -3706,6 +3618,128 @@ function packLearnRestart(){
   plShowCard();
 }
 
+
+
+/* ── GATE ANIMATION ── */
+(function(){
+  const WORD = 'Kündigungsfrist';
+  let cur=0, running=false, started=false;
+
+  function setStep(n){
+    document.querySelectorAll('.lp-step').forEach((s,i)=>s.classList.toggle('active',i===n));
+    document.querySelectorAll('.lp-dot').forEach((d,i)=>d.classList.toggle('active',i===n));
+    cur=n;
+  }
+
+  function getPos(id){
+    const el=document.getElementById(id);
+    const phone=document.getElementById('lp-phone');
+    if(!el||!phone) return {x:110,y:120};
+    const pr=phone.getBoundingClientRect();
+    const er=el.getBoundingClientRect();
+    return {x:er.left-pr.left+er.width/2, y:er.top-pr.top+er.height/2};
+  }
+
+  function mv(x,y,delay){
+    return new Promise(r=>{
+      setTimeout(()=>{
+        const m=document.getElementById('lp-mouse');
+        if(m){m.style.left=x+'px';m.style.top=y+'px';}
+        setTimeout(r,560);
+      },delay);
+    });
+  }
+
+  function showM(v){
+    const m=document.getElementById('lp-mouse');
+    if(m) m.style.opacity=v?'1':'0';
+  }
+
+  function click(x,y){
+    return new Promise(r=>{
+      const rp=document.getElementById('lp-ripple');
+      if(rp){
+        rp.style.left=(x-8)+'px';rp.style.top=(y-8)+'px';
+        rp.style.transform='scale(0)';rp.style.opacity='1';
+        void rp.offsetWidth;
+        rp.style.transform='scale(1)';rp.style.opacity='0';
+      }
+      setTimeout(r,260);
+    });
+  }
+
+  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+  async function type(){
+    const el=document.getElementById('lp-typetext');
+    if(!el) return;
+    el.textContent='';
+    for(let i=0;i<WORD.length;i++){
+      el.textContent=WORD.slice(0,i+1);
+      await sleep(60);
+    }
+  }
+
+  async function run(){
+    if(running||!document.getElementById('lp-phone')) return;
+    running=true;
+    setStep(0);
+    await sleep(700);
+    showM(true);
+
+    const sb=getPos('lp-searchbox');
+    await mv(sb.x,sb.y,200);
+    await click(sb.x,sb.y);
+    await type();
+    await sleep(500);
+
+    setStep(1);
+    await sleep(900);
+    const ab=getPos('lp-addbtn');
+    await mv(ab.x,ab.y,300);
+    await click(ab.x,ab.y);
+    const btn=document.getElementById('lp-addbtn');
+    if(btn){btn.textContent='✓ اضافه شد';btn.style.background='#639922';}
+    await sleep(500);
+
+    setStep(2);
+    await sleep(900);
+    const fc=getPos('lp-flashcard');
+    await mv(fc.x,fc.y,300);
+    await click(fc.x,fc.y);
+    const card=document.getElementById('lp-flashcard');
+    if(card){
+      card.style.background='var(--abl)';
+      card.innerHTML='<div style="font-size:10px;color:var(--accent);font-weight:600">مهلت فسخ قرارداد</div><div style="font-family:var(--serif);font-size:14px;font-weight:700;direction:ltr;color:var(--ink)">Kündigungsfrist</div>';
+    }
+    await sleep(700);
+
+    setStep(3);
+    await sleep(900);
+    const kb=getPos('lp-knowbtn');
+    await mv(kb.x,kb.y,300);
+    await click(kb.x,kb.y);
+    await sleep(400);
+    showM(false);
+    setStep(4);
+    await sleep(2800);
+    running=false;
+    run();
+  }
+
+  function tryStart(){
+    if(!started && document.getElementById('gate')?.classList.contains('open')){
+      started=true;
+      setTimeout(run,400);
+    }
+  }
+
+  const gate=document.getElementById('gate');
+  if(gate){
+    new MutationObserver(tryStart).observe(gate,{attributes:true,attributeFilter:['class']});
+    if(gate.classList.contains('open')) setTimeout(run,400);
+  }
+})();
 
 </script>
 
