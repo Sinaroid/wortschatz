@@ -412,12 +412,22 @@ async function loadStats(){
 // ── Users ──────────────────────────────
 async function loadUsers(){
   try{
-    const {data} = await sb.from('profiles')
-      .select('id,email,plan,created_at,word_count,search_count,is_beta')
+    // profiles join با auth.users از طریق view
+    const {data,error} = await sb.from('admin_users_view')
+      .select('*')
       .order('created_at',{ascending:false})
       .limit(500);
 
-    allUsers=data||[];
+    if(error){
+      // fallback: profiles بدون email
+      const {data:p} = await sb.from('profiles')
+        .select('id,plan,created_at,word_count,search_count')
+        .order('created_at',{ascending:false})
+        .limit(500);
+      allUsers=(p||[]).map(u=>({...u,email:'(view نساختی)'}));
+    } else {
+      allUsers=data||[];
+    }
     renderUsers(allUsers);
   }catch(e){console.error(e)}
 }
