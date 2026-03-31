@@ -791,7 +791,7 @@ body.offline .topbar{top:36px}
 .drw-avatar img{width:100%;height:100%;object-fit:cover}
 .drw-profile-info{flex:1;min-width:0}
 .drw-profile-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.drw-profile-email{font-size:11px;color:rgba(255,255,255,.7);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drw-profile-email{font-size:11px;color:rgba(255,255,255,.6);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;background:rgba(0,0,0,.15);border-radius:20px;padding:2px 8px;display:inline-block;max-width:100%}
 .drw-plan-pill{
   display:inline-flex;align-items:center;gap:5px;
   background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
@@ -808,7 +808,7 @@ body.offline .topbar{top:36px}
   padding:8px 4px;text-align:center;
 }
 .drw-hstat-n{
-  font-family:var(--serif);font-size:20px;font-weight:600;
+  font-family:var(--sans);font-size:20px;font-weight:700;
   color:#fff;line-height:1;margin-bottom:2px;
 }
 .drw-hstat-n.fire{color:#ffd166}
@@ -1467,6 +1467,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
           پاک کردن لغات
         </button>
       </div>
+      <button class="drw-action-btn" style="justify-content:center;gap:8px;color:var(--accent);border-color:var(--abl);background:var(--abl)" onclick="window.open('https://t.me/wortschatzapp','_blank')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.467l-2.95-.924c-.64-.203-.654-.64.136-.954l11.57-4.461c.537-.194 1.006.131.968.093z"/></svg>
+        ارتباط با ما در تلگرام
+      </button>
     </div>
 
   </div>
