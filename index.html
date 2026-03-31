@@ -1007,6 +1007,9 @@ body.offline .topbar{top:36px}
 .pl-btn-save:hover{background:rgba(245,200,20,.2)}
 .pl-btn-flash{background:var(--abl);color:var(--accent)}
 .pl-btn-flash:hover{background:rgba(26,58,242,.15)}
+.pl-btn-know{background:var(--bg2);color:var(--ink2)}
+.pl-btn-know:hover{background:var(--bg3)}
+.pl-btn-flash:hover{background:rgba(26,58,242,.15)}
 
 /* Summary */
 .pl-summary{
@@ -3162,6 +3165,14 @@ function packLearnNext(){
   plShowCard();
 }
 
+function packLearnKnow(){
+  // بلدم — skip می‌کنه، به عنوان "دیده شده" count میشه
+  plSkipCount++;
+  Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
+  plIdx++;
+  plShowCard();
+}
+
 async function packLearnAddFlash(){
   const w = plWords[plIdx];
   const btn = Q('.pl-btn-flash');
@@ -3384,23 +3395,17 @@ function packLearnRestart(){
 
     <!-- Action Buttons -->
     <div class="pl-actions" id="pl-actions" style="display:none">
-      <button class="pl-btn pl-btn-skip" onclick="packLearnNext()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        رد کن
-      </button>
-      <button class="pl-btn pl-btn-save" onclick="packLearnSave()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 2l1.6 3.2L13 5.8l-2.5 2.4.6 3.4L8 9.8 4.9 11.6l.6-3.4L3 5.8l3.4-.6L8 2z" fill="currentColor"/>
-        </svg>
-        ذخیره
-      </button>
-      <button class="pl-btn pl-btn-flash" onclick="packLearnAddFlash()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <button class="pl-btn pl-btn-flash" onclick="packLearnAddFlash()" style="flex:1.5">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
           <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        فلش‌کارت
+        یاد می‌گیرم
+      </button>
+      <button class="pl-btn pl-btn-know" onclick="packLearnKnow()" style="flex:1">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        بلدم
       </button>
     </div>
 
@@ -3419,7 +3424,7 @@ function packLearnRestart(){
         </div>
         <div class="pl-sum-stat">
           <div class="pl-sum-n" id="pl-sum-skip">0</div>
-          <div class="pl-sum-l">رد شده</div>
+          <div class="pl-sum-l">بلد بودم</div>
         </div>
       </div>
       <div class="pl-sum-msg" id="pl-sum-msg"></div>
