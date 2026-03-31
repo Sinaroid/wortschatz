@@ -1461,9 +1461,9 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   <!-- HOME -->
   <div class="pane on" id="pane-home">
     <div class="hero">
-      <div class="hero-eye">دستیار یادگیری آلمانی</div>
-      <h1>لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
-      <p>لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
+      <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
+      <h1 id="hero-title">لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
+      <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
     </div>
 
     <div id="free-banner" style="display:none"></div>
@@ -2317,9 +2317,17 @@ function updateLangUI(){
   const label = document.getElementById('home-lang-label');
   if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
   if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
-  // Home subtitle
-  const sub = document.querySelector('.home-sub');
-  if(sub) sub.textContent = isDE ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
+  // Hero texts
+  const heroLabel = document.getElementById('hero-label');
+  const heroTitle = document.getElementById('hero-title');
+  const heroSub   = document.getElementById('hero-sub');
+  if(heroLabel) heroLabel.textContent = isDE ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
+  if(heroTitle) heroTitle.innerHTML   = isDE
+    ? 'لغت یاد بگیر،<br><em>نه حفظ کنی</em>'
+    : 'Words stick,<br><em>not memorized</em>';
+  if(heroSub) heroSub.textContent = isDE
+    ? 'لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی'
+    : 'لغت، جمله یا اصطلاح — فارسی، انگلیسی یا آلمانی';
   // Drawer lang toggle
   drawerUpdateLangToggle();
 }
