@@ -908,10 +908,37 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 /* ═══════════════════════════════════
    EMPTY STATES
 ═══════════════════════════════════ */
-.empty{text-align:center;padding:var(--s10) var(--s4);color:var(--ink3);animation:fade .35s}
-.empty-ic{font-size:48px;opacity:.35;display:block;margin-bottom:var(--s4)}
-.empty h3{font-family:var(--serif);font-size:20px;color:var(--ink2);margin-bottom:var(--s2)}
-.empty p{font-size:14px;line-height:1.75}
+.empty{
+  text-align:center;padding:var(--s10) var(--s6) var(--s8);
+  animation:up .35s var(--spring);
+}
+.empty-ic{
+  font-size:52px;display:block;margin-bottom:var(--s5);
+  animation:pop .5s var(--spring);
+}
+.empty h3{
+  font-family:var(--serif);font-size:22px;font-weight:600;
+  color:var(--ink);margin-bottom:var(--s2);
+}
+.empty p{
+  font-size:14px;color:var(--ink3);line-height:1.75;
+  margin-bottom:var(--s6);
+}
+.empty-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent);color:#fff;border:none;
+  border-radius:var(--r5);padding:12px 24px;
+  font-family:var(--sans);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .18s;
+}
+.empty-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+.empty-hint{
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg2);border:1px solid var(--bg3);
+  border-radius:var(--r2);padding:10px var(--s4);
+  font-size:12px;color:var(--ink3);margin-top:var(--s3);
+  justify-content:center;
+}
 
 /* ─── RESPONSIVE ─────────────────── */
 @media(max-width:480px){
@@ -1596,6 +1623,20 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <div class="sum-acts">
         <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">شروع مرور</span> →</button>
         <button class="sum-all" onclick="sesOpen()">همه لغات</button>
+      </div>
+    </div>
+
+    <!-- Home empty state -->
+    <div id="home-empty" style="display:none">
+      <div class="empty" style="padding-top:var(--s6)">
+        <span class="empty-ic">✨</span>
+        <h3>اولین لغتت رو یاد بگیر</h3>
+        <p>یه کلمه توی کادر بالا سرچ کن<br>AI معنی، مثال و ریشه‌اش رو بهت میده</p>
+        <button class="empty-btn" onclick="Q('#s-inp')?.focus()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          شروع کن
+        </button>
+        <div id="home-empty-chips" style="display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s4);flex-wrap:wrap"></div>
       </div>
     </div>
   </div>
@@ -2333,6 +2374,19 @@ function updateLangUI(){
   drawerUpdateLangToggle();
   // Pack presets
   updatePackPresets();
+  // Home empty chips
+  updateHomeEmptyChips();
+}
+
+function updateHomeEmptyChips(){
+  const wrap = document.getElementById('home-empty-chips');
+  if(!wrap) return;
+  const chips = targetLang === 'de'
+    ? ['Arbeit','Freundschaft','Reise','Glück']
+    : ['happiness','freedom','journey','grateful'];
+  wrap.innerHTML = chips.map(w=>
+    `<span onclick="qs('${w}')" style="background:var(--bg2);border:1px solid var(--bg3);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink2);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--bg3)'">${w}</span>`
+  ).join('');
 }
 
 const PACK_PRESETS = {
@@ -2423,9 +2477,15 @@ function updateBadges(){
 ══════════════════════════════ */
 function updateStats(){
   const card=Q('#sum-card');
+  const homeEmpty=Q('#home-empty');
   const fw=filteredWords();
-  if(!fw.length){card.classList.remove('show');return;}
+  if(!fw.length){
+    card.classList.remove('show');
+    if(homeEmpty) homeEmpty.style.display='block';
+    return;
+  }
   card.classList.add('show');
+  if(homeEmpty) homeEmpty.style.display='none';
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
@@ -3076,7 +3136,16 @@ function renderList(){
   const el=Q('#wlist');
   const fw=filteredWords();
   if(!fw.length){
-    el.innerHTML='<div class="empty"><span class="empty-ic">📭</span><h3>لیست خالیه</h3><p>لغت جستجو کن و اضافه کن</p></div>';
+    el.innerHTML=`<div class="empty">
+      <span class="empty-ic">🌱</span>
+      <h3>هنوز لغتی نداری</h3>
+      <p>یه کلمه آلمانی، فارسی یا انگلیسی سرچ کن<br>AI کامل توضیح میده — بعد save کن</p>
+      <button class="empty-btn" onclick="navTo('home');setTimeout(()=>Q('#s-inp')?.focus(),200)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        اولین لغتت رو سرچ کن
+      </button>
+      <div class="empty-hint">💡 مثلاً بنویس <strong>Arbeit</strong> یا <strong>کار</strong></div>
+    </div>`;
     Q('#list-count').textContent='';Q('#due-banner').classList.remove('show');return;
   }
   const now=new Date();
