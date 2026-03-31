@@ -3065,7 +3065,7 @@ function generateAIPackTab(){
 فقط JSON برگردون، هیچ توضیحی نده:
 {"words":[{"de":"لغت","fa":"معنی فارسی","ex":"یک جمله نمونه آلمانی","ex_fa":"ترجمه فارسی جمله"}]}`;
 
-  ai([{role:'user',content:prompt}])
+  ai(prompt)
     .then(txt=>{
       const clean = txt.replace(/\`\`\`json|\`\`\`/g,'').trim();
       const data = JSON.parse(clean);
