@@ -141,6 +141,26 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    PANES
 ═══════════════════════════════════ */
+/* ── pane-home full screen ── */
+#pane-home{
+  min-height:calc(100dvh - var(--nav-h));
+  display:none;
+  flex-direction:column;
+  padding-bottom:0 !important;
+}
+#pane-home.on{
+  display:flex;
+  animation:fade .2s var(--ease);
+}
+#home-empty{
+  flex:1;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:var(--s4) var(--s5) calc(var(--nav-h) + var(--s4));
+}
+#home-empty.show{display:flex}
+
 .pane{
   display:none;
   padding:var(--s5) var(--s5) calc(var(--nav-h) + 20px);
@@ -1665,18 +1685,16 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </div>
 
     <!-- Home empty state -->
-    <div id="home-empty" style="display:none">
-      <div class="empty">
-        <div class="empty-box">
-          <span class="empty-ic">✨</span>
-          <h3>اولین لغتت رو یاد بگیر</h3>
-          <p>یه کلمه توی کادر بالا سرچ کن<br>AI معنی، مثال و ریشه‌اش رو بهت میده</p>
-          <button class="empty-btn" onclick="Q('#s-inp')?.focus();Q('#s-inp')?.scrollIntoView({behavior:'smooth',block:'center'})">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            شروع کن
-          </button>
-          <div class="empty-chips" id="home-empty-chips"></div>
-        </div>
+    <div id="home-empty">
+      <div class="empty-box" style="width:100%;max-width:380px">
+        <span class="empty-ic" style="font-size:40px;margin-bottom:var(--s3)">✨</span>
+        <h3 style="font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);margin-bottom:var(--s2)">اولین لغتت رو یاد بگیر</h3>
+        <p style="font-size:13px;color:var(--ink3);line-height:1.7;margin-bottom:var(--s4)">یه کلمه توی کادر بالا سرچ کن<br>AI معنی، مثال و ریشه‌اش رو بهت میده</p>
+        <button class="empty-btn" onclick="Q('#s-inp')?.focus();Q('#s-inp')?.scrollIntoView({behavior:'smooth',block:'center'})">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M9.5 9.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          شروع کن
+        </button>
+        <div class="empty-chips" id="home-empty-chips" style="margin-top:var(--s3)"></div>
       </div>
     </div>
   </div>
@@ -2521,11 +2539,11 @@ function updateStats(){
   const fw=filteredWords();
   if(!fw.length){
     card.classList.remove('show');
-    if(homeEmpty) homeEmpty.style.display='block';
+    if(homeEmpty) homeEmpty.classList.add('show');
     return;
   }
   card.classList.add('show');
-  if(homeEmpty) homeEmpty.style.display='none';
+  if(homeEmpty) homeEmpty.classList.remove('show');
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
