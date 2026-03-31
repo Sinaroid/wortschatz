@@ -1180,6 +1180,18 @@ body.offline .topbar{top:36px}
       </div>
     </div>
 
+    <!-- Language Target -->
+    <div style="display:flex;gap:8px;margin-bottom:var(--s4)">
+      <button onclick="setTargetLang('de');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;transition:all .2s" id="btn-lang-de">
+        <span>🇩🇪</span> آلمانی
+        <span id="lang-de-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);transition:background .2s;margin-right:2px"></span>
+      </button>
+      <button onclick="setTargetLang('en');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;transition:all .2s" id="btn-lang-en">
+        <span>🇬🇧</span> انگلیسی
+        <span id="lang-en-dot" style="width:6px;height:6px;border-radius:50%;background:var(--bg3);transition:background .2s;margin-right:2px"></span>
+      </button>
+    </div>
+
     <!-- Plan card — FREE -->
     <div class="drw-plan-card drw-plan-free-card" id="drw-plan-free">
       <div class="drw-free-top">
@@ -1234,23 +1246,6 @@ body.offline .topbar{top:36px}
       <div class="drw-stat">
         <div class="drw-stat-n err" id="drw-stat-due">—</div>
         <div class="drw-stat-l">سررسید</div>
-      </div>
-    </div>
-
-    <div class="drw-divider"></div>
-
-    <!-- Language Target -->
-    <div style="margin-bottom:var(--s4)">
-      <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;font-weight:500">زبان یادگیری</div>
-      <div style="display:flex;gap:8px">
-        <button onclick="setTargetLang('de');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;transition:all .2s" id="btn-lang-de">
-          <span style="font-size:16px">🇩🇪</span> آلمانی
-          <span id="lang-de-dot" style="width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:2px;transition:background .2s"></span>
-        </button>
-        <button onclick="setTargetLang('en');drawerClose()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--card);cursor:pointer;font-family:var(--sans);font-size:13px;transition:all .2s" id="btn-lang-en">
-          <span style="font-size:16px">🇬🇧</span> انگلیسی
-          <span id="lang-en-dot" style="width:7px;height:7px;border-radius:50%;background:var(--bg3);margin-right:2px;transition:background .2s"></span>
-        </button>
       </div>
     </div>
 
@@ -1409,6 +1404,13 @@ body.offline .topbar{top:36px}
     </div>
 
     <div id="free-banner" style="display:none"></div>
+    <div style="display:flex;align-items:center;margin-bottom:10px">
+      <button onclick="drawerOpen()" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'">
+        <span id="home-lang-flag">🇩🇪</span>
+        <span id="home-lang-label">آلمانی</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
         placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
@@ -1506,6 +1508,7 @@ body.offline .topbar{top:36px}
         <div class="sum-nb">
           <div class="sum-n" id="sn-total">0</div>
           <div class="sum-l">لغت</div>
+          <div id="sn-lang-split" style="font-size:10px;color:var(--ink3);margin-top:3px;display:none"></div>
         </div>
         <div class="sum-nb ok">
           <div class="sum-n" id="sn-learned">0</div>
@@ -2228,6 +2231,14 @@ function updateLangUI(){
   const enDot = document.getElementById('lang-en-dot');
   if(deDot) deDot.style.background = targetLang==='de' ? 'var(--accent)' : 'var(--bg3)';
   if(enDot) enDot.style.background = targetLang==='en' ? 'var(--accent)' : 'var(--bg3)';
+  // Update home badge
+  const flag = document.getElementById('home-lang-flag');
+  const label = document.getElementById('home-lang-label');
+  if(flag) flag.textContent = targetLang==='de' ? '🇩🇪' : '🇬🇧';
+  if(label) label.textContent = targetLang==='de' ? 'آلمانی' : 'انگلیسی';
+  // Update home subtitle
+  const sub = document.querySelector('.home-sub');
+  if(sub) sub.textContent = targetLang==='de' ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
 }
 
 function toggleDark(){const d=document.body.classList.toggle('dark');localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
@@ -2271,7 +2282,19 @@ function updateStats(){
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
-  Q('#sn-total').textContent=words.length;
+  Q('#sn-total').textContent=fw.length;
+  // Lang split
+  const splitEl=Q('#sn-lang-split');
+  if(splitEl && words.length > 0){
+    const deCount = words.filter(w=>(w.lang||'de')==='de').length;
+    const enCount = words.filter(w=>w.lang==='en').length;
+    if(deCount>0 && enCount>0){
+      splitEl.textContent = '🇩🇪 '+deCount+' · 🇬🇧 '+enCount;
+      splitEl.style.display='block';
+    } else {
+      splitEl.style.display='none';
+    }
+  }
   Q('#sn-learned').textContent=learned.length;
   // streak
   const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
