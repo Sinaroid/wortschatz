@@ -22,7 +22,7 @@
   --abl:rgba(26,58,242,.09); --aglow:rgba(26,58,242,.18);
   --ok:#126e35; --okbg:rgba(18,110,53,.08);
   --err:#cc2020; --errbg:rgba(204,32,32,.07);
-  --warn:#a84800;
+  --warn:#a84800; --warnbg:rgba(168,72,0,.07);
   --serif:'Fraunces',Georgia,serif;
   --sans:'Vazirmatn',system-ui,sans-serif;
   --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;
@@ -33,6 +33,8 @@
   --ease:cubic-bezier(.4,0,.2,1);
   --spring:cubic-bezier(.34,1.56,.64,1);
   --nav-h:66px;
+  --prog-h:4px; --prog-r:4px;
+  --warnbg:rgba(168,72,0,.07);
 }
 body.dark{
   --bg:#0d0d0c;--bg2:#161614;--bg3:#202020;--bg4:#2c2c2a;
@@ -229,11 +231,11 @@ body.offline .topbar{top:36px}
    FORM ELEMENTS
 ═══════════════════════════════════ */
 .inp{
-  width:100%;padding:11px var(--s4);border-radius:var(--r2);
+  width:100%;padding:11px var(--s4);border-radius:var(--input-r);
   border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink);
   font-size:14px;outline:none;transition:all .2s;margin-bottom:var(--s3);
 }
-.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--aglow)}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--aglow),var(--sh1)}
 .inp::placeholder{color:var(--ink4);font-family:var(--sans);direction:rtl}
 .inp.ltr{direction:ltr;letter-spacing:.2px}
 .btn{
@@ -327,7 +329,7 @@ body.offline .topbar{top:36px}
 .ses-again-btn:hover{border-color:var(--warn);color:var(--warn)}
 .again-n{background:var(--warn);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;display:none}
 .again-n.show{display:inline-block}
-.ses-prog{height:3px;background:var(--bg3);flex-shrink:0;overflow:hidden}
+.ses-prog{height:var(--prog-h);background:var(--bg3);flex-shrink:0;overflow:hidden}
 .ses-fill{height:100%;background:var(--accent);transition:width .4s var(--ease)}
 .ses-body{
   flex:1;display:flex;flex-direction:column;align-items:center;
@@ -793,7 +795,7 @@ body.offline .topbar{top:36px}
 }
 .drw-plan-badge.pro{background:var(--abl);color:var(--accent)}
 .drw-plan-bar-wrap{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s3)}
-.drw-plan-bar{flex:1;height:5px;background:var(--bg3);border-radius:5px;overflow:hidden}
+.drw-plan-bar{flex:1;height:var(--prog-h);background:var(--bg3);border-radius:var(--prog-r);overflow:hidden}
 .drw-plan-fill{height:100%;background:var(--accent);border-radius:5px;transition:width .4s var(--ease)}
 .drw-plan-count{font-size:11px;color:var(--ink3);white-space:nowrap;flex-shrink:0}
 .drw-upgrade-btn{
@@ -888,8 +890,12 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   padding:10px 20px;border-radius:var(--r6);white-space:nowrap;
   opacity:0;transition:opacity .2s,transform .22s var(--spring);
   pointer-events:none;z-index:400;
+  display:flex;align-items:center;gap:8px;
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{background:var(--ok)}
+#toast.err{background:var(--err)}
+#toast.warn{background:var(--warn)}
 
 /* ═══════════════════════════════════
    LIST
@@ -1047,8 +1053,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .pack-card:active{transform:scale(.97)}
 .pack-card.pack-done{border-color:var(--ok);background:rgba(18,110,53,.04)}
 .pack-card.pack-locked{opacity:.75}
-.pack-progress{width:100%;height:4px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:4px}
-.pack-progress-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s}
+.pack-progress{width:100%;height:var(--prog-h);background:var(--bg3);border-radius:var(--prog-r);overflow:hidden;margin-top:4px}
+.pack-progress-fill{height:100%;border-radius:var(--prog-r);background:var(--accent);transition:width .4s var(--ease)}
 .pack-progress-fill.done{background:var(--ok)}
 .pack-card:active{transform:scale(.97)}
 .pack-card:hover{box-shadow:var(--sh2)}
@@ -1089,8 +1095,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 }
 .pl-close:hover{background:var(--bg2)}
 .pl-progress-wrap{flex:1;display:flex;flex-direction:column;gap:4px}
-.pl-progress-bar{height:4px;background:var(--bg3);border-radius:4px;overflow:hidden}
-.pl-progress-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s var(--ease)}
+.pl-progress-bar{height:var(--prog-h);background:var(--bg3);border-radius:var(--prog-r);overflow:hidden}
+.pl-progress-fill{height:100%;background:var(--accent);border-radius:var(--prog-r);transition:width .4s var(--ease)}
 .pl-counter{font-size:11px;color:var(--ink3);text-align:left}
 .pl-score{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--warn);flex-shrink:0}
 
@@ -1916,10 +1922,12 @@ const saveCache=()=>localStorage.setItem('ws_cache_'+uid(),JSON.stringify(words)
 const uid=()=>currentUser?.id||localStorage.getItem('ws_uid')||'anon';
 
 let _toastT;
-function showToast(msg,dur=2800){
+function showToast(msg,dur=2800,type=''){
   let el=Q('#toast');
   if(!el){el=document.createElement('div');el.id='toast';document.body.appendChild(el);}
-  el.textContent=msg;el.classList.add('show');
+  el.textContent=msg;
+  el.className='show';
+  if(type) el.classList.add(type);
   clearTimeout(_toastT);
   _toastT=setTimeout(()=>el.classList.remove('show'),dur);
 }
@@ -2026,9 +2034,9 @@ function updateFreeBanner(){
     // تموم شد — upgrade modal
     showUpgrade();
   } else if(left===2){
-    showToast('⚠ فقط ۲ جستجو امروز مونده');
+    showToast('⚠ فقط ۲ جستجو امروز مونده',2800,'warn');
   } else if(left===1){
-    showToast('🔴 آخرین جستجوی امروز!');
+    showToast('🔴 آخرین جستجوی امروز!',2800,'warn');
   }
   updateDrawerPlan();
 }
@@ -2039,7 +2047,7 @@ function showUpgrade(){
 
 async function startCheckout(){
   if(!currentUser){
-    showToast('اول وارد شو');
+    showToast('اول وارد شو',2800,'warn');
     Q('#upgrade-modal').classList.remove('open');
     showGate();
     return;
@@ -2056,7 +2064,7 @@ async function startCheckout(){
     if(d.url) window.location.href = d.url;
     else throw new Error(d.error||'خطا');
   }catch(e){
-    showToast('خطا: '+e.message);
+    showToast('خطا: '+e.message,3000,'err');
     btn.disabled=false;
     btn.textContent='شروع اشتراک Pro';
   }
@@ -2072,7 +2080,7 @@ async function redeemBeta(){
     if(error)throw error;
     if(data?.success){
       userPlan='beta';
-      showToast('کد بتا فعال شد! جستجو نامحدوده ✅');
+      showToast('کد بتا فعال شد! جستجو نامحدوده ✅',2800,'ok');
       Q('#upgrade-modal').classList.remove('open');
       updateFreeBanner();updateDrawerPlan();
     } else {
@@ -2153,8 +2161,8 @@ async function ai(prompt,tokens=900){
   const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
   if(used>0){userSearchCount=used;updateFreeBanner();}
   const rem=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
-  if(rem===3) showToast('⚠ فقط ۳ جستجو مونده');
-  else if(rem===0) showToast('جستجوی رایگان تموم شد 😔');
+  if(rem===3) showToast('⚠ فقط ۳ جستجو مونده',2800,'warn');
+  else if(rem===0) showToast('جستجوی رایگان تموم شد 😔',3000,'warn');
   return d.content.map(b=>b.text||'').join('').trim();
 }
 
@@ -2318,13 +2326,13 @@ async function init(){
     if(uid){
       fetch('/api/upgrade',{method:'POST',headers:{'Content-Type':'application/json','x-user-id':uid}})
         .then(()=>{
-          showToast('🎉 Pro فعال شد! جستجوی نامحدود داری');
+          showToast('🎉 Pro فعال شد! جستجوی نامحدود داری',3000,'ok');
           setTimeout(()=>loadProfile(),1500);
         }).catch(()=>{});
     }
   } else if(params.get('upgrade')==='cancel'){
     history.replaceState({},document.title,window.location.pathname);
-    showToast('پرداخت لغو شد');
+    showToast('پرداخت لغو شد',2800,'warn');
   }
 
   // Auth state listener
@@ -2929,7 +2937,7 @@ function getDeckStats(deck){
    SESSION
 ══════════════════════════════ */
 function sesOpenSmart(){
-  if(!words.length){ showToast('هنوز لغتی اضافه نکردی!'); return; }
+  if(!words.length){ showToast('هنوز لغتی اضافه نکردی!',2800,'warn'); return; }
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
   showIntro();
@@ -3559,7 +3567,7 @@ async function addPackToFlashcards(){
   }
   saveCache(); updateBadges(); updateStats();
   packClose();
-  showToast(`✅ ${added} لغت اضافه شد!`);
+  showToast(`✅ ${added} لغت اضافه شد!`,2800,'ok');
   btn.disabled = false;
   btn.textContent = '+ افزودن همه به فلش‌کارت‌ها';
 }
@@ -3774,14 +3782,14 @@ function _doGenerateAIPack(topic, forceNew=false){
 function addSingleAIWord(idx){
   const w = window._aiPackWords?.[idx];
   if(!w) return;
-  if(words.find(x=>x.de===w.de)){ showToast('قبلاً اضافه شده'); return; }
+  if(words.find(x=>x.de===w.de)){ showToast('قبلاً اضافه شده',2000,'warn',2800,'ok'); return; }
   const nw={de:w.de,fa:w.fa,ex:w.ex||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
   words.unshift(nw);
   if(currentUser) dbAdd(nw).catch(()=>{});
   saveCache(); updateBadges(); updateStats();
   const btn = Q('#ai-add-btn-'+idx);
   if(btn){ btn.innerHTML='✓'; btn.style.background='var(--okbg)'; btn.style.color='var(--ok)'; btn.disabled=true; }
-  showToast(w.de+' اضافه شد ✓');
+  showToast(w.de+' اضافه شد ✓',2800,'ok');
 }
 
 function addAllAIPackWords(){
@@ -3798,7 +3806,7 @@ function addAllAIPackWords(){
     }
   });
   saveCache(); updateBadges(); updateStats();
-  showToast(added+' لغت به فلش‌کارت اضافه شد 🎉');
+  showToast(added+' لغت به فلش‌کارت اضافه شد 🎉',2800,'ok');
 }
 
 async function addAIPackWords(){
@@ -3812,7 +3820,7 @@ async function addAIPackWords(){
     added++;
   }
   saveCache(); updateBadges(); updateStats();
-  showToast(`✅ ${added} لغت اضافه شد!`);
+  showToast(`✅ ${added} لغت اضافه شد!`,2800,'ok');
   Q('#ai-pack-tab-result').innerHTML='';
   Q('#ai-pack-tab-inp').value='';
   aiPackWords=[];
@@ -3971,7 +3979,7 @@ async function packLearnAddFlash(){
   
   // Check already exists
   if(words.find(x=>x.de===w.de)){
-    showToast('قبلاً اضافه شده ✓');
+    showToast('قبلاً اضافه شده ✓',2800,'ok');
     plIdx++;
     plShowCard();
     return;
