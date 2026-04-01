@@ -1791,10 +1791,24 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     <!-- Phrase result -->
     <div class="ph-res" id="ph-res">
       <div class="ph-top">
+        <!-- correction banner -->
+        <div id="ph-correction" style="display:none;font-size:11px;color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);border-radius:8px;padding:6px 10px;margin-bottom:8px;direction:ltr;text-align:left">
+          <span style="opacity:.7">شاید منظورت:</span> <span id="ph-corrected" style="color:#fff;font-weight:600;cursor:pointer;text-decoration:underline" onclick="rephrase()"></span>
+        </div>
         <div class="ph-orig" id="ph-orig"></div>
         <div class="ph-meaning" id="ph-meaning"></div>
         <div class="ph-priority" id="ph-priority" style="display:none"></div>
+        <!-- similar phrases -->
+        <div id="ph-similar" style="display:none;margin-top:8px">
+          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:5px">عبارات مشابه:</div>
+          <div id="ph-similar-chips" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        </div>
         <span class="ph-syn" id="ph-syn"></span>
+        <!-- example -->
+        <div id="ph-example" style="display:none;margin-top:8px;background:rgba(255,255,255,.08);border-radius:8px;padding:8px 10px">
+          <div id="ph-ex-de" style="font-size:12px;color:rgba(255,255,255,.85);direction:ltr;text-align:left;font-style:italic"></div>
+          <div id="ph-ex-fa" style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px"></div>
+        </div>
       </div>
       <div class="ph-body">
         <button class="ph-add" id="ph-add" onclick="addPhrase()">
@@ -3061,35 +3075,75 @@ async function addWord(){
 
 async function searchPhrase(q){
   const isDE = targetLang === 'de';
-  const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
   setMsg('در حال تحلیل اصطلاح...','info');
-  const p = (isDE
-    ? `اصطلاح یا جمله آلمانی: "${q}"\nمعنی کامل اصطلاح رو به فارسی بده — نه لغت به لغت.\nJSON خالص:\n{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"مترادف یا عبارت مشابه آلمانی یا null","example_de":"یه جمله نمونه کوتاه یا null","priority":{"score":1,"reason":"چرا این اصطلاح مهمه — یه جمله فارسی"}}`
-    : `English phrase or sentence: "${q}"\nExplain the full meaning in Persian (Farsi). Not word by word.\nJSON only:\n{"original":"${q.replace(/"/g,"'")}","meaning_fa":"معنی کامل فارسی","synonym":"similar English phrase or null","example_de":"a short natural example sentence in English or null","priority":{"score":1,"reason":"why this phrase matters — one sentence in Persian"}}`
-  ) + '\nبرای score: 5=خیلی رایج، 4=مهم، 3=متوسط، 2=کمتر رایج، 1=نادر\nفقط JSON.';
+  const esc = s => s.replace(/"/g,"'");
+  const p = isDE
+    ? 'اصطلاح یا جمله آلمانی: "'+esc(q)+'"\nمعنی کامل رو به فارسی بده. اگه غلط نوشته شده فرم صحیح رو بده.\nفقط JSON:\n{"original":"'+esc(q)+'","corrected":"فرم صحیح اگه غلط بود وگرنه null","meaning_fa":"معنی کامل فارسی","synonym":"مترادف آلمانی یا null","similar":["عبارت مشابه ۱","عبارت مشابه ۲"],"example_de":"جمله نمونه کوتاه یا null","example_fa":"ترجمه فارسی مثال یا null","priority":{"score":3,"reason":"چرا مهمه"}}'
+    : 'English phrase: "'+esc(q)+'"\nExplain in Persian. If misspelled give the correct form.\nJSON only:\n{"original":"'+esc(q)+'","corrected":"correct form if misspelled else null","meaning_fa":"معنی کامل فارسی","synonym":"similar English phrase or null","similar":["similar phrase 1","similar phrase 2"],"example_de":"short example sentence or null","example_fa":"ترجمه فارسی مثال یا null","priority":{"score":3,"reason":"why it matters"}}';
 
-  const raw=(await ai(p,400)).replace(/```json|```/g,'').trim();
+  const raw=(await ai(p,500)).replace(/```json|```/g,'').trim();
   const pm=raw.match(/\{[\s\S]*\}/);
   if(!pm) throw new Error('parse error');
   try{ curPhrase=JSON.parse(pm[0]); } catch(e){ throw new Error('parse error'); }
+
   Q('#ph-orig').textContent=curPhrase.original;
   Q('#ph-meaning').textContent=curPhrase.meaning_fa;
+
+  // correction
+  const corrEl=Q('#ph-correction');
+  const corrTxt=Q('#ph-corrected');
+  if(curPhrase.corrected&&curPhrase.corrected!=='null'&&curPhrase.corrected!==curPhrase.original){
+    corrTxt.textContent=curPhrase.corrected;
+    corrEl.style.display='block';
+    window._phraseCorrection=curPhrase.corrected;
+  } else {
+    corrEl.style.display='none';
+  }
+
+  // priority
   const phpEl=Q('#ph-priority');
   if(curPhrase.priority&&curPhrase.priority.score){
     const sc=curPhrase.priority.score;
     const icons={5:'🔴',4:'🟠',3:'🔵',2:'⚪',1:'⚪'};
     const labels={5:'خیلی رایجه',4:'مهمه',3:'متوسط',2:'کمتر رایج',1:'نادر'};
-    phpEl.innerHTML=`<span>${icons[sc]}</span><span>${labels[sc]} — ${curPhrase.priority.reason||''}</span>`;
+    phpEl.innerHTML='<span>'+icons[sc]+'</span><span>'+labels[sc]+' — '+(curPhrase.priority.reason||'')+'</span>';
     phpEl.style.display='flex';
   } else phpEl.style.display='none';
+
+  // synonym
   const synEl=Q('#ph-syn');
   synEl.textContent=curPhrase.synonym&&curPhrase.synonym!=='null'?'مترادف: '+curPhrase.synonym:'';
-  const exists=words.some(w=>w.de===curPhrase.original);
+
+  // similar phrases
+  const simEl=Q('#ph-similar');
+  const simChips=Q('#ph-similar-chips');
+  if(curPhrase.similar&&curPhrase.similar.length>0&&curPhrase.similar[0]!=='null'){
+    simChips.innerHTML=curPhrase.similar.filter(function(s){return s&&s!=='null';}).map(function(s){
+      return '<span onclick="qs(\''+s.replace(/'/g,'')+'\')" style="font-size:11px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);padding:3px 10px;border-radius:20px;cursor:pointer;direction:ltr">'+s+'</span>';
+    }).join('');
+    simEl.style.display='block';
+  } else simEl.style.display='none';
+
+  // example
+  const exEl=Q('#ph-example');
+  if(curPhrase.example_de&&curPhrase.example_de!=='null'){
+    Q('#ph-ex-de').textContent=curPhrase.example_de;
+    Q('#ph-ex-fa').textContent=curPhrase.example_fa&&curPhrase.example_fa!=='null'?curPhrase.example_fa:'';
+    exEl.style.display='block';
+  } else exEl.style.display='none';
+
+  const exists=words.some(function(w){return w.de===curPhrase.original;});
   const btn=Q('#ph-add');
   btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن کل اصطلاح';
   btn.disabled=exists;btn.className='ph-add'+(exists?' done':'');
   Q('#ph-res').style.display='block';
-  setTimeout(()=>Q('#ph-res').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+  setTimeout(function(){Q('#ph-res').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+}
+function rephrase(){
+  if(window._phraseCorrection){
+    Q('#s-inp').value=window._phraseCorrection;
+    doSearch();
+  }
 }
 async function addPhrase(){
   if(!curPhrase)return;
