@@ -2906,7 +2906,7 @@ async function doSearch(){
         query:q,
         lang:targetLang,
         result_type:detectMode(q)
-      }).catch(()=>{});
+      }).then(()=>{}).catch(()=>{});
     }
   }catch(e){
     const {fa,type} = classifyError(e);
