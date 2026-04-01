@@ -432,7 +432,7 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    SEARCH
 ═══════════════════════════════════ */
-.s-wrap{position:relative;margin-bottom:var(--s2);animation:up .35s .06s var(--ease) both}
+.s-wrap{position:relative;margin-bottom:var(--s2);animation:up .35s .06s var(--ease) both;z-index:50}
 .s-field{
   width:100%;padding:13px var(--s5) 13px 56px;border-radius:var(--r6);
   border:1.5px solid var(--bg3);background:var(--card);color:var(--ink);
@@ -453,7 +453,7 @@ body.offline .topbar{top:36px}
 .ac-drop{
   position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--card);
   border:1px solid var(--bg3);border-radius:var(--r3);box-shadow:var(--sh3);
-  z-index:20;overflow:hidden;display:none;animation:down .15s var(--ease);
+  z-index:100;overflow:hidden;display:none;animation:down .15s var(--ease);
 }
 .ac-drop.open{display:block}
 .ac-row{
