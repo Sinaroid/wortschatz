@@ -699,17 +699,18 @@ async function loadTopWords(days){
     });
     var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,20);
     var max=counts[sorted[0]]||1;
-    var h='<div class="table-wrap"><table style="width:100%"><thead><tr><th>#</th><th>لغت</th><th>زبان</th><th>تعداد</th><th style="width:100px">—</th></tr></thead><tbody>';
+    var h='<div class="table-wrap"><table style="width:100%"><thead><tr><th>#</th><th>لغت سرچ شده</th><th>زبان</th><th>تعداد</th><th style="width:120px"></th></tr></thead><tbody>';
     sorted.forEach(function(q,i){
       var cnt=counts[q];
       var pct=Math.round(cnt/max*100);
       var lang=langMap[q]==='en'?'🇬🇧':'🇩🇪';
       var col=i===0?'var(--accent)':i<3?'var(--blue)':'var(--ink2)';
+      var medal=i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':'';
       h+='<tr><td style="padding:7px 12px;color:var(--ink3);font-size:11px">'+(i+1)+'</td>';
-      h+='<td style="padding:7px 12px;font-family:var(--serif);font-size:13px;color:var(--ink);direction:ltr">'+q+'</td>';
+      h+='<td style="padding:7px 12px;font-family:var(--serif);font-size:13px;color:var(--ink);direction:ltr">'+medal+q+'</td>';
       h+='<td style="padding:7px 12px">'+lang+'</td>';
-      h+='<td style="padding:7px 12px;font-weight:600;color:'+col+'">'+cnt+'×</td>';
-      h+='<td style="padding:7px 12px"><div style="background:var(--bg3);border-radius:3px;height:5px"><div style="width:'+pct+'%;height:100%;border-radius:3px;background:'+col+'"></div></div></td></tr>';
+      h+='<td style="padding:7px 12px;font-weight:700;color:'+col+'">'+cnt+'×</td>';
+      h+='<td style="padding:7px 12px"><div style="background:var(--bg3);border-radius:3px;height:6px"><div style="width:'+pct+'%;height:100%;border-radius:3px;background:'+col+'"></div></div></td></tr>';
     });
     h+='</tbody></table></div>';
     el.innerHTML=h;
@@ -729,10 +730,13 @@ async function loadRecentWords(){
     logs.forEach(function(l){
       var lang=l.lang==='en'?'🇬🇧':'🇩🇪';
       var ago=Math.round((Date.now()-new Date(l.created_at))/60000);
-      var agoStr=ago<1?'همین الان':ago<60?ago+' دقیقه پیش':Math.round(ago/60)+' ساعت پیش';
-      h+='<tr><td style="padding:7px 12px;font-size:13px">'+lang+'</td>';
-      h+='<td style="padding:7px 12px;font-family:var(--serif);font-size:13px;color:var(--ink);direction:ltr">'+l.query+'</td>';
-      h+='<td style="padding:7px 12px;font-size:10px;color:var(--ink3)">'+agoStr+'</td></tr>';
+      var agoStr=ago<1?'همین الان':ago<60?ago+' دقیقه پیش':ago<1440?Math.round(ago/60)+' ساعت پیش':Math.round(ago/1440)+' روز پیش';
+      var agoCol=ago<5?'var(--accent)':ago<60?'var(--blue)':'var(--ink3)';
+      h+='<tr>';
+      h+='<td style="padding:7px 12px;font-size:13px;width:30px">'+lang+'</td>';
+      h+='<td style="padding:7px 12px;font-family:var(--serif);font-size:14px;color:var(--ink);direction:ltr">'+l.query+'</td>';
+      h+='<td style="padding:7px 12px;font-size:10px;color:'+agoCol+';text-align:left">'+agoStr+'</td>';
+      h+='</tr>';
     });
     h+='</tbody></table></div>';
     document.getElementById('an-recent-words').innerHTML=h;
