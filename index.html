@@ -1571,10 +1571,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <div class="ses-cnt" id="ses-cnt">۱/۱</div>
       <div class="ses-sub" id="ses-sub"></div>
     </div>
-    <button class="ses-again-btn" onclick="sesAgain()">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M9 2H5a3 3 0 000 5h1M3 10H7a3 3 0 000-5H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      دوباره<span class="again-n" id="again-n"></span>
-    </button>
+    <!-- دکمه دوباره حذف شد -->
   </div>
   <div class="ses-prog"><div class="ses-fill" id="ses-fill" style="width:0%"></div></div>
 
@@ -3226,7 +3223,12 @@ function sesResume(){
 }
 function sesRestart(){
   Q('#ses-end').classList.remove('show');
-  setTimeout(()=>{Q('#ses-end').style.display='none'; sesOpenSmart();},180);
+  Q('#ses-end').style.display='none';
+  // rebuild deck از نو
+  sesDeck = buildSmartDeck();
+  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
+  if(!sesDeck.length){ showToast('همه لغت‌ها رو مرور کردی 🎉'); sesClose(true); return; }
+  startSession();
 }
 
 function showCard(){
