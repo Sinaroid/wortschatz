@@ -1883,17 +1883,17 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   <div id="pane-packs" class="pane" style="padding-top:0">
 
   <!-- Header -->
-  <div style="padding:var(--s4) var(--s5) var(--s3);border-bottom:1px solid var(--bg3);margin-bottom:var(--s4)">
+  <div style="padding:12px 16px 10px;border-bottom:1px solid var(--bg3);margin-bottom:12px">
     <div style="font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px">📦 جعبه لغت‌ها</div>
     <div style="font-size:12px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
   </div>
 
   <!-- Pack Grid -->
-  <div id="packs-grid-container" style="padding:0 var(--s4);margin-bottom:var(--s5)"></div>
+  <div id="packs-grid-container" style="padding:0 12px;margin-bottom:var(--s5)"></div>
 
 
   <!-- AI Pack Section -->
-  <div style="padding:0 var(--s5) var(--s8)">
+  <div style="padding:0 12px var(--s8)">
 
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
@@ -3868,7 +3868,7 @@ function renderPackGrid(){
   const inFlashcard = new Set(words.map(w=>w.de));
   const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
 
-  var packHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+  var packHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
   packList.forEach(function(pack){
     var packWords = (activePacks[pack.id] && activePacks[pack.id].words) || [];
     var total = packWords.length;
@@ -3881,7 +3881,7 @@ function renderPackGrid(){
     var isLocked = !pack.free && userPlan === 'free';
     var isStarted = learned > 0 && !isDone;
 
-    var cardStyle = 'font-family:var(--sans);border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:flex-start;text-align:right;min-height:170px;cursor:pointer;transition:border-color .15s,transform .12s;width:100%;position:relative;';
+    var cardStyle = 'font-family:var(--sans);border-radius:16px;padding:13px;display:flex;flex-direction:column;align-items:flex-start;text-align:right;min-height:150px;cursor:pointer;transition:border-color .15s,transform .12s;width:100%;position:relative;box-sizing:border-box;';
     if(isDone){
       cardStyle += 'background:rgba(18,110,53,.05);border:2px solid rgba(18,110,53,.3);';
     } else if(isStarted){
@@ -3939,7 +3939,7 @@ function renderPackGrid(){
     packHtml += '<button data-pid="' + pack.id + '" onclick="' + clickHandler + '" type="button" style="' + cardStyle + '">'
       + checkmark
       + badge
-      + '<div style="font-size:17px;font-weight:600;color:' + (isDone ? 'var(--ok)' : 'var(--ink)') + ';line-height:1.2;margin-bottom:4px;font-family:var(--sans)">' + pack.name + '</div>'
+      + '<div style="font-size:15px;font-weight:600;color:' + (isDone ? 'var(--ok)' : 'var(--ink)') + ';line-height:1.2;margin-bottom:3px;font-family:var(--sans)">' + pack.name + '</div>'
       + '<div style="font-size:11px;color:var(--ink3);line-height:1.5;font-family:var(--sans)">' + pack.desc + '</div>'
       + bottom
       + '</button>';
