@@ -2890,7 +2890,13 @@ async function doSearch(){
     if(type==='limit'){
       const e2=Q('#s-msg');
       if(e2){
-        e2.innerHTML=`<svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3M7 9.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>${fa} — <span onclick="showUpgrade()" style="font-weight:700;text-decoration:underline;cursor:pointer">Pro بگیر</span></span>`;
+        // محاسبه ساعت تا reset
+        const now = new Date();
+        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1); tomorrow.setHours(0,0,0,0);
+        const hoursLeft = Math.ceil((tomorrow-now)/3600000);
+        const resetText = hoursLeft<=1 ? 'کمتر از ۱ ساعت' : hoursLeft+' ساعت';
+        e2.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3M7 9.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+          +'<span>سرچ امروز تموم شد — '+resetText+' دیگه reset میشه · <span onclick="window.open(\'https://t.me/cinuxx\',\'_blank\')" style="font-weight:700;text-decoration:underline;cursor:pointer">Pro بگیر →</span></span>';
         e2.className='s-msg err';e2.style.display='flex';
       }
     } else {
@@ -4661,7 +4667,17 @@ function packLearnRestart(){
 })();
 
 </script>
-<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+<script>if('serviceWorker'in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  navigator.serviceWorker.addEventListener('message', e => {
+    if(e.data?.type==='UPDATE_AVAILABLE'){
+      const t=document.createElement('div');
+      t.innerHTML='🔄 نسخه جدید موجوده <button onclick="location.reload()" style="margin-right:8px;padding:4px 10px;border-radius:6px;border:none;background:#fff;color:#1a3af2;font-family:var(--sans);font-size:11px;font-weight:700;cursor:pointer">بروزرسانی</button>';
+      t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a3af2;color:#fff;padding:10px 16px;border-radius:12px;font-family:var(--sans);font-size:12px;z-index:9999;white-space:nowrap;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.2)';
+      document.body.appendChild(t);
+    }
+  });
+}
 </script>
 
 <!-- Upgrade Modal -->
