@@ -1459,7 +1459,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
         </div>
         <div class="drw-hstat">
           <div class="drw-hstat-n" id="drw-stat-due">—</div>
-          <div class="drw-hstat-l">سررسید</div>
+          <div class="drw-hstat-l">برای مرور</div>
         </div>
       </div>
     </div>
@@ -1521,7 +1521,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
           پاک کردن لغات
         </button>
       </div>
-      <button class="drw-action-btn" style="justify-content:center;gap:8px;color:var(--accent);border-color:var(--abl);background:var(--abl)" onclick="window.open('https://t.me/wortschatzapp','_blank')">
+      <button class="drw-action-btn" style="justify-content:center;gap:8px;color:var(--accent);border-color:var(--abl);background:var(--abl)" onclick="window.open('https://t.me/cinuxx','_blank')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.467l-2.95-.924c-.64-.203-.654-.64.136-.954l11.57-4.461c.537-.194 1.006.131.968.093z"/></svg>
         ارتباط با ما در تلگرام
       </button>
@@ -1672,9 +1672,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <div id="free-banner" style="display:none"></div>
     <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
-      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'">
+      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
         <span id="home-lang-flag">🇩🇪</span>
         <span id="home-lang-label">آلمانی</span>
+        <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <!-- Lang mini popover -->
@@ -1686,7 +1687,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
         </button>
         <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
           <span style="font-size:16px">🇬🇧</span>
-          <span>انگلیسی</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-start">
+            <span>انگلیسی</span>
+            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
+          </div>
           <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
         </button>
       </div>
@@ -1793,7 +1797,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
         </div>
         <div class="sum-nb warn" id="sn-due-wrap">
           <div class="sum-n" id="sn-due">0</div>
-          <div class="sum-l">سررسید</div>
+          <div class="sum-l">برای مرور</div>
         </div>
       </div>
       <div class="sum-dots" id="sum-dots"></div>
@@ -4642,6 +4646,10 @@ function langPopoverPick(lang){
   document.getElementById('lang-popover').style.display = 'none';
   document.getElementById('lang-badge-chevron').style.transform = '';
   langPopoverUpdateChecks();
+  // توضیح برای زبان انگلیسی
+  if(lang === 'en'){
+    showToast('🇬🇧 حالا میتونی لغت انگلیسی یاد بگیری — همون سیستم هوشمند، برای انگلیسی', 4000, 'info');
+  }
 }
 function langPopoverUpdateChecks(){
   const isDE = (typeof targetLang !== 'undefined' ? targetLang : 'de') === 'de';
