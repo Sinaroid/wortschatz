@@ -802,6 +802,34 @@ body.offline .topbar{top:36px}
 
 
 
+/* ── Upgrade button animation ── */
+@keyframes gradShift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@keyframes pulse3{
+  0%,100%{box-shadow:0 0 0 0 rgba(26,58,242,.3)}
+  50%{box-shadow:0 0 0 8px rgba(26,58,242,.0)}
+}
+.drw-upgrade-btn-new{
+  width:100%;padding:12px 16px;border-radius:var(--r2);border:none;cursor:pointer;
+  background:linear-gradient(135deg,#1a3af2,#4f46e5,#7c3aed,#1a3af2);
+  background-size:300% 300%;
+  animation:gradShift 3s ease infinite, pulse3 2s ease-in-out infinite;
+  color:#fff;font-family:var(--sans);font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.drw-upgrade-btn-new::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:linear-gradient(45deg,transparent,rgba(255,255,255,.08),transparent);
+  animation:shimmer2 2.5s ease-in-out infinite;
+}
+@keyframes shimmer2{
+  0%{transform:translateX(-100%) rotate(45deg)}
+  100%{transform:translateX(100%) rotate(45deg)}
+}
 /* ─── DRAWER REDESIGN v2 ─── */
 
 /* Hero profile block */
@@ -1483,8 +1511,13 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-bottom:10px">
         <div id="drw-free-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .4s"></div>
       </div>
-      <button style="width:100%;padding:10px;border-radius:var(--r2);background:var(--accent);color:#000;border:none;font-family:var(--sans);font-size:12px;font-weight:700;cursor:pointer" onclick="showUpgrade();drawerClose()">
-        ✨ ارتقا به Pro — €4.99/ماه
+      <button class="drw-upgrade-btn-new" onclick="showUpgrade();drawerClose()">
+        <span style="font-size:16px">⚡</span>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:700">Pro بگیر — €4.99/ماه</div>
+          <div style="font-size:10px;opacity:.8;margin-top:1px">جستجو و لغت نامحدود</div>
+        </div>
+        <span style="margin-right:auto;font-size:12px;opacity:.7">←</span>
       </button>
     </div>
 
