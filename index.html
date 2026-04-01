@@ -1830,7 +1830,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </div>
     <div class="sort-tabs">
       <button class="sort-tab on" id="st-new"   onclick="setSort('new')">جدیدترین</button>
-      <button class="sort-tab"    id="st-due"   onclick="setSort('due')">سررسید</button>
+      <button class="sort-tab"    id="st-due"   onclick="setSort('due')">دیر شده</button>
       <button class="sort-tab"    id="st-weak"  onclick="setSort('weak')">ضعیف‌ترین</button>
       <button class="sort-tab"    id="st-best"  onclick="setSort('best')">بهترین</button>
       <button class="sort-tab"    id="st-alpha" onclick="setSort('alpha')">الفبا</button>
@@ -1955,7 +1955,7 @@ function wordDetail(idx){
   const now = new Date();
   const nr = new Date(w.next_review||0);
   const diff = Math.round((nr-now)/(1000*60*60*24));
-  const nextStr = !w.seen?'هنوز مرور نشده':diff<=0?'سررسیده':diff===1?'فردا':diff+' روز دیگه';
+  const nextStr = !w.seen?'هنوز مرور نشده':diff<=0?'دیر شده':diff===1?'فردا':diff+' روز دیگه';
   const level = Math.min(5,Math.max(0,w.seen||0));
   const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
 
@@ -3183,7 +3183,7 @@ function showIntro(){
   Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
   Q('#intro-title').textContent=greet;
   let sub='';
-  if(due>0) sub+=`<b style="color:var(--accent)">${due} کارت</b> سررسیده `;
+  if(due>0) sub+=`<b style="color:var(--accent)">${due} کارت</b> برای مرور `;
   if(newW>0) sub+=(due>0?'و ':'')+`<b>${newW} لغت</b> جدید `;
   sub+=`داری — جمعاً <b>${total} کارت</b>`;
   Q('#intro-sub').innerHTML=sub;
@@ -3239,7 +3239,7 @@ function showCard(){
 
   // type badge
   const typeEl = Q('#c-type');
-  const labels = {due:'سررسید',new:'جدید',weak:'ضعیف',rev:'مرور'};
+  const labels = {due:'دیر شده',new:'جدید',weak:'ضعیف',rev:'مرور'};
   typeEl.textContent = labels[w._type]||'';
   typeEl.className = 'c-type show ' + (w._type||'rev');
 
@@ -3250,7 +3250,7 @@ function showCard(){
   // sub line: نوع deck
   const stats = getDeckStats(sesDeck);
   const parts=[];
-  if(stats.due) parts.push(stats.due+' سررسید');
+  if(stats.due) parts.push(stats.due+' دیر شده');
   if(stats.new) parts.push(stats.new+' جدید');
   Q('#ses-sub').textContent = parts.join(' · ');
 
@@ -3387,7 +3387,7 @@ function sesSummary(){
   if(nextDue > 0 || (nextNew > 0 && pct >= 60)){
     moreBtn.style.display='inline-flex';
     Q('#end-next').textContent = nextDue > 0
-      ? `${nextDue} کارت سررسید دیگه منتظره`
+      ? `${nextDue} کارت دیگه منتظر مروره`
       : `${nextNew} لغت جدید آماده یادگیریه`;
   } else {
     moreBtn.style.display='none';
@@ -3478,7 +3478,7 @@ function renderList(){
     if(!w.seen) return '<span class="wr-status new">جدید</span>';
     const nr=new Date(w.next_review||0);
     const diff=Math.round((nr-now)/(1000*60*60*24));
-    if(diff<=0) return '<span class="wr-status due">سررسیده ⏰</span>';
+    if(diff<=0) return '<span class="wr-status due">دیر شده ⏰</span>';
     if(diff===1) return '<span class="wr-status soon">فردا</span>';
     if(diff<=3) return '<span class="wr-status soon">'+diff+' روز دیگه</span>';
     return '<span class="wr-status ok">'+diff+' روز دیگه</span>';
