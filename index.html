@@ -3267,7 +3267,7 @@ function showCard(){
   const o = words.find(x=>x.de===w.de);
   const nextD = o ? Math.max(1, Math.round((o.interval||1)*(o.easiness||2.5))) : 1;
   Q('#ses-next').textContent = nextD > 1 ? nextD+' روز' : 'فردا';
-  Q('#again-n').classList.remove('show');
+  const _an=Q('#again-n'); if(_an) _an.classList.remove('show');
 }
 
 function sesFlip(){ Q('#card-wrap').classList.toggle('flip'); }
@@ -3296,7 +3296,7 @@ async function sesRate(good){
     const insertAt = Math.min(sesI + 1 + Math.floor(Math.random()*2+1), sesDeck.length);
     sesDeck.splice(insertAt, 0, {...w, _type: w._type});
     sesRepN++;
-    const n = Q('#again-n'); n.textContent = sesRepN; n.classList.add('show');
+    const n = Q('#again-n'); if(n){ n.textContent = sesRepN; n.classList.add('show'); }
   }
 
   if(good) sesGood++; else sesBad++;
@@ -3311,7 +3311,7 @@ function sesAgain(){
     const insertAt = Math.min(sesI + 2, sesDeck.length);
     sesDeck.splice(insertAt, 0, {...w});
     sesRepN++;
-    const n = Q('#again-n'); n.textContent = sesRepN; n.classList.add('show');
+    const n = Q('#again-n'); if(n){ n.textContent = sesRepN; n.classList.add('show'); }
     const cw = Q('#card-wrap');
     cw.style.transition='transform .12s'; cw.style.transform='rotate(2.5deg) scale(1.02)';
     setTimeout(()=>{ cw.style.transform='rotate(-2deg)'; setTimeout(()=>{ cw.style.transform=''; cw.style.transition='transform .5s var(--ease)'; },120); },120);
