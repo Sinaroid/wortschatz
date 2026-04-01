@@ -3881,37 +3881,70 @@ function renderPackGrid(){
     var isLocked = !pack.free && userPlan === 'free';
     var isStarted = learned > 0 && !isDone;
 
-    var cardBorder = isDone ? '1.5px solid rgba(18,110,53,.25)' : isStarted ? '1.5px solid rgba(26,58,242,.2)' : '1.5px solid var(--bg3)';
-    var cardBg = isDone ? 'rgba(18,110,53,.03)' : isLocked ? 'var(--bg2)' : 'var(--card)';
-    var cardOpacity = isLocked ? '0.72' : '1';
-
-    var statusHtml = '';
+    // ── card styles ──
+    var cardBorder, cardBg, cardOpacity;
     if(isDone){
-      statusHtml = '<div style="font-size:10px;color:var(--ok);font-weight:600;margin-top:auto;padding-top:8px">✓ تکمیل شد</div>';
-    } else if(isLocked){
-      statusHtml = '<div style="margin-top:auto;padding-top:8px;width:100%;padding:7px 0;border-radius:6px;background:linear-gradient(135deg,#1a3af2,#7c3aed);color:#fff;font-size:10px;font-weight:700;text-align:center">🔒 Pro بگیر</div>';
+      cardBorder='2px solid #16a34a'; cardBg='rgba(22,163,74,.06)'; cardOpacity='1';
     } else if(isStarted){
-      statusHtml = '<div style="width:100%;margin-top:auto;padding-top:8px"><div style="background:var(--bg3);border-radius:3px;height:3px;overflow:hidden"><div style="height:100%;border-radius:3px;background:var(--accent);width:'+pct+'%"></div></div><div style="font-size:9px;color:var(--accent);margin-top:3px;font-weight:600">'+(total-learned)+' لغت مونده</div></div>';
+      cardBorder='2px solid #3b82f6'; cardBg='var(--card)'; cardOpacity='1';
+    } else if(isLocked){
+      cardBorder='1.5px solid var(--bg3)'; cardBg='var(--bg2)'; cardOpacity='.8';
     } else {
-      statusHtml = '<div style="font-size:10px;color:var(--ink4);margin-top:auto;padding-top:8px">'+total+' لغت ← شروع</div>';
+      cardBorder='1.5px solid var(--bg3)'; cardBg='var(--card)'; cardOpacity='1';
     }
 
-    var freeBadge = pack.free ? '<span style="font-size:9px;background:rgba(18,110,53,.1);color:var(--ok);padding:2px 6px;border-radius:8px;font-weight:600">رایگان</span>' : '';
+    // ── badge ──
+    var badge;
+    if(isDone){
+      badge='<div style="font-size:10px;color:#16a34a;background:rgba(22,163,74,.12);padding:3px 9px;border-radius:20px;width:fit-content;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:4px"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>تکمیل</div>';
+    } else if(isLocked){
+      badge='<div style="font-size:10px;color:var(--ink3);background:var(--card);border:1px solid var(--bg3);padding:3px 9px;border-radius:20px;width:fit-content;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:4px"><svg width="9" height="10" viewBox="0 0 9 10" fill="none"><rect x="1" y="4" width="7" height="6" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 4V3a1.5 1.5 0 013 0v1" stroke="currentColor" stroke-width="1.3"/></svg>Pro</div>';
+    } else if(isStarted){
+      badge='<div style="font-size:10px;color:#3b82f6;background:rgba(59,130,246,.1);padding:3px 9px;border-radius:20px;width:fit-content;font-weight:500;margin-bottom:10px">در حال یادگیری</div>';
+    } else if(pack.free){
+      badge='<div style="font-size:10px;color:#16a34a;background:rgba(22,163,74,.1);padding:3px 9px;border-radius:20px;width:fit-content;font-weight:500;margin-bottom:10px">رایگان</div>';
+    } else {
+      badge='<div style="font-size:10px;color:var(--ink3);background:var(--bg2);padding:3px 9px;border-radius:20px;width:fit-content;font-weight:500;margin-bottom:10px">Pro</div>';
+    }
+
+    // ── bottom section ──
+    var bottom;
+    if(isDone){
+      bottom='<div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between">'
+        +'<span style="font-size:10px;color:#16a34a;font-weight:500">مرور دوباره</span>'
+        +'<div style="width:28px;height:28px;border-radius:50%;background:rgba(22,163,74,.15);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round"/></svg></div>'
+        +'</div>';
+    } else if(isLocked){
+      bottom='<div style="margin-top:auto;padding-top:12px">'
+        +'<div style="background:#4f46e5;border-radius:10px;padding:9px;text-align:center;color:#fff;font-size:11px;font-weight:500">ارتقا به Pro</div>'
+        +'</div>';
+    } else if(isStarted){
+      bottom='<div style="margin-top:auto;padding-top:12px">'
+        +'<div style="display:flex;justify-content:space-between;margin-bottom:5px">'
+        +'<span style="font-size:10px;color:#3b82f6;font-weight:500">'+(total-learned)+' لغت مونده</span>'
+        +'<span style="font-size:10px;color:var(--ink3)">'+pct+'٪</span>'
+        +'</div>'
+        +'<div style="background:var(--bg3);border-radius:4px;height:3px"><div style="height:100%;border-radius:4px;background:#3b82f6;width:'+pct+'%"></div></div>'
+        +'</div>';
+    } else {
+      bottom='<div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between">'
+        +'<span style="font-size:10px;color:var(--ink3)">'+total+' لغت</span>'
+        +'<div style="width:28px;height:28px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round"/></svg></div>'
+        +'</div>';
+    }
 
     var clickHandler = isLocked ? 'showUpgrade()' : 'openPack(this.dataset.pid)';
+    var checkmark = isDone ? '<div style="position:absolute;top:12px;left:12px;width:20px;height:20px;border-radius:50%;background:#16a34a;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>' : '';
+
     packHtml += '<button data-pid="'+pack.id+'" onclick="'+clickHandler+'" type="button" style="'
-      + 'background:'+cardBg+';border:'+cardBorder+';opacity:'+cardOpacity+';'
-      + 'border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:flex-start;'
-      + 'text-align:right;gap:4px;min-height:140px;cursor:pointer;transition:all .18s;width:100%;'
-      + 'box-shadow:0 1px 3px rgba(0,0,0,.04)">'
-      + '<div style="font-size:26px;line-height:1;margin-bottom:2px">'+pack.emoji+'</div>'
-      + '<div style="font-size:13px;font-weight:700;color:var(--ink);line-height:1.2">'+pack.name+'</div>'
-      + '<div style="font-size:10px;color:var(--ink3)">'+pack.desc+'</div>'
-      + '<div style="display:flex;gap:4px;margin-top:2px">'
-      + '<span style="font-size:9px;background:var(--bg3);color:var(--ink3);padding:2px 6px;border-radius:8px;font-weight:600">'+pack.level+'</span>'
-      + freeBadge
-      + '</div>'
-      + statusHtml
+      + 'background:'+cardBg+';border:'+cardBorder+';opacity:'+cardOpacity+';position:relative;'
+      + 'border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:flex-start;'
+      + 'text-align:right;min-height:170px;cursor:pointer;transition:border-color .15s,transform .12s;width:100%">'
+      + checkmark
+      + badge
+      + '<div style="font-size:17px;font-weight:500;color:'+(isDone?'#16a34a':'var(--ink)')+';line-height:1.2;margin-bottom:3px">'+pack.name+'</div>'
+      + '<div style="font-size:11px;color:var(--ink3);line-height:1.4">'+pack.desc+'</div>'
+      + bottom
       + '</button>';
   });
   packHtml += '</div>';
