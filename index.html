@@ -1242,6 +1242,9 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   min-height:280px;display:flex;align-items:center;justify-content:center;
   transition:transform .15s,box-shadow .15s;
   animation:cardIn .3s var(--spring);
+  user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .pl-card:active{transform:scale(.98)}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -4744,7 +4747,7 @@ function packLearnRestart(){
 
     <!-- Card Area -->
     <div class="pl-card-area" id="pl-card-area">
-      <div class="pl-card" id="pl-card" onclick="packLearnFlip()">
+      <div class="pl-card" id="pl-card" onclick="packLearnFlip()" ontouchend="packLearnFlip();event.preventDefault()">
 
         <!-- Front -->
         <div class="pl-front" id="pl-front">
