@@ -336,7 +336,7 @@ function renderUsers(users){
     h+='<button class="pb'+(u.plan==='beta'?' ab':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="beta">Beta</button>';
     h+='<button class="pb'+(u.plan==='pro'?' ap':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="pro">Pro</button>';
     if(u.plan==='pro'){
-      h+='<button style="padding:3px 8px;border-radius:4px;background:transparent;border:1px solid var(--border);color:var(--ink3);font-family:var(--sans);font-size:10px;cursor:pointer" onclick="openSubModal(\"'+u.id+'\",\"'+(u.email||'')+'\",'+'\"'+u.plan+'\",'+'\"'+(u.pro_until||'')+'\")">⚙</button>';
+      h+='<button class="sub-open-btn" style="padding:3px 8px;border-radius:4px;background:transparent;border:1px solid var(--border);color:var(--ink3);font-family:var(--sans);font-size:10px;cursor:pointer" data-uid="'+u.id+'" data-email="'+(u.email||'')+'" data-plan="'+u.plan+'" data-until="'+(u.pro_until||'')+'" onclick="subBtnClick(this)">⚙</button>';
     }
     h+='</td></tr>';
   }
@@ -414,6 +414,15 @@ async function loadErrs(){
 function clearErrs(){localStorage.removeItem('ws_admin_errors');loadErrs();toast('پاک شد');}
 
 var subUserId='', subUserEmail='';
+
+function subBtnClick(btn){
+  openSubModal(
+    btn.getAttribute('data-uid'),
+    btn.getAttribute('data-email'),
+    btn.getAttribute('data-plan'),
+    btn.getAttribute('data-until')
+  );
+}
 
 function openSubModal(uid, email, plan, proUntil){
   subUserId=uid; subUserEmail=email;
