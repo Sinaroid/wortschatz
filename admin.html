@@ -130,6 +130,7 @@ tr.hot td{background:rgba(74,222,128,.04)}
       <div class="nav on" id="nav-stats" onclick="tab('stats')">📊 آمار کلی</div>
       <div class="nav" id="nav-users" onclick="tab('users')">👥 کاربران</div>
       <div class="nav" id="nav-beta" onclick="tab('beta')">🔑 کدهای بتا</div>
+      <div class="nav" id="nav-analytics" onclick="tab('analytics');loadAnalytics()">📈 Analytics</div>
       <div class="nav" id="nav-errors" onclick="tab('errors')">⚠️ خطاها</div>
     </div>
     <div class="main">
@@ -203,6 +204,63 @@ tr.hot td{background:rgba(74,222,128,.04)}
           </div>
           <div id="bbody" class="cgrid"><div class="empty">در حال بارگذاری...</div></div>
         </div>
+      </div>
+
+      <div class="pane" id="pane-analytics">
+
+        <!-- Search Usage -->
+        <div class="tw" style="margin-bottom:16px">
+          <div class="th">
+            <div class="tt">مصرف سرچ امروز</div>
+            <span class="tc" id="an-search-date">—</span>
+            <span style="font-size:10px;color:var(--ink3);margin-right:auto">فقط Free users — reset هر شب</span>
+          </div>
+          <div id="an-search-body" style="padding:16px"><div class="empty">در حال بارگذاری...</div></div>
+        </div>
+
+        <!-- User Segments -->
+        <div class="tw" style="margin-bottom:16px">
+          <div class="th"><div class="tt">تحلیل رفتار کاربران</div></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px">
+            <div class="sc">
+              <div class="sn" style="color:var(--accent)" id="an-power">—</div>
+              <div class="sl">Power users</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:4px">≥20 لغت + ≥5 session</div>
+            </div>
+            <div class="sc">
+              <div class="sn" style="color:var(--warn)" id="an-casual">—</div>
+              <div class="sl">Casual</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:4px">1-19 لغت</div>
+            </div>
+            <div class="sc">
+              <div class="sn" style="color:var(--err)" id="an-ghost">—</div>
+              <div class="sl">Ghost</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:4px">0 لغت بعد از sign up</div>
+            </div>
+            <div class="sc">
+              <div class="sn" style="color:var(--blue)" id="an-hit-limit">—</div>
+              <div class="sl">به limit رسیدن</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:4px">search_count ≥ 10 امروز</div>
+            </div>
+            <div class="sc">
+              <div class="sn" id="an-avg-words">—</div>
+              <div class="sl">میانگین لغت</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:4px">per free user</div>
+            </div>
+            <div class="sc">
+              <div class="sn" id="an-avg-session">—</div>
+              <div class="sl">میانگین session</div>
+              <div style="font-size:10px;color:var(--ink3);margin-top:4px">per active user</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top searchers today -->
+        <div class="tw">
+          <div class="th"><div class="tt">بیشترین سرچ امروز</div><span class="tc">Free users</span></div>
+          <div id="an-top-searchers" style="padding:8px 0"><div class="empty">در حال بارگذاری...</div></div>
+        </div>
+
       </div>
 
       <div class="pane" id="pane-errors">
@@ -305,9 +363,9 @@ async function loadStats(){
 
 async function loadUsers(){
   try{
-    var res=await sb.from('admin_users_view').select('*,pro_until').order('created_at',{ascending:false}).limit(500);
+    var res=await sb.from('admin_users_view').select('*').order('created_at',{ascending:false}).limit(500);
     if(res.error){
-      var r2=await sb.from('profiles').select('id,plan,created_at,word_count,search_count,last_seen_at,session_count').order('created_at',{ascending:false}).limit(500);
+      var r2=await sb.from('profiles').select('id,plan,created_at,word_count,search_count,last_seen_at,session_count,pro_until').order('created_at',{ascending:false}).limit(500);
       allUsers=(r2.data||[]).map(function(u){return Object.assign({email:'—'},u);});
     }else{
       allUsers=res.data||[];
@@ -406,7 +464,7 @@ function renderUsers(users){
   h+='<div class="ic'+(curFilter==='convert'?' on':'')+'" onclick="setFilter(\'convert\')" style="border-color:rgba(74,222,128,.3)"><div class="in2" style="color:var(--accent)">'+cv+'</div><div class="il">💰 Pro candidate</div></div>';
   h+='<div class="ic'+(curFilter==='stuck'?' on':'')+'" onclick="setFilter(\'stuck\')" style="border-color:rgba(251,146,60,.3)"><div class="in2" style="color:var(--warn)">'+st+'</div><div class="il">🔄 Onboarding</div></div>';
   h+='</div>';
-  h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>درآمد</th><th>لغت</th><th>آخرین فعالیت</th><th>تغییر پلن</th></tr></thead><tbody>';
+  h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>درآمد</th><th>لغت</th><th>سرچ امروز</th><th>آخرین فعالیت</th><th>تغییر پلن</th></tr></thead><tbody>';
   for(var i=0;i<filtered.length;i++){
     var u=filtered[i];
     h+='<tr class="'+u._rc+'">';
@@ -415,6 +473,7 @@ function renderUsers(users){
     h+='<td><span class="badge '+(u.plan||'free')+'">'+(u.plan||'free')+'</span></td>';
     h+='<td>'+revenueCell(u)+'</td>';
     h+='<td style="font-weight:600;color:var(--ink)">'+(u.word_count||0)+'</td>';
+    h+='<td>'+searchLimitCell(u)+'</td>';
     h+='<td>'+lastActiveLabel(u._d)+'</td>';
     h+='<td style="display:flex;gap:4px;align-items:center">';
     h+='<button class="pb'+(u.plan==='free'?' af':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="free">Free</button>';
@@ -427,6 +486,18 @@ function renderUsers(users){
   }
   h+='</tbody></table>';
   document.getElementById('ubody').innerHTML=h;
+}
+
+function searchLimitCell(u){
+  if(u.plan==='pro'||u.plan==='beta') return '<span style="color:var(--ink3);font-size:10px">نامحدود</span>';
+  var used=u.search_count||0;
+  var limit=10;
+  var left=limit-used;
+  var pct=Math.round(used/limit*100);
+  var col=left<=0?'var(--err)':left<=3?'var(--warn)':'var(--ink3)';
+  var bar='<div style="width:50px;height:3px;background:var(--bg3);border-radius:2px;margin-top:3px"><div style="width:'+Math.min(100,pct)+'%;height:100%;border-radius:2px;background:'+col+'"></div></div>';
+  var label=left<=0?'<span style="color:var(--err);font-size:10px">تموم شد!</span>':'<span style="font-size:10px;color:'+col+'">'+used+'/'+limit+'</span>';
+  return label+bar;
 }
 
 function clickPlan(btn){
@@ -452,6 +523,79 @@ async function updatePlan(uid,plan){
     await loadUsers();
     await loadStats();
   }catch(e){toast('خطا: '+e.message,true);}
+}
+
+async function loadAnalytics(){
+  try{
+    var res=await sb.from('profiles').select('id,email,plan,word_count,search_count,session_count,last_seen_at,search_reset_at').order('search_count',{ascending:false}).limit(500);
+    var users=res.data||[];
+    var now=new Date();
+    var todayStr=now.toDateString();
+
+    // تاریخ امروز
+    document.getElementById('an-search-date').textContent=now.toLocaleDateString('fa-IR',{month:'long',day:'numeric'});
+
+    // فقط free users با search امروز
+    var freeUsers=users.filter(function(u){return u.plan==='free';});
+    var hitLimit=freeUsers.filter(function(u){return (u.search_count||0)>=10;});
+    var activeSearchers=freeUsers.filter(function(u){return (u.search_count||0)>0;}).sort(function(a,b){return (b.search_count||0)-(a.search_count||0);});
+
+    // Segments
+    var allU=users;
+    var powerUsers=allU.filter(function(u){return (u.word_count||0)>=20&&(u.session_count||0)>=5;});
+    var casualUsers=allU.filter(function(u){return (u.word_count||0)>=1&&(u.word_count||0)<20;});
+    var ghostUsers=allU.filter(function(u){return (u.word_count||0)===0;});
+    var avgWords=allU.length?Math.round(allU.reduce(function(a,u){return a+(u.word_count||0);},0)/allU.length):0;
+    var activeSess=allU.filter(function(u){return (u.session_count||0)>0;});
+    var avgSess=activeSess.length?Math.round(activeSess.reduce(function(a,u){return a+(u.session_count||0);},0)/activeSess.length):0;
+
+    document.getElementById('an-power').textContent=powerUsers.length;
+    document.getElementById('an-casual').textContent=casualUsers.length;
+    document.getElementById('an-ghost').textContent=ghostUsers.length;
+    document.getElementById('an-hit-limit').textContent=hitLimit.length;
+    document.getElementById('an-avg-words').textContent=avgWords;
+    document.getElementById('an-avg-session').textContent=avgSess;
+
+    // Search usage bars
+    if(!activeSearchers.length){
+      document.getElementById('an-search-body').innerHTML='<div class="empty">هیچ سرچی امروز نشده</div>';
+    }else{
+      var sh='<table style="width:100%"><thead><tr><th>ایمیل</th><th>سرچ امروز</th><th>مصرف</th><th>وضعیت</th></tr></thead><tbody>';
+      activeSearchers.forEach(function(u){
+        var cnt=u.search_count||0;
+        var pct=Math.min(100,Math.round(cnt/10*100));
+        var col=cnt>=10?'var(--err)':cnt>=7?'var(--warn)':'var(--blue)';
+        var status=cnt>=10?'<span class="ins churn">تموم شد</span>':cnt>=7?'<span class="ins stuck">نزدیکه</span>':'<span class="ins new">OK</span>';
+        sh+='<tr>';
+        sh+='<td class="ecell">'+(u.email||u.id.slice(0,8)+'...')+'</td>';
+        sh+='<td style="font-weight:600;color:'+col+'">'+cnt+' / 10</td>';
+        sh+='<td style="width:120px"><div style="background:var(--bg3);border-radius:3px;height:6px"><div style="width:'+pct+'%;height:100%;border-radius:3px;background:'+col+';transition:width .3s"></div></div></td>';
+        sh+='<td>'+status+'</td>';
+        sh+='</tr>';
+      });
+      sh+='</tbody></table>';
+      document.getElementById('an-search-body').innerHTML=sh;
+    }
+
+    // Top searchers
+    var topSh='';
+    var top=freeUsers.slice(0,8);
+    if(!top.length){
+      topSh='<div class="empty">هنوز سرچی نشده</div>';
+    }else{
+      topSh='<table style="width:100%"><tbody>';
+      top.forEach(function(u,i){
+        var cnt=u.search_count||0;
+        var col=cnt>=10?'var(--err)':cnt>=7?'var(--warn)':'var(--accent)';
+        topSh+='<tr><td style="padding:8px 16px;width:20px;color:var(--ink3);font-size:11px">'+(i+1)+'</td>';
+        topSh+='<td class="ecell">'+(u.email||'—')+'</td>';
+        topSh+='<td style="text-align:left;padding:8px 16px;font-size:12px;font-weight:600;color:'+col+'">'+cnt+' سرچ</td></tr>';
+      });
+      topSh+='</tbody></table>';
+    }
+    document.getElementById('an-top-searchers').innerHTML=topSh;
+
+  }catch(e){console.error('analytics error:',e);}
 }
 
 async function loadBeta(){
