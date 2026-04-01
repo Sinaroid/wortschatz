@@ -97,6 +97,9 @@ tr.hot td{background:rgba(74,222,128,.04)}
 .sub-btn.danger{background:transparent;color:var(--err);border:1px solid rgba(248,113,113,.3)}
 .sub-btn.cancel{background:var(--bg3);color:var(--ink2)}
 
+.ftab{padding:4px 10px;border-radius:4px;border:none;background:transparent;color:var(--ink3);font-family:var(--sans);font-size:10px;cursor:pointer;transition:all .15s}
+.ftab.on{background:var(--card);color:var(--ink);border:1px solid var(--border)}
+.ftab:hover:not(.on){color:var(--ink)}
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--accent);color:#000;font-size:12px;font-weight:600;padding:8px 20px;border-radius:20px;opacity:0;transition:all .2s;pointer-events:none;z-index:999}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -132,17 +135,38 @@ tr.hot td{background:rgba(74,222,128,.04)}
     <div class="main">
 
       <div class="pane on" id="pane-stats">
-        <div class="sgrid">
+        <!-- Row 1: Revenue KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px">
+          <div class="sc" style="border-color:rgba(74,222,128,.25)">
+            <div class="sn" style="color:var(--accent)" id="s-mrr">—</div>
+            <div class="sl">MRR (ماهانه)</div>
+          </div>
+          <div class="sc">
+            <div class="sn" style="color:var(--accent)" id="s-arr">—</div>
+            <div class="sl">ARR (سالانه)</div>
+          </div>
+          <div class="sc">
+            <div class="sn" style="color:var(--blue)" id="s-conv">—</div>
+            <div class="sl">Conversion Rate</div>
+          </div>
+          <div class="sc">
+            <div class="sn" style="color:var(--err)" id="s-churn-cnt">—</div>
+            <div class="sl">در خطر Churn</div>
+          </div>
+        </div>
+        <!-- Row 2: User counts -->
+        <div class="sgrid" style="margin-bottom:12px">
           <div class="sc"><div class="sn" style="color:var(--accent)" id="s-total">—</div><div class="sl">کل کاربر</div></div>
           <div class="sc"><div class="sn" style="color:var(--blue)" id="s-active">—</div><div class="sl">فعال ۷ روز</div></div>
           <div class="sc"><div class="sn" style="color:var(--warn)" id="s-beta">—</div><div class="sl">بتا</div></div>
-          <div class="sc"><div class="sn" id="s-pro">—</div><div class="sl">Pro</div></div>
+          <div class="sc"><div class="sn" style="color:var(--accent)" id="s-pro">—</div><div class="sl">Pro 💎</div></div>
         </div>
+        <!-- Row 3: Product stats -->
         <div class="sgrid">
           <div class="sc"><div class="sn" id="s-words">—</div><div class="sl">کل لغت</div></div>
           <div class="sc"><div class="sn" id="s-cf">—</div><div class="sl">کد بتا آزاد</div></div>
           <div class="sc"><div class="sn" id="s-cu">—</div><div class="sl">کد بتا استفاده شده</div></div>
-          <div class="sc"><div class="sn" style="color:var(--accent)" id="s-today">—</div><div class="sl">امروز</div></div>
+          <div class="sc"><div class="sn" style="color:var(--accent)" id="s-today">—</div><div class="sl">عضو امروز</div></div>
         </div>
       </div>
 
@@ -151,7 +175,17 @@ tr.hot td{background:rgba(74,222,128,.04)}
           <div class="th">
             <div class="tt">کاربران</div>
             <span class="tc" id="ucnt">—</span>
-            <input class="si" placeholder="🔍 ایمیل..." oninput="filterUsers(this.value)">
+            <div style="display:flex;gap:6px;margin-right:auto;align-items:center">
+              <!-- Plan filter tabs -->
+              <div style="display:flex;gap:3px;background:var(--bg3);border-radius:6px;padding:3px">
+                <button class="ftab on" id="ft-all" onclick="setPlanFilter('all')">همه</button>
+                <button class="ftab" id="ft-free" onclick="setPlanFilter('free')">Free</button>
+                <button class="ftab" id="ft-beta" onclick="setPlanFilter('beta')">Beta</button>
+                <button class="ftab" id="ft-pro" onclick="setPlanFilter('pro')">Pro</button>
+              </div>
+              <input class="si" style="margin-right:0" placeholder="🔍 ایمیل..." oninput="filterUsers(this.value)">
+              <button class="sbtn" onclick="exportCSV()" title="Export CSV">⬇ CSV</button>
+            </div>
           </div>
           <div id="ubody"><div class="empty">در حال بارگذاری...</div></div>
         </div>
@@ -229,14 +263,39 @@ async function loadAll(){
 
 async function loadStats(){
   try{
-    var p=(await sb.from('profiles').select('plan,created_at,word_count')).data||[];
+    var p=(await sb.from('profiles').select('plan,created_at,word_count,last_seen_at,session_count,pro_until')).data||[];
     var c=(await sb.from('beta_codes').select('used')).data||[];
-    var ago=new Date(Date.now()-7*24*60*60*1000).toISOString();
+    var ago7=new Date(Date.now()-7*24*60*60*1000).toISOString();
     var td=new Date().toDateString();
+    var now=new Date();
+
+    // counts
+    var proUsers=p.filter(function(x){return x.plan==='pro';});
+    var freeUsers=p.filter(function(x){return x.plan==='free';});
+    var betaUsers=p.filter(function(x){return x.plan==='beta';});
+    var active7=p.filter(function(x){return x.last_seen_at&&x.last_seen_at>ago7;});
+
+    // MRR — €4.99 per pro user
+    var mrr=proUsers.length*4.99;
+    var arr=mrr*12;
+    var convRate=p.length>0?Math.round(proUsers.length/p.length*100):0;
+
+    // Churn risk: Pro users inactive >7 days OR expiring in <=7 days
+    var churnRisk=proUsers.filter(function(u){
+      var inactive=u.last_seen_at&&(now-new Date(u.last_seen_at))>7*86400000;
+      var expiringSoon=u.pro_until&&Math.ceil((new Date(u.pro_until)-now)/86400000)<=7;
+      return inactive||expiringSoon;
+    }).length;
+
+    // set
+    document.getElementById('s-mrr').textContent='€'+mrr.toFixed(2);
+    document.getElementById('s-arr').textContent='€'+arr.toFixed(0);
+    document.getElementById('s-conv').textContent=convRate+'%';
+    document.getElementById('s-churn-cnt').textContent=churnRisk;
     document.getElementById('s-total').textContent=p.length;
-    document.getElementById('s-active').textContent=p.filter(function(x){return x.created_at>ago;}).length;
-    document.getElementById('s-beta').textContent=p.filter(function(x){return x.plan==='beta';}).length;
-    document.getElementById('s-pro').textContent=p.filter(function(x){return x.plan==='pro';}).length;
+    document.getElementById('s-active').textContent=active7.length;
+    document.getElementById('s-beta').textContent=betaUsers.length;
+    document.getElementById('s-pro').textContent=proUsers.length;
     document.getElementById('s-words').textContent=p.reduce(function(a,x){return a+(x.word_count||0);},0);
     document.getElementById('s-cf').textContent=c.filter(function(x){return !x.used;}).length;
     document.getElementById('s-cu').textContent=c.filter(function(x){return x.used;}).length;
@@ -257,86 +316,112 @@ async function loadUsers(){
   }catch(e){console.error(e);}
 }
 
+var planFilter='all';
+var searchQ='';
+
+function setPlanFilter(f){
+  planFilter=f;
+  document.querySelectorAll('.ftab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('ft-'+f).classList.add('on');
+  applyFilters();
+}
+
 function filterUsers(q){
-  var f=allUsers.filter(function(u){return (u.email||'').toLowerCase().indexOf(q.toLowerCase())>-1;});
+  searchQ=q.toLowerCase();
+  applyFilters();
+}
+
+function applyFilters(){
+  var f=allUsers;
+  if(planFilter!=='all') f=f.filter(function(u){return (u.plan||'free')===planFilter;});
+  if(searchQ) f=f.filter(function(u){return (u.email||'').toLowerCase().indexOf(searchQ)>-1;});
   renderUsers(f);
 }
 
 function setFilter(f){
   curFilter=f;
-  renderUsers(allUsers);
+  applyFilters();
 }
 
-function dc(d){
-  if(d===null)return 'var(--ink3)';
-  if(d===0)return 'var(--accent)';
-  if(d<=3)return 'var(--blue)';
-  if(d<=7)return 'var(--warn)';
-  return 'var(--err)';
+function lastActiveLabel(d){
+  if(d===null||d===undefined)return '<span style="color:var(--ink3)">—</span>';
+  if(d===0)return '<span style="color:var(--accent)">امروز</span>';
+  if(d===1)return '<span style="color:var(--accent)">دیروز</span>';
+  if(d<=3)return '<span style="color:var(--blue)">'+d+' روز پیش</span>';
+  if(d<=7)return '<span style="color:var(--warn)">'+d+' روز پیش</span>';
+  return '<span style="color:var(--err)">'+d+' روز پیش</span>';
 }
 
-function dt(d){
-  if(d===null)return '—';
-  if(d===0)return 'امروز';
-  return d+' روز پیش';
+function revenueCell(u){
+  if(u.plan==='pro'){
+    if(!u.pro_until) return '<span style="color:var(--accent);font-size:11px">€4.99/m</span>';
+    var days=Math.ceil((new Date(u.pro_until)-new Date())/86400000);
+    var col=days<=7?'var(--err)':days<=14?'var(--warn)':'var(--accent)';
+    return '<div style="font-size:11px;color:'+col+'">€4.99</div><div style="font-size:9px;color:var(--ink3)">'+days+' روز مونده</div>';
+  }
+  if(u.plan==='beta') return '<span style="color:var(--blue);font-size:10px">رایگان</span>';
+  return '<span style="color:var(--ink3);font-size:10px">€0</span>';
 }
 
-function fd(iso){
-  if(!iso)return '—';
-  return new Date(iso).toLocaleDateString('fa-IR',{year:'numeric',month:'short',day:'numeric'});
+function exportCSV(){
+  var rows=[['email','plan','words','sessions','last_active_days','pro_until','created_at']];
+  allUsers.forEach(function(u){
+    var d=u.last_seen_at?Math.floor((Date.now()-new Date(u.last_seen_at))/86400000):'';
+    rows.push([u.email||'',u.plan||'free',u.word_count||0,u.session_count||0,d,u.pro_until||'',u.created_at||'']);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='wortschatz_users_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('CSV دانلود شد ✓');
 }
 
 function renderUsers(users){
   document.getElementById('ucnt').textContent=users.length+' نفر';
+  var now=new Date();
   var cls=users.map(function(u){
     var d=u.last_seen_at?Math.floor((Date.now()-new Date(u.last_seen_at))/86400000):null;
     var w=u.word_count||0,s=u.session_count||0,ins=[],rc='';
-    if(d!==null&&d>7){ins.push('<span class="ins churn">⚠ چرن</span>');rc='risk';}
-    if(w>=10&&u.plan!=='pro'){ins.push('<span class="ins convert">💰 Pro</span>');if(!rc)rc='hot';}
+    var proExpiring=u.plan==='pro'&&u.pro_until&&Math.ceil((new Date(u.pro_until)-now)/86400000)<=7;
+    if((d!==null&&d>7&&u.plan==='pro')||proExpiring){ins.push('<span class="ins churn">⚠ چرن</span>');rc='risk';}
+    if(w>=10&&u.plan==='free'){ins.push('<span class="ins convert">💰 Pro candidate</span>');if(!rc)rc='hot';}
     if(s>=3&&w<3)ins.push('<span class="ins stuck">🔄 Stuck</span>');
     if(d!==null&&d<=1&&s<=1)ins.push('<span class="ins new">✨ جدید</span>');
     return Object.assign({},u,{_d:d,_ins:ins,_rc:rc});
   });
-  var flt=curFilter==='all'?cls:cls.filter(function(u){
-    return curFilter==='churn'?(u._d!==null&&u._d>7)
-      :curFilter==='convert'?((u.word_count||0)>=10&&u.plan!=='pro')
+  var filtered=curFilter==='all'?cls:cls.filter(function(u){
+    return curFilter==='churn'?u._rc==='risk'
+      :curFilter==='convert'?((u.word_count||0)>=10&&u.plan==='free')
       :curFilter==='stuck'?((u.session_count||0)>=3&&(u.word_count||0)<3)
       :true;
   });
-  var cn=cls.filter(function(u){return u._d!==null&&u._d>7;}).length;
-  var cv=cls.filter(function(u){return (u.word_count||0)>=10&&u.plan!=='pro';}).length;
+  var cn=cls.filter(function(u){return u._rc==='risk';}).length;
+  var cv=cls.filter(function(u){return (u.word_count||0)>=10&&u.plan==='free';}).length;
   var st=cls.filter(function(u){return (u.session_count||0)>=3&&(u.word_count||0)<3;}).length;
 
   var h='<div class="irow">';
-  h+='<div class="ic'+(curFilter==='all'?' on':'')+'" onclick="setFilter(\'all\')"><div class="in2">'+users.length+'</div><div class="il">همه</div></div>';
-  h+='<div class="ic'+(curFilter==='churn'?' on':'')+'" onclick="setFilter(\'churn\')" style="border-color:rgba(248,113,113,.3)"><div class="in2" style="color:var(--err)">'+cn+'</div><div class="il">⚠ چرن</div></div>';
-  h+='<div class="ic'+(curFilter==='convert'?' on':'')+'" onclick="setFilter(\'convert\')" style="border-color:rgba(74,222,128,.3)"><div class="in2" style="color:var(--accent)">'+cv+'</div><div class="il">💰 Pro candidate</div></div>';
-  h+='<div class="ic'+(curFilter==='stuck'?' on':'')+'" onclick="setFilter(\'stuck\')" style="border-color:rgba(251,146,60,.3)"><div class="in2" style="color:var(--warn)">'+st+'</div><div class="il">🔄 Onboarding</div></div>';
+  h+='<div class="ic'+(curFilter==='all'?' on':'')+'" onclick="setFilter('all')"><div class="in2">'+cls.length+'</div><div class="il">همه</div></div>';
+  h+='<div class="ic'+(curFilter==='churn'?' on':'')+'" onclick="setFilter('churn')" style="border-color:rgba(248,113,113,.3)"><div class="in2" style="color:var(--err)">'+cn+'</div><div class="il">⚠ چرن</div></div>';
+  h+='<div class="ic'+(curFilter==='convert'?' on':'')+'" onclick="setFilter('convert')" style="border-color:rgba(74,222,128,.3)"><div class="in2" style="color:var(--accent)">'+cv+'</div><div class="il">💰 Pro candidate</div></div>';
+  h+='<div class="ic'+(curFilter==='stuck'?' on':'')+'" onclick="setFilter('stuck')" style="border-color:rgba(251,146,60,.3)"><div class="in2" style="color:var(--warn)">'+st+'</div><div class="il">🔄 Onboarding</div></div>';
   h+='</div>';
-  h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>انقضا</th><th>لغت</th><th>session</th><th>بازدید</th><th>تغییر پلن</th></tr></thead><tbody>';
-  for(var i=0;i<flt.length;i++){
-    var u=flt[i];
+  h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>درآمد</th><th>لغت</th><th>آخرین فعالیت</th><th>تغییر پلن</th></tr></thead><tbody>';
+  for(var i=0;i<filtered.length;i++){
+    var u=filtered[i];
     h+='<tr class="'+u._rc+'">';
     h+='<td class="ecell">'+(u.email||'—')+'</td>';
-    h+='<td>'+(u._ins.length?u._ins.join(''):'—')+'</td>';
+    h+='<td>'+(u._ins.length?u._ins.join(' '):'—')+'</td>';
     h+='<td><span class="badge '+(u.plan||'free')+'">'+(u.plan||'free')+'</span></td>';
-    h+='<td>'+(function(){
-      if(!u.pro_until) return '<span style="color:var(--ink3);font-size:10px">—</span>';
-      var d=new Date(u.pro_until);
-      var days=Math.ceil((d-new Date())/86400000);
-      var col=days<=7?'var(--err)':days<=14?'var(--warn)':'var(--accent)';
-      return '<span style="font-size:11px;color:'+col+'">'+days+' روز</span>';
-    })()+'</td>';
-    h+='<td>'+(u.word_count||0)+'</td>';
-    h+='<td>'+(u.session_count||0)+'</td>';
-    h+='<td style="color:'+dc(u._d)+'">'+dt(u._d)+'</td>';
-    h+='<td class="dcell">'+fd(u.created_at)+'</td>';
-    h+='<td style="display:flex;gap:4px">';
+    h+='<td>'+revenueCell(u)+'</td>';
+    h+='<td style="font-weight:600;color:var(--ink)">'+(u.word_count||0)+'</td>';
+    h+='<td>'+lastActiveLabel(u._d)+'</td>';
+    h+='<td style="display:flex;gap:4px;align-items:center">';
     h+='<button class="pb'+(u.plan==='free'?' af':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="free">Free</button>';
     h+='<button class="pb'+(u.plan==='beta'?' ab':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="beta">Beta</button>';
     h+='<button class="pb'+(u.plan==='pro'?' ap':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="pro">Pro</button>';
     if(u.plan==='pro'){
-      h+='<button class="sub-open-btn" style="padding:3px 8px;border-radius:4px;background:transparent;border:1px solid var(--border);color:var(--ink3);font-family:var(--sans);font-size:10px;cursor:pointer" data-uid="'+u.id+'" data-email="'+(u.email||'')+'" data-plan="'+u.plan+'" data-until="'+(u.pro_until||'')+'" onclick="subBtnClick(this)">⚙</button>';
+      h+='<button style="padding:3px 8px;border-radius:4px;background:transparent;border:1px solid var(--border);color:var(--ink3);font-family:var(--sans);font-size:10px;cursor:pointer" data-uid="'+u.id+'" data-email="'+(u.email||'')+'" data-plan="'+u.plan+'" data-until="'+(u.pro_until||'')+'" onclick="subBtnClick(this)">⚙</button>';
     }
     h+='</td></tr>';
   }
