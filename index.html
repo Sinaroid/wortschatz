@@ -2941,6 +2941,13 @@ function setMsg(t,cls){
 }
 
 async function searchWord(q){
+  // normalize: ae→ä, oe→ö, ue→ü, ss→ß (فقط برای آلمانی)
+  if(targetLang==='de'){
+    q=q.replace(/\bae/g,'ä').replace(/\boe/g,'ö').replace(/\bue/g,'ü')
+       .replace(/ae\b/g,'ä').replace(/oe\b/g,'ö').replace(/ue\b/g,'ü')
+       .replace(/ss/g,'ß');
+  }
+
   const ck='wc_'+targetLang+'_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
@@ -2961,12 +2968,18 @@ async function searchWord(q){
    +'- synonyms: حداکثر ۲ تا\n'
    +'- examples: دقیقاً ۱ جمله\n'
    +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
-   +'فقط JSON.';
+   +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
 
-  const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
-  const jsonMatch=raw.match(/\{[\s\S]*\}/);
-  if(!jsonMatch) throw new Error('parse error');
-  try{ curWord=JSON.parse(jsonMatch[0]); } catch(e){ throw new Error('parse error'); }
+  // retry تا ۲ بار اگه parse fail شد
+  let curWord2=null;
+  for(let attempt=0; attempt<2; attempt++){
+    const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
+    const jsonMatch=raw.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) continue;
+    try{ curWord2=JSON.parse(jsonMatch[0]); break; }catch(e){ continue; }
+  }
+  if(!curWord2) throw new Error('parse error');
+  curWord=curWord2;
   try{
     const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
     if(keys.length>100)localStorage.removeItem(keys[0]);
