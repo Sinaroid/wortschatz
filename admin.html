@@ -293,9 +293,32 @@ tr.hot td{background:rgba(74,222,128,.04)}
         </div>
 
         <!-- Top searchers today -->
-        <div class="tw">
+        <div class="tw" style="margin-bottom:16px">
           <div class="th"><div class="tt">بیشترین سرچ امروز</div><span class="tc">Free users</span></div>
           <div id="an-top-searchers" style="padding:8px 0"><div class="empty">در حال بارگذاری...</div></div>
+        </div>
+
+        <!-- Top searched words -->
+        <div class="tw" style="margin-bottom:16px">
+          <div class="th">
+            <div class="tt">پرسرچ‌ترین لغات</div>
+            <span class="tc" id="an-words-period">۷ روز اخیر</span>
+            <div style="display:flex;gap:4px;margin-right:auto">
+              <button class="ftab on" id="wt-7" onclick="loadTopWords(7)">۷ روز</button>
+              <button class="ftab" id="wt-30" onclick="loadTopWords(30)">۳۰ روز</button>
+              <button class="ftab" id="wt-all" onclick="loadTopWords(0)">همه</button>
+            </div>
+          </div>
+          <div id="an-top-words" style="padding:8px 0"><div class="empty">در حال بارگذاری...</div></div>
+        </div>
+
+        <!-- Recent searches -->
+        <div class="tw">
+          <div class="th">
+            <div class="tt">آخرین سرچ‌ها</div>
+            <span class="tc" id="an-recent-cnt">—</span>
+          </div>
+          <div id="an-recent-words" style="padding:8px 0"><div class="empty">در حال بارگذاری...</div></div>
         </div>
 
       </div>
@@ -639,9 +662,82 @@ async function loadAnalytics(){
       document.getElementById('an-top-searchers').innerHTML=topSh;
     }
 
+    // لغات سرچ شده
+    loadTopWords(7);
+    loadRecentWords();
+
   }catch(e){
     console.error('analytics error:',e);
     document.getElementById('an-search-body').innerHTML='<div class="empty" style="color:var(--err)">خطا: '+e.message+'</div>';
+  }
+}
+
+async function loadTopWords(days){
+  ['7','30','all'].forEach(function(t){
+    var el=document.getElementById('wt-'+t);
+    if(el) el.classList.toggle('on',String(days)===(t==='all'?'0':t));
+  });
+  var periodEl=document.getElementById('an-words-period');
+  if(periodEl) periodEl.textContent=days===7?'۷ روز اخیر':days===30?'۳۰ روز اخیر':'همه زمان‌ها';
+  var el=document.getElementById('an-top-words');
+  if(el) el.innerHTML='<div class="empty">در حال بارگذاری...</div>';
+  try{
+    var query=sb.from('search_logs').select('query,lang');
+    if(days>0){
+      var since=new Date(Date.now()-days*86400000).toISOString();
+      query=query.gte('created_at',since);
+    }
+    var res=await query.limit(1000);
+    var logs=res.data||[];
+    if(!logs.length){el.innerHTML='<div class="empty">هنوز سرچی لاگ نشده</div>';return;}
+    var counts={},langMap={};
+    logs.forEach(function(l){
+      var q=(l.query||'').toLowerCase().trim();
+      if(!q)return;
+      counts[q]=(counts[q]||0)+1;
+      langMap[q]=l.lang||'de';
+    });
+    var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,20);
+    var max=counts[sorted[0]]||1;
+    var h='<div class="table-wrap"><table style="width:100%"><thead><tr><th>#</th><th>لغت</th><th>زبان</th><th>تعداد</th><th style="width:100px">—</th></tr></thead><tbody>';
+    sorted.forEach(function(q,i){
+      var cnt=counts[q];
+      var pct=Math.round(cnt/max*100);
+      var lang=langMap[q]==='en'?'🇬🇧':'🇩🇪';
+      var col=i===0?'var(--accent)':i<3?'var(--blue)':'var(--ink2)';
+      h+='<tr><td style="padding:7px 12px;color:var(--ink3);font-size:11px">'+(i+1)+'</td>';
+      h+='<td style="padding:7px 12px;font-family:var(--serif);font-size:13px;color:var(--ink);direction:ltr">'+q+'</td>';
+      h+='<td style="padding:7px 12px">'+lang+'</td>';
+      h+='<td style="padding:7px 12px;font-weight:600;color:'+col+'">'+cnt+'×</td>';
+      h+='<td style="padding:7px 12px"><div style="background:var(--bg3);border-radius:3px;height:5px"><div style="width:'+pct+'%;height:100%;border-radius:3px;background:'+col+'"></div></div></td></tr>';
+    });
+    h+='</tbody></table></div>';
+    el.innerHTML=h;
+  }catch(e){
+    el.innerHTML='<div class="empty" style="color:var(--err)">جدول search_logs وجود نداره — SQL رو اجرا کن</div>';
+  }
+}
+
+async function loadRecentWords(){
+  try{
+    var res=await sb.from('search_logs').select('query,lang,created_at').order('created_at',{ascending:false}).limit(30);
+    var logs=res.data||[];
+    var cntEl=document.getElementById('an-recent-cnt');
+    if(cntEl) cntEl.textContent=logs.length+' سرچ اخیر';
+    if(!logs.length){document.getElementById('an-recent-words').innerHTML='<div class="empty">هنوز سرچی نشده</div>';return;}
+    var h='<div class="table-wrap"><table style="width:100%"><tbody>';
+    logs.forEach(function(l){
+      var lang=l.lang==='en'?'🇬🇧':'🇩🇪';
+      var ago=Math.round((Date.now()-new Date(l.created_at))/60000);
+      var agoStr=ago<1?'همین الان':ago<60?ago+' دقیقه پیش':Math.round(ago/60)+' ساعت پیش';
+      h+='<tr><td style="padding:7px 12px;font-size:13px">'+lang+'</td>';
+      h+='<td style="padding:7px 12px;font-family:var(--serif);font-size:13px;color:var(--ink);direction:ltr">'+l.query+'</td>';
+      h+='<td style="padding:7px 12px;font-size:10px;color:var(--ink3)">'+agoStr+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+    document.getElementById('an-recent-words').innerHTML=h;
+  }catch(e){
+    document.getElementById('an-recent-words').innerHTML='<div class="empty" style="color:var(--err)">خطا: '+e.message+'</div>';
   }
 }
 
