@@ -3898,7 +3898,7 @@ function renderPackGrid(){
 
     var freeBadge = pack.free ? '<span style="font-size:9px;background:rgba(18,110,53,.1);color:var(--ok);padding:2px 6px;border-radius:8px;font-weight:600">رایگان</span>' : '';
 
-    var clickHandler = isLocked ? 'showUpgrade()' : 'openPack(this.getAttribute(\"data-pid\"))';
+    var clickHandler = isLocked ? 'showUpgrade()' : 'openPack(this.dataset.pid)';
     packHtml += '<button data-pid="'+pack.id+'" onclick="'+clickHandler+'" type="button" style="'
       + 'background:'+cardBg+';border:'+cardBorder+';opacity:'+cardOpacity+';'
       + 'border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:flex-start;'
