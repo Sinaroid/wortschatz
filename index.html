@@ -1475,29 +1475,29 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </div>
 
     <!-- Plan card — FREE -->
-    <div class="drw-plan-card drw-plan-free-card" id="drw-plan-free">
-      <div class="drw-free-top">
-        <span class="drw-plan-badge">Free</span>
-        <span class="drw-plan-label">نسخه رایگان</span>
+    <!-- Free card -->
+    <div id="drw-plan-free" style="padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div id="drw-free-msg" style="font-size:11px;color:var(--ink3)">امروز ۰ از ۱۰ جستجو</div>
       </div>
-      <div class="drw-free-msg" id="drw-free-msg">
-        یادگیری بدون محدودیت رو تجربه کن 🚀
+      <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-bottom:10px">
+        <div id="drw-free-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .4s"></div>
       </div>
-      <button class="drw-upgrade-btn" onclick="showUpgrade();drawerClose()">
-        ✨ شروع Pro — فقط €4.99/ماه
+      <button style="width:100%;padding:10px;border-radius:var(--r2);background:var(--accent);color:#000;border:none;font-family:var(--sans);font-size:12px;font-weight:700;cursor:pointer" onclick="showUpgrade();drawerClose()">
+        ✨ ارتقا به Pro — €4.99/ماه
       </button>
     </div>
 
-    <!-- Plan card — BETA -->
-    <div class="drw-plan-card drw-plan-beta" id="drw-plan-beta" style="display:none">
-      <div class="drw-plan-row">
-        <span class="drw-plan-label">دسترسی بتا</span>
-        <span class="drw-plan-badge pro">Beta 🚀</span>
+    <!-- Beta card -->
+    <div id="drw-plan-beta" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;color:var(--ink3)">دسترسی آزمایشی</span>
+        <span style="font-size:11px;color:var(--ok);font-weight:600">فعال ✓</span>
       </div>
-      <div style="font-size:13px;color:var(--ink2);line-height:1.6">
-        جستجوی نامحدود فعاله.<br>
-        <span style="font-size:12px;color:var(--ink3)">ممنون که اپ رو تست می‌کنی ❤️</span>
+      <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-top:8px">
+        <div style="height:100%;background:var(--ok);border-radius:4px;width:100%"></div>
       </div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:4px">ممنون که اپ رو تست می‌کنی ❤️</div>
     </div>
 
     <!-- Plan card — PRO -->
@@ -2274,10 +2274,16 @@ function updateDrawerPlan(){
     const used = userSearchCount;
     const left = FREE_LIMIT - used;
     const msg = Q('#drw-free-msg');
+    const bar = Q('#drw-free-bar');
+    const pct = Math.round(used/FREE_LIMIT*100);
     if(msg){
-      if(left<=0) msg.innerHTML='جستجوی امروز تموم شد 😔<br><small>فردا دوباره ۱۰ تا داری</small>';
-      else if(left<=3) msg.innerHTML=`⚠ فقط <b>${left}</b> جستجو امروز مونده`;
-      else msg.innerHTML=`امروز <b>${used}</b> از <b>${FREE_LIMIT}</b> جستجو استفاده کردی`;
+      if(left<=0) msg.textContent='جستجوی امروز تموم شد 😔';
+      else if(left<=3) msg.textContent='⚠ فقط '+left+' جستجو مونده';
+      else msg.textContent='امروز '+used+' از '+FREE_LIMIT+' جستجو';
+    }
+    if(bar){
+      bar.style.width = pct+'%';
+      bar.style.background = left<=0?'var(--err)':left<=3?'var(--warn)':'var(--accent)';
     }
   }
 
