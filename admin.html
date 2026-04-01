@@ -224,7 +224,7 @@ async function loadStats(){
 
 async function loadUsers(){
   try{
-    var res=await sb.from('admin_users_view').select('*').order('created_at',{ascending:false}).limit(500);
+    var res=await sb.from('admin_users_view').select('*,pro_until').order('created_at',{ascending:false}).limit(500);
     if(res.error){
       var r2=await sb.from('profiles').select('id,plan,created_at,word_count,search_count,last_seen_at,session_count').order('created_at',{ascending:false}).limit(500);
       allUsers=(r2.data||[]).map(function(u){return Object.assign({email:'—'},u);});
