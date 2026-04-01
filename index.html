@@ -1501,19 +1501,15 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </div>
 
     <!-- Plan card — PRO -->
-    <div class="drw-plan-card" id="drw-plan-pro" style="display:none;background:linear-gradient(135deg,rgba(26,58,242,.05),rgba(26,58,242,.02));border-color:rgba(26,58,242,.15)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:12px;font-weight:600;color:var(--ink)">اشتراک Pro ✨</span>
-        <span class="drw-plan-badge pro" style="font-size:10px">فعال</span>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:11px;color:var(--ink3)">انقضا:</span>
+    <div id="drw-plan-pro" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;color:var(--ink3)">اشتراک تا:</span>
         <span style="font-size:11px;font-weight:600" id="drw-pro-until">—</span>
       </div>
-      <div style="margin-top:8px;background:rgba(26,58,242,.08);border-radius:6px;height:4px;overflow:hidden">
-        <div id="drw-pro-bar" style="height:100%;background:var(--accent);border-radius:6px;transition:width .5s"></div>
+      <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden">
+        <div id="drw-pro-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .5s"></div>
       </div>
-      <div style="font-size:10px;color:var(--ink3);margin-top:4px;text-align:left" id="drw-pro-days"></div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:4px" id="drw-pro-days"></div>
     </div>
 
     <!-- Actions -->
