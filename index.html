@@ -2011,6 +2011,7 @@ let acSel=-1, editIdx=-1, listSort='new';
 let sesDeck=[], sesI=0, sesGood=0, sesBad=0, sesRepN=0;
 let sesRepeat=new Set();
 let currentUser=null;
+let userProUntil=null;
 let userPlan='free';
 let userWordCount=0;
 let userSearchCount=0;
@@ -2100,12 +2101,18 @@ async function loadProfile(){
   if(!currentUser)return;
   try{
     const{data}=await sb.from('profiles')
-      .select('plan,word_count,is_beta,search_count,search_reset_at,last_seen_at,session_count')
+      .select('plan,word_count,is_beta,search_count,search_reset_at,last_seen_at,session_count,pro_until')
       .eq('id',currentUser.id).single();
     if(data){
       userPlan = data.plan === 'pro' ? 'pro'
                : data.plan === 'beta' || data.is_beta ? 'beta'
                : 'free';
+      userProUntil = data.pro_until ? new Date(data.pro_until) : null;
+      // اگه اشتراک منقضی شده → برگرد به free
+      if(userPlan === 'pro' && userProUntil && userProUntil < new Date()){
+        userPlan = 'free';
+        sb.from('profiles').update({plan:'free',is_beta:false}).eq('id',currentUser.id).catch(()=>{});
+      }
       userWordCount = data.word_count||0;
       const now=new Date();
       const resetAt=data.search_reset_at?new Date(data.search_reset_at):null;
@@ -2232,7 +2239,27 @@ function updateDrawerPlan(){
   // Hero plan pill
   const pill = Q('#drw-hero-plan-badge');
   if(pill){
-    if(isPro) { pill.textContent='Pro ✨'; pill.style.background='rgba(255,255,255,.25)'; }
+    if(isPro){
+      pill.textContent='Pro ✨';
+      pill.style.background='rgba(255,255,255,.25)';
+      // نمایش تاریخ انقضا
+      if(userProUntil){
+        const daysLeft = Math.ceil((userProUntil - new Date()) / (1000*60*60*24));
+        const wrap = Q('#drw-plan-pill-wrap');
+        if(wrap){
+          const expEl = wrap.querySelector('.pro-exp') || document.createElement('div');
+          expEl.className = 'pro-exp';
+          expEl.style.cssText = 'font-size:10px;margin-top:4px;opacity:.8;color:#fff;text-align:center';
+          if(daysLeft <= 7){
+            expEl.innerHTML = '⚠ ' + daysLeft + ' روز مونده';
+            expEl.style.color = '#fbbf24';
+          } else {
+            expEl.textContent = 'تا ' + userProUntil.toLocaleDateString('fa-IR',{month:'long',day:'numeric'});
+          }
+          if(!wrap.querySelector('.pro-exp')) wrap.appendChild(expEl);
+        }
+      }
+    }
     else if(isBeta){ pill.textContent='Beta 🚀'; pill.style.background='rgba(255,255,255,.25)'; }
     else { pill.textContent='Free'; pill.style.background='rgba(255,255,255,.15)'; }
   }
