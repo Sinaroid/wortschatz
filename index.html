@@ -55,7 +55,8 @@ body.dark{
 /* ═══════════════════════════════════
    RESET + BASE
 ═══════════════════════════════════ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+button,a,[onclick]{touch-action:manipulation;user-select:none;-webkit-user-select:none}
 html{height:100%;direction:rtl;overflow-x:hidden;-webkit-text-size-adjust:100%}
 body{
   font-family:var(--sans);background:var(--bg);color:var(--ink);
