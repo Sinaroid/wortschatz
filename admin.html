@@ -291,13 +291,20 @@ function renderUsers(users){
   h+='<div class="ic'+(curFilter==='convert'?' on':'')+'" onclick="setFilter(\'convert\')" style="border-color:rgba(74,222,128,.3)"><div class="in2" style="color:var(--accent)">'+cv+'</div><div class="il">💰 Pro candidate</div></div>';
   h+='<div class="ic'+(curFilter==='stuck'?' on':'')+'" onclick="setFilter(\'stuck\')" style="border-color:rgba(251,146,60,.3)"><div class="in2" style="color:var(--warn)">'+st+'</div><div class="il">🔄 Onboarding</div></div>';
   h+='</div>';
-  h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>لغت</th><th>session</th><th>بازدید</th><th>ثبت‌نام</th><th>تغییر پلن</th></tr></thead><tbody>';
+  h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>انقضا</th><th>لغت</th><th>session</th><th>بازدید</th><th>تغییر پلن</th></tr></thead><tbody>';
   for(var i=0;i<flt.length;i++){
     var u=flt[i];
     h+='<tr class="'+u._rc+'">';
     h+='<td class="ecell">'+(u.email||'—')+'</td>';
     h+='<td>'+(u._ins.length?u._ins.join(''):'—')+'</td>';
     h+='<td><span class="badge '+(u.plan||'free')+'">'+(u.plan||'free')+'</span></td>';
+    h+='<td>'+(function(){
+      if(!u.pro_until) return '<span style="color:var(--ink3);font-size:10px">—</span>';
+      var d=new Date(u.pro_until);
+      var days=Math.ceil((d-new Date())/86400000);
+      var col=days<=7?'var(--err)':days<=14?'var(--warn)':'var(--accent)';
+      return '<span style="font-size:11px;color:'+col+'">'+days+' روز</span>';
+    })()+'</td>';
     h+='<td>'+(u.word_count||0)+'</td>';
     h+='<td>'+(u.session_count||0)+'</td>';
     h+='<td style="color:'+dc(u._d)+'">'+dt(u._d)+'</td>';
