@@ -2899,6 +2899,15 @@ async function doSearch(){
     if(detectMode(q)==='word') await searchWord(q);
     else await searchPhrase(q);
     setMsg('','');Q('#s-inp').value='';
+    // لاگ کردن سرچ
+    if(currentUser && navigator.onLine){
+      sb.from('search_logs').insert({
+        user_id:currentUser.id,
+        query:q,
+        lang:targetLang,
+        result_type:detectMode(q)
+      }).catch(()=>{});
+    }
   }catch(e){
     const {fa,type} = classifyError(e);
     if(type==='limit'){
@@ -4320,12 +4329,12 @@ let plSkipCount = 0;
 let plSavedWords = [];
 
 function getSeenPackWords(packId){
-  const key = 'ws_seen_'+packId+'_'+uid();
+  const key='ws_seen_'+packId+'_'+uid();
   return new Set(JSON.parse(localStorage.getItem(key)||'[]'));
 }
 function markPackWordSeen(packId, word){
-  const key = 'ws_seen_'+packId+'_'+uid();
-  const seen = getSeenPackWords(packId);
+  const key='ws_seen_'+packId+'_'+uid();
+  const seen=getSeenPackWords(packId);
   seen.add(word);
   localStorage.setItem(key, JSON.stringify([...seen]));
 }
@@ -4345,9 +4354,8 @@ function openPack(id){
   // Start learning flow — لغات قبلاً اضافه‌شده رو فیلتر کن
   plPack = pack;
   plPackId = id;
-  plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]');
   const inFlash = new Set(words.map(w=>w.de));
-  const inSaved = new Set(plSavedWords.map(w=>w.de));
+  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
   const inSeen  = getSeenPackWords(id);
   plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
 
