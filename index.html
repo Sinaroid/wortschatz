@@ -2347,8 +2347,8 @@ function updateDrawerStats(){
   const fw = filteredWords();
   const due = fw.filter(w=>new Date(w.next_review||0)<=now).length;
   const learned = fw.filter(w=>w.seen>0&&w.interval>3).length;
-  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const rl = JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  const ol = JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
   const all = {}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
   let streak=0; const dd=new Date();
   while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
@@ -2843,11 +2843,11 @@ function updateStats(){
   if(dueEl) dueEl.textContent=due.length;
   if(dueWrap) dueWrap.classList.toggle('warn', due.length>0);
   // streak
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const rl=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
   const all={};Object.keys(rl).forEach(k=>all[k]=1);Object.keys(ol).forEach(k=>all[k]=1);
   const today=new Date().toDateString();
-  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
+  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog_'+uid(),JSON.stringify(ol));}
   let s=0;const dd=new Date();
   while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
   Q('#sn-streak').textContent=s;
@@ -2870,11 +2870,11 @@ function updateStats(){
 }
 function logReview(){
   const today=new Date().toDateString();
-  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const log=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
   log[today]=(log[today]||0)+1;
   const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
   const t={};keys.forEach(k=>t[k]=log[k]);
-  localStorage.setItem('ws_rlog',JSON.stringify(t));
+  localStorage.setItem('ws_rlog_'+uid(),JSON.stringify(t));
 }
 
 /* ══════════════════════════════
@@ -3461,8 +3461,8 @@ function sesAgain(){
 
 function checkStreakReward(){
   if(userPlan==='pro'||userPlan==='beta') return; // نامحدود نیاز به جایزه نداره
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const rl=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
   const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
   let streak=0; const dd=new Date();
   while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
@@ -3934,7 +3934,7 @@ function renderPackGrid(){
   ];
 
   const inFlashcard = new Set(words.map(w=>w.de));
-  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
 
   var packHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
   packList.forEach(function(pack){
@@ -4317,15 +4317,17 @@ let plFlipped = false;
 let plFlashCount = 0;
 let plSaveCount = 0;
 let plSkipCount = 0;
-let plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words')||'[]');
+let plSavedWords = [];
 
 function getSeenPackWords(packId){
-  return new Set(JSON.parse(localStorage.getItem('ws_seen_'+packId)||'[]'));
+  const key = 'ws_seen_'+packId+'_'+uid();
+  return new Set(JSON.parse(localStorage.getItem(key)||'[]'));
 }
 function markPackWordSeen(packId, word){
+  const key = 'ws_seen_'+packId+'_'+uid();
   const seen = getSeenPackWords(packId);
   seen.add(word);
-  localStorage.setItem('ws_seen_'+packId, JSON.stringify([...seen]));
+  localStorage.setItem(key, JSON.stringify([...seen]));
 }
 
 function openPack(id){
@@ -4343,8 +4345,9 @@ function openPack(id){
   // Start learning flow — لغات قبلاً اضافه‌شده رو فیلتر کن
   plPack = pack;
   plPackId = id;
+  plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]');
   const inFlash = new Set(words.map(w=>w.de));
-  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+  const inSaved = new Set(plSavedWords.map(w=>w.de));
   const inSeen  = getSeenPackWords(id);
   plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
 
@@ -4511,7 +4514,7 @@ function packLearnSave(){
   }
 
   plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
-  localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
+  localStorage.setItem('ws_saved_words_'+uid(), JSON.stringify(plSavedWords));
   plSaveCount++;
   Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
 
