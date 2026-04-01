@@ -1792,8 +1792,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     <div class="ph-res" id="ph-res">
       <div class="ph-top">
         <!-- correction banner -->
-        <div id="ph-correction" style="display:none;font-size:11px;color:rgba(255,255,255,.75);background:rgba(255,165,0,.15);border:1px solid rgba(255,165,0,.25);border-radius:8px;padding:7px 12px;margin-bottom:8px;display:none;align-items:center;gap:6px">
-          <span>⚠</span><span>غلط املایی داشتی — اصلاح شد به: </span><span id="ph-corrected" style="color:#fbbf24;font-weight:700;cursor:pointer;font-family:var(--sans);direction:ltr" onclick="rephrase()"></span>
+        <div id="ph-correction" style="display:none">
+          <span style="opacity:.8">غلط املایی داشتی — اصلاح شد:</span> <span id="ph-corrected" style="font-weight:700;direction:ltr;cursor:pointer" onclick="rephrase()"></span>
         </div>
         <div class="ph-orig" id="ph-orig"></div>
         <div class="ph-meaning" id="ph-meaning"></div>
@@ -3086,19 +3086,23 @@ async function searchPhrase(q){
   if(!pm) throw new Error('parse error');
   try{ curPhrase=JSON.parse(pm[0]); } catch(e){ throw new Error('parse error'); }
 
-  Q('#ph-orig').textContent=curPhrase.original;
-  Q('#ph-meaning').textContent=curPhrase.meaning_fa;
-
-  // correction
+  // اگه اصلاح شده، عنوان اصلی = فرم صحیح
+  const hasCorrected = curPhrase.corrected && curPhrase.corrected!=='null' && curPhrase.corrected!==curPhrase.original;
   const corrEl=Q('#ph-correction');
   const corrTxt=Q('#ph-corrected');
-  if(curPhrase.corrected&&curPhrase.corrected!=='null'&&curPhrase.corrected!==curPhrase.original){
+  if(hasCorrected){
+    // عنوان: فرم صحیح بزرگ + فرم غلط خط خورده کوچیک
+    Q('#ph-orig').innerHTML='<span style="direction:ltr;display:block">'+curPhrase.corrected+'</span>'
+      +'<span style="font-size:12px;opacity:.4;text-decoration:line-through;font-style:normal;direction:ltr;display:block;margin-top:2px">'+curPhrase.original+'</span>';
+    // نوار اطلاع غلط املایی
     corrTxt.textContent=curPhrase.corrected;
-    corrEl.style.display='block';
+    corrEl.style.cssText='display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,200,0,.9);background:rgba(255,165,0,.12);border:1px solid rgba(255,165,0,.2);border-radius:8px;padding:6px 10px;margin-bottom:8px';
     window._phraseCorrection=curPhrase.corrected;
   } else {
+    Q('#ph-orig').textContent=curPhrase.original;
     corrEl.style.display='none';
   }
+  Q('#ph-meaning').textContent=curPhrase.meaning_fa;
 
   // priority
   const phpEl=Q('#ph-priority');
