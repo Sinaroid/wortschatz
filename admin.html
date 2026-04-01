@@ -75,6 +75,28 @@ tr.hot td{background:rgba(74,222,128,.04)}
 .genbtn{padding:8px 16px;border-radius:var(--r);background:var(--accent);color:#000;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer}
 .delbtn{padding:4px 10px;border-radius:6px;background:transparent;border:1px solid rgba(248,113,113,.3);color:var(--err);font-family:var(--sans);font-size:10px;cursor:pointer}
 .ei{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px}
+/* Subscription Modal */
+#sub-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999}
+#sub-modal.show{display:flex}
+.sub-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:360px;font-family:var(--sans)}
+.sub-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.sub-email{font-size:11px;color:var(--ink3);margin-bottom:20px;direction:ltr}
+.sub-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sub-label{font-size:11px;color:var(--ink3)}
+.sub-value{font-size:12px;color:var(--ink);font-weight:600}
+.sub-value.green{color:var(--accent)}
+.sub-value.red{color:var(--err)}
+.sub-value.orange{color:var(--warn)}
+.sub-divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+.sub-date-inp{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--ink);font-family:var(--sans);font-size:12px;outline:none;width:100%;margin-bottom:12px}
+.sub-date-inp:focus{border-color:var(--accent)}
+.sub-btns{display:flex;gap:8px;margin-top:16px}
+.sub-btn{flex:1;padding:9px;border-radius:var(--r);border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer}
+.sub-btn.primary{background:var(--accent);color:#000}
+.sub-btn.add{background:var(--bg3);color:var(--accent);border:1px solid rgba(74,222,128,.3)}
+.sub-btn.danger{background:transparent;color:var(--err);border:1px solid rgba(248,113,113,.3)}
+.sub-btn.cancel{background:var(--bg3);color:var(--ink2)}
+
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--accent);color:#000;font-size:12px;font-weight:600;padding:8px 20px;border-radius:20px;opacity:0;transition:all .2s;pointer-events:none;z-index:999}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
@@ -313,6 +335,9 @@ function renderUsers(users){
     h+='<button class="pb'+(u.plan==='free'?' af':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="free">Free</button>';
     h+='<button class="pb'+(u.plan==='beta'?' ab':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="beta">Beta</button>';
     h+='<button class="pb'+(u.plan==='pro'?' ap':'')+'" onclick="clickPlan(this)" data-uid="'+u.id+'" data-plan="pro">Pro</button>';
+    if(u.plan==='pro'){
+      h+='<button style="padding:3px 8px;border-radius:4px;background:transparent;border:1px solid var(--border);color:var(--ink3);font-family:var(--sans);font-size:10px;cursor:pointer" onclick="openSubModal(\"'+u.id+'\",\"'+(u.email||'')+'\",'+'\"'+u.plan+'\",'+'\"'+(u.pro_until||'')+'\")">⚙</button>';
+    }
     h+='</td></tr>';
   }
   h+='</tbody></table>';
@@ -388,6 +413,95 @@ async function loadErrs(){
 
 function clearErrs(){localStorage.removeItem('ws_admin_errors');loadErrs();toast('پاک شد');}
 
+var subUserId='', subUserEmail='';
+
+function openSubModal(uid, email, plan, proUntil){
+  subUserId=uid; subUserEmail=email;
+  document.getElementById('sub-email').textContent=email;
+  // status
+  var statusEl=document.getElementById('sub-status');
+  statusEl.textContent=plan;
+  statusEl.className='sub-value '+(plan==='pro'?'green':plan==='beta'?'orange':'');
+  // dates
+  var now=new Date();
+  var untilEl=document.getElementById('sub-until');
+  var daysEl=document.getElementById('sub-days');
+  var dateInp=document.getElementById('sub-date-inp');
+  if(proUntil){
+    var d=new Date(proUntil);
+    var days=Math.ceil((d-now)/86400000);
+    untilEl.textContent=d.toLocaleDateString('fa-IR',{year:'numeric',month:'long',day:'numeric'});
+    untilEl.className='sub-value '+(days<=7?'red':days<=14?'orange':'green');
+    daysEl.textContent=days+' روز';
+    daysEl.className='sub-value '+(days<=7?'red':days<=14?'orange':'green');
+    // set date input to current pro_until
+    var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+    dateInp.value=y+'-'+m+'-'+dd;
+  } else {
+    untilEl.textContent='ندارد';
+    untilEl.className='sub-value red';
+    daysEl.textContent='—';
+    // default: 1 month from now
+    var def=new Date(); def.setMonth(def.getMonth()+1);
+    var y=def.getFullYear(),m=String(def.getMonth()+1).padStart(2,'0'),dd=String(def.getDate()).padStart(2,'0');
+    dateInp.value=y+'-'+m+'-'+dd;
+  }
+  document.getElementById('sub-modal').classList.add('show');
+}
+
+function subAddMonths(n){
+  var inp=document.getElementById('sub-date-inp');
+  var base=inp.value?new Date(inp.value):new Date();
+  base.setMonth(base.getMonth()+n);
+  var y=base.getFullYear(),m=String(base.getMonth()+1).padStart(2,'0'),d=String(base.getDate()).padStart(2,'0');
+  inp.value=y+'-'+m+'-'+d;
+  // update preview
+  var now=new Date();
+  var days=Math.ceil((base-now)/86400000);
+  document.getElementById('sub-days').textContent=days+' روز';
+  document.getElementById('sub-days').className='sub-value '+(days<=7?'red':days<=14?'orange':'green');
+}
+
+async function subSave(){
+  var dateVal=document.getElementById('sub-date-inp').value;
+  if(!dateVal){toast('تاریخ رو انتخاب کن',true);return;}
+  try{
+    var r=await fetch('/api/admin-update',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-password':adminPwd},
+      body:JSON.stringify({userId:subUserId,plan:'pro',customDate:dateVal})
+    });
+    var d=await r.json();
+    if(!r.ok)throw new Error(d.error||'خطا');
+    var days=d.days_remaining||'?';
+    toast('ذخیره شد ✓ — '+days+' روز باقی‌مونده');
+    subClose();
+    await loadUsers();
+    await loadStats();
+  }catch(e){toast('خطا: '+e.message,true);}
+}
+
+async function subRevoke(){
+  if(!confirm('اشتراک '+subUserEmail+' لغو بشه؟')) return;
+  try{
+    var r=await fetch('/api/admin-update',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-password':adminPwd},
+      body:JSON.stringify({userId:subUserId,plan:'free'})
+    });
+    var d=await r.json();
+    if(!r.ok)throw new Error(d.error||'خطا');
+    toast('اشتراک لغو شد');
+    subClose();
+    await loadUsers();
+    await loadStats();
+  }catch(e){toast('خطا: '+e.message,true);}
+}
+
+function subClose(){
+  document.getElementById('sub-modal').classList.remove('show');
+}
+
 var _tt;
 function toast(msg,err){
   var el=document.getElementById('toast');
@@ -395,5 +509,38 @@ function toast(msg,err){
   el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},2500);
 }
 </script>
+<!-- Subscription Modal -->
+<div id="sub-modal">
+  <div class="sub-box">
+    <div class="sub-title">مدیریت اشتراک</div>
+    <div class="sub-email" id="sub-email">—</div>
+    <div class="sub-row">
+      <span class="sub-label">وضعیت فعلی</span>
+      <span class="sub-value" id="sub-status">—</span>
+    </div>
+    <div class="sub-row">
+      <span class="sub-label">انقضای اشتراک</span>
+      <span class="sub-value" id="sub-until">—</span>
+    </div>
+    <div class="sub-row">
+      <span class="sub-label">روزهای باقی‌مونده</span>
+      <span class="sub-value" id="sub-days">—</span>
+    </div>
+    <hr class="sub-divider">
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">تنظیم دستی تاریخ انقضا:</div>
+    <input type="date" class="sub-date-inp" id="sub-date-inp">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="sub-btn add" onclick="subAddMonths(1)">+ ۱ ماه</button>
+      <button class="sub-btn add" onclick="subAddMonths(3)">+ ۳ ماه</button>
+      <button class="sub-btn add" onclick="subAddMonths(12)">+ ۱ سال</button>
+    </div>
+    <div class="sub-btns">
+      <button class="sub-btn primary" onclick="subSave()">ذخیره</button>
+      <button class="sub-btn danger" onclick="subRevoke()">لغو اشتراک</button>
+      <button class="sub-btn cancel" onclick="subClose()">بستن</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
