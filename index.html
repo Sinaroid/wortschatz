@@ -3103,12 +3103,19 @@ const MAX_NEW = 3;
 function buildSmartDeck(){
   const now = new Date();
   const fw = filteredWords();
-  const due   = fw.filter(w => new Date(w.next_review||0) <= now)
-                     .sort((a,b) => new Date(a.next_review) - new Date(b.next_review));
-  const fresh = fw.filter(w => w.seen === 0 && new Date(w.next_review||0) > now);
-  const weak  = fw.filter(w => w.seen > 0 && new Date(w.next_review||0) > now && (w.score < 0 || (w.easiness||2.5) < 2.0))
+
+  // فقط لغت‌هایی که واقعاً due هستن — null یا 0 رو نادیده بگیر اگه seen > 1
+  const due = fw.filter(w => {
+    if(w.seen === 0) return false; // جدید — جداگانه handle میشه
+    const nr = w.next_review ? new Date(w.next_review) : null;
+    if(!nr) return true; // هیچوقت review نشده
+    return nr <= now;
+  }).sort((a,b) => new Date(a.next_review||0) - new Date(b.next_review||0));
+
+  const fresh = fw.filter(w => w.seen === 0);
+  const weak  = fw.filter(w => w.seen > 0 && w.next_review && new Date(w.next_review) > now && (w.score < 0 || (w.easiness||2.5) < 2.0))
                      .sort((a,b) => (a.easiness||2.5) - (b.easiness||2.5));
-  const rest  = fw.filter(w => w.seen > 0 && new Date(w.next_review||0) > now && w.score >= 0 && (w.easiness||2.5) >= 2.0)
+  const rest  = fw.filter(w => w.seen > 0 && w.next_review && new Date(w.next_review) > now && w.score >= 0 && (w.easiness||2.5) >= 2.0)
                      .sort((a,b) => new Date(a.next_review) - new Date(b.next_review));
 
   const deck = [];
