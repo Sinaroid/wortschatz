@@ -2941,11 +2941,24 @@ function setMsg(t,cls){
 }
 
 async function searchWord(q){
-  // normalize: ae→ä, oe→ö, ue→ü, ss→ß (فقط برای آلمانی)
+  // normalize umlauts — همه جای کلمه
   if(targetLang==='de'){
-    q=q.replace(/\bae/g,'ä').replace(/\boe/g,'ö').replace(/\bue/g,'ü')
-       .replace(/ae\b/g,'ä').replace(/oe\b/g,'ö').replace(/ue\b/g,'ü')
-       .replace(/ss/g,'ß');
+    // لیست کلمات رایج که ue/oe/ae واقعاً umlaut هستن
+    const umlautMap = {
+      'ae':'ä','oe':'ö','ue':'ü',
+      'Ae':'Ä','Oe':'Ö','Ue':'Ü'
+    };
+    // replace همه جا — ساده‌ترین روش
+    q = q
+      .replace(/ue/gi, (m,o,s) => {
+        // استثنا: que (query)، fuel، blue — اگه قبلش q یا b داشت نگه‌دار
+        const prev = s[o-1]||'';
+        if('qb'.includes(prev.toLowerCase())) return m;
+        return m[0]==='U'?'Ü':'ü';
+      })
+      .replace(/oe/gi, m => m[0]==='O'?'Ö':'ö')
+      .replace(/ae/gi, m => m[0]==='A'?'Ä':'ä')
+      .replace(/ss/g,'ß');
   }
 
   const ck='wc_'+targetLang+'_'+q.toLowerCase();
