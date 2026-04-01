@@ -401,10 +401,10 @@ function renderUsers(users){
   var st=cls.filter(function(u){return (u.session_count||0)>=3&&(u.word_count||0)<3;}).length;
 
   var h='<div class="irow">';
-  h+='<div class="ic'+(curFilter==='all'?' on':'')+'" onclick="setFilter('all')"><div class="in2">'+cls.length+'</div><div class="il">همه</div></div>';
-  h+='<div class="ic'+(curFilter==='churn'?' on':'')+'" onclick="setFilter('churn')" style="border-color:rgba(248,113,113,.3)"><div class="in2" style="color:var(--err)">'+cn+'</div><div class="il">⚠ چرن</div></div>';
-  h+='<div class="ic'+(curFilter==='convert'?' on':'')+'" onclick="setFilter('convert')" style="border-color:rgba(74,222,128,.3)"><div class="in2" style="color:var(--accent)">'+cv+'</div><div class="il">💰 Pro candidate</div></div>';
-  h+='<div class="ic'+(curFilter==='stuck'?' on':'')+'" onclick="setFilter('stuck')" style="border-color:rgba(251,146,60,.3)"><div class="in2" style="color:var(--warn)">'+st+'</div><div class="il">🔄 Onboarding</div></div>';
+  h+='<div class="ic'+(curFilter==='all'?' on':'')+'" onclick="setFilter(\'all\')"><div class="in2">'+cls.length+'</div><div class="il">همه</div></div>';
+  h+='<div class="ic'+(curFilter==='churn'?' on':'')+'" onclick="setFilter(\'churn\')" style="border-color:rgba(248,113,113,.3)"><div class="in2" style="color:var(--err)">'+cn+'</div><div class="il">⚠ چرن</div></div>';
+  h+='<div class="ic'+(curFilter==='convert'?' on':'')+'" onclick="setFilter(\'convert\')" style="border-color:rgba(74,222,128,.3)"><div class="in2" style="color:var(--accent)">'+cv+'</div><div class="il">💰 Pro candidate</div></div>';
+  h+='<div class="ic'+(curFilter==='stuck'?' on':'')+'" onclick="setFilter(\'stuck\')" style="border-color:rgba(251,146,60,.3)"><div class="in2" style="color:var(--warn)">'+st+'</div><div class="il">🔄 Onboarding</div></div>';
   h+='</div>';
   h+='<table><thead><tr><th>ایمیل</th><th>Insights</th><th>پلن</th><th>درآمد</th><th>لغت</th><th>آخرین فعالیت</th><th>تغییر پلن</th></tr></thead><tbody>';
   for(var i=0;i<filtered.length;i++){
