@@ -417,17 +417,8 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s2) 0 var(--s2);animation:up .4s var(--ease) both}
-.hero-eye{
-  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--accent);margin-bottom:var(--s3);opacity:.8;
-}
-.hero h1{
-  font-family:var(--sans);font-size:clamp(28px,7vw,40px);font-weight:700;
-  color:var(--ink);line-height:1.15;letter-spacing:0;margin-bottom:var(--s2);
-}
-.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.75}
-.hero p{font-size:13px;color:var(--ink3);line-height:1.6}
+.hero{display:none}
+.hero-eye{display:none}
 
 /* ═══════════════════════════════════
    SEARCH
@@ -680,28 +671,27 @@ body.offline .topbar{top:36px}
 .sc-streak-info{display:flex;flex-direction:column;gap:1px}
 .sc-streak-lvl{font-size:12px;font-weight:600;color:var(--ink)}
 .sc-streak-lbl{font-size:11px;color:var(--ink3)}
-.sc-next-pill{font-size:11px;color:var(--ink3);background:var(--bg2);border-radius:20px;padding:4px 10px;border:1px solid var(--bg3)}
+.sc-next-pill{font-size:11px;color:var(--ink3);background:var(--bg2);border-radius:20px;padding:4px 10px;border:1px solid var(--bg3);white-space:nowrap}
 .sc-dots{display:flex;gap:4px;margin-bottom:var(--s3)}
-.sc-dot{flex:1;height:4px;border-radius:4px;background:var(--bg3);transition:background .3s}
+.sc-dot{flex:1;height:4px;border-radius:4px;background:var(--bg3)}
 .sc-dot.on{background:var(--accent)}
 .sc-dot.cur{background:var(--accent);box-shadow:0 0 0 2px var(--aglow)}
-.sc-btn-review{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:var(--s2);transition:background .15s}
-.sc-btn-review:hover{background:var(--accent2)}
+.sc-btn-review{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:var(--s2);transition:all .18s}
+.sc-btn-review:hover{background:var(--accent2);transform:translateY(-1px)}
 .sc-btn-review:active{transform:scale(.98)}
 .sc-bottom-row{display:flex;gap:var(--s2)}
-.sc-stat{flex:1;background:var(--bg2);border-radius:var(--r2);padding:8px 10px;text-align:center}
+.sc-stat{flex:1;background:var(--bg2);border-radius:var(--r2);padding:8px 6px;text-align:center}
 .sc-stat .n{font-size:18px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:2px}
 .sc-stat .n.ok{color:var(--ok)}
 .sc-stat .l{font-size:10px;color:var(--ink3)}
-.sc-btn-detail{padding:8px 14px;background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3);border-radius:var(--r2);font-size:12px;font-family:var(--sans);cursor:pointer;white-space:nowrap;transition:all .15s}
+.sc-btn-detail{padding:8px 12px;background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3);border-radius:var(--r2);font-size:11px;font-family:var(--sans);cursor:pointer;white-space:nowrap;transition:all .15s}
 .sc-btn-detail:hover{background:var(--bg3)}
-.sc-details{display:none;margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--bg3);animation:scFadeUp .22s var(--ease) both}
-.sc-details.open{display:block}
+.sc-details{display:none;margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--bg3)}
+.sc-details.open{display:block;animation:scFadeUp .22s var(--ease) both}
 .sc-detail-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:30px;padding:3px;margin-bottom:var(--s3)}
 .sc-dt{flex:1;padding:6px 4px;font-size:11px;color:var(--ink3);background:transparent;border:none;border-radius:30px;cursor:pointer;font-family:var(--sans);transition:all .2s}
 .sc-dt.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:var(--sh1)}
 .sc-panel{animation:scFadeIn .2s var(--ease) both}
-/* XP */
 .sc-xp-hero{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
 .sc-xp-num{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--accent)}
 .sc-xp-bar-wrap{height:5px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:6px 0 4px}
@@ -712,7 +702,6 @@ body.offline .topbar{top:36px}
 .sc-xp-item{display:flex;justify-content:space-between;font-size:11px}
 .sc-xp-item span:first-child{color:var(--ink2)}
 .sc-xp-item span:last-child{color:var(--accent);font-weight:600}
-/* Freeze */
 .sc-freeze-box{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:var(--r2);padding:10px 12px;margin-bottom:var(--s3)}
 .sc-lvl-row{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:5px}
 .sc-lvl-bar-wrap{height:4px;background:var(--bg3);border-radius:4px;overflow:hidden}
@@ -1766,19 +1755,18 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
   <!-- HOME -->
   <div class="pane on" id="pane-home">
-    <div class="hero">
-      <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
-      <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
-    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+      <div>
+        <div style="font-size:10px;color:var(--ink3);font-weight:600;letter-spacing:.5px" id="hero-label">دستیار یادگیری آلمانی</div>
+        <div style="font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);line-height:1.2" id="hero-title">لغت یاد بگیر</div>
+      </div>
 
     <div id="free-banner" style="display:none"></div>
-    <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
-      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
+    <div style="position:relative;margin-bottom:var(--s2)" id="lang-badge-wrap">
+      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:4px;background:var(--bg2);color:var(--ink2);border:1px solid var(--bg3);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--sans)">
         <span id="home-lang-flag">🇩🇪</span>
         <span id="home-lang-label">آلمانی</span>
-        <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
       <!-- Lang mini popover -->
       <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
@@ -1799,14 +1787,14 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
-        placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
+        placeholder="لغت یا اصطلاح بنویس..."
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
       <div class="ac-drop" id="ac-drop"></div>
       <button class="s-btn" id="s-btn" onclick="doSearch()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
+    <div class="search-tip" id="search-tip">💡 مثلاً <strong>Arbeit</strong> یا <strong>قرارداد</strong></div>
     <div class="s-msg" id="s-msg"></div>
 
     <!-- Word result -->
@@ -1895,8 +1883,6 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Stats card -->
     <div class="sum-card" id="sum-card">
-
-      <!-- streak row -->
       <div class="sc-streak-row">
         <div class="sc-streak-badge">
           <div id="sc-empty-icon" style="display:none;font-size:28px">🌱</div>
@@ -1908,52 +1894,29 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
         </div>
         <div class="sc-next-pill" id="sc-next-pill">امروز شروع کن</div>
       </div>
-
-      <!-- 7-day dots -->
       <div class="sc-dots" id="sc-dots"></div>
-
-      <!-- CTA -->
       <button class="sc-btn-review" onclick="sesOpenSmart()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span id="review-lbl">شروع مرور</span>
       </button>
-
-      <!-- stats row -->
       <div class="sc-bottom-row">
-        <div class="sc-stat">
-          <div class="n" id="sn-total">0</div>
-          <div class="l">کل لغت</div>
-          <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:1px;display:none"></div>
-        </div>
-        <div class="sc-stat">
-          <div class="n ok" id="sn-learned">0</div>
-          <div class="l">یاد گرفتم</div>
-        </div>
-        <div class="sc-stat">
-          <div class="n" id="sn-due" style="color:var(--accent)">0</div>
-          <div class="l">مرور</div>
-        </div>
+        <div class="sc-stat"><div class="n" id="sn-total">0</div><div class="l">لغت</div><div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:1px;display:none"></div></div>
+        <div class="sc-stat"><div class="n ok" id="sn-learned">0</div><div class="l">یاد گرفتم</div></div>
+        <div class="sc-stat"><div class="n" id="sn-due" style="color:var(--accent)">0</div><div class="l">مرور</div></div>
         <button class="sc-btn-detail" id="sc-detail-btn" onclick="scToggleDetail(this)">جزئیات ↓</button>
       </div>
-
-      <!-- expandable -->
       <div class="sc-details" id="sc-details">
         <div class="sc-detail-tabs">
           <button class="sc-dt on" onclick="scTab('xp',this)">امتیاز XP</button>
           <button class="sc-dt" onclick="scTab('freeze',this)">🧊 Freeze</button>
         </div>
-
-        <!-- XP -->
         <div id="sc-panel-xp" class="sc-panel">
           <div class="sc-xp-hero">
             <div style="font-size:11px;color:var(--ink3)">امتیاز کل</div>
             <div class="sc-xp-num"><span id="sc-xp-total">0</span> <span style="font-size:11px;font-weight:400;color:var(--ink3)">XP</span></div>
           </div>
           <div class="sc-xp-bar-wrap"><div class="sc-xp-bar" id="sc-xp-bar" style="width:0%"></div></div>
-          <div class="sc-xp-sub">
-            <span id="sc-xp-sub">— XP مونده</span>
-            <span id="sc-xp-pct">0%</span>
-          </div>
+          <div class="sc-xp-sub"><span id="sc-xp-sub">— XP مونده</span><span id="sc-xp-pct">0%</span></div>
           <div class="sc-xp-tip">هر ۱۰۰ XP = ۵ جستجوی رایگان اضافه ⚡</div>
           <div style="font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.3px;margin:var(--s3) 0 6px">چطور XP بگیری</div>
           <div class="sc-xp-list">
@@ -1964,8 +1927,6 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
             <div class="sc-xp-item"><span>🏆 milestone streak</span><span>+100 XP</span></div>
           </div>
         </div>
-
-        <!-- Freeze -->
         <div id="sc-panel-freeze" class="sc-panel" style="display:none">
           <div class="sc-freeze-box">
             <div style="display:flex;align-items:center;gap:8px">
@@ -1981,9 +1942,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
             <span id="sc-lvl-lbl">پیشرفت به Lerner</span>
             <span id="sc-lvl-pct" style="color:var(--accent)">0%</span>
           </div>
-          <div class="sc-lvl-bar-wrap">
-            <div class="sc-lvl-bar" id="sc-lvl-bar" style="width:0%"></div>
-          </div>
+          <div class="sc-lvl-bar-wrap"><div class="sc-lvl-bar" id="sc-lvl-bar" style="width:0%"></div></div>
           <div style="font-size:10px;color:var(--ink3);margin-top:6px" id="sc-lvl-sub"></div>
         </div>
       </div>
@@ -3909,10 +3868,7 @@ function addXP(amount,reason){
   const prevH=Math.floor(prev/100),nextH=Math.floor(next/100);
   if(nextH>prevH&&userPlan==='free'){
     const bonus=(nextH-prevH)*5;
-    if(currentUser?.id){
-      sb.from('profiles').update({search_count:Math.max(0,userSearchCount-bonus)}).eq('id',currentUser.id)
-        .then(()=>{userSearchCount=Math.max(0,userSearchCount-bonus);updateFreeBanner();}).catch(()=>{});
-    }
+    if(currentUser?.id){sb.from('profiles').update({search_count:Math.max(0,userSearchCount-bonus)}).eq('id',currentUser.id).then(()=>{userSearchCount=Math.max(0,userSearchCount-bonus);updateFreeBanner();}).catch(()=>{});}
     showToast('🎉 '+nextH*100+' XP! +'+bonus+' جستجوی رایگان گرفتی',3500,'ok');
   }
   updateXPUI();
@@ -3921,85 +3877,45 @@ function updateXPUI(){
   const xp=getXP();
   const li=XP_LEVELS.findIndex(l=>xp>=l.min&&xp<=l.max);
   const lvl=XP_LEVELS[li>=0?li:XP_LEVELS.length-1];
-  const nxtLvl=XP_LEVELS[li+1];
+  const nxt=XP_LEVELS[li+1];
   const el=Q('#sc-xp-total');if(el)el.textContent=xp;
   const fill=Q('#sc-xp-bar'),sub=Q('#sc-xp-sub'),pct=Q('#sc-xp-pct');
-  if(nxtLvl){
-    const p=Math.round((xp-lvl.min)/(nxtLvl.min-lvl.min)*100);
-    if(fill)fill.style.width=p+'%';
-    if(sub)sub.textContent=(nxtLvl.min-xp)+' XP مونده به «'+nxtLvl.name+'»';
-    if(pct)pct.textContent=p+'%';
-  } else {
-    if(fill)fill.style.width='100%';
-    if(sub)sub.textContent='بالاترین سطح 🏆';
-    if(pct)pct.textContent='100%';
-  }
+  if(nxt){const p=Math.round((xp-lvl.min)/(nxt.min-lvl.min)*100);if(fill)fill.style.width=p+'%';if(sub)sub.textContent=(nxt.min-xp)+' XP مونده به «'+nxt.name+'»';if(pct)pct.textContent=p+'%';}
+  else{if(fill)fill.style.width='100%';if(sub)sub.textContent='بالاترین سطح 🏆';if(pct)pct.textContent='100%';}
 }
-
 function scToggleDetail(btn){
   const d=Q('#sc-details');
   const open=d.classList.toggle('open');
   btn.textContent=open?'بستن ↑':'جزئیات ↓';
   if(open){updateXPUI();scUpdateFreeze();}
 }
-
 function scTab(name,el){
-  ['xp','freeze'].forEach(n=>{
-    const p=Q('#sc-panel-'+n);
-    if(p){p.style.display='none';p.style.animation='none';}
-  });
+  ['xp','freeze'].forEach(n=>{const p=Q('#sc-panel-'+n);if(p){p.style.display='none';p.style.animation='none';}});
   document.querySelectorAll('.sc-dt').forEach(t=>t.classList.remove('on'));
   const p=Q('#sc-panel-'+name);
-  if(p){
-    p.style.display='block';
-    void p.offsetWidth;
-    p.style.animation='scFadeIn .2s var(--ease) both';
-  }
+  if(p){p.style.display='block';void p.offsetWidth;p.style.animation='scFadeIn .2s var(--ease) both';}
   el.classList.add('on');
 }
-
 function scUpdateFreeze(){
-  const freezeData=getStreakFreezes();
-  const maxFreeze=userPlan==='pro'?3:1;
+  const fd=getStreakFreezes(),maxF=userPlan==='pro'?3:1;
   const fDotsEl=Q('#sc-freeze-dots');
-  if(fDotsEl){
-    let fh='';
-    for(let i=0;i<maxFreeze;i++){
-      const used=i<freezeData.count;
-      fh+=`<div style="width:22px;height:22px;border-radius:50%;background:${used?'var(--bg3)':'var(--abl)'};border:2px solid ${used?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${used?'.3':'1'}">🧊</div>`;
-    }
-    fDotsEl.innerHTML=fh;
-  }
+  if(fDotsEl){let fh='';for(let i=0;i<maxF;i++){const u=i<fd.count;fh+=`<div style="width:22px;height:22px;border-radius:50%;background:${u?'var(--bg3)':'var(--abl)'};border:2px solid ${u?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${u?'.3':'1'}">🧊</div>`;}fDotsEl.innerHTML=fh;}
   const fDesc=Q('#sc-freeze-desc');
-  if(fDesc){
-    const left=maxFreeze-freezeData.count;
-    fDesc.innerHTML=userPlan!=='pro'?(left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد · <span onclick="window.open(\'https://t.me/cinuxx\',\'_blank\')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Pro: ۳ تا</span>'):left+' تا Freeze مونده';
-  }
+  if(fDesc){const left=maxF-fd.count;if(userPlan!=='pro'){fDesc.textContent=left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد';}else{fDesc.textContent=left+' تا Freeze مونده';}}
 }
-
 function updateStats(){
   const card=Q('#sum-card'),homeEmpty=Q('#home-empty');
   const fw=filteredWords();
   if(!fw.length){card.classList.remove('show');if(homeEmpty)homeEmpty.classList.add('show');return;}
-  card.classList.add('show');
-  if(homeEmpty)homeEmpty.classList.remove('show');
+  card.classList.add('show');if(homeEmpty)homeEmpty.classList.remove('show');
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
-
   const e1=Q('#sn-total');if(e1)e1.textContent=fw.length;
   const e2=Q('#sn-learned');if(e2)e2.textContent=learned.length;
   const e3=Q('#sn-due');if(e3)e3.textContent=due.length;
-
   const splitEl=Q('#sn-lang-split');
-  if(splitEl&&words.length>0){
-    const deC=words.filter(w=>(w.lang||'de')==='de').length;
-    const enC=words.filter(w=>w.lang==='en').length;
-    if(deC>0&&enC>0){splitEl.textContent='🇩🇪 '+deC+' · 🇬🇧 '+enC;splitEl.style.display='block';}
-    else splitEl.style.display='none';
-  }
-
-  // streak calc
+  if(splitEl&&words.length>0){const deC=words.filter(w=>(w.lang||'de')==='de').length,enC=words.filter(w=>w.lang==='en').length;if(deC>0&&enC>0){splitEl.textContent='🇩🇪 '+deC+' · 🇬🇧 '+enC;splitEl.style.display='block';}else splitEl.style.display='none';}
   const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
   const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
   const all={};Object.keys(rl).forEach(k=>all[k]=1);Object.keys(ol).forEach(k=>all[k]=1);
@@ -4007,8 +3923,6 @@ function updateStats(){
   if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
   let s=0;const dd=new Date();
   while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
-
-  // streak UI
   const numEl=Q('#sc-streak-num');if(numEl)numEl.textContent=s||'0';
   const emptyIc=Q('#sc-empty-icon');
   if(emptyIc)emptyIc.style.display=s===0?'block':'none';
@@ -4018,46 +3932,15 @@ function updateStats(){
   const lblEl=Q('#sc-streak-lbl');if(lblEl)lblEl.textContent=s>0?'روز متوالی':'شروع کن!';
   const nextM=MILESTONES.find(m=>m>s);
   const pillEl=Q('#sc-next-pill');
-  if(pillEl){
-    if(s===0)pillEl.textContent='اولین مرور رو انجام بده';
-    else if(nextM){const nL=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nL.name;}
-    else pillEl.textContent='به Legende رسیدی 👑';
-  }
-
-  // 7-day dots (bar style)
+  if(pillEl){if(s===0)pillEl.textContent='اولین مرور رو انجام بده';else if(nextM){const nL=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nL.name;}else pillEl.textContent='به Legende رسیدی 👑';}
   const dotsEl=Q('#sc-dots');
-  if(dotsEl){
-    let h='';
-    for(let i=6;i>=0;i--){
-      const d=new Date();d.setDate(d.getDate()-i);
-      const isT=i===0,done=!!all[d.toDateString()];
-      h+=`<div class="sc-dot${done&&!isT?' on':isT?' cur':''}"></div>`;
-    }
-    dotsEl.innerHTML=h;
-  }
-
-  // review button
+  if(dotsEl){let h='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const isT=i===0,done=!!all[d.toDateString()];h+=`<div class="sc-dot${done&&!isT?' on':isT?' cur':''}"></div>`;}dotsEl.innerHTML=h;}
   const lbl=Q('#review-lbl');
   if(lbl){const deck=buildSmartDeck();lbl.textContent=due.length>0?`مرور ${deck.length} کارت`:`سشن ${deck.length} کارتی`;}
-
-  // level progress (inside freeze panel)
-  if(nextM){
-    const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;
-    const p=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;
-    const nLvl=getStreakLevel(nextM);
-    const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width=p+'%';
-    const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='پیشرفت به '+nLvl.name;
-    const pctEl=Q('#sc-lvl-pct');if(pctEl)pctEl.textContent=p+'%';
-    const subEl=Q('#sc-lvl-sub');if(subEl)subEl.textContent=(nextM-s)+' روز دیگه';
-  } else {
-    const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width='100%';
-    const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='بالاترین سطح 👑';
-  }
-
-  scUpdateFreeze();
-  updateXPUI();
+  if(nextM){const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;const p=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;const nLvl=getStreakLevel(nextM);const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width=p+'%';const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='پیشرفت به '+nLvl.name;const pctEl=Q('#sc-lvl-pct');if(pctEl)pctEl.textContent=p+'%';const subEl=Q('#sc-lvl-sub');if(subEl)subEl.textContent=(nextM-s)+' روز دیگه';}
+  else{const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width='100%';const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='بالاترین سطح 👑';}
+  scUpdateFreeze();updateXPUI();
 }
-
 function logReview(){
   const today=new Date().toDateString();
   const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
@@ -4070,7 +3953,6 @@ function logReview(){
   const streak=calcStreak();
   if(wasFirst&&streak>1)addXP(5,'streak bonus — '+streak+' روز');
 }
-
 init();
 
 
