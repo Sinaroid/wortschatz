@@ -671,7 +671,9 @@ body.offline .topbar{top:36px}
 }
 .sum-card.show{display:block}
 
-/* ── COMPACT CARD v2 ── */
+/* ── COMPACT CARD ── */
+@keyframes scFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes scFadeIn{from{opacity:0}to{opacity:1}}
 .sc-streak-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
 .sc-streak-badge{display:flex;align-items:center;gap:10px}
 .sc-streak-num{font-family:var(--serif);font-size:36px;font-weight:600;color:var(--accent);line-height:1}
@@ -680,37 +682,41 @@ body.offline .topbar{top:36px}
 .sc-streak-lbl{font-size:11px;color:var(--ink3)}
 .sc-next-pill{font-size:11px;color:var(--ink3);background:var(--bg2);border-radius:20px;padding:4px 10px;border:1px solid var(--bg3)}
 .sc-dots{display:flex;gap:4px;margin-bottom:var(--s3)}
-.sc-dot{flex:1;height:4px;border-radius:4px;background:var(--bg3)}
+.sc-dot{flex:1;height:4px;border-radius:4px;background:var(--bg3);transition:background .3s}
 .sc-dot.on{background:var(--accent)}
 .sc-dot.cur{background:var(--accent);box-shadow:0 0 0 2px var(--aglow)}
 .sc-btn-review{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:var(--s2);transition:background .15s}
 .sc-btn-review:hover{background:var(--accent2)}
+.sc-btn-review:active{transform:scale(.98)}
 .sc-bottom-row{display:flex;gap:var(--s2)}
 .sc-stat{flex:1;background:var(--bg2);border-radius:var(--r2);padding:8px 10px;text-align:center}
 .sc-stat .n{font-size:18px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:2px}
 .sc-stat .n.ok{color:var(--ok)}
 .sc-stat .l{font-size:10px;color:var(--ink3)}
 .sc-btn-detail{padding:8px 14px;background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3);border-radius:var(--r2);font-size:12px;font-family:var(--sans);cursor:pointer;white-space:nowrap;transition:all .15s}
-.sc-btn-detail:hover{background:var(--bg3);color:var(--ink)}
-.sc-details{display:none;margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--bg3)}
+.sc-btn-detail:hover{background:var(--bg3)}
+.sc-details{display:none;margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--bg3);animation:scFadeUp .22s var(--ease) both}
 .sc-details.open{display:block}
 .sc-detail-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:30px;padding:3px;margin-bottom:var(--s3)}
-.sc-dt{flex:1;padding:6px 4px;font-size:11px;color:var(--ink3);background:transparent;border:none;border-radius:30px;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.sc-dt{flex:1;padding:6px 4px;font-size:11px;color:var(--ink3);background:transparent;border:none;border-radius:30px;cursor:pointer;font-family:var(--sans);transition:all .2s}
 .sc-dt.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:var(--sh1)}
+.sc-panel{animation:scFadeIn .2s var(--ease) both}
+/* XP */
 .sc-xp-hero{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
-.sc-xp-num{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--accent)}
+.sc-xp-num{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--accent)}
 .sc-xp-bar-wrap{height:5px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:6px 0 4px}
-.sc-xp-bar{height:100%;background:var(--accent);border-radius:5px;transition:width .5s var(--ease)}
+.sc-xp-bar{height:100%;background:var(--accent);border-radius:5px;transition:width .6s var(--ease)}
 .sc-xp-sub{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3)}
 .sc-xp-tip{margin-top:var(--s3);background:var(--abl);border-radius:var(--r2);padding:8px 10px;font-size:11px;color:var(--accent)}
-.sc-hm-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px}
-.sc-hm-dl{font-size:9px;color:var(--ink4);text-align:center}
-.sc-hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.sc-hm-c{aspect-ratio:1;border-radius:2px;background:var(--bg3)}
-.sc-hm-c.l2{background:rgba(26,58,242,.25)}
-.sc-hm-c.l4{background:var(--accent)}
-.sc-hm-c.t{box-shadow:0 0 0 1.5px var(--accent)}
-.sc-hm-foot{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--ink3)}
+.sc-xp-list{margin-top:var(--s3);display:flex;flex-direction:column;gap:5px}
+.sc-xp-item{display:flex;justify-content:space-between;font-size:11px}
+.sc-xp-item span:first-child{color:var(--ink2)}
+.sc-xp-item span:last-child{color:var(--accent);font-weight:600}
+/* Freeze */
+.sc-freeze-box{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:var(--r2);padding:10px 12px;margin-bottom:var(--s3)}
+.sc-lvl-row{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:5px}
+.sc-lvl-bar-wrap{height:4px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.sc-lvl-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .6s var(--ease)}
 
 /* header row */
 .sum-header{
@@ -1893,12 +1899,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <!-- streak row -->
       <div class="sc-streak-row">
         <div class="sc-streak-badge">
-          <div id="sc-streak-empty" style="display:none">
-            <div style="font-size:28px">🌱</div>
-          </div>
-          <div id="sc-streak-num-wrap">
-            <div class="sc-streak-num" id="sn-streak">0</div>
-          </div>
+          <div id="sc-empty-icon" style="display:none;font-size:28px">🌱</div>
+          <div id="sc-streak-num" class="sc-streak-num">0</div>
           <div class="sc-streak-info">
             <div class="sc-streak-lvl" id="sc-streak-lvl">Anfänger 🌱</div>
             <div class="sc-streak-lbl" id="sc-streak-lbl">روز متوالی</div>
@@ -1910,13 +1912,13 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <!-- 7-day dots -->
       <div class="sc-dots" id="sc-dots"></div>
 
-      <!-- primary CTA -->
+      <!-- CTA -->
       <button class="sc-btn-review" onclick="sesOpenSmart()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span id="review-lbl">شروع مرور</span>
       </button>
 
-      <!-- stats + detail toggle -->
+      <!-- stats row -->
       <div class="sc-bottom-row">
         <div class="sc-stat">
           <div class="n" id="sn-total">0</div>
@@ -1931,65 +1933,41 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
           <div class="n" id="sn-due" style="color:var(--accent)">0</div>
           <div class="l">مرور</div>
         </div>
-        <button class="sc-btn-detail" onclick="scToggleDetail(this)">جزئیات ↓</button>
+        <button class="sc-btn-detail" id="sc-detail-btn" onclick="scToggleDetail(this)">جزئیات ↓</button>
       </div>
 
-      <!-- expandable details -->
+      <!-- expandable -->
       <div class="sc-details" id="sc-details">
         <div class="sc-detail-tabs">
           <button class="sc-dt on" onclick="scTab('xp',this)">امتیاز XP</button>
-          <button class="sc-dt" onclick="scTab('cal',this)">تقویم</button>
-          <button class="sc-dt" onclick="scTab('freeze',this)">🧊 freeze</button>
+          <button class="sc-dt" onclick="scTab('freeze',this)">🧊 Freeze</button>
         </div>
 
-        <!-- XP panel -->
-        <div id="sc-panel-xp">
+        <!-- XP -->
+        <div id="sc-panel-xp" class="sc-panel">
           <div class="sc-xp-hero">
             <div style="font-size:11px;color:var(--ink3)">امتیاز کل</div>
             <div class="sc-xp-num"><span id="sc-xp-total">0</span> <span style="font-size:11px;font-weight:400;color:var(--ink3)">XP</span></div>
           </div>
           <div class="sc-xp-bar-wrap"><div class="sc-xp-bar" id="sc-xp-bar" style="width:0%"></div></div>
           <div class="sc-xp-sub">
-            <span id="sc-xp-sub-left">—</span>
-            <span id="sc-xp-sub-pct">0%</span>
+            <span id="sc-xp-sub">— XP مونده</span>
+            <span id="sc-xp-pct">0%</span>
           </div>
           <div class="sc-xp-tip">هر ۱۰۰ XP = ۵ جستجوی رایگان اضافه ⚡</div>
-          <div style="margin-top:var(--s3);font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.3px;margin-bottom:6px">چطور XP بگیری</div>
-          <div style="display:flex;flex-direction:column;gap:5px">
-            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">📖 مرور روزانه</span><span style="color:var(--accent);font-weight:600">+10 XP</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">🔥 streak bonus</span><span style="color:var(--accent);font-weight:600">+5 XP</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">✅ تسلط لغت</span><span style="color:var(--accent);font-weight:600">+3 XP</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">📦 تکمیل pack</span><span style="color:var(--accent);font-weight:600">+50 XP</span></div>
+          <div style="font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.3px;margin:var(--s3) 0 6px">چطور XP بگیری</div>
+          <div class="sc-xp-list">
+            <div class="sc-xp-item"><span>📖 مرور روزانه</span><span>+10 XP</span></div>
+            <div class="sc-xp-item"><span>🔥 streak bonus</span><span>+5 XP</span></div>
+            <div class="sc-xp-item"><span>✅ تسلط لغت</span><span>+3 XP</span></div>
+            <div class="sc-xp-item"><span>📦 تکمیل pack</span><span>+50 XP</span></div>
+            <div class="sc-xp-item"><span>🏆 milestone streak</span><span>+100 XP</span></div>
           </div>
         </div>
 
-        <!-- Calendar panel -->
-        <div id="sc-panel-cal" style="display:none">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div style="font-size:12px;font-weight:600;color:var(--ink)" id="sc-cal-title">—</div>
-            <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--ink3)">
-              کمتر
-              <div style="width:8px;height:8px;border-radius:2px;background:var(--bg3)"></div>
-              <div style="width:8px;height:8px;border-radius:2px;background:rgba(26,58,242,.25)"></div>
-              <div style="width:8px;height:8px;border-radius:2px;background:var(--accent)"></div>
-              بیشتر
-            </div>
-          </div>
-          <div class="sc-hm-days">
-            <div class="sc-hm-dl">ش</div><div class="sc-hm-dl">ی</div><div class="sc-hm-dl">د</div>
-            <div class="sc-hm-dl">س</div><div class="sc-hm-dl">چ</div><div class="sc-hm-dl">پ</div><div class="sc-hm-dl">ج</div>
-          </div>
-          <div class="sc-hm-grid" id="sc-hm-grid"></div>
-          <div class="sc-hm-foot">
-            <span>streak: <strong style="color:var(--accent)" id="sc-hm-streak">0</strong></span>
-            <span>بهترین: <strong style="color:var(--ink)" id="sc-hm-best">0</strong></span>
-            <span>روز فعال: <strong style="color:var(--ink)" id="sc-hm-active">0</strong></span>
-          </div>
-        </div>
-
-        <!-- Freeze panel -->
-        <div id="sc-panel-freeze" style="display:none">
-          <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:var(--r2);padding:10px 12px;margin-bottom:var(--s3)">
+        <!-- Freeze -->
+        <div id="sc-panel-freeze" class="sc-panel" style="display:none">
+          <div class="sc-freeze-box">
             <div style="display:flex;align-items:center;gap:8px">
               <span style="font-size:20px">🧊</span>
               <div>
@@ -1999,16 +1977,15 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
             </div>
             <div id="sc-freeze-dots" style="display:flex;gap:4px"></div>
           </div>
-          <!-- progress to next level -->
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:5px">
+          <div class="sc-lvl-row">
             <span id="sc-lvl-lbl">پیشرفت به Lerner</span>
-            <span id="sc-lvl-pct" style="color:var(--accent)"></span>
+            <span id="sc-lvl-pct" style="color:var(--accent)">0%</span>
           </div>
-          <div style="height:4px;background:var(--bg3);border-radius:4px;overflow:hidden">
-            <div id="sc-lvl-bar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width .5s"></div>
+          <div class="sc-lvl-bar-wrap">
+            <div class="sc-lvl-bar" id="sc-lvl-bar" style="width:0%"></div>
           </div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:6px" id="sc-lvl-sub"></div>
         </div>
-
       </div>
     </div>
 
@@ -3942,20 +3919,20 @@ function addXP(amount,reason){
 }
 function updateXPUI(){
   const xp=getXP();
-  const lvlIdx=XP_LEVELS.findIndex(l=>xp>=l.min&&xp<=l.max);
-  const lvl=XP_LEVELS[lvlIdx>=0?lvlIdx:XP_LEVELS.length-1];
-  const nextLvl=XP_LEVELS[lvlIdx+1];
+  const li=XP_LEVELS.findIndex(l=>xp>=l.min&&xp<=l.max);
+  const lvl=XP_LEVELS[li>=0?li:XP_LEVELS.length-1];
+  const nxtLvl=XP_LEVELS[li+1];
   const el=Q('#sc-xp-total');if(el)el.textContent=xp;
-  const fill=Q('#sc-xp-bar'),sub1=Q('#sc-xp-sub-left'),sub2=Q('#sc-xp-sub-pct');
-  if(nextLvl){
-    const pct=Math.round((xp-lvl.min)/(nextLvl.min-lvl.min)*100);
-    if(fill)fill.style.width=pct+'%';
-    if(sub1)sub1.textContent=(nextLvl.min-xp)+' XP مونده به «'+nextLvl.name+'»';
-    if(sub2)sub2.textContent=pct+'%';
+  const fill=Q('#sc-xp-bar'),sub=Q('#sc-xp-sub'),pct=Q('#sc-xp-pct');
+  if(nxtLvl){
+    const p=Math.round((xp-lvl.min)/(nxtLvl.min-lvl.min)*100);
+    if(fill)fill.style.width=p+'%';
+    if(sub)sub.textContent=(nxtLvl.min-xp)+' XP مونده به «'+nxtLvl.name+'»';
+    if(pct)pct.textContent=p+'%';
   } else {
     if(fill)fill.style.width='100%';
-    if(sub1)sub1.textContent='بالاترین سطح 🏆';
-    if(sub2)sub2.textContent='100%';
+    if(sub)sub.textContent='بالاترین سطح 🏆';
+    if(pct)pct.textContent='100%';
   }
 }
 
@@ -3963,55 +3940,45 @@ function scToggleDetail(btn){
   const d=Q('#sc-details');
   const open=d.classList.toggle('open');
   btn.textContent=open?'بستن ↑':'جزئیات ↓';
-  if(open){updateXPUI();buildScHeatmap();}
+  if(open){updateXPUI();scUpdateFreeze();}
 }
 
 function scTab(name,el){
-  ['xp','cal','freeze'].forEach(n=>{const p=Q('#sc-panel-'+n);if(p)p.style.display='none';});
+  ['xp','freeze'].forEach(n=>{
+    const p=Q('#sc-panel-'+n);
+    if(p){p.style.display='none';p.style.animation='none';}
+  });
   document.querySelectorAll('.sc-dt').forEach(t=>t.classList.remove('on'));
-  const p=Q('#sc-panel-'+name);if(p)p.style.display='block';
+  const p=Q('#sc-panel-'+name);
+  if(p){
+    p.style.display='block';
+    void p.offsetWidth;
+    p.style.animation='scFadeIn .2s var(--ease) both';
+  }
   el.classList.add('on');
-  if(name==='cal')buildScHeatmap();
 }
 
-function buildScHeatmap(){
-  const grid=Q('#sc-hm-grid');if(!grid)return;
-  const now=new Date(),yr=now.getFullYear(),mo=now.getMonth();
-  const daysInMonth=new Date(yr,mo+1,0).getDate();
-  const firstDay=new Date(yr,mo,1).getDay();
-  const offset=(firstDay+1)%7;
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={};Object.keys(rl).forEach(k=>all[k]=(rl[k]||0));Object.keys(ol).forEach(k=>{if(!all[k])all[k]=1;});
-  const mNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
-  const t=Q('#sc-cal-title');if(t)t.textContent=mNames[(mo+9)%12]+' '+yr;
-  grid.innerHTML='';
-  for(let i=0;i<offset;i++){const e=document.createElement('div');e.className='sc-hm-c';e.style.background='transparent';grid.appendChild(e);}
-  let active=0;
-  for(let d=1;d<=daysInMonth;d++){
-    const key=new Date(yr,mo,d).toDateString();
-    const cnt=all[key]||0;
-    const c=document.createElement('div');
-    let cls='sc-hm-c';
-    if(cnt>=5)cls+=' l4';
-    else if(cnt>=1)cls+=' l2';
-    if(d===now.getDate())cls+=' t';
-    c.className=cls;
-    if(cnt>0)active++;
-    grid.appendChild(c);
+function scUpdateFreeze(){
+  const freezeData=getStreakFreezes();
+  const maxFreeze=userPlan==='pro'?3:1;
+  const fDotsEl=Q('#sc-freeze-dots');
+  if(fDotsEl){
+    let fh='';
+    for(let i=0;i<maxFreeze;i++){
+      const used=i<freezeData.count;
+      fh+=`<div style="width:22px;height:22px;border-radius:50%;background:${used?'var(--bg3)':'var(--abl)'};border:2px solid ${used?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${used?'.3':'1'}">🧊</div>`;
+    }
+    fDotsEl.innerHTML=fh;
   }
-  const streak=calcStreak();
-  const s1=Q('#sc-hm-streak');if(s1)s1.textContent=streak;
-  const allDays=Object.keys(all).sort((a,b)=>new Date(a)-new Date(b));
-  let best=0,cur2=0,prev2=null;
-  allDays.forEach(k=>{const d=new Date(k);if(prev2&&(d-prev2)===86400000)cur2++;else cur2=1;if(cur2>best)best=cur2;prev2=d;});
-  const s2=Q('#sc-hm-best');if(s2)s2.textContent=best;
-  const s3=Q('#sc-hm-active');if(s3)s3.textContent=active;
+  const fDesc=Q('#sc-freeze-desc');
+  if(fDesc){
+    const left=maxFreeze-freezeData.count;
+    fDesc.innerHTML=userPlan!=='pro'?(left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد · <span onclick="window.open(\'https://t.me/cinuxx\',\'_blank\')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Pro: ۳ تا</span>'):left+' تا Freeze مونده';
+  }
 }
 
 function updateStats(){
-  const card=Q('#sum-card');
-  const homeEmpty=Q('#home-empty');
+  const card=Q('#sum-card'),homeEmpty=Q('#home-empty');
   const fw=filteredWords();
   if(!fw.length){card.classList.remove('show');if(homeEmpty)homeEmpty.classList.add('show');return;}
   card.classList.add('show');
@@ -4020,9 +3987,9 @@ function updateStats(){
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
 
-  const el=Q('#sn-total');if(el)el.textContent=fw.length;
-  const el2=Q('#sn-learned');if(el2)el2.textContent=learned.length;
-  const el3=Q('#sn-due');if(el3)el3.textContent=due.length;
+  const e1=Q('#sn-total');if(e1)e1.textContent=fw.length;
+  const e2=Q('#sn-learned');if(e2)e2.textContent=learned.length;
+  const e3=Q('#sn-due');if(e3)e3.textContent=due.length;
 
   const splitEl=Q('#sn-lang-split');
   if(splitEl&&words.length>0){
@@ -4042,27 +4009,22 @@ function updateStats(){
   while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
 
   // streak UI
-  const numEl=Q('#sn-streak');if(numEl)numEl.textContent=s||'0';
-  const emptyEl=Q('#sc-streak-empty'),numWrap=Q('#sc-streak-num-wrap');
-  if(s===0){
-    if(emptyEl)emptyEl.style.display='block';
-    if(numWrap)numWrap.style.display='none';
-  } else {
-    if(emptyEl)emptyEl.style.display='none';
-    if(numWrap)numWrap.style.display='block';
-  }
-  const lvl=getStreakLevel(s||0);
+  const numEl=Q('#sc-streak-num');if(numEl)numEl.textContent=s||'0';
+  const emptyIc=Q('#sc-empty-icon');
+  if(emptyIc)emptyIc.style.display=s===0?'block':'none';
+  if(numEl)numEl.style.display=s===0?'none':'block';
+  const lvl=getStreakLevel(s);
   const lvlEl=Q('#sc-streak-lvl');if(lvlEl)lvlEl.textContent=lvl.name+' '+lvl.icon;
   const lblEl=Q('#sc-streak-lbl');if(lblEl)lblEl.textContent=s>0?'روز متوالی':'شروع کن!';
   const nextM=MILESTONES.find(m=>m>s);
   const pillEl=Q('#sc-next-pill');
   if(pillEl){
     if(s===0)pillEl.textContent='اولین مرور رو انجام بده';
-    else if(nextM){const nLvl=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nLvl.name;}
+    else if(nextM){const nL=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nL.name;}
     else pillEl.textContent='به Legende رسیدی 👑';
   }
 
-  // 7-day dots
+  // 7-day dots (bar style)
   const dotsEl=Q('#sc-dots');
   if(dotsEl){
     let h='';
@@ -4078,38 +4040,21 @@ function updateStats(){
   const lbl=Q('#review-lbl');
   if(lbl){const deck=buildSmartDeck();lbl.textContent=due.length>0?`مرور ${deck.length} کارت`:`سشن ${deck.length} کارتی`;}
 
-  // freeze panel
-  const freezeData=getStreakFreezes();
-  const maxFreeze=userPlan==='pro'?3:1;
-  const fDotsEl=Q('#sc-freeze-dots');
-  if(fDotsEl){
-    let fh='';
-    for(let i=0;i<maxFreeze;i++){
-      const used=i<freezeData.count;
-      fh+=`<div style="width:22px;height:22px;border-radius:50%;background:${used?'var(--bg3)':'var(--abl)'};border:2px solid ${used?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${used?'.3':'1'}">🧊</div>`;
-    }
-    fDotsEl.innerHTML=fh;
-  }
-  const fDesc=Q('#sc-freeze-desc');
-  if(fDesc){
-    const left=maxFreeze-freezeData.count;
-    fDesc.innerHTML=userPlan!=='pro'?(left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد · <span onclick="window.open(\'https://t.me/cinuxx\',\'_blank\')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Pro: ۳ تا</span>'):left+' تا Freeze مونده';
-  }
-
-  // level progress bar
-  const barEl=Q('#sc-lvl-bar'),lblBar=Q('#sc-lvl-lbl'),pctEl=Q('#sc-lvl-pct');
+  // level progress (inside freeze panel)
   if(nextM){
     const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;
-    const pct=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;
+    const p=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;
     const nLvl=getStreakLevel(nextM);
-    if(barEl)barEl.style.width=pct+'%';
-    if(lblBar)lblBar.textContent='پیشرفت به '+nLvl.name;
-    if(pctEl)pctEl.textContent=pct+'%';
+    const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width=p+'%';
+    const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='پیشرفت به '+nLvl.name;
+    const pctEl=Q('#sc-lvl-pct');if(pctEl)pctEl.textContent=p+'%';
+    const subEl=Q('#sc-lvl-sub');if(subEl)subEl.textContent=(nextM-s)+' روز دیگه';
   } else {
-    if(barEl)barEl.style.width='100%';
-    if(lblBar)lblBar.textContent='بالاترین سطح 👑';
+    const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width='100%';
+    const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='بالاترین سطح 👑';
   }
 
+  scUpdateFreeze();
   updateXPUI();
 }
 
