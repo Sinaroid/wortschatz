@@ -1337,12 +1337,55 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-/* ════════════════════
-   UI REFRESH v2
-════════════════════ */
+/* ════════════════════════════════════════
+   FIX: فاصله سمت راست بعد از نتیجه
+════════════════════════════════════════ */
 
-/* 1. hero — فقط h1 می‌مونه، بقیه حذف */
-.hero { padding: var(--s2) 0 var(--s3) !important; }
+/* مشکل: overflow-x از direction:ltr روی res elements */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+.app {
+  overflow-x: hidden !important;
+  max-width: 600px !important;
+}
+
+/* res-word-block: padding متقارن */
+.res-word-block {
+  padding: var(--s4) var(--s5) var(--s3) var(--s5) !important;
+  overflow-x: hidden !important;
+}
+
+/* res-footer padding fix */
+.res-footer {
+  padding: var(--s3) var(--s4) !important;
+}
+
+/* pane padding — کمی کمتر در افقی */
+.pane {
+  padding-right: var(--s4) !important;
+  padding-left: var(--s4) !important;
+}
+#pane-home {
+  padding-right: var(--s4) !important;
+  padding-left: var(--s4) !important;
+}
+
+/* res container */
+.res {
+  overflow-x: hidden !important;
+  width: 100% !important;
+}
+
+/* ac-drop (autocomplete) */
+.ac-drop {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* ─── UI REFRESH v2 ─── */
+.hero    { padding: var(--s2) 0 var(--s3) !important; }
 .hero-eye { display: none !important; }
 .hero p   { display: none !important; }
 .hero h1  {
@@ -1352,19 +1395,9 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   margin-bottom: var(--s3) !important;
   letter-spacing: -.3px !important;
 }
-
-/* 2. hint chips — حذف */
 .hint-chips, #hint-chips, .hint { display: none !important; }
-
-/* 3. search tip — کوچیک‌تر */
 .search-tip { font-size: 11px !important; margin-bottom: var(--s2) !important; }
-
-/* 4. sum-card — compact */
-.sum-card {
-  padding: var(--s3) var(--s4) !important;
-  border-radius: var(--r3) !important;
-  margin-top: var(--s2) !important;
-}
+.sum-card   { padding: var(--s3) var(--s4) !important; border-radius: var(--r3) !important; margin-top: var(--s2) !important; }
 .sum-header { margin-bottom: var(--s3) !important; }
 .sum-title  { font-size: 12px !important; }
 .sum-streak { font-size: 11px !important; padding: 3px 8px !important; }
@@ -1377,22 +1410,14 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .sum-acts   { gap: var(--s1) !important; }
 .sum-review { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
 .sum-all    { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
-
-/* 5. nav — با label، compact */
-.bottom-nav { padding-top: 0 !important; }
-.nav-item   { padding: 8px 4px 6px !important; gap: 2px !important; }
-.nav-label  {
-  font-size: 10px !important;
-  font-weight: 500 !important;
-  display: block !important;
-}
-.nav-item svg { width: 19px !important; height: 19px !important; }
-
-/* 6. topbar */
 .sync-dot   { display: none !important; }
 .topbar     { padding: 10px var(--s5) !important; }
 .logo-name  { font-size: 16px !important; }
 .logo-mark  { width: 24px !important; height: 24px !important; border-radius: 7px !important; }
+.bottom-nav { padding-top: 0 !important; }
+.nav-item   { padding: 8px 4px 6px !important; gap: 2px !important; }
+.nav-label  { font-size: 10px !important; font-weight: 500 !important; display: block !important; }
+.nav-item svg { width: 19px !important; height: 19px !important; }
 
 </style>
 </head>
