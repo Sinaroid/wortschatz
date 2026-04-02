@@ -1337,48 +1337,29 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-/* ════════════════════════════════════════
-   WORTSCHATZ — UI REFRESH
-   فقط CSS — هیچ feature‌ای تغییر نمی‌کنه
-════════════════════════════════════════ */
+/* ════════════════════
+   UI REFRESH v2
+════════════════════ */
 
-/* 1. HERO — compact, بدون text اضافه */
-.hero {
-  padding: var(--s1) 0 var(--s2) !important;
-  animation: none !important;
-}
+/* 1. hero — فقط h1 می‌مونه، بقیه حذف */
+.hero { padding: var(--s2) 0 var(--s3) !important; }
 .hero-eye { display: none !important; }
 .hero p   { display: none !important; }
 .hero h1  {
-  font-size: 22px !important;
+  font-size: 26px !important;
   font-weight: 700 !important;
-  line-height: 1.2 !important;
-  margin-bottom: var(--s2) !important;
+  line-height: 1.25 !important;
+  margin-bottom: var(--s3) !important;
   letter-spacing: -.3px !important;
 }
 
-/* 2. LANG BADGE — inline با hero */
-#home-lang-badge {
-  margin-bottom: var(--s3) !important;
-  font-size: 12px !important;
-  padding: 4px 10px !important;
-}
+/* 2. hint chips — حذف */
+.hint-chips, #hint-chips, .hint { display: none !important; }
 
-/* 3. SEARCH — cleaner */
-.s-field {
-  padding: 12px var(--s5) 12px 52px !important;
-  font-size: 14px !important;
-  border-radius: var(--r5) !important;
-}
-.s-wrap { margin-bottom: var(--s2) !important; }
+/* 3. search tip — کوچیک‌تر */
+.search-tip { font-size: 11px !important; margin-bottom: var(--s2) !important; }
 
-/* 4. SEARCH TIP — کوچک‌تر */
-.search-tip {
-  font-size: 11px !important;
-  margin-bottom: var(--s2) !important;
-}
-
-/* 5. SUM-CARD — compact */
+/* 4. sum-card — compact */
 .sum-card {
   padding: var(--s3) var(--s4) !important;
   border-radius: var(--r3) !important;
@@ -1387,105 +1368,31 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .sum-header { margin-bottom: var(--s3) !important; }
 .sum-title  { font-size: 12px !important; }
 .sum-streak { font-size: 11px !important; padding: 3px 8px !important; }
+.sum-nums   { gap: var(--s1) !important; margin-bottom: var(--s3) !important; }
+.sum-nb     { padding: var(--s2) var(--s1) !important; border-radius: var(--r2) !important; }
+.sum-n      { font-size: 22px !important; }
+.sum-l      { font-size: 9px !important; }
+.sum-dots   { margin-bottom: var(--s3) !important; }
+.sd-c       { width: 6px !important; height: 6px !important; }
+.sum-acts   { gap: var(--s1) !important; }
+.sum-review { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
+.sum-all    { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
 
-/* stat numbers کوچک‌تر */
-.sum-nums {
-  gap: var(--s1) !important;
-  margin-bottom: var(--s3) !important;
+/* 5. nav — با label، compact */
+.bottom-nav { padding-top: 0 !important; }
+.nav-item   { padding: 8px 4px 6px !important; gap: 2px !important; }
+.nav-label  {
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  display: block !important;
 }
-.sum-nb {
-  padding: var(--s2) var(--s1) !important;
-  border-radius: var(--r2) !important;
-}
-.sum-n { font-size: 22px !important; }
-.sum-l { font-size: 9px !important; }
+.nav-item svg { width: 19px !important; height: 19px !important; }
 
-/* dots row */
-.sum-dots { margin-bottom: var(--s3) !important; }
-.sd-c { width: 6px !important; height: 6px !important; }
-
-/* دکمه‌های action */
-.sum-acts { gap: var(--s1) !important; }
-.sum-review {
-  padding: 10px var(--s3) !important;
-  font-size: 12px !important;
-  border-radius: var(--r2) !important;
-}
-.sum-all {
-  padding: 10px var(--s3) !important;
-  font-size: 12px !important;
-  border-radius: var(--r2) !important;
-}
-
-/* 6. BOTTOM NAV — بدون label */
-.bottom-nav {
-  padding-top: 0 !important;
-}
-.nav-item {
-  padding: 10px 4px 8px !important;
-  gap: 0 !important;
-}
-.nav-label { display: none !important; }
-.nav-item svg { width: 20px !important; height: 20px !important; }
-
-/* 7. TOPBAR — streak pill به جای sync dot */
-.sync-dot { display: none !important; }
-.topbar { padding: 10px var(--s5) !important; }
-.logo-name { font-size: 16px !important; }
-.logo-mark {
-  width: 24px !important; height: 24px !important;
-  border-radius: 7px !important;
-}
-
-/* 8. RESULT CARD — cleaner */
-.res {
-  border-radius: var(--r3) !important;
-  margin-top: var(--s2) !important;
-}
-.res-word {
-  font-size: 32px !important;
-  letter-spacing: -1px !important;
-}
-.res-meaning { font-size: 16px !important; }
-
-/* 9. FREE BANNER — compact */
-#free-banner > div {
-  border-radius: var(--r2) !important;
-  padding: var(--s2) var(--s3) !important;
-  font-size: 11px !important;
-  margin-bottom: var(--s2) !important;
-}
-
-/* 10. HINT CHIPS — suggestion chips */
-.hint-chips {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 6px !important;
-  margin-bottom: var(--s2) !important;
-}
-.hint-chip {
-  padding: 5px 12px !important;
-  background: var(--card) !important;
-  border: 1px solid var(--bg3) !important;
-  border-radius: var(--r6) !important;
-  font-size: 12px !important;
-  color: var(--ink2) !important;
-  cursor: pointer !important;
-  font-family: var(--serif) !important;
-  font-style: italic !important;
-  transition: all .15s !important;
-}
-.hint-chip:active {
-  background: var(--bg2) !important;
-  transform: scale(.95) !important;
-}
-
-/* 11. DARK MODE همه موارد بالا */
-body.dark .hint-chip {
-  background: var(--bg2) !important;
-  border-color: var(--bg3) !important;
-  color: var(--ink2) !important;
-}
+/* 6. topbar */
+.sync-dot   { display: none !important; }
+.topbar     { padding: 10px var(--s5) !important; }
+.logo-name  { font-size: 16px !important; }
+.logo-mark  { width: 24px !important; height: 24px !important; border-radius: 7px !important; }
 
 </style>
 </head>
@@ -1853,7 +1760,7 @@ body.dark .hint-chip {
   <div class="pane on" id="pane-home">
     <div class="hero">
       <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
+      <h1 id="hero-title">یاد بگیر،<br><em>نه حفظ کن</em></h1>
       <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
     </div>
 
@@ -1891,14 +1798,7 @@ body.dark .hint-chip {
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <div class="hint-chips" id="hint-chips">
-  <div class="hint-chip" onclick="qs('Sehnsucht')">Sehnsucht</div>
-  <div class="hint-chip" onclick="qs('Fernweh')">Fernweh</div>
-  <div class="hint-chip" onclick="qs('قرارداد')">قرارداد</div>
-  <div class="hint-chip" onclick="qs('Heimweh')">Heimweh</div>
-  <div class="hint-chip" onclick="qs('Weltschmerz')">Weltschmerz</div>
-</div>
-<div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
+    <div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
     <div class="s-msg" id="s-msg"></div>
 
     <!-- Word result -->
