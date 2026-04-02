@@ -1338,9 +1338,14 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-/* ════════════════════
-   EMPTY STATE
-════════════════════ */
+/* ════════════════════════════════════════
+   FIX: reminder حذف + empty state بهتر
+════════════════════════════════════════ */
+
+/* 1. reminder/notification کامل حذف */
+.reminder, #reminder { display: none !important; }
+
+/* 2. empty state */
 .ws-empty {
   display: none;
   flex-direction: column;
@@ -1351,48 +1356,23 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   gap: var(--s3);
 }
 .ws-empty.show { display: flex; }
-.ws-empty-icon {
-  font-size: 40px;
-  margin-bottom: var(--s2);
-}
-.ws-empty-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--ink);
-  font-family: var(--sans);
-}
-.ws-empty-sub {
-  font-size: 13px;
-  color: var(--ink3);
-  line-height: 1.6;
-  max-width: 260px;
-}
+.ws-empty-icon { font-size: 40px; margin-bottom: var(--s2); }
+.ws-empty-title { font-size: 17px; font-weight: 700; color: var(--ink); }
+.ws-empty-sub { font-size: 13px; color: var(--ink3); line-height: 1.6; max-width: 260px; }
 .ws-empty-btn {
   margin-top: var(--s2);
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--r2);
-  padding: 11px var(--s6);
-  font-size: 13px;
-  font-weight: 600;
-  font-family: var(--sans);
-  cursor: pointer;
-  transition: opacity .15s;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: var(--r2);
+  padding: 11px var(--s6); font-size: 13px; font-weight: 600;
+  font-family: var(--sans); cursor: pointer; transition: opacity .15s;
 }
 .ws-empty-btn:active { opacity: .75; }
 
-/* ── UI REFRESH ── */
+/* 3. UI Refresh */
 .hero    { padding: var(--s2) 0 var(--s3) !important; }
 .hero-eye { display: none !important; }
 .hero p   { display: none !important; }
-.hero h1  {
-  font-size: 24px !important;
-  font-weight: 700 !important;
-  line-height: 1.25 !important;
-  margin-bottom: var(--s3) !important;
-  letter-spacing: -.3px !important;
-}
+.hero h1  { font-size: 24px !important; font-weight: 700 !important; line-height: 1.25 !important; margin-bottom: var(--s3) !important; letter-spacing: -.3px !important; }
 .hint-chips, #hint-chips, .hint { display: none !important; }
 .search-tip { font-size: 11px !important; margin-bottom: var(--s2) !important; }
 .sum-card   { padding: var(--s3) var(--s4) !important; border-radius: var(--r3) !important; margin-top: var(--s2) !important; }
@@ -1415,18 +1395,13 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .nav-item   { padding: 8px 4px 6px !important; gap: 2px !important; }
 .nav-label  { font-size: 10px !important; font-weight: 500 !important; display: block !important; }
 .nav-item svg { width: 19px !important; height: 19px !important; }
-
-/* overflow fix */
 html, body  { overflow-x: hidden !important; }
-.app        { overflow-x: hidden !important; }
+.app        { overflow-x: hidden !important; min-height: var(--tg-viewport-stable-height, 100dvh) !important; }
 .res        { overflow-x: hidden !important; width: 100% !important; }
 .res-word-block { padding: var(--s4) var(--s4) var(--s3) !important; overflow-x: hidden !important; }
 .res-footer { padding: var(--s3) var(--s4) !important; }
 .pane       { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
 #pane-home  { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
-
-/* TG */
-.app { min-height: var(--tg-viewport-stable-height, 100dvh) !important; }
 .low-perf *, .low-perf *::before, .low-perf *::after { animation: none !important; transition: none !important; }
 
 </style>
@@ -1434,23 +1409,18 @@ html, body  { overflow-x: hidden !important; }
 <body>
 <script>
 (function(){
-  var tg = window.Telegram && window.Telegram.WebApp;
-  if (!tg) { window.tgApp = null; return; }
-  tg.ready(); tg.expand();
-  if (tg.colorScheme === 'dark') document.body.classList.add('dark');
-  function syncHeader() {
-    var dark = document.body.classList.contains('dark');
-    try { tg.setHeaderColor(dark ? '#0d0d0c' : '#f5f4f0'); } catch(e){}
-    try { tg.setBackgroundColor(dark ? '#0d0d0c' : '#f5f4f0'); } catch(e){}
-    try { tg.setBottomBarColor(dark ? '#161614' : '#ffffff'); } catch(e){}
-  }
+  var tg=window.Telegram&&window.Telegram.WebApp;
+  if(!tg){window.tgApp=null;return;}
+  tg.ready();tg.expand();
+  if(tg.colorScheme==='dark')document.body.classList.add('dark');
+  function syncHeader(){var dark=document.body.classList.contains('dark');try{tg.setHeaderColor(dark?'#0d0d0c':'#f5f4f0');}catch(e){}try{tg.setBackgroundColor(dark?'#0d0d0c':'#f5f4f0');}catch(e){}try{tg.setBottomBarColor(dark?'#161614':'#ffffff');}catch(e){}}
   syncHeader();
-  tg.onEvent('themeChanged', function(){ if(tg.colorScheme==='dark') document.body.classList.add('dark'); else document.body.classList.remove('dark'); syncHeader(); });
-  function applySafeArea(){ var sa=tg.safeAreaInset||{}; var tb=document.getElementById('topbar'); if(tb) tb.style.paddingTop=((sa.top||0)+10)+'px'; var bn=document.querySelector('.bottom-nav'); if(bn) bn.style.paddingBottom=(sa.bottom||0)+'px'; }
-  applySafeArea(); tg.onEvent('safeAreaChanged',applySafeArea); tg.onEvent('contentSafeAreaChanged',applySafeArea);
-  try { tg.disableVerticalSwipes(); } catch(e){}
-  var pm=navigator.userAgent.match(/TelegramPerformanceClass\/(\d+)/);
-  if(pm&&parseInt(pm[1])<2) document.body.classList.add('low-perf');
+  tg.onEvent('themeChanged',function(){if(tg.colorScheme==='dark')document.body.classList.add('dark');else document.body.classList.remove('dark');syncHeader();});
+  function applySafeArea(){var sa=tg.safeAreaInset||{};var tb=document.getElementById('topbar');if(tb)tb.style.paddingTop=((sa.top||0)+10)+'px';var bn=document.querySelector('.bottom-nav');if(bn)bn.style.paddingBottom=(sa.bottom||0)+'px';}
+  applySafeArea();tg.onEvent('safeAreaChanged',applySafeArea);tg.onEvent('contentSafeAreaChanged',applySafeArea);
+  try{tg.disableVerticalSwipes();}catch(e){}
+  var pm=navigator.userAgent.match(/TelegramPerformanceClass\/([0-9]+)/);
+  if(pm&&parseInt(pm[1])<2)document.body.classList.add('low-perf');
   tg.BackButton.onClick(function(){
     var ses=document.getElementById('session-overlay'),drw=document.getElementById('drawer'),res=document.getElementById('res'),ph=document.getElementById('ph-res');
     if(ses&&ses.classList.contains('open')){try{sesEnd();}catch(e){ses.classList.remove('open');}tg.BackButton.hide();return;}
@@ -1460,10 +1430,9 @@ html, body  { overflow-x: hidden !important; }
     tg.BackButton.hide();
   });
   var BB=tg.BottomButton||tg.MainButton;
-  if(BB){ BB.setParams({text:'افزودن به فلش‌کارت',color:'#1a3af2',text_color:'#ffffff',is_active:true,is_visible:false}); BB.onClick(function(){ tg.HapticFeedback.impactOccurred('medium'); var ph=document.getElementById('ph-res'); if(ph&&ph.classList.contains('show')){try{addPhrase();}catch(e){}}else{try{addWord();}catch(e){}} BB.hide(); }); }
-  document.addEventListener('click',function(e){ if(e.target.closest('button,.nav-item,.s-btn')) tg.HapticFeedback.impactOccurred('light'); },{passive:true});
+  if(BB){BB.setParams({text:'افزودن به فلش‌کارت',color:'#1a3af2',text_color:'#ffffff',is_active:true,is_visible:false});BB.onClick(function(){tg.HapticFeedback.impactOccurred('medium');var ph=document.getElementById('ph-res');if(ph&&ph.classList.contains('show')){try{addPhrase();}catch(e){}}else{try{addWord();}catch(e){}}BB.hide();});}
+  document.addEventListener('click',function(e){if(e.target.closest('button,.nav-item,.s-btn'))tg.HapticFeedback.impactOccurred('light');},{passive:true});
   window.tgApp={tg:tg,isTg:true,user:tg.initDataUnsafe&&tg.initDataUnsafe.user,showBack:function(){tg.BackButton.show();},hideBack:function(){tg.BackButton.hide();},showAdd:function(t){if(BB){BB.setText(t||'افزودن به فلش‌کارت');BB.show();}},hideAdd:function(){if(BB)BB.hide();},haptic:function(t){try{if(['success','error','warning'].includes(t))tg.HapticFeedback.notificationOccurred(t);else tg.HapticFeedback.impactOccurred(t||'medium');}catch(e){}},setTheme:syncHeader};
-  console.log('[TG]',tg.version,tg.platform,tg.colorScheme);
 })();
 </script>
 
@@ -1956,12 +1925,11 @@ html, body  { overflow-x: hidden !important; }
 
     <!-- Stats card -->
     
-    <!-- empty state — وقتی هنوز لغتی نداره -->
     <div class="ws-empty" id="ws-empty">
       <div class="ws-empty-icon">🇩🇪</div>
-      <div class="ws-empty-title">اولین لغتت رو اضافه کن</div>
-      <div class="ws-empty-sub">یه لغت آلمانی سرچ کن و به فلش‌کارت‌هات اضافه‌اش کن</div>
-      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()">شروع کن ←</button>
+      <div class="ws-empty-title">اولین لغتت رو سرچ کن</div>
+      <div class="ws-empty-sub">یه لغت آلمانی بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن</div>
+      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus();document.getElementById('s-inp').scrollIntoView({behavior:'smooth'})">شروع کن ←</button>
     </div>
 
     <div class="sum-card" id="sum-card">
@@ -2701,31 +2669,28 @@ function setUserUI(user){
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
-/* empty state */
 function updateEmptyState() {
   var empty = document.getElementById('ws-empty');
-  var sumCard = document.getElementById('sum-card');
-  if (!empty || !sumCard) return;
-  var hasWords = window.words && window.words.length > 0;
-  empty.classList.toggle('show', !hasWords);
-  if (hasWords) {
-    sumCard.classList.add('show');
-  }
+  var card  = document.getElementById('sum-card');
+  if (!empty) return;
+  var has = window.words && window.words.length > 0;
+  empty.classList.toggle('show', !has);
+  if (card && has) card.classList.add('show');
 }
 
 async function tgAutoLogin(u){
   var email='tg'+u.id+'@wortschatz.app',pass='ws_tg_'+u.id+'_2025!';
   var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'کاربر';
   try{
-    var r=await sb.auth.signInWithPassword({email:email,password:pass});
-    if(r.error) r=await sb.auth.signUp({email:email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
+    var r=await sb.auth.signInWithPassword({email,password:pass});
+    if(r.error)r=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
     if(r.error)throw r.error;
-    if(r.data&&r.data.user){
+    if(r.data?.user){
       setUserUI(r.data.user);hideGate();
       var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
       var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
       await dbLoad();await loadProfile();setTimeout(checkReminder,2500);
-      if(window.tgApp)window.tgApp.haptic('success');
+      window.tgApp?.haptic('success');
       showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
     }else showGate();
   }catch(e){console.error('[TG]',e.message);showGate();}
@@ -2764,8 +2729,8 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    var _tgu=window.tgApp&&window.tgApp.user;
-    if(_tgu&&_tgu.id){await tgAutoLogin(_tgu);}else{showGate();}
+    var _u=window.tgApp&&window.tgApp.user;
+    if(_u&&_u.id){await tgAutoLogin(_u);}else{showGate();}
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
@@ -2942,7 +2907,7 @@ function drawerUpdateLangToggle(){
   if(en){ en.classList.toggle('active', !isDE); }
 }
 
-function toggleDark(){const d=document.body.classList.toggle('dark'); if(window.tgApp)window.tgApp.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
+function toggleDark(){const d=document.body.classList.toggle('dark');window.tgApp?.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
     ?'<circle cx="7" cy="7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
