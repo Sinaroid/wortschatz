@@ -1338,14 +1338,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-/* ════════════════════════════════════════
-   FIX: reminder حذف + empty state بهتر
-════════════════════════════════════════ */
-
-/* 1. reminder/notification کامل حذف */
+/* ══ reminder حذف ══ */
 .reminder, #reminder { display: none !important; }
 
-/* 2. empty state */
+/* ══ empty state ══ */
 .ws-empty {
   display: none;
   flex-direction: column;
@@ -1354,6 +1350,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   text-align: center;
   padding: var(--s8) var(--s5);
   gap: var(--s3);
+  animation: up .3s var(--ease) both;
 }
 .ws-empty.show { display: flex; }
 .ws-empty-icon { font-size: 40px; margin-bottom: var(--s2); }
@@ -1368,40 +1365,40 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 }
 .ws-empty-btn:active { opacity: .75; }
 
-/* 3. UI Refresh */
-.hero    { padding: var(--s2) 0 var(--s3) !important; }
+/* ══ UI Refresh ══ */
+.hero { padding: var(--s2) 0 var(--s3) !important; }
 .hero-eye { display: none !important; }
-.hero p   { display: none !important; }
-.hero h1  { font-size: 24px !important; font-weight: 700 !important; line-height: 1.25 !important; margin-bottom: var(--s3) !important; letter-spacing: -.3px !important; }
+.hero p { display: none !important; }
+.hero h1 { font-size: 24px !important; font-weight: 700 !important; line-height: 1.25 !important; margin-bottom: var(--s3) !important; letter-spacing: -.3px !important; }
 .hint-chips, #hint-chips, .hint { display: none !important; }
 .search-tip { font-size: 11px !important; margin-bottom: var(--s2) !important; }
-.sum-card   { padding: var(--s3) var(--s4) !important; border-radius: var(--r3) !important; margin-top: var(--s2) !important; }
+.sum-card { padding: var(--s3) var(--s4) !important; border-radius: var(--r3) !important; margin-top: var(--s2) !important; }
 .sum-header { margin-bottom: var(--s3) !important; }
-.sum-title  { font-size: 12px !important; }
+.sum-title { font-size: 12px !important; }
 .sum-streak { font-size: 11px !important; padding: 3px 8px !important; }
-.sum-nums   { gap: var(--s1) !important; margin-bottom: var(--s3) !important; }
-.sum-nb     { padding: var(--s2) var(--s1) !important; border-radius: var(--r2) !important; }
-.sum-n      { font-size: 22px !important; }
-.sum-l      { font-size: 9px !important; }
-.sum-dots   { margin-bottom: var(--s3) !important; }
-.sd-c       { width: 6px !important; height: 6px !important; }
-.sum-acts   { gap: var(--s1) !important; }
+.sum-nums { gap: var(--s1) !important; margin-bottom: var(--s3) !important; }
+.sum-nb { padding: var(--s2) var(--s1) !important; border-radius: var(--r2) !important; }
+.sum-n { font-size: 22px !important; }
+.sum-l { font-size: 9px !important; }
+.sum-dots { margin-bottom: var(--s3) !important; }
+.sd-c { width: 6px !important; height: 6px !important; }
+.sum-acts { gap: var(--s1) !important; }
 .sum-review { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
-.sum-all    { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
-.sync-dot   { display: none !important; }
-.topbar     { padding: 10px var(--s5) !important; }
-.logo-name  { font-size: 16px !important; }
-.logo-mark  { width: 24px !important; height: 24px !important; border-radius: 7px !important; }
-.nav-item   { padding: 8px 4px 6px !important; gap: 2px !important; }
-.nav-label  { font-size: 10px !important; font-weight: 500 !important; display: block !important; }
+.sum-all { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
+.sync-dot { display: none !important; }
+.topbar { padding: 10px var(--s5) !important; }
+.logo-name { font-size: 16px !important; }
+.logo-mark { width: 24px !important; height: 24px !important; border-radius: 7px !important; }
+.nav-item { padding: 8px 4px 6px !important; gap: 2px !important; }
+.nav-label { font-size: 10px !important; font-weight: 500 !important; display: block !important; }
 .nav-item svg { width: 19px !important; height: 19px !important; }
-html, body  { overflow-x: hidden !important; }
-.app        { overflow-x: hidden !important; min-height: var(--tg-viewport-stable-height, 100dvh) !important; }
-.res        { overflow-x: hidden !important; width: 100% !important; }
+html, body { overflow-x: hidden !important; }
+.app { overflow-x: hidden !important; min-height: var(--tg-viewport-stable-height, 100dvh) !important; }
+.res { overflow-x: hidden !important; width: 100% !important; }
 .res-word-block { padding: var(--s4) var(--s4) var(--s3) !important; overflow-x: hidden !important; }
 .res-footer { padding: var(--s3) var(--s4) !important; }
-.pane       { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
-#pane-home  { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
+.pane { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
+#pane-home { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
 .low-perf *, .low-perf *::before, .low-perf *::after { animation: none !important; transition: none !important; }
 
 </style>
@@ -1929,7 +1926,7 @@ html, body  { overflow-x: hidden !important; }
       <div class="ws-empty-icon">🇩🇪</div>
       <div class="ws-empty-title">اولین لغتت رو سرچ کن</div>
       <div class="ws-empty-sub">یه لغت آلمانی بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن</div>
-      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus();document.getElementById('s-inp').scrollIntoView({behavior:'smooth'})">شروع کن ←</button>
+      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus();window.scrollTo({top:0,behavior:'smooth'})">شروع کن ←</button>
     </div>
 
     <div class="sum-card" id="sum-card">
@@ -2673,9 +2670,17 @@ function updateEmptyState() {
   var empty = document.getElementById('ws-empty');
   var card  = document.getElementById('sum-card');
   if (!empty) return;
-  var has = window.words && window.words.length > 0;
-  empty.classList.toggle('show', !has);
-  if (card && has) card.classList.add('show');
+  var hasWords = window.words && window.words.length > 0;
+  if (hasWords) {
+    /* یه بار که لغت داشت، دیگه empty state نشون نده */
+    empty.classList.remove('show');
+    empty.style.display = 'none';
+    if (card) card.classList.add('show');
+  } else {
+    /* هنوز لغتی نداره — empty نشون بده */
+    empty.classList.add('show');
+    if (card) card.classList.remove('show');
+  }
 }
 
 async function tgAutoLogin(u){
@@ -2685,14 +2690,7 @@ async function tgAutoLogin(u){
     var r=await sb.auth.signInWithPassword({email,password:pass});
     if(r.error)r=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
     if(r.error)throw r.error;
-    if(r.data?.user){
-      setUserUI(r.data.user);hideGate();
-      var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
-      var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
-      await dbLoad();await loadProfile();setTimeout(checkReminder,2500);
-      window.tgApp?.haptic('success');
-      showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
-    }else showGate();
+    if(r.data?.user){setUserUI(r.data.user);hideGate();var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();await dbLoad();await loadProfile();setTimeout(checkReminder,2500);window.tgApp?.haptic('success');showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');}else showGate();
   }catch(e){console.error('[TG]',e.message);showGate();}
 }
 
