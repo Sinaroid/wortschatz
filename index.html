@@ -831,6 +831,24 @@ body.offline .topbar{top:36px}
   0%{transform:translateX(-100%) rotate(45deg)}
   100%{transform:translateX(100%) rotate(45deg)}
 }
+/* ── Streak System ── */
+@keyframes streakPop{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.streak-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:999;padding:0}
+.streak-modal.open{display:flex}
+.streak-box{background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;animation:up .3s var(--spring)}
+.streak-icon{font-size:56px;text-align:center;margin-bottom:12px;animation:streakPop .4s var(--spring)}
+.streak-title{font-size:22px;font-weight:700;color:var(--ink);text-align:center;font-family:var(--sans);margin-bottom:6px}
+.streak-sub{font-size:14px;color:var(--ink2);text-align:center;line-height:1.6;margin-bottom:20px}
+.streak-level-badge{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bg2);border-radius:12px;padding:10px 16px;margin-bottom:16px}
+.streak-freeze-bar{display:flex;gap:6px;justify-content:center;margin-bottom:20px}
+.streak-freeze-dot{width:32px;height:32px;border-radius:50%;background:var(--abl);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px}
+.streak-freeze-dot.used{background:var(--bg3);border-color:var(--bg3);opacity:.4}
+.streak-cta{width:100%;padding:14px;border-radius:var(--r2);background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.streak-skip{width:100%;padding:10px;border-radius:var(--r2);background:transparent;color:var(--ink3);border:none;font-family:var(--sans);font-size:13px;cursor:pointer}
+.milestone-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:999;padding:24px}
+.milestone-modal.open{display:flex}
+.milestone-box{background:var(--card);border-radius:24px;padding:32px 24px;width:100%;max-width:360px;text-align:center;animation:streakPop .4s var(--spring)}
 /* ─── DRAWER REDESIGN v2 ─── */
 
 /* Hero profile block */
@@ -2203,6 +2221,7 @@ async function loadProfile(){
   }catch(e){console.error('loadProfile:',e);}
   updateFreeBanner();
   updateDrawerPlan();
+  setTimeout(checkAndShowStreakBreak, 1500);
 }
 
 function canAddMore(){
@@ -2347,14 +2366,22 @@ function updateDrawerStats(){
   const fw = filteredWords();
   const due = fw.filter(w=>new Date(w.next_review||0)<=now).length;
   const learned = fw.filter(w=>w.seen>0&&w.interval>3).length;
-  const rl = JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
-  const ol = JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
+  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
   const all = {}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
   let streak=0; const dd=new Date();
   while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
   Q('#drw-stat-total').textContent  = fw.length;
   Q('#drw-stat-learned').textContent= learned;
   Q('#drw-stat-streak').textContent = streak;
+  // level badge
+  const lvl = getStreakLevel(streak);
+  const lvlEl = Q('#drw-stat-streak');
+  if(lvlEl && streak > 0){
+    lvlEl.innerHTML = streak + ' <span style="font-size:11px">' + lvl.icon + '</span>';
+    const lbl = lvlEl.nextElementSibling;
+    if(lbl) lbl.innerHTML = '🔥 streak · <span style="font-size:10px;color:' + lvl.color + '">' + lvl.name + '</span>';
+  }
   Q('#drw-stat-due').textContent    = due;
 }
 
@@ -2843,11 +2870,11 @@ function updateStats(){
   if(dueEl) dueEl.textContent=due.length;
   if(dueWrap) dueWrap.classList.toggle('warn', due.length>0);
   // streak
-  const rl=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
   const all={};Object.keys(rl).forEach(k=>all[k]=1);Object.keys(ol).forEach(k=>all[k]=1);
   const today=new Date().toDateString();
-  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog_'+uid(),JSON.stringify(ol));}
+  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
   let s=0;const dd=new Date();
   while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
   Q('#sn-streak').textContent=s;
@@ -2868,13 +2895,133 @@ function updateStats(){
     lbl.textContent=due.length>0?`مرور ${smartDeck.length} کارت`:`سشن ${smartDeck.length} کارتی`;
   }
 }
+// ══════════════════════════════
+// STREAK SYSTEM
+// ══════════════════════════════
+
+const STREAK_LEVELS = [
+  {min:1,  max:6,  icon:'🌱', name:'Anfänger',  color:'#16a34a'},
+  {min:7,  max:13, icon:'📚', name:'Lerner',    color:'#1a3af2'},
+  {min:14, max:29, icon:'⚡', name:'Fleißig',   color:'#7c3aed'},
+  {min:30, max:59, icon:'🏆', name:'Meister',   color:'#d97706'},
+  {min:60, max:89, icon:'💎', name:'Experte',   color:'#0891b2'},
+  {min:90, max:999,icon:'👑', name:'Legende',   color:'#dc2626'},
+];
+
+const MILESTONES = [7, 14, 30, 60, 90, 180, 365];
+
+function getStreakLevel(streak){
+  return STREAK_LEVELS.find(l => streak >= l.min && streak <= l.max) || STREAK_LEVELS[0];
+}
+
+function calcStreak(){
+  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all = {}; 
+  Object.keys(rl).forEach(k=>all[k]=1);
+  Object.keys(ol).forEach(k=>all[k]=1);
+  let s = 0; const dd = new Date();
+  while(all[dd.toDateString()] && s < 365){ s++; dd.setDate(dd.getDate()-1); }
+  return s;
+}
+
+function getStreakFreezes(){
+  const data = JSON.parse(localStorage.getItem('ws_freezes')||'{"count":0,"lastReset":""}');
+  const week = new Date(); week.setDate(week.getDate() - week.getDay());
+  const weekStr = week.toDateString();
+  if(data.lastReset !== weekStr){ data.count = 0; data.lastReset = weekStr; localStorage.setItem('ws_freezes', JSON.stringify(data)); }
+  return data;
+}
+
+function useStreakFreeze(){
+  const maxFreeze = userPlan === 'pro' ? 3 : 1;
+  const data = getStreakFreezes();
+  if(data.count >= maxFreeze) return false;
+  data.count++;
+  localStorage.setItem('ws_freezes', JSON.stringify(data));
+  // log freeze day
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  ol[yesterday.toDateString()] = 1;
+  localStorage.setItem('ws_olog', JSON.stringify(ol));
+  return true;
+}
+
+function checkStreakBreak(){
+  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all = {}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
+  const today = new Date().toDateString();
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yStr = yesterday.toDateString();
+  // اگه دیروز یه چیزی داشت ولی امروز هیچی نداشت → شاید freeze
+  if(!all[today] && all[yStr]){
+    // چک کن آیا قبل از امروز streak داشت
+    let prevStreak = 0; const dd = new Date(yesterday);
+    while(all[dd.toDateString()] && prevStreak < 365){ prevStreak++; dd.setDate(dd.getDate()-1); }
+    return prevStreak;
+  }
+  return 0;
+}
+
+function checkAndShowStreakBreak(){
+  const shown = localStorage.getItem('ws_streak_break_shown');
+  const today = new Date().toDateString();
+  if(shown === today) return;
+  const prevStreak = checkStreakBreak();
+  if(prevStreak >= 3){
+    localStorage.setItem('ws_streak_break_shown', today);
+    const freezes = getStreakFreezes();
+    const maxFreeze = userPlan === 'pro' ? 3 : 1;
+    const canFreeze = freezes.count < maxFreeze;
+    const modal = Q('#streak-break-modal');
+    const title = Q('#sbm-title');
+    const sub = Q('#sbm-sub');
+    if(!modal) return;
+    title.textContent = 'streak ' + prevStreak + ' روزت شکست 💔';
+    if(canFreeze && userPlan === 'free'){
+      sub.innerHTML = 'یه Freeze مونده — میتونی نجاتش بدی<br><small style="color:var(--ink3)">Pro داری ۳ تا Freeze</small>';
+      modal.querySelector('.streak-cta').textContent = '🧊 Freeze استفاده کن';
+      modal.querySelector('.streak-cta').onclick = function(){
+        if(useStreakFreeze()){ showToast('streak نجات پیدا کرد! 🧊'); closeStreakBreak(); updateSummary(); }
+      };
+    } else {
+      sub.innerHTML = 'streak ' + prevStreak + ' روزت از دست رفت<br><small style="color:var(--ink3)">Pro داشتی میتونستی با Freeze نجاتش بدی</small>';
+      modal.querySelector('.streak-cta').textContent = '✨ Pro بگیر — streak رو برگردون';
+      modal.querySelector('.streak-cta').onclick = streakBreakUpgrade;
+    }
+    setTimeout(() => modal.classList.add('open'), 800);
+  }
+}
+
+function checkMilestone(){
+  const streak = calcStreak();
+  const shown = JSON.parse(localStorage.getItem('ws_milestones_shown')||'[]');
+  const hit = MILESTONES.find(m => streak === m && !shown.includes(m));
+  if(!hit) return;
+  shown.push(hit); localStorage.setItem('ws_milestones_shown', JSON.stringify(shown));
+  const level = getStreakLevel(streak);
+  const modal = Q('#milestone-modal');
+  if(!modal) return;
+  Q('#mm-icon').textContent = level.icon;
+  Q('#mm-title').textContent = hit + ' روز متوالی! ' + level.icon;
+  const msgs = {7:'یه هفته تموم — خیلی‌ها همین‌جا quit میکنن',14:'دو هفته — الان عادت شده',30:'یه ماه — جزء ۵٪ بالایی هستی',60:'دو ماه — Experte واقعی',90:'۹۰ روز — افسانه شدی 👑',180:'۶ ماه — باورنکردنیه',365:'یه سال! — تو واقعاً استثنایی هستی'};
+  Q('#mm-sub').textContent = (msgs[hit] || 'عالی بود') + ' — ' + level.name;
+  setTimeout(() => modal.classList.add('open'), 500);
+}
+
+function closeStreakBreak(){ Q('#streak-break-modal')?.classList.remove('open'); }
+function closeMilestone(){ Q('#milestone-modal')?.classList.remove('open'); }
+function streakBreakUpgrade(){ closeStreakBreak(); window.open('https://t.me/cinuxx','_blank'); }
+function milestoneUpgrade(){ closeMilestone(); window.open('https://t.me/cinuxx','_blank'); }
+
 function logReview(){
   const today=new Date().toDateString();
-  const log=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
   log[today]=(log[today]||0)+1;
   const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
   const t={};keys.forEach(k=>t[k]=log[k]);
-  localStorage.setItem('ws_rlog_'+uid(),JSON.stringify(t));
+  localStorage.setItem('ws_rlog',JSON.stringify(t));
 }
 
 /* ══════════════════════════════
@@ -2899,15 +3046,6 @@ async function doSearch(){
     if(detectMode(q)==='word') await searchWord(q);
     else await searchPhrase(q);
     setMsg('','');Q('#s-inp').value='';
-    // لاگ کردن سرچ
-    if(currentUser && navigator.onLine){
-      sb.from('search_logs').insert({
-        user_id:currentUser.id,
-        query:q,
-        lang:targetLang,
-        result_type:detectMode(q)
-      }).then(()=>{}).catch(()=>{});
-    }
   }catch(e){
     const {fa,type} = classifyError(e);
     if(type==='limit'){
@@ -2941,26 +3079,6 @@ function setMsg(t,cls){
 }
 
 async function searchWord(q){
-  // normalize umlauts — همه جای کلمه
-  if(targetLang==='de'){
-    // لیست کلمات رایج که ue/oe/ae واقعاً umlaut هستن
-    const umlautMap = {
-      'ae':'ä','oe':'ö','ue':'ü',
-      'Ae':'Ä','Oe':'Ö','Ue':'Ü'
-    };
-    // replace همه جا — ساده‌ترین روش
-    q = q
-      .replace(/ue/gi, (m,o,s) => {
-        // استثنا: que (query)، fuel، blue — اگه قبلش q یا b داشت نگه‌دار
-        const prev = s[o-1]||'';
-        if('qb'.includes(prev.toLowerCase())) return m;
-        return m[0]==='U'?'Ü':'ü';
-      })
-      .replace(/oe/gi, m => m[0]==='O'?'Ö':'ö')
-      .replace(/ae/gi, m => m[0]==='A'?'Ä':'ä')
-      .replace(/ss/g,'ß');
-  }
-
   const ck='wc_'+targetLang+'_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
@@ -2981,18 +3099,12 @@ async function searchWord(q){
    +'- synonyms: حداکثر ۲ تا\n'
    +'- examples: دقیقاً ۱ جمله\n'
    +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
-   +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
+   +'فقط JSON.';
 
-  // retry تا ۲ بار اگه parse fail شد
-  let curWord2=null;
-  for(let attempt=0; attempt<2; attempt++){
-    const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
-    const jsonMatch=raw.match(/\{[\s\S]*\}/);
-    if(!jsonMatch) continue;
-    try{ curWord2=JSON.parse(jsonMatch[0]); break; }catch(e){ continue; }
-  }
-  if(!curWord2) throw new Error('parse error');
-  curWord=curWord2;
+  const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
+  const jsonMatch=raw.match(/\{[\s\S]*\}/);
+  if(!jsonMatch) throw new Error('parse error');
+  try{ curWord=JSON.parse(jsonMatch[0]); } catch(e){ throw new Error('parse error'); }
   try{
     const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
     if(keys.length>100)localStorage.removeItem(keys[0]);
@@ -3462,7 +3574,7 @@ async function sesRate(good){
     const next = new Date(); next.setDate(next.getDate()+o.interval);
     o.next_review = next.toISOString(); o.reviewed_at = new Date().toISOString();
     o.score += good ? 1 : -1; o.seen++;
-    logReview(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
+    logReview(); checkMilestone(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
   }
 
   if(!good && !sesRepeat.has(w.de)){
@@ -3496,8 +3608,8 @@ function sesAgain(){
 
 function checkStreakReward(){
   if(userPlan==='pro'||userPlan==='beta') return; // نامحدود نیاز به جایزه نداره
-  const rl=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
   const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
   let streak=0; const dd=new Date();
   while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
@@ -3579,7 +3691,7 @@ function sesSummary(){
     Q('#end-next').textContent = 'سشن بعدی بر اساس SM-2 زمان‌بندی میشه';
   }
 
-  logReview(); updateStats();
+  logReview(); checkMilestone(); updateStats();
 
   // Streak reward check
   checkStreakReward();
@@ -3969,7 +4081,7 @@ function renderPackGrid(){
   ];
 
   const inFlashcard = new Set(words.map(w=>w.de));
-  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
+  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
 
   var packHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
   packList.forEach(function(pack){
@@ -4352,17 +4464,15 @@ let plFlipped = false;
 let plFlashCount = 0;
 let plSaveCount = 0;
 let plSkipCount = 0;
-let plSavedWords = [];
+let plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words')||'[]');
 
 function getSeenPackWords(packId){
-  const key='ws_seen_'+packId+'_'+uid();
-  return new Set(JSON.parse(localStorage.getItem(key)||'[]'));
+  return new Set(JSON.parse(localStorage.getItem('ws_seen_'+packId)||'[]'));
 }
 function markPackWordSeen(packId, word){
-  const key='ws_seen_'+packId+'_'+uid();
-  const seen=getSeenPackWords(packId);
+  const seen = getSeenPackWords(packId);
   seen.add(word);
-  localStorage.setItem(key, JSON.stringify([...seen]));
+  localStorage.setItem('ws_seen_'+packId, JSON.stringify([...seen]));
 }
 
 function openPack(id){
@@ -4381,7 +4491,7 @@ function openPack(id){
   plPack = pack;
   plPackId = id;
   const inFlash = new Set(words.map(w=>w.de));
-  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
+  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
   const inSeen  = getSeenPackWords(id);
   plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
 
@@ -4548,7 +4658,7 @@ function packLearnSave(){
   }
 
   plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
-  localStorage.setItem('ws_saved_words_'+uid(), JSON.stringify(plSavedWords));
+  localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
   plSaveCount++;
   Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
 
@@ -4974,6 +5084,32 @@ document.addEventListener('click', function(e){
   }
 });
 </script>
+<!-- Streak Break Modal -->
+<div class="streak-modal" id="streak-break-modal">
+  <div class="streak-box">
+    <div class="streak-icon">💔</div>
+    <div class="streak-title" id="sbm-title">streak شکست</div>
+    <div class="streak-sub" id="sbm-sub">streak از دست رفت<br><small style="color:var(--ink3);font-size:12px">Pro داشتی میتونستی بازیابیش کنی</small></div>
+    <button class="streak-cta" onclick="streakBreakUpgrade()">✨ Pro بگیر — streak رو برگردون</button>
+    <button class="streak-skip" onclick="closeStreakBreak()">بیخیال، از صفر شروع میکنم</button>
+  </div>
+</div>
+
+<!-- Milestone Modal -->
+<div class="milestone-modal" id="milestone-modal">
+  <div class="milestone-box">
+    <div style="font-size:60px;margin-bottom:12px" id="mm-icon">🏆</div>
+    <div style="font-size:22px;font-weight:700;color:var(--ink);font-family:var(--sans);margin-bottom:6px" id="mm-title">عالی!</div>
+    <div style="font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:20px" id="mm-sub">به یه milestone مهم رسیدی</div>
+    <div style="background:var(--abl);border-radius:12px;padding:12px;margin-bottom:16px;text-align:right">
+      <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:4px">Pro بگیر — streak رو محافظت کن 🧊</div>
+      <div style="font-size:11px;color:var(--ink3)">۳ تا Freeze + بازیابی streak در صورت شکستن</div>
+    </div>
+    <button class="streak-cta" onclick="milestoneUpgrade()">✨ Pro بگیر</button>
+    <button class="streak-skip" onclick="closeMilestone()">بعداً</button>
+  </div>
+</div>
+
 <script>
 // ── Global error safety net ──────────────────
 window.addEventListener('unhandledrejection', e => {
