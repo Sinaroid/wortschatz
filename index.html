@@ -1848,13 +1848,46 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Stats card -->
     <div class="sum-card" id="sum-card">
-      <div class="sum-header">
-        <div class="sum-title">پیشرفت تو</div>
-        <div class="sum-streak">
-          🔥 <span id="sn-streak">0</span> روز
+
+      <!-- Streak Hero -->
+      <div id="streak-hero" style="text-align:center;padding:16px 0 12px;border-bottom:1px solid var(--bg3);margin-bottom:14px">
+        <div id="streak-empty-state" style="display:none">
+          <div style="font-size:36px;margin-bottom:8px">🌱</div>
+          <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px">امروز شروع کن</div>
+          <div style="font-size:12px;color:var(--ink3);line-height:1.6">اولین مرور رو انجام بده<br>تا streak ات شروع بشه</div>
+        </div>
+        <div id="streak-active-state">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">
+            <span style="font-size:36px" id="streak-level-icon">🔥</span>
+            <span style="font-size:42px;font-weight:700;color:var(--ink);line-height:1" id="sn-streak">0</span>
+          </div>
+          <div style="font-size:12px;font-weight:600;margin-bottom:2px" id="streak-level-name" style="color:var(--accent)">روز متوالی</div>
+          <div style="font-size:11px;color:var(--ink3)" id="streak-level-label">Anfänger 🌱</div>
+          <!-- next milestone -->
+          <div id="streak-next-milestone" style="margin-top:10px;background:var(--bg2);border-radius:8px;padding:6px 12px;display:inline-flex;align-items:center;gap:6px">
+            <div style="font-size:10px;color:var(--ink3)" id="streak-next-text">۷ روز دیگه به Lerner میرسی</div>
+            <div style="font-size:10px;font-weight:600;color:var(--accent)" id="streak-next-days"></div>
+          </div>
         </div>
       </div>
-      <div class="sum-nums">
+
+      <!-- 7 day dots -->
+      <div class="sum-dots" id="sum-dots" style="margin-bottom:14px"></div>
+
+      <!-- Freeze status -->
+      <div id="freeze-status" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:10px;padding:8px 12px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:16px">🧊</span>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--ink)">Streak Freeze</div>
+            <div style="font-size:10px;color:var(--ink3)" id="freeze-desc">محافظت در برابر شکستن streak</div>
+          </div>
+        </div>
+        <div id="freeze-dots" style="display:flex;gap:4px"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="sum-nums" style="margin-bottom:14px">
         <div class="sum-nb">
           <div class="sum-n" id="sn-total">0</div>
           <div class="sum-l">کل لغت</div>
@@ -1869,7 +1902,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
           <div class="sum-l">برای مرور</div>
         </div>
       </div>
-      <div class="sum-dots" id="sum-dots"></div>
+
       <div class="sum-acts">
         <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">شروع مرور</span> →</button>
         <button class="sum-all" onclick="sesOpen()">همه لغات</button>
@@ -2877,8 +2910,62 @@ function updateStats(){
   if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
   let s=0;const dd=new Date();
   while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
-  Q('#sn-streak').textContent=s;
-  // dots
+
+  // ── Streak Hub UI ──
+  const emptyEl = Q('#streak-empty-state');
+  const activeEl = Q('#streak-active-state');
+  if(s === 0){
+    if(emptyEl) emptyEl.style.display='block';
+    if(activeEl) activeEl.style.display='none';
+  } else {
+    if(emptyEl) emptyEl.style.display='none';
+    if(activeEl) activeEl.style.display='block';
+    // number
+    const snEl = Q('#sn-streak');
+    if(snEl) snEl.textContent = s;
+    // level
+    const lvl = getStreakLevel(s);
+    const iconEl = Q('#streak-level-icon');
+    const nameEl = Q('#streak-level-name');
+    const labelEl = Q('#streak-level-label');
+    if(iconEl) iconEl.textContent = lvl.icon;
+    if(nameEl){ nameEl.textContent = 'روز متوالی'; nameEl.style.color = lvl.color; }
+    if(labelEl) labelEl.textContent = lvl.name;
+    // next milestone
+    const nextM = MILESTONES.find(m => m > s);
+    const nextEl = Q('#streak-next-text');
+    if(nextEl && nextM){
+      const diff = nextM - s;
+      const nextLvl = getStreakLevel(nextM);
+      nextEl.textContent = diff + ' روز دیگه به ' + nextLvl.name + ' ' + nextLvl.icon + ' میرسی';
+    } else if(nextEl){
+      nextEl.textContent = 'به بالاترین سطح رسیدی 👑';
+    }
+  }
+
+  // ── Freeze dots ──
+  const freezeData = getStreakFreezes();
+  const maxFreeze = userPlan === 'pro' ? 3 : 1;
+  const freezeDotsEl = Q('#freeze-dots');
+  const freezeDesc = Q('#freeze-desc');
+  if(freezeDotsEl){
+    let fdHtml = '';
+    for(let i=0;i<maxFreeze;i++){
+      const used = i < freezeData.count;
+      fdHtml += '<div style="width:24px;height:24px;border-radius:50%;background:'+(used?'var(--bg3)':'var(--abl)')+';border:2px solid '+(used?'var(--bg3)':'var(--accent)')+';display:flex;align-items:center;justify-content:center;font-size:11px;opacity:'+(used?'.3':'1')+'">🧊</div>';
+    }
+    freezeDotsEl.innerHTML = fdHtml;
+  }
+  if(freezeDesc){
+    const left = maxFreeze - freezeData.count;
+    if(userPlan !== 'pro'){
+      freezeDesc.innerHTML = left > 0 ? 'این هفته ۱ Freeze داری' : 'این هفته تموم شد · <span onclick="window.open(\'https://t.me/cinuxx\',\'_blank\')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Pro: ۳ تا</span>';
+    } else {
+      freezeDesc.textContent = left + ' تا Freeze مونده این هفته';
+    }
+  }
+
+  // ── 7 day dots ──
   const dn=['ی','د','س','چ','پ','ج','ش'];
   const dotsEl=Q('#sum-dots');
   let html='';
@@ -2888,7 +2975,8 @@ function updateStats(){
     html+=`<div class="sd"><div class="sd-c ${isT?'today':done?'done':''}"></div><div class="sd-l${isT?' t':''}">${isT?'▲':dn[day.getDay()]}</div></div>`;
   }
   dotsEl.innerHTML=html;
-  // review button
+
+  // ── review button ──
   const lbl=Q('#review-lbl');
   if(lbl){
     const smartDeck=buildSmartDeck();
