@@ -1338,28 +1338,56 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-/* ════════════════════════════════════════
-   TELEGRAM MINI APP — DESIGN GUIDELINES
-   رنگ‌های خودمان — فقط header TG sync میشه
-════════════════════════════════════════ */
-
-/* 1. viewport-stable-height */
-.app {
-  min-height: var(--tg-viewport-stable-height, 100dvh) !important;
-  overflow-x: hidden !important;
+/* ════════════════════
+   EMPTY STATE
+════════════════════ */
+.ws-empty {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--s8) var(--s5);
+  gap: var(--s3);
 }
-
-/* 2. bottom nav safe area */
-.bottom-nav {
-  padding-bottom: max(env(safe-area-inset-bottom), 0px) !important;
+.ws-empty.show { display: flex; }
+.ws-empty-icon {
+  font-size: 40px;
+  margin-bottom: var(--s2);
 }
+.ws-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--sans);
+}
+.ws-empty-sub {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.6;
+  max-width: 260px;
+}
+.ws-empty-btn {
+  margin-top: var(--s2);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r2);
+  padding: 11px var(--s6);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.ws-empty-btn:active { opacity: .75; }
 
-/* 3. UI Refresh */
+/* ── UI REFRESH ── */
 .hero    { padding: var(--s2) 0 var(--s3) !important; }
 .hero-eye { display: none !important; }
 .hero p   { display: none !important; }
 .hero h1  {
-  font-size: 26px !important;
+  font-size: 24px !important;
   font-weight: 700 !important;
   line-height: 1.25 !important;
   margin-bottom: var(--s3) !important;
@@ -1388,19 +1416,18 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .nav-label  { font-size: 10px !important; font-weight: 500 !important; display: block !important; }
 .nav-item svg { width: 19px !important; height: 19px !important; }
 
-/* 4. overflow fix */
+/* overflow fix */
 html, body  { overflow-x: hidden !important; }
+.app        { overflow-x: hidden !important; }
 .res        { overflow-x: hidden !important; width: 100% !important; }
 .res-word-block { padding: var(--s4) var(--s4) var(--s3) !important; overflow-x: hidden !important; }
 .res-footer { padding: var(--s3) var(--s4) !important; }
 .pane       { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
 #pane-home  { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
 
-/* 5. Android low-perf */
-.low-perf *, .low-perf *::before, .low-perf *::after {
-  animation: none !important;
-  transition: none !important;
-}
+/* TG */
+.app { min-height: var(--tg-viewport-stable-height, 100dvh) !important; }
+.low-perf *, .low-perf *::before, .low-perf *::after { animation: none !important; transition: none !important; }
 
 </style>
 </head>
@@ -1409,14 +1436,8 @@ html, body  { overflow-x: hidden !important; }
 (function(){
   var tg = window.Telegram && window.Telegram.WebApp;
   if (!tg) { window.tgApp = null; return; }
-
-  tg.ready();
-  tg.expand();
-
-  /* dark/light از تلگرام */
+  tg.ready(); tg.expand();
   if (tg.colorScheme === 'dark') document.body.classList.add('dark');
-
-  /* رنگ header تلگرام = رنگ app ما */
   function syncHeader() {
     var dark = document.body.classList.contains('dark');
     try { tg.setHeaderColor(dark ? '#0d0d0c' : '#f5f4f0'); } catch(e){}
@@ -1424,76 +1445,25 @@ html, body  { overflow-x: hidden !important; }
     try { tg.setBottomBarColor(dark ? '#161614' : '#ffffff'); } catch(e){}
   }
   syncHeader();
-  tg.onEvent('themeChanged', function() {
-    if (tg.colorScheme === 'dark') document.body.classList.add('dark');
-    else document.body.classList.remove('dark');
-    syncHeader();
-  });
-
-  /* safe area */
-  function applySafeArea() {
-    var sa = tg.safeAreaInset || {};
-    var top = sa.top || 0;
-    var bot = sa.bottom || 0;
-    var tb = document.getElementById('topbar');
-    if (tb) tb.style.paddingTop = (top + 10) + 'px';
-    var bn = document.querySelector('.bottom-nav');
-    if (bn) bn.style.paddingBottom = bot + 'px';
-  }
-  applySafeArea();
-  tg.onEvent('safeAreaChanged', applySafeArea);
-  tg.onEvent('contentSafeAreaChanged', applySafeArea);
-
-  /* disable vertical swipes */
+  tg.onEvent('themeChanged', function(){ if(tg.colorScheme==='dark') document.body.classList.add('dark'); else document.body.classList.remove('dark'); syncHeader(); });
+  function applySafeArea(){ var sa=tg.safeAreaInset||{}; var tb=document.getElementById('topbar'); if(tb) tb.style.paddingTop=((sa.top||0)+10)+'px'; var bn=document.querySelector('.bottom-nav'); if(bn) bn.style.paddingBottom=(sa.bottom||0)+'px'; }
+  applySafeArea(); tg.onEvent('safeAreaChanged',applySafeArea); tg.onEvent('contentSafeAreaChanged',applySafeArea);
   try { tg.disableVerticalSwipes(); } catch(e){}
-
-  /* Android low-perf */
-  var pm = navigator.userAgent.match(/TelegramPerformanceClass\/(\d+)/);
-  if (pm && parseInt(pm[1]) < 2) document.body.classList.add('low-perf');
-
-  /* Back Button */
-  tg.BackButton.onClick(function() {
-    var ses = document.getElementById('session-overlay');
-    var drw = document.getElementById('drawer');
-    var res = document.getElementById('res');
-    var ph  = document.getElementById('ph-res');
-    if (ses && ses.classList.contains('open')) { try{sesEnd();}catch(e){ses.classList.remove('open');} tg.BackButton.hide(); return; }
-    if (drw && drw.classList.contains('open')) { try{drawerClose();}catch(e){} tg.BackButton.hide(); return; }
-    if (res && res.classList.contains('show'))  { try{clearResult();}catch(e){res.classList.remove('show');} tg.BackButton.hide(); return; }
-    if (ph  && ph.classList.contains('show'))   { ph.classList.remove('show'); tg.BackButton.hide(); return; }
+  var pm=navigator.userAgent.match(/TelegramPerformanceClass\/(\d+)/);
+  if(pm&&parseInt(pm[1])<2) document.body.classList.add('low-perf');
+  tg.BackButton.onClick(function(){
+    var ses=document.getElementById('session-overlay'),drw=document.getElementById('drawer'),res=document.getElementById('res'),ph=document.getElementById('ph-res');
+    if(ses&&ses.classList.contains('open')){try{sesEnd();}catch(e){ses.classList.remove('open');}tg.BackButton.hide();return;}
+    if(drw&&drw.classList.contains('open')){try{drawerClose();}catch(e){}tg.BackButton.hide();return;}
+    if(res&&res.classList.contains('show')){try{clearResult();}catch(e){res.classList.remove('show');}tg.BackButton.hide();return;}
+    if(ph&&ph.classList.contains('show')){ph.classList.remove('show');tg.BackButton.hide();return;}
     tg.BackButton.hide();
   });
-
-  /* Bottom Button */
-  var BB = tg.BottomButton || tg.MainButton;
-  if (BB) {
-    BB.setParams({ text:'افزودن به فلش‌کارت', color:'#1a3af2', text_color:'#ffffff', is_active:true, is_visible:false });
-    BB.onClick(function() {
-      tg.HapticFeedback.impactOccurred('medium');
-      var ph = document.getElementById('ph-res');
-      if (ph && ph.classList.contains('show')) { try{addPhrase();}catch(e){} }
-      else { try{addWord();}catch(e){} }
-      BB.hide();
-    });
-  }
-
-  /* Haptic */
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('button,.nav-item,.s-btn')) tg.HapticFeedback.impactOccurred('light');
-  }, {passive:true});
-
-  /* expose */
-  window.tgApp = {
-    tg: tg, isTg: true,
-    user: tg.initDataUnsafe && tg.initDataUnsafe.user,
-    showBack: function(){ tg.BackButton.show(); },
-    hideBack: function(){ tg.BackButton.hide(); },
-    showAdd: function(t){ if(BB){BB.setText(t||'افزودن به فلش‌کارت');BB.show();} },
-    hideAdd: function(){ if(BB) BB.hide(); },
-    haptic: function(t){ try{ if(['success','error','warning'].includes(t)) tg.HapticFeedback.notificationOccurred(t); else tg.HapticFeedback.impactOccurred(t||'medium'); }catch(e){} },
-    setTheme: syncHeader,
-  };
-  console.log('[TG]', tg.version, tg.platform, tg.colorScheme);
+  var BB=tg.BottomButton||tg.MainButton;
+  if(BB){ BB.setParams({text:'افزودن به فلش‌کارت',color:'#1a3af2',text_color:'#ffffff',is_active:true,is_visible:false}); BB.onClick(function(){ tg.HapticFeedback.impactOccurred('medium'); var ph=document.getElementById('ph-res'); if(ph&&ph.classList.contains('show')){try{addPhrase();}catch(e){}}else{try{addWord();}catch(e){}} BB.hide(); }); }
+  document.addEventListener('click',function(e){ if(e.target.closest('button,.nav-item,.s-btn')) tg.HapticFeedback.impactOccurred('light'); },{passive:true});
+  window.tgApp={tg:tg,isTg:true,user:tg.initDataUnsafe&&tg.initDataUnsafe.user,showBack:function(){tg.BackButton.show();},hideBack:function(){tg.BackButton.hide();},showAdd:function(t){if(BB){BB.setText(t||'افزودن به فلش‌کارت');BB.show();}},hideAdd:function(){if(BB)BB.hide();},haptic:function(t){try{if(['success','error','warning'].includes(t))tg.HapticFeedback.notificationOccurred(t);else tg.HapticFeedback.impactOccurred(t||'medium');}catch(e){}},setTheme:syncHeader};
+  console.log('[TG]',tg.version,tg.platform,tg.colorScheme);
 })();
 </script>
 
@@ -1859,7 +1829,7 @@ html, body  { overflow-x: hidden !important; }
   <div class="pane on" id="pane-home">
     <div class="hero">
       <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">یاد بگیر،<br><em>نه حفظ کن</em></h1>
+      <h1 id="hero-title">لغت آلمانی یاد بگیر<br><em>با هوش مصنوعی</em></h1>
       <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
     </div>
 
@@ -1890,7 +1860,7 @@ html, body  { overflow-x: hidden !important; }
     </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
-        placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
+        placeholder="لغت یا اصطلاح بنویس..."
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
       <div class="ac-drop" id="ac-drop"></div>
       <button class="s-btn" id="s-btn" onclick="doSearch()">
@@ -1985,6 +1955,15 @@ html, body  { overflow-x: hidden !important; }
     </div>
 
     <!-- Stats card -->
+    
+    <!-- empty state — وقتی هنوز لغتی نداره -->
+    <div class="ws-empty" id="ws-empty">
+      <div class="ws-empty-icon">🇩🇪</div>
+      <div class="ws-empty-title">اولین لغتت رو اضافه کن</div>
+      <div class="ws-empty-sub">یه لغت آلمانی سرچ کن و به فلش‌کارت‌هات اضافه‌اش کن</div>
+      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()">شروع کن ←</button>
+    </div>
+
     <div class="sum-card" id="sum-card">
       <div class="sum-header">
         <div class="sum-title">پیشرفت تو</div>
@@ -2722,23 +2701,34 @@ function setUserUI(user){
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
-async function tgAutoLogin(u) {
-  var email = 'tg'+u.id+'@wortschatz.app';
-  var pass  = 'ws_tg_'+u.id+'_2025!';
-  var name  = [u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'کاربر';
-  try {
-    var r = await sb.auth.signInWithPassword({email:email,password:pass});
-    if (r.error) r = await sb.auth.signUp({email:email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
-    if (r.error) throw r.error;
-    if (r.data&&r.data.user) {
-      setUserUI(r.data.user); hideGate();
-      var nm=document.getElementById('drw-profile-name'); if(nm) nm.textContent=name;
-      var av=document.getElementById('drw-avatar-big'); if(av) av.textContent=(name[0]||'T').toUpperCase();
-      await dbLoad(); await loadProfile(); setTimeout(checkReminder,2500);
-      if(window.tgApp) window.tgApp.haptic('success');
+/* empty state */
+function updateEmptyState() {
+  var empty = document.getElementById('ws-empty');
+  var sumCard = document.getElementById('sum-card');
+  if (!empty || !sumCard) return;
+  var hasWords = window.words && window.words.length > 0;
+  empty.classList.toggle('show', !hasWords);
+  if (hasWords) {
+    sumCard.classList.add('show');
+  }
+}
+
+async function tgAutoLogin(u){
+  var email='tg'+u.id+'@wortschatz.app',pass='ws_tg_'+u.id+'_2025!';
+  var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'کاربر';
+  try{
+    var r=await sb.auth.signInWithPassword({email:email,password:pass});
+    if(r.error) r=await sb.auth.signUp({email:email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
+    if(r.error)throw r.error;
+    if(r.data&&r.data.user){
+      setUserUI(r.data.user);hideGate();
+      var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
+      var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
+      await dbLoad();await loadProfile();setTimeout(checkReminder,2500);
+      if(window.tgApp)window.tgApp.haptic('success');
       showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
-    } else showGate();
-  } catch(e) { console.error('[TG]',e.message); showGate(); }
+    }else showGate();
+  }catch(e){console.error('[TG]',e.message);showGate();}
 }
 
 async function init(){
@@ -2774,9 +2764,8 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    var _tgu = window.tgApp && window.tgApp.user;
-    if (_tgu && _tgu.id) { await tgAutoLogin(_tgu); }
-    else { showGate(); }
+    var _tgu=window.tgApp&&window.tgApp.user;
+    if(_tgu&&_tgu.id){await tgAutoLogin(_tgu);}else{showGate();}
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
@@ -2953,7 +2942,7 @@ function drawerUpdateLangToggle(){
   if(en){ en.classList.toggle('active', !isDE); }
 }
 
-function toggleDark(){const d=document.body.classList.toggle('dark'); if(window.tgApp) window.tgApp.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
+function toggleDark(){const d=document.body.classList.toggle('dark'); if(window.tgApp)window.tgApp.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
     ?'<circle cx="7" cy="7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
@@ -2986,7 +2975,7 @@ function updateBadges(){
 /* ══════════════════════════════
    STATS / SUMMARY CARD
 ══════════════════════════════ */
-function updateStats(){
+function updateStats(){ updateEmptyState();
   const card=Q('#sum-card');
   const homeEmpty=Q('#home-empty');
   const fw=filteredWords();
