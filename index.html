@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,6 +15,7 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
+
 /* ═══════════════════════════════════
    DESIGN TOKENS
 ═══════════════════════════════════ */
@@ -103,18 +104,19 @@ button,input{font-family:var(--sans)}
 ═══════════════════════════════════ */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px var(--s5);position:sticky;top:0;background:var(--bg);
-  z-index:30;border-bottom:1px solid var(--bg3);
-  transition:background .3s;
+  padding:14px var(--s5);position:sticky;top:0;background:var(--bg);
+  z-index:30;border-bottom:1px solid transparent;
+  transition:border-color .2s,background .3s;
 }
+.topbar.raised{border-color:var(--bg3)}
 body.offline .topbar{top:36px}
-.logo{display:flex;align-items:center;gap:8px;text-decoration:none;user-select:none}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;user-select:none}
 .logo-mark{
-  width:26px;height:26px;background:var(--accent);border-radius:7px;
+  width:28px;height:28px;background:var(--accent);border-radius:8px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.logo-name{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
-.top-r{display:flex;align-items:center;gap:8px}
+.logo-name{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+.top-r{display:flex;align-items:center;gap:6px}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--bg4);transition:all .3s}
 .sync-dot.ok{background:var(--ok)}
 .sync-dot.busy{background:var(--accent);animation:pulse .9s infinite}
@@ -124,15 +126,6 @@ body.offline .topbar{top:36px}
   cursor:pointer;color:var(--ink2);transition:all .18s;flex-shrink:0;
 }
 .btn-ic:hover{background:var(--bg3);color:var(--ink)}
-/* streak chip in topbar */
-.top-streak{
-  display:flex;align-items:center;gap:5px;
-  background:var(--bg2);border:1px solid var(--bg3);border-radius:20px;
-  padding:5px 10px;cursor:pointer;transition:all .18s;
-}
-.top-streak:hover{background:var(--bg3)}
-.top-streak-n{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--accent);line-height:1}
-.top-streak-lbl{font-size:10px;color:var(--ink3)}
 
 /* ═══════════════════════════════════
    BOTTOM NAV
@@ -663,28 +656,6 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    STATS CARD
 ═══════════════════════════════════ */
-@keyframes scFadeIn{from{opacity:0}to{opacity:1}}
-.sc-dots{display:flex;gap:4px}
-.sc-dot{flex:1;height:4px;border-radius:4px;background:var(--bg3)}
-.sc-dot.on{background:var(--accent)}
-.sc-dot.cur{background:var(--accent);box-shadow:0 0 0 2px var(--aglow)}
-.sc-details{display:none;margin-top:var(--s3)}
-.sc-details.open{display:block;animation:scFadeIn .2s var(--ease)}
-.sc-detail-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:30px;padding:3px;margin-bottom:var(--s3)}
-.sc-dt{flex:1;padding:6px 4px;font-size:11px;color:var(--ink3);background:transparent;border:none;border-radius:30px;cursor:pointer;font-family:var(--sans);transition:all .2s}
-.sc-dt.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:var(--sh1)}
-.sc-panel{animation:scFadeIn .2s var(--ease) both}
-.sc-xp-hero{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
-.sc-xp-num{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--accent)}
-.sc-xp-bar-wrap{height:5px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:6px 0 4px}
-.sc-xp-bar{height:100%;background:var(--accent);border-radius:5px;transition:width .6s var(--ease)}
-.sc-xp-sub{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3)}
-.sc-xp-tip{margin-top:var(--s3);background:var(--abl);border-radius:var(--r2);padding:8px 10px;font-size:11px;color:var(--accent)}
-.sc-xp-list{margin-top:var(--s3);display:flex;flex-direction:column;gap:5px}
-.sc-xp-item{display:flex;justify-content:space-between;font-size:11px}
-.sc-xp-item span:first-child{color:var(--ink2)}
-.sc-xp-item span:last-child{color:var(--accent);font-weight:600}
-.sc-freeze-box{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:var(--r2);padding:10px 12px}
 .sum-card{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
   padding:var(--s5);margin-top:var(--s3);margin-bottom:0;box-shadow:var(--sh1);
@@ -1421,129 +1392,187 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
+
+
+/* ═══════════════════════════════════
+   NEW UI — GRADIENT DESIGN SYSTEM
+═══════════════════════════════════ */
+.app{max-width:390px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* BG */
+.grad-bg{position:absolute;inset:0;z-index:0;background:#f2f0ea;transition:background .7s ease}
+.grad-bg.dark{background:#0d0d0c}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;transition:all 1.6s cubic-bezier(.4,0,.2,1)}
+.b1{width:380px;height:380px;top:-120px;right:-90px;background:rgba(160,140,255,.34)}
+.b2{width:300px;height:300px;top:50px;left:-110px;background:rgba(255,160,140,.28)}
+.b3{width:260px;height:260px;bottom:140px;left:-40px;background:rgba(140,210,170,.22)}
+.grad-bg.dark .b1{background:rgba(55,35,155,.5)}
+.grad-bg.dark .b2{background:rgba(26,58,242,.25)}
+.grad-bg.dark .b3{background:rgba(15,65,45,.34)}
+
+/* TOPBAR */
+.topbar{
+  position:relative;z-index:10;flex-shrink:0;
+  display:flex;flex-direction:row;align-items:center;justify-content:space-between;
+  padding:max(env(safe-area-inset-top),14px) 20px 0;
+  direction:ltr;background:transparent;border:none;
+}
+.logo{display:flex;align-items:center;gap:0;text-decoration:none}
+.logo-name{font-family:var(--serif);font-size:17px;font-weight:700;color:#0f0f0e;letter-spacing:-.4px;transition:color .5s}
+.logo-mark{display:none}
+body.dark .logo-name{color:rgba(255,255,255,.9)}
+.top-r{display:flex;align-items:center;gap:7px;direction:ltr}
+.streak-pill{
+  display:flex;align-items:center;gap:3px;padding:5px 10px;border-radius:20px;
+  background:rgba(255,255,255,.5);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.62);transition:all .5s;
+}
+body.dark .streak-pill{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.12)}
+.streak-pill .sp-num{font-family:var(--serif);font-size:15px;font-weight:700;color:#0f0f0e;transition:color .5s}
+body.dark .streak-pill .sp-num{color:#fff}
+.streak-pill .sp-unit{font-size:10px;color:rgba(15,15,14,.38);transition:color .5s}
+body.dark .streak-pill .sp-unit{color:rgba(255,255,255,.32)}
+.top-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer}
+/* hide old topbar elements */
+.btn-ic,.sync-dot{display:none!important}
+#user-chip{display:none!important}
+
+/* PAGES */
+.pages{flex:1;position:relative;z-index:5;overflow:hidden;min-height:0}
+.page{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .28s ease;padding-bottom:82px}
+.page.on{opacity:1;pointer-events:all}
+
+/* Old pane system hidden */
+.pane{display:none!important}
+.bottom-nav{display:none!important}
+
+/* ══ SEARCH PAGE ══ */
+#pg-search{padding:0 22px;justify-content:space-between;direction:rtl}
+.search-top{flex:1;display:flex;align-items:center}
+.big-q{font-family:var(--serif);font-size:52px;font-weight:700;color:#0f0f0e;line-height:.9;letter-spacing:-2.5px;text-align:right;transition:color .5s}
+.big-q em{font-style:italic;font-weight:300;opacity:.48;display:block;margin-top:6px}
+body.dark .big-q{color:#fff}
+.search-bottom{padding-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-start;direction:rtl}
+.chip{padding:9px 16px;border-radius:20px;background:rgba(255,255,255,.52);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.68);font-size:14px;color:#0f0f0e;cursor:pointer;font-family:var(--serif);font-style:italic;transition:all .15s}
+.chip:active{transform:scale(.94);background:rgba(255,255,255,.8)}
+
+/* ══ REVIEW PAGE ══ */
+#pg-review{direction:rtl;padding:0 22px;justify-content:flex-end}
+.rv-num{font-family:var(--serif);font-size:96px;font-weight:700;color:#fff;line-height:.85;letter-spacing:-5px}
+.rv-lbl{font-size:11px;color:rgba(255,255,255,.32);letter-spacing:1.8px;margin-top:4px;margin-bottom:20px}
+.rv-track{height:2px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-bottom:5px}
+.rv-fill{height:100%;background:rgba(255,255,255,.55);border-radius:2px;width:0;transition:width 1s ease}
+.rv-meta{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.28);margin-bottom:18px}
+.rv-stats{display:flex;gap:8px;margin-bottom:20px}
+.rv-stat{flex:1;padding:13px 6px;text-align:center;background:rgba(255,255,255,.07);border-radius:13px}
+.rv-stat .n{font-family:var(--serif);font-size:28px;font-weight:700;color:#fff;line-height:1}
+.rv-stat .l{font-size:9px;color:rgba(255,255,255,.3);margin-top:3px}
+.rv-cta{width:100%;padding:15px;border-radius:14px;border:none;background:#fff;color:#0f0f0e;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s}
+.rv-cta:active{opacity:.75}
+.rv-dots{display:flex;gap:4px;margin-top:14px}
+.rv-d{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.12)}
+.rv-d.on{background:rgba(255,255,255,.65)}
+
+/* ══ PACKS PAGE ══ */
+#pg-packs-new{padding:0 22px;justify-content:center;direction:rtl}
+.pk-ttl{font-family:var(--serif);font-size:42px;font-weight:700;color:#0f0f0e;letter-spacing:-1.8px;line-height:.9;margin-bottom:18px;transition:color .5s}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pc{border-radius:16px;padding:15px 13px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:transform .15s;min-height:112px;backdrop-filter:blur(8px)}
+.pc:active{transform:scale(.96)}
+.pc.c1{background:rgba(195,178,255,.42);border:1px solid rgba(180,162,255,.36)}
+.pc.c2{background:rgba(162,228,190,.42);border:1px solid rgba(145,212,172,.36)}
+.pc.c3{background:rgba(255,213,165,.42);border:1px solid rgba(240,196,148,.36)}
+.pc.c4{background:rgba(178,208,255,.42);border:1px solid rgba(162,192,240,.36)}
+.pc.c5{background:#0f0f0e;grid-column:span 2;flex-direction:row;align-items:center;min-height:auto;padding:13px 16px;gap:10px;border:none}
+.pc-ico{font-size:20px}
+.pc-name{font-size:12px;font-weight:600;color:#0f0f0e;line-height:1.2}
+.pc-cnt{font-size:10px;color:rgba(15,15,14,.38)}
+.pc-bar{height:2px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden}
+.pc-fill-v{height:100%;background:rgba(0,0,0,.28);border-radius:2px}
+.pc.c5 .pc-name{color:#fff;flex:1;font-size:13px}
+
+/* ══ LIST PAGE ══ */
+#pg-list-new{direction:rtl;overflow:hidden}
+.ls-wrap{margin:10px 20px 8px;flex-shrink:0;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 13px}
+.ls-wrap svg{color:rgba(255,255,255,.3);flex-shrink:0;width:15px;height:15px}
+.ls-wrap input{flex:1;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.85);direction:rtl}
+.ls-wrap input::placeholder{color:rgba(255,255,255,.24)}
+.wl{flex:1;overflow-y:auto;padding:0 20px;scrollbar-width:none}
+.wl::-webkit-scrollbar{display:none}
+.wr{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:opacity .12s}
+.wr:last-child{border-bottom:none}
+.wr:active{opacity:.55}
+.wr-de{font-family:var(--serif);font-size:17px;font-weight:600;color:#fff;direction:ltr;flex:1.3}
+.wr-fa{font-size:11px;color:rgba(255,255,255,.36);flex:1;text-align:right}
+.wr-lv{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(100,120,255,.16);color:rgba(160,180,255,.82);flex-shrink:0}
+
+/* ══ RESULT OVERLAY ══ */
+.result-overlay{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,1,.58,1);pointer-events:none;direction:rtl}
+.result-overlay.open{transform:none;pointer-events:all}
+.rov-bg{position:absolute;inset:0;background:#0d0d0c}
+.rov-b1{position:absolute;width:320px;height:320px;top:-90px;right:-70px;border-radius:50%;filter:blur(65px);background:rgba(55,35,170,.48)}
+.rov-b2{position:absolute;width:260px;height:260px;top:50px;left:-60px;border-radius:50%;filter:blur(65px);background:rgba(26,58,242,.26)}
+.rov-inner{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:0 22px 100px;overflow-y:auto;scrollbar-width:none}
+.rov-inner::-webkit-scrollbar{display:none}
+.rov-back{display:flex;align-items:center;gap:5px;padding:max(env(safe-area-inset-top),14px) 0 18px;cursor:pointer;width:fit-content;flex-shrink:0}
+.rov-back svg{color:rgba(255,255,255,.36);width:16px;height:16px}
+.rov-back span{font-size:12px;color:rgba(255,255,255,.36)}
+.rov-typing{display:flex;align-items:center;gap:5px;padding:10px 0 20px}
+.rov-td{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.28);animation:rov-tdot .9s ease-in-out infinite}
+.rov-td:nth-child(2){animation-delay:.15s}
+.rov-td:nth-child(3){animation-delay:.3s}
+@keyframes rov-tdot{0%,80%,100%{transform:scale(.55);opacity:.2}40%{transform:scale(1);opacity:1}}
+.rov-content{animation:up .38s ease both}
+.rov-word{font-family:var(--serif);font-size:58px;font-weight:700;color:#fff;line-height:.88;letter-spacing:-3px;direction:ltr;margin-bottom:7px}
+.rov-art{font-size:12px;color:rgba(255,255,255,.28);direction:ltr;margin-bottom:12px}
+.rov-meaning{font-size:23px;font-weight:500;color:rgba(255,255,255,.88);margin-bottom:20px;line-height:1.2}
+.rov-ex{background:rgba(255,255,255,.06);border-radius:14px;padding:14px 16px;margin-bottom:14px;border-right:2px solid rgba(100,120,255,.44)}
+.rov-ex-de{font-size:13px;color:rgba(255,255,255,.68);direction:ltr;font-style:italic;line-height:1.7;margin-bottom:5px}
+.rov-ex-fa{font-size:11px;color:rgba(255,255,255,.3)}
+.rov-badges{display:flex;gap:7px;margin-bottom:24px}
+.rov-badge{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.08);color:rgba(255,255,255,.45)}
+.rov-badge.hi{background:rgba(100,120,255,.2);color:rgba(165,185,255,.88)}
+.rov-add{width:100%;padding:15px;border-radius:14px;border:none;background:#fff;color:#0f0f0e;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .18s}
+.rov-add:active{transform:scale(.98);opacity:.8}
+.rov-add.done{background:#1a3af2;color:#fff}
+
+/* ══ INPUT BAR ══ */
+.ibar{position:absolute;bottom:0;left:0;right:0;z-index:25;padding:8px 16px max(env(safe-area-inset-bottom),14px)}
+.ibar-box{background:rgba(255,255,255,.64);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1.5px solid rgba(255,255,255,.8);border-radius:18px;padding:10px 12px;transition:all .5s}
+body.dark .ibar-box{background:rgba(20,20,18,.85);border-color:rgba(255,255,255,.1)}
+.ibar-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;direction:rtl}
+.ibar-credits{font-size:10px;color:rgba(15,15,14,.32);transition:color .5s}
+body.dark .ibar-credits{color:rgba(255,255,255,.22)}
+.ibar-pro{font-size:10px;font-weight:700;color:var(--accent);cursor:pointer}
+.ibar-row{display:flex;align-items:center;gap:8px;direction:ltr}
+.ibar-inp{flex:1;border:none;outline:none;resize:none;font-family:var(--sans);font-size:14px;color:#0f0f0e;background:transparent;direction:rtl;text-align:right;scrollbar-width:none;line-height:1.45;max-height:64px;overflow-y:auto;transition:color .5s}
+body.dark .ibar-inp{color:rgba(255,255,255,.88)}
+.ibar-inp::-webkit-scrollbar{display:none}
+.ibar-inp::placeholder{color:rgba(15,15,14,.3);text-align:right}
+body.dark .ibar-inp::placeholder{color:rgba(255,255,255,.22)}
+.ibar-flags{display:flex;gap:3px;flex-shrink:0}
+.ibar-flag{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:background .15s;background:transparent}
+.ibar-flag.on{background:rgba(15,15,14,.09)}
+body.dark .ibar-flag.on{background:rgba(255,255,255,.11)}
+.ibar-send{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:#0f0f0e;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+body.dark .ibar-send{background:rgba(255,255,255,.9)}
+.ibar-send:active{transform:scale(.86)}
+
+/* ══ FLOATING NAV ══ */
+.fnav{position:absolute;bottom:max(env(safe-area-inset-bottom),12px);left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;background:rgba(16,16,14,.9);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.08);border-radius:40px;padding:5px;gap:2px;box-shadow:0 12px 44px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.2);transition:opacity .3s,transform .3s}
+.fnav.hide{opacity:0;transform:translateX(-50%) translateY(16px);pointer-events:none}
+.fn{width:44px;height:35px;display:flex;align-items:center;justify-content:center;border-radius:28px;cursor:pointer;transition:all .2s;position:relative}
+.fn svg{width:18px;height:18px;color:rgba(255,255,255,.25);transition:color .22s}
+.fn.on{background:rgba(255,255,255,.1)}
+.fn.on svg{color:#fff}
+.fn:active{transform:scale(.86)}
+.fn.on::after{content:'';position:absolute;bottom:4px;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.5)}
+
 </style>
 </head>
 <body>
 
-
-<div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
-
-<!-- Auth Gate -->
-<div id="gate">
-
-  
-<div style="position:relative;z-index:1;width:100%;max-width:360px;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3)">
-
-  <!-- TOP: Blue section -->
-  <div style="background:linear-gradient(135deg,#1a3af2,#3d5af5);padding:16px;position:relative;overflow:hidden">
-    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
-    <div style="position:absolute;bottom:-25px;left:-10px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.05)"></div>
-
-    <!-- Phone -->
-    <div id="lp-phone" style="width:160px;margin:0 auto;background:rgba(255,255,255,.96);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 8px 28px rgba(0,0,0,.22)">
-      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40px;height:11px;background:#1a1916;border-radius:0 0 7px 7px;z-index:10"></div>
-      <div style="background:#f5f3ee;padding:15px 9px 6px;display:flex;align-items:center;border-bottom:1px solid #eceae3">
-        <div style="display:flex;align-items:center;gap:3px">
-          <div style="width:11px;height:11px;background:#1a3af2;border-radius:2px;color:white;font-size:6px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif">W</div>
-          <span style="font-family:'Fraunces',serif;font-size:8px;font-weight:700;color:#1a1916">Wortschatz</span>
-        </div>
-      </div>
-      <div style="padding:8px;height:130px;overflow:hidden;position:relative">
-
-        <div class="lp-step active" id="lps0">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:15%;background:#1a3af2;border-radius:2px"></div></div>
-          <div id="lp-searchbox" style="background:#eceae3;border-radius:7px;padding:4px 7px;display:flex;align-items:center;gap:4px;margin-bottom:5px">
-            <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><circle cx="2.8" cy="2.8" r="1.8" stroke="#8a8780" stroke-width=".7"/><path d="M4 4L5.8 5.8" stroke="#8a8780" stroke-width=".7" stroke-linecap="round"/></svg>
-            <span style="font-size:8px;direction:ltr;color:#1a1916" id="lp-typetext"></span><span style="width:1px;height:8px;background:#1a3af2;animation:blink .7s infinite;display:inline-block;flex-shrink:0"></span>
-          </div>
-          <div style="font-size:7px;color:#8a8780;text-align:center;padding:8px 0">در حال تایپ...</div>
-        </div>
-
-        <div class="lp-step" id="lps1">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:40%;background:#1a3af2;border-radius:2px"></div></div>
-          <div style="background:#eceae3;border-radius:7px;padding:7px">
-            <div style="font-family:'Fraunces',serif;font-size:10px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
-            <div style="font-size:7px;color:#4a4843;margin:2px 0 3px">مهلت فسخ قرارداد</div>
-            <div style="font-size:6px;color:#8a8780;font-style:italic;direction:ltr;background:white;border-radius:3px;padding:2px 4px;margin-bottom:4px">...beträgt drei Monate</div>
-            <button id="lp-addbtn" style="width:100%;background:#1a3af2;color:white;border:none;border-radius:4px;padding:4px;font-size:7px;font-weight:600;cursor:pointer;font-family:var(--sans)">+ فلش‌کارت</button>
-          </div>
-        </div>
-
-        <div class="lp-step" id="lps2">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:65%;background:#1a3af2;border-radius:2px"></div></div>
-          <div id="lp-flashcard" style="background:#eceae3;border-radius:7px;padding:10px;text-align:center;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
-            <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
-            <div style="font-size:6px;color:#8a8780;margin-top:2px">کلیک برای معنی</div>
-          </div>
-          <div style="display:flex;gap:3px;opacity:.35">
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">بلدم</button>
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
-          </div>
-        </div>
-
-        <div class="lp-step" id="lps3">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:85%;background:#1a3af2;border-radius:2px"></div></div>
-          <div style="background:#e6ebff;border-radius:7px;padding:10px;text-align:center;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
-            <div style="font-size:9px;color:#1a3af2;font-weight:600">مهلت فسخ قرارداد</div>
-            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
-            <div style="font-size:6px;color:#1a3af2;opacity:.7;margin-top:2px">فردا مرور کن</div>
-          </div>
-          <div style="display:flex;gap:3px">
-            <button id="lp-knowbtn" style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">✓ بلدم</button>
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
-          </div>
-        </div>
-
-        <div class="lp-step" id="lps4">
-          <div style="text-align:center;padding:16px 0">
-            <div style="font-size:22px">🎉</div>
-            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;color:#1a1916;margin-top:4px">یاد گرفتی!</div>
-            <div style="font-size:7px;color:#8a8780;margin-top:2px">SM-2 بهترین وقت مرور رو یادت میاره</div>
-          </div>
-        </div>
-
-      </div>
-      <!-- cursor -->
-      <div id="lp-mouse" style="position:absolute;pointer-events:none;z-index:50;opacity:0;transition:left .5s cubic-bezier(.4,0,.2,1),top .5s cubic-bezier(.4,0,.2,1),opacity .3s">
-        <svg width="11" height="14" viewBox="0 0 11 14" fill="none"><path d="M1 1l3.5 9.8 1.6-3.5 3.5-.9L1 1z" fill="white" stroke="#1a1916" stroke-width=".8" stroke-linejoin="round"/></svg>
-      </div>
-      <div id="lp-ripple" style="position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(26,58,242,.25);transform:scale(0);pointer-events:none;z-index:49;transition:transform .3s,opacity .3s"></div>
-    </div>
-
-    <!-- Dots + dynamic description -->
-    <div style="margin-top:10px;text-align:center">
-      <div style="display:flex;gap:4px;justify-content:center;margin-bottom:8px">
-        <div class="lp-dot active" id="lpd0"></div>
-        <div class="lp-dot" id="lpd1"></div>
-        <div class="lp-dot" id="lpd2"></div>
-        <div class="lp-dot" id="lpd3"></div>
-        <div class="lp-dot" id="lpd4"></div>
-      </div>
-      <!-- Dynamic description per slide -->
-      <div id="lp-slide-desc" style="min-height:40px;transition:opacity .3s">
-        <div style="font-family:var(--sans);font-size:15px;font-weight:700;color:white;line-height:1.3">لغت جستجو کن</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">فارسی، آلمانی یا انگلیسی — AI توضیح میده</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOTTOM: White login section -->
-  <div style="background:var(--card);padding:16px">
-    <button onclick="loginGoogle()" class="btn-google" style="margin-bottom:10px">
-      <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
-      ورود با Google
-    </button>
-    <div class="gate-or">یا با ایمیل</div>
-    <input class="inp ltr" id="gate-email" type="email" placeholder="your@email.com" style="margin-bottom:8px">
-    <button class="btn btn-p btn-full" onclick="loginMagicLink()" id="gate-btn">ارسال لینک ورود</button>
-    <div id="gate-err" style="font-size:11px;color:var(--ok);text-align:center;margin-top:6px;min-height:14px"></div>
-  </div>
-
-</div>
-</div>
-
-
-<!-- Drawer -->
 <div class="drawer-bg" id="drawer" onclick="if(event.target===this)drawerClose()">
   <div class="drawer">
     <div class="drw-handle"></div>
@@ -1760,7 +1789,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   <header class="topbar" id="topbar">
     <a class="logo" href="#">
       <div class="logo-mark">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M2 5L5.5 13L8 7.5L10.5 13L14 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
@@ -1768,17 +1797,11 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </a>
     <div class="top-r">
       <div class="sync-dot" id="sync-dot"></div>
-      <button class="btn-ic" id="theme-btn" onclick="toggleDark()" style="display:none">
+      <button class="btn-ic" id="theme-btn" onclick="toggleDark()">
         <svg id="theme-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M12.5 8.5A5.5 5.5 0 116.5 3a4.5 4.5 0 006 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
-      <!-- streak chip -->
-      <div class="top-streak" id="top-streak-chip" onclick="go('home')" style="display:none">
-        <span id="top-streak-ic" style="font-size:14px">🔥</span>
-        <span class="top-streak-n" id="top-streak-n">0</span>
-        <span class="top-streak-lbl">روز</span>
-      </div>
       <div class="user-chip" id="user-chip" onclick="drawerOpen()" style="display:none">
         <div class="user-avatar" id="user-avatar">?</div>
         <span class="user-name" id="user-name"></span>
@@ -1790,237 +1813,99 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   </header>
 
   <!-- HOME -->
-  <div class="pane on" id="pane-home">
 
-    <div id="free-banner" style="display:none"></div>
+<div class="app" id="app">
 
-    <!-- SEARCH — اول و بزرگ -->
-    <div style="padding:var(--s3) 0 var(--s3)">
-      <div class="s-wrap" style="position:relative">
-        <input class="s-field" id="s-inp"
-          placeholder="لغت یا اصطلاح جستجو کن..."
-          oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
-        <div class="ac-drop" id="ac-drop"></div>
-        <button class="s-btn" id="s-btn" onclick="doSearch()">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-      <!-- lang selector زیر search -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;position:relative">
-        <div style="font-size:11px;color:var(--ink3)" id="search-tip-inline">💡 فارسی، آلمانی یا انگلیسی</div>
-        <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:4px;background:var(--bg2);color:var(--ink2);border:1px solid var(--bg3);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--sans)">
-          <span id="home-lang-flag">🇩🇪</span>
-          <span id="home-lang-label">آلمانی</span>
-          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </button>
-        <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
-          <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink)">
-            <span style="font-size:16px">🇩🇪</span><span>آلمانی</span>
-            <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
-          </button>
-          <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink)">
-            <span style="font-size:16px">🇬🇧</span>
-            <div style="display:flex;flex-direction:column;align-items:flex-start">
-              <span>انگلیسی</span>
-              <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
-            </div>
-            <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="s-msg" id="s-msg"></div>
-
-        <!-- Word result -->
-    <div class="res" id="res">
-      <div class="res-fix" id="res-fix"></div>
-
-      <!-- اسم لغت -->
-      <div class="res-word-block">
-        <div class="res-art-word">
-          <span class="res-art" id="res-art"></span>
-          <span class="res-word" id="res-word"></span>
-        </div>
-        <div class="res-principal" id="res-principal"></div>
-        <div class="res-plural" id="res-plural"></div>
-      </div>
-
-      <div class="res-divider"></div>
-
-      <!-- معنی و اطلاعات -->
-      <div class="res-info-block">
-        <div class="res-meaning" id="res-meaning"></div>
-        <div class="res-synonym" id="res-synonym"></div>
-        <div class="res-usage-line" id="res-usage-line"></div>
-        <div class="res-example" id="res-example"></div>
-        <div class="res-tip-line" id="res-tip-line"></div>
-      </div>
-
-      <div class="res-divider"></div>
-
-      <!-- badges + priority -->
-      <div class="res-footer">
-        <div class="res-footer-left">
-          <span class="res-badge level" id="res-level"></span>
-          <span class="res-badge type" id="res-type"></span>
-        </div>
-        <div class="res-priority" id="res-priority"></div>
-      </div>
-
-      <div class="res-add-wrap">
-        <button class="add-btn" id="add-btn" onclick="addWord()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن به فلش‌کارت‌ها
-        </button>
-      </div>
-    </div>
-
-    <!-- Phrase result -->
-    <div class="ph-res" id="ph-res">
-      <div class="ph-top">
-        <!-- correction banner -->
-        <div id="ph-correction" style="display:none">
-          <span style="opacity:.8">غلط املایی داشتی — اصلاح شد:</span> <span id="ph-corrected" style="font-weight:700;direction:ltr;cursor:pointer" onclick="rephrase()"></span>
-        </div>
-        <div class="ph-orig" id="ph-orig"></div>
-        <div class="ph-meaning" id="ph-meaning"></div>
-        <div class="ph-priority" id="ph-priority" style="display:none"></div>
-        <!-- similar phrases -->
-        <div id="ph-similar" style="display:none;margin-top:8px">
-          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:5px">عبارات مشابه:</div>
-          <div id="ph-similar-chips" style="display:flex;flex-wrap:wrap;gap:5px"></div>
-        </div>
-        <span class="ph-syn" id="ph-syn"></span>
-        <!-- example -->
-        <div id="ph-example" style="display:none;margin-top:8px;background:rgba(255,255,255,.08);border-radius:8px;padding:8px 10px">
-          <div id="ph-ex-de" style="font-size:12px;color:rgba(255,255,255,.85);direction:ltr;text-align:left;font-style:italic"></div>
-          <div id="ph-ex-fa" style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px"></div>
-        </div>
-      </div>
-      <div class="ph-body">
-        <button class="ph-add" id="ph-add" onclick="addPhrase()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن کل اصطلاح به فلش‌کارت‌ها
-        </button>
-      </div>
-    </div>
-
-    <!-- Reminder -->
-    <div class="reminder" id="reminder">
-      <div class="rem-head">
-        <div><div class="rem-title" id="rem-title">وقت مرور! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
-        <button class="rem-x" onclick="remDismiss()">✕</button>
-      </div>
-      <div class="rem-chips" id="rem-chips"></div>
-      <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
-    </div>
-
-    <!-- Daily Card — new design -->
-    <div class="sum-card" id="sum-card">
-
-      <!-- DAILY ACTION CARD -->
-      <div id="daily-card" style="background:var(--accent);border-radius:var(--r4);padding:var(--s4);margin-bottom:var(--s3);position:relative;overflow:hidden">
-        <div style="position:absolute;top:-24px;right:-24px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
-        <div style="position:absolute;bottom:-16px;left:-16px;width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.04)"></div>
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s3);position:relative;z-index:1">
-          <div>
-            <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.8px;margin-bottom:4px">مرور امروز</div>
-            <div style="display:flex;align-items:baseline;gap:5px">
-              <div style="font-family:var(--serif);font-size:34px;font-weight:600;color:#fff;line-height:1" id="sn-streak">0</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.7)" id="sc-streak-lbl">روز متوالی</div>
-            </div>
-            <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px" id="sc-streak-lvl">Anfänger 🌱</div>
-          </div>
-          <div id="sc-empty-icon" style="display:none;font-size:32px;margin-top:4px">🌱</div>
-        </div>
-        <!-- progress bar -->
-        <div style="margin-bottom:var(--s3);position:relative;z-index:1">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <div style="font-size:10px;color:rgba(255,255,255,.6)" id="sc-lvl-lbl">پیشرفت به Lerner</div>
-            <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.8)" id="sc-lvl-pct">0%</div>
-          </div>
-          <div style="height:4px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden">
-            <div id="sc-lvl-bar" style="height:100%;background:#fff;border-radius:4px;transition:width .6s var(--ease);width:0%"></div>
-          </div>
-          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px" id="sc-next-pill">امروز شروع کن</div>
-        </div>
-        <!-- CTA -->
-        <button onclick="sesOpenSmart()" style="width:100%;padding:11px;background:#fff;color:var(--accent);border:none;border-radius:var(--r2);font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;position:relative;z-index:1;transition:opacity .15s">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span id="review-lbl">شروع مرور</span>
-        </button>
-      </div>
-
-      <!-- QUICK STATS -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s2);margin-bottom:var(--s3)">
-        <div style="background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r3);padding:10px;text-align:center">
-          <div style="font-family:var(--serif);font-size:22px;font-weight:600;color:var(--ink);line-height:1;margin-bottom:2px" id="sn-total">0</div>
-          <div style="font-size:10px;color:var(--ink3)">لغت</div>
-          <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:1px;display:none"></div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r3);padding:10px;text-align:center">
-          <div style="font-family:var(--serif);font-size:22px;font-weight:600;color:var(--ok);line-height:1;margin-bottom:2px" id="sn-learned">0</div>
-          <div style="font-size:10px;color:var(--ink3)">یاد گرفتم</div>
-        </div>
-        <div style="background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r3);padding:10px;text-align:center">
-          <div style="font-family:var(--serif);font-size:22px;font-weight:600;color:var(--accent);line-height:1;margin-bottom:2px" id="sn-due">0</div>
-          <div style="font-size:10px;color:var(--ink3)">برای مرور</div>
-        </div>
-      </div>
-
-      <!-- 7-day dots -->
-      <div style="display:flex;gap:4px;margin-bottom:var(--s3)" id="sc-dots"></div>
-
-      <!-- XP + Freeze toggle -->
-      <button onclick="scToggleDetail(this)" id="sc-detail-btn" style="width:100%;padding:8px;background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);font-family:var(--sans);font-size:11px;color:var(--ink3);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px">
-        <span id="sc-xp-preview">XP ↓</span>
-      </button>
-
-      <div class="sc-details" id="sc-details">
-        <div class="sc-detail-tabs" style="margin-top:var(--s3)">
-          <button class="sc-dt on" onclick="scTab('xp',this)">امتیاز XP</button>
-          <button class="sc-dt" onclick="scTab('freeze',this)">🧊 Freeze</button>
-        </div>
-        <div id="sc-panel-xp" class="sc-panel">
-          <div class="sc-xp-hero">
-            <div style="font-size:11px;color:var(--ink3)">امتیاز کل</div>
-            <div class="sc-xp-num"><span id="sc-xp-total">0</span> <span style="font-size:11px;font-weight:400;color:var(--ink3)">XP</span></div>
-          </div>
-          <div class="sc-xp-bar-wrap"><div class="sc-xp-bar" id="sc-xp-bar" style="width:0%"></div></div>
-          <div class="sc-xp-sub"><span id="sc-xp-sub">— XP مونده</span><span id="sc-xp-pct">0%</span></div>
-          <div class="sc-xp-tip">هر ۱۰۰ XP = ۵ جستجوی رایگان اضافه ⚡</div>
-          <div style="font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.3px;margin:var(--s3) 0 6px">چطور XP بگیری</div>
-          <div class="sc-xp-list">
-            <div class="sc-xp-item"><span>📖 مرور روزانه</span><span>+10 XP</span></div>
-            <div class="sc-xp-item"><span>🔥 streak bonus</span><span>+5 XP</span></div>
-            <div class="sc-xp-item"><span>✅ تسلط لغت</span><span>+3 XP</span></div>
-            <div class="sc-xp-item"><span>📦 تکمیل pack</span><span>+50 XP</span></div>
-            <div class="sc-xp-item"><span>🏆 milestone streak</span><span>+100 XP</span></div>
-          </div>
-        </div>
-        <div id="sc-panel-freeze" class="sc-panel" style="display:none">
-          <div class="sc-freeze-box">
-            <div style="display:flex;align-items:center;gap:8px">
-              <span style="font-size:20px">🧊</span>
-              <div>
-                <div style="font-size:12px;font-weight:600;color:var(--ink)">Streak Freeze</div>
-                <div style="font-size:10px;color:var(--ink3)" id="sc-freeze-desc">محافظت در برابر شکستن streak</div>
-              </div>
-            </div>
-            <div id="sc-freeze-dots" style="display:flex;gap:4px"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Home empty state -->
-    <div id="home-empty">
-      <div class="hint" style="padding:var(--s2) 0 calc(var(--nav-h) + var(--s4))">
-        <div class="hint-chips" id="home-empty-chips"></div>
-      </div>
-    </div>
+  <!-- GRADIENT BG -->
+  <div class="grad-bg" id="grad-bg">
+    <div class="blob b1" id="b1"></div>
+    <div class="blob b2" id="b2"></div>
+    <div class="blob b3" id="b3"></div>
   </div>
 
-  <!-- LIST -->
+  <!-- TOPBAR -->
+  <header class="topbar" id="topbar">
+    <a class="logo" href="#">
+      <span class="logo-name">Wortschatz</span>
+    </a>
+    <div class="top-r">
+      <div class="streak-pill" id="streak-pill" style="display:none">
+        <span style="font-size:14px">🔥</span>
+        <span class="sp-num" id="sp-num">0</span>
+        <span class="sp-unit">روز</span>
+      </div>
+      <div class="top-avatar" id="top-avatar" onclick="drawerOpen()">S</div>
+    </div>
+  </header>
+
+  <!-- PAGES -->
+  <div class="pages" id="pages">
+
+    <!-- SEARCH -->
+    <div class="page on" id="pg-search">
+      <div class="search-top">
+        <div class="big-q">امروز<br>چه لغتی<br><em>می‌گیری؟</em></div>
+      </div>
+      <div class="search-bottom">
+        <div class="chips" id="home-chips">
+          <div class="chip" onclick="chipSearch('Sehnsucht')">Sehnsucht</div>
+          <div class="chip" onclick="chipSearch('Fernweh')">Fernweh</div>
+          <div class="chip" onclick="chipSearch('قرارداد')">قرارداد</div>
+          <div class="chip" onclick="chipSearch('Weltschmerz')">Weltschmerz</div>
+          <div class="chip" onclick="chipSearch('Heimweh')">Heimweh</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW -->
+    <div class="page" id="pg-review">
+      <div class="rv-num" id="rv-num">0</div>
+      <div class="rv-lbl">STREAK · روز متوالی</div>
+      <div class="rv-track"><div class="rv-fill" id="rv-fill"></div></div>
+      <div class="rv-meta"><span id="rv-lvl-lbl">Anfänger → Lerner</span><span id="rv-pct">0%</span></div>
+      <div class="rv-stats">
+        <div class="rv-stat"><div class="n" id="rv-total">0</div><div class="l">لغت</div></div>
+        <div class="rv-stat"><div class="n" id="rv-learned">0</div><div class="l">یاد گرفتم</div></div>
+        <div class="rv-stat"><div class="n" id="rv-due">0</div><div class="l">مرور</div></div>
+      </div>
+      <button class="rv-cta" onclick="sesOpenSmart()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        شروع مرور
+      </button>
+      <div class="rv-dots" id="rv-dots">
+        <div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div>
+        <div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div>
+      </div>
+    </div>
+
+    <!-- PACKS -->
+    <div class="page" id="pg-packs-new">
+      <div class="pk-ttl">جعبه‌های<br>لغت</div>
+      <div class="pgrid" id="packs-grid-new">
+        <div class="pc c1" onclick="go('packs')"><div class="pc-ico">🌱</div><div class="pc-name">پایه</div><div class="pc-cnt">لودینگ...</div></div>
+        <div class="pc c2" onclick="go('packs')"><div class="pc-ico">💬</div><div class="pc-name">مکالمه</div><div class="pc-cnt">لودینگ...</div></div>
+        <div class="pc c3" onclick="go('packs')"><div class="pc-ico">💼</div><div class="pc-name">کار و شغل</div><div class="pc-cnt">لودینگ...</div></div>
+        <div class="pc c4" onclick="go('packs')"><div class="pc-ico">✈️</div><div class="pc-name">سفر</div><div class="pc-cnt">لودینگ...</div></div>
+        <div class="pc c5" onclick="go('packs')">
+          <div class="pc-ico">✨</div>
+          <div class="pc-name">با AI بساز — هر موضوعی</div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <div class="page" id="pg-list-new">
+      <div class="ls-wrap">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11.5 11.5L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input placeholder="جستجو در لغات..." id="new-list-q" oninput="newRenderList()">
+      </div>
+      <div class="wl" id="new-wl"></div>
+    </div>
+
+  </div><!-- /pages -->
+
+  <!-- OLD PANES (hidden, keep for functionality) -->
   <div class="pane" id="pane-list">
     <div class="list-topbar">
       <div class="list-title">لیست لغات</div>
@@ -2112,46 +1997,76 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
   </div>
 
+  <!-- RESULT OVERLAY -->
+  <div class="result-overlay" id="result-overlay">
+    <div class="rov-bg"></div>
+    <div class="rov-b1"></div><div class="rov-b2"></div>
+    <div class="rov-inner">
+      <div class="rov-back" onclick="closeResultOverlay()">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>برگشت</span>
+      </div>
+      <div id="rov-typing" class="rov-typing"><div class="rov-td"></div><div class="rov-td"></div><div class="rov-td"></div></div>
+      <div id="rov-content" class="rov-content" style="display:none">
+        <div class="rov-word" id="rov-word"></div>
+        <div class="rov-art" id="rov-art"></div>
+        <div class="rov-meaning" id="rov-meaning"></div>
+        <div class="rov-ex">
+          <div class="rov-ex-de" id="rov-ex-de"></div>
+          <div class="rov-ex-fa" id="rov-ex-fa"></div>
+        </div>
+        <div class="rov-badges">
+          <div class="rov-badge hi" id="rov-lvl"></div>
+          <div class="rov-badge" id="rov-type"></div>
+        </div>
+        <button class="rov-add" id="rov-add" onclick="rovAddWord()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          افزودن به فلش‌کارت
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class="ibar" id="ibar">
+    <div class="ibar-box">
+      <div class="ibar-meta">
+        <span class="ibar-credits" id="ibar-credits">در حال لود...</span>
+        <span class="ibar-pro" onclick="drawerOpen()">✦ Pro</span>
+      </div>
+      <div class="ibar-row">
+        <textarea class="ibar-inp" id="ibar-inp" rows="1"
+          placeholder="لغت یا اصطلاح..."
+          onkeydown="ibarKey(event)"
+          oninput="ibarResize(this)"></textarea>
+        <div class="ibar-flags">
+          <div class="ibar-flag on" onclick="ibarSetFlag(this,'de')">🇩🇪</div>
+          <div class="ibar-flag" onclick="ibarSetFlag(this,'en')">🇬🇧</div>
+        </div>
+        <button class="ibar-send" onclick="ibarSend()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 12V2M2 7l5-5 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING NAV -->
+  <div class="fnav" id="fnav">
+    <div class="fn on" id="fn-search" onclick="navTo('search')">
+      <svg viewBox="0 0 18 18" fill="none"><circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11.5 11.5L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fn" id="fn-review" onclick="navTo('review')">
+      <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5V4a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fn" id="fn-packs" onclick="navTo('packs')">
+      <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+    </div>
+    <div class="fn" id="fn-list" onclick="navTo('list')">
+      <svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h12M3 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+  </div>
 
 </div><!-- .app -->
-
-<!-- Bottom nav -->
-<nav class="bottom-nav">
-  <button class="nav-item on" id="t-home" onclick="go('home')">
-    <div class="nav-dot" id="nd-home"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-      <path d="M7 18v-6h6v6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-    </svg>
-    <span class="nav-label">خانه</span>
-  </button>
-  <button class="nav-item" id="t-packs" onclick="go('packs')">
-    <div class="nav-dot" id="nd-packs"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-    </svg>
-    <span class="nav-label">جعبه‌ها</span>
-  </button>
-  <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
-    <div class="nav-dot" id="nd-cards"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <rect x="3" y="6" width="14" height="11" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M6 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <span class="nav-label">کارت‌ها</span>
-  </button>
-  <button class="nav-item" id="t-list" onclick="go('list')">
-    <div class="nav-dot" id="nd-list"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <span class="nav-label">لیست</span>
-  </button>
-</nav>
-
 
 <script>
 function wordDetail(idx){
@@ -3919,7 +3834,6 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ══ XP SYSTEM ══ */
-/* ══ XP SYSTEM ══ */
 const XP_LEVELS=[{min:0,max:99,name:'مبتدی'},{min:100,max:299,name:'یادگیر'},{min:300,max:599,name:'پیشرفته'},{min:600,max:999,name:'حرفه‌ای'},{min:1000,max:9999,name:'استاد'}];
 function getXP(){return parseInt(localStorage.getItem('ws_xp')||'0');}
 function setXP(v){localStorage.setItem('ws_xp',String(v));}
@@ -3947,13 +3861,11 @@ function updateXPUI(){
   const fill=Q('#sc-xp-bar'),sub=Q('#sc-xp-sub'),pct=Q('#sc-xp-pct');
   if(nxt){const p=Math.round((xp-lvl.min)/(nxt.min-lvl.min)*100);if(fill)fill.style.width=p+'%';if(sub)sub.textContent=(nxt.min-xp)+' XP مونده به «'+nxt.name+'»';if(pct)pct.textContent=p+'%';}
   else{if(fill)fill.style.width='100%';if(sub)sub.textContent='بالاترین سطح 🏆';if(pct)pct.textContent='100%';}
-  const prev=Q('#sc-xp-preview');if(prev)prev.textContent=xp+' XP ↓';
 }
 function scToggleDetail(btn){
   const d=Q('#sc-details');
   const open=d.classList.toggle('open');
-  const prev=Q('#sc-xp-preview');
-  if(prev)prev.textContent=open?'بستن ↑':(getXP()+' XP ↓');
+  btn.textContent=open?'بستن ↑':'جزئیات ↓';
   if(open){updateXPUI();scUpdateFreeze();}
 }
 function scTab(name,el){
@@ -3968,20 +3880,7 @@ function scUpdateFreeze(){
   const fDotsEl=Q('#sc-freeze-dots');
   if(fDotsEl){let fh='';for(let i=0;i<maxF;i++){const u=i<fd.count;fh+=`<div style="width:22px;height:22px;border-radius:50%;background:${u?'var(--bg3)':'var(--abl)'};border:2px solid ${u?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${u?'.3':'1'}">🧊</div>`;}fDotsEl.innerHTML=fh;}
   const fDesc=Q('#sc-freeze-desc');
-  if(fDesc){const left=maxF-fd.count;fDesc.textContent=userPlan!=='pro'?(left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد'):left+' تا Freeze مونده';}
-}
-function updateTopStreak(s){
-  const chip=Q('#top-streak-chip');
-  const n=Q('#top-streak-n');
-  const ic=Q('#top-streak-ic');
-  if(!chip)return;
-  if(s>0){
-    chip.style.display='flex';
-    if(n)n.textContent=s;
-    if(ic)ic.textContent=s>=30?'🏆':s>=14?'⚡':s>=7?'📚':'🔥';
-  } else {
-    chip.style.display='none';
-  }
+  if(fDesc){const left=maxF-fd.count;if(userPlan!=='pro'){fDesc.textContent=left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد';}else{fDesc.textContent=left+' تا Freeze مونده';}}
 }
 function updateStats(){
   const card=Q('#sum-card'),homeEmpty=Q('#home-empty');
@@ -4003,8 +3902,7 @@ function updateStats(){
   if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
   let s=0;const dd=new Date();
   while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
-  updateTopStreak(s);
-  const numEl=Q('#sn-streak');if(numEl)numEl.textContent=s||'0';
+  const numEl=Q('#sc-streak-num');if(numEl)numEl.textContent=s||'0';
   const emptyIc=Q('#sc-empty-icon');
   if(emptyIc)emptyIc.style.display=s===0?'block':'none';
   if(numEl)numEl.style.display=s===0?'none':'block';
@@ -4013,12 +3911,12 @@ function updateStats(){
   const lblEl=Q('#sc-streak-lbl');if(lblEl)lblEl.textContent=s>0?'روز متوالی':'شروع کن!';
   const nextM=MILESTONES.find(m=>m>s);
   const pillEl=Q('#sc-next-pill');
-  if(pillEl){if(s===0)pillEl.textContent='اولین مرور رو انجام بده';else if(nextM){const nL=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nL.name+' '+nL.icon;}else pillEl.textContent='به Legende رسیدی 👑';}
+  if(pillEl){if(s===0)pillEl.textContent='اولین مرور رو انجام بده';else if(nextM){const nL=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nL.name;}else pillEl.textContent='به Legende رسیدی 👑';}
   const dotsEl=Q('#sc-dots');
   if(dotsEl){let h='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const isT=i===0,done=!!all[d.toDateString()];h+=`<div class="sc-dot${done&&!isT?' on':isT?' cur':''}"></div>`;}dotsEl.innerHTML=h;}
   const lbl=Q('#review-lbl');
   if(lbl){const deck=buildSmartDeck();lbl.textContent=due.length>0?`مرور ${deck.length} کارت`:`سشن ${deck.length} کارتی`;}
-  if(nextM){const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;const p=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;const nLvl=getStreakLevel(nextM);const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width=p+'%';const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='پیشرفت به '+nLvl.name;const pctEl=Q('#sc-lvl-pct');if(pctEl)pctEl.textContent=p+'%';}
+  if(nextM){const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;const p=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;const nLvl=getStreakLevel(nextM);const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width=p+'%';const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='پیشرفت به '+nLvl.name;const pctEl=Q('#sc-lvl-pct');if(pctEl)pctEl.textContent=p+'%';const subEl=Q('#sc-lvl-sub');if(subEl)subEl.textContent=(nextM-s)+' روز دیگه';}
   else{const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width='100%';const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='بالاترین سطح 👑';}
   scUpdateFreeze();updateXPUI();
 }
@@ -4034,7 +3932,6 @@ function logReview(){
   const streak=calcStreak();
   if(wasFirst&&streak>1)addXP(5,'streak bonus — '+streak+' روز');
 }
-/* compact card CSS classes needed */
 init();
 
 
@@ -5058,6 +4955,250 @@ function packLearnRestart(){
 })();
 
 </script>
+<script>
+
+<script>
+/* ══ NEW UI LAYER ══ */
+const gbg = document.getElementById('grad-bg');
+const DARK_TABS = ['review','list'];
+let curTab = 'search';
+let ibarLang = 'de';
+let _blobT = 0;
+
+(function blobTick(){
+  _blobT += .002;
+  const b1=document.getElementById('b1'),b2=document.getElementById('b2');
+  if(b1)b1.style.transform=`translate(${Math.sin(_blobT)*14}px,${Math.cos(_blobT*.75)*10}px)`;
+  if(b2)b2.style.transform=`translate(${Math.cos(_blobT*.85)*12}px,${Math.sin(_blobT*1.05)*8}px)`;
+  requestAnimationFrame(blobTick);
+})();
+
+function navTo(name) {
+  if(curTab === name) return;
+  curTab = name;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById('pg-' + (name==='packs'?'packs-new':name==='list'?'list-new':name)).classList.add('on');
+  document.querySelectorAll('.fn').forEach(b => b.classList.remove('on'));
+  document.getElementById('fn-' + name).classList.add('on');
+  const dark = DARK_TABS.includes(name);
+  gbg.classList.toggle('dark', dark);
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('ibar').style.display = name==='search' ? 'block' : 'none';
+  if(name==='review') {
+    setTimeout(() => {
+      document.getElementById('rv-fill').style.width = '43%';
+      updateReviewPage();
+    }, 120);
+  }
+  if(name==='list') newRenderList();
+}
+
+function updateReviewPage() {
+  const streak = parseInt(localStorage.getItem('ws_streak')||'0');
+  const snum = document.getElementById('rv-num');
+  if(snum) snum.textContent = streak;
+  const total = (window.words||[]).length;
+  const learned = (window.words||[]).filter(w=>w.seen>=3).length;
+  const due = (window.words||[]).filter(w=>w.next_review && new Date(w.next_review)<=new Date()).length;
+  const rt=document.getElementById('rv-total'),rl=document.getElementById('rv-learned'),rd=document.getElementById('rv-due');
+  if(rt)rt.textContent=total;if(rl)rl.textContent=learned;if(rd)rd.textContent=due;
+  // dots
+  const dots = document.getElementById('rv-dots');
+  if(dots && streak>0) {
+    const ds = dots.querySelectorAll('.rv-d');
+    ds.forEach((d,i)=>d.classList.toggle('on', i<Math.min(streak,7)));
+  }
+}
+
+// Override go() to use new nav
+const _origGo = typeof go === 'function' ? go : null;
+window.go = function(tab) {
+  if(tab==='home') navTo('search');
+  else if(tab==='packs') navTo('packs');
+  else if(tab==='list') navTo('list');
+  else if(_origGo) _origGo(tab);
+};
+
+// Streak pill sync
+function syncStreakPill() {
+  const s = parseInt(localStorage.getItem('ws_streak')||'0');
+  const pill = document.getElementById('streak-pill');
+  const num = document.getElementById('sp-num');
+  if(pill && s>0) { pill.style.display='flex'; if(num) num.textContent=s; }
+}
+setInterval(syncStreakPill, 2000);
+setTimeout(syncStreakPill, 800);
+
+// credits
+function syncCredits() {
+  const free = parseInt(localStorage.getItem('ws_free_searches')||'10');
+  const el = document.getElementById('ibar-credits');
+  if(el) el.textContent = free + ' جستجو باقی‌مانده';
+}
+setInterval(syncCredits, 1000);
+setTimeout(syncCredits, 500);
+
+// avatar initial
+function syncAvatar() {
+  const emailEl = document.getElementById('drw-email');
+  const email = emailEl ? emailEl.textContent : '';
+  const av = document.getElementById('top-avatar');
+  if(av && email && email!=='—') av.textContent = email[0].toUpperCase();
+}
+setTimeout(syncAvatar, 2000);
+
+// ibar
+function ibarResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,64)+'px'; }
+function ibarKey(e) { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); ibarSend(); } }
+function ibarSetFlag(el, l) {
+  ibarLang = l;
+  document.querySelectorAll('.ibar-flag').forEach(f=>f.classList.remove('on'));
+  el.classList.add('on');
+  // sync with app's lang
+  if(typeof setTargetLang === 'function') setTargetLang(l);
+}
+function ibarSend() {
+  const q = document.getElementById('ibar-inp').value.trim();
+  if(!q) return;
+  document.getElementById('ibar-inp').value='';
+  document.getElementById('ibar-inp').style.height='auto';
+  chipSearch(q);
+}
+
+// chip search — triggers result overlay using existing doSearch
+let _rovCurrentWord = null;
+function chipSearch(q) {
+  document.getElementById('ibar-inp').value = q;
+  // Set lang in old system
+  const sinp = document.getElementById('s-inp');
+  if(sinp) { sinp.value = q; }
+  // Show overlay
+  showResultOverlay(q);
+}
+
+function showResultOverlay(q) {
+  const ov = document.getElementById('result-overlay');
+  const fnav = document.getElementById('fnav');
+  document.getElementById('rov-typing').style.display='flex';
+  document.getElementById('rov-content').style.display='none';
+  const btn = document.getElementById('rov-add');
+  btn.className='rov-add';
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>افزودن به فلش‌کارت';
+  ov.classList.add('open');
+  fnav.classList.add('hide');
+  // Call real doSearch and wait for result
+  if(typeof doSearch === 'function') {
+    const sinp = document.getElementById('s-inp');
+    if(sinp) sinp.value = q;
+    // intercept result
+    _waitForResult(q);
+    doSearch();
+  }
+}
+
+function _waitForResult(q) {
+  let tries = 0;
+  const check = setInterval(() => {
+    tries++;
+    const word = document.getElementById('res-word');
+    const art = document.getElementById('res-art');
+    const meaning = document.getElementById('res-meaning');
+    if((word && word.textContent) || tries > 30) {
+      clearInterval(check);
+      const wordTxt = word ? word.textContent : q;
+      const artTxt = art ? art.textContent : '';
+      const meaningTxt = meaning ? meaning.textContent : '';
+      const exDe = document.getElementById('res-example');
+      const lvl = document.getElementById('res-level');
+      const type = document.getElementById('res-type');
+      _rovCurrentWord = wordTxt;
+      document.getElementById('rov-word').textContent = wordTxt;
+      document.getElementById('rov-art').textContent = artTxt;
+      document.getElementById('rov-meaning').textContent = meaningTxt;
+      document.getElementById('rov-ex-de').textContent = exDe ? exDe.querySelector?.('[dir="ltr"]')?.textContent || '' : '';
+      document.getElementById('rov-ex-fa').textContent = '';
+      document.getElementById('rov-lvl').textContent = lvl ? lvl.textContent : '';
+      document.getElementById('rov-type').textContent = type ? type.textContent : '';
+      document.getElementById('rov-typing').style.display='none';
+      const c = document.getElementById('rov-content');
+      c.style.display='block'; c.style.animation='none';
+      requestAnimationFrame(()=>{ c.style.animation='up .38s ease both'; });
+    }
+  }, 200);
+}
+
+function closeResultOverlay() {
+  document.getElementById('result-overlay').classList.remove('open');
+  document.getElementById('fnav').classList.remove('hide');
+}
+
+function rovAddWord() {
+  // call real addWord
+  if(typeof addWord === 'function') addWord();
+  const btn = document.getElementById('rov-add');
+  btn.className='rov-add done';
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>اضافه شد!';
+  setTimeout(closeResultOverlay, 1600);
+}
+
+// List rendering
+function newRenderList() {
+  const words = window.words || [];
+  const q = (document.getElementById('new-list-q')?.value||'').toLowerCase();
+  const wl = document.getElementById('new-wl');
+  if(!wl) return;
+  const filtered = q ? words.filter(w=>(w.de||'').toLowerCase().includes(q)||(w.fa||'').includes(q)) : words;
+  const sorted = [...filtered].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  const levels = ['A1','A1','A2','A2','B1','B1','B2','B2','C1','C2'];
+  wl.innerHTML = sorted.slice(0,80).map(w=>{
+    const lvl = w.level || levels[Math.min((w.seen||0),9)] || '—';
+    return `<div class="wr" onclick="wordDetail(${words.indexOf(w)})">
+      <div class="wr-de">${w.de||''}</div>
+      <div class="wr-fa">${w.fa||''}</div>
+      <div class="wr-lv">${lvl}</div>
+    </div>`;
+  }).join('');
+}
+
+// Packs grid sync
+function syncPacksGrid() {
+  const words = window.words || [];
+  const grid = document.getElementById('packs-grid-new');
+  if(!grid) return;
+  const cats = [
+    {ico:'🌱', name:'پایه A1', filter:w=>w.pack?.includes('A1')||w.level==='A1'},
+    {ico:'💬', name:'مکالمه', filter:w=>w.pack?.includes('مکالمه')||w.pack?.includes('conversation')},
+    {ico:'💼', name:'کار و شغل', filter:w=>w.pack?.includes('کار')||w.pack?.includes('work')},
+    {ico:'✈️', name:'سفر', filter:w=>w.pack?.includes('سفر')||w.pack?.includes('travel')},
+  ];
+  const items = cats.map((c,i)=>{
+    const cnt = words.filter(c.filter).length;
+    const cls = ['c1','c2','c3','c4'][i];
+    return `<div class="pc ${cls}" onclick="go('packs')">
+      <div class="pc-ico">${c.ico}</div>
+      <div class="pc-name">${c.name}</div>
+      <div class="pc-cnt">${cnt>0?cnt+' لغت':'خالی'}</div>
+    </div>`;
+  }).join('');
+  grid.innerHTML = items + `<div class="pc c5" onclick="go('packs')">
+    <div class="pc-ico">✨</div>
+    <div class="pc-name">با AI بساز</div>
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>`;
+}
+
+// sync after words load
+const _origRenderList = typeof renderList === 'function' ? renderList : null;
+window.renderList = function() {
+  if(_origRenderList) _origRenderList();
+  newRenderList();
+  syncPacksGrid();
+  updateReviewPage();
+};
+
+setTimeout(() => { newRenderList(); syncPacksGrid(); updateReviewPage(); }, 2500);
+</script>
+
 <script>if('serviceWorker'in navigator){
   navigator.serviceWorker.register('/sw.js').catch(()=>{});
   navigator.serviceWorker.addEventListener('message', e => {
@@ -5307,3 +5448,5 @@ window.addEventListener('unhandledrejection', e => {
   console.warn('[Wortschatz] unhandled:', err.message);
 });
 </script>
+</body>
+</html>
