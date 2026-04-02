@@ -1397,7 +1397,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 /* ═══════════════════════════════════
    NEW UI — GRADIENT DESIGN SYSTEM
 ═══════════════════════════════════ */
-.app{max-width:390px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.app{max-width:390px;margin:0 auto;height:100dvh!important;min-height:unset!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;position:relative!important}
 
 /* BG */
 .grad-bg{position:absolute;inset:0;z-index:0;background:#f2f0ea;transition:background .7s ease}
@@ -1412,10 +1412,11 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
 /* TOPBAR */
 .topbar{
-  position:relative;z-index:10;flex-shrink:0;
-  display:flex;flex-direction:row;align-items:center;justify-content:space-between;
-  padding:max(env(safe-area-inset-top),14px) 20px 0;
-  direction:ltr;background:transparent;border:none;
+  position:relative!important;z-index:10!important;flex-shrink:0;
+  display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;
+  padding:max(env(safe-area-inset-top),14px) 20px 0!important;
+  direction:ltr!important;background:transparent!important;border:none!important;
+  max-width:390px!important;margin:0 auto!important;
 }
 .logo{display:flex;align-items:center;gap:0;text-decoration:none}
 .logo-name{font-family:var(--serif);font-size:17px;font-weight:700;color:#0f0f0e;letter-spacing:-.4px;transition:color .5s}
@@ -1453,7 +1454,7 @@ body.dark .streak-pill .sp-unit{color:rgba(255,255,255,.32)}
 .big-q em{font-style:italic;font-weight:300;opacity:.48;display:block;margin-top:6px}
 body.dark .big-q{color:#fff}
 .search-bottom{padding-bottom:14px}
-.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-start;direction:rtl}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;direction:ltr}
 .chip{padding:9px 16px;border-radius:20px;background:rgba(255,255,255,.52);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.68);font-size:14px;color:#0f0f0e;cursor:pointer;font-family:var(--serif);font-style:italic;transition:all .15s}
 .chip:active{transform:scale(.94);background:rgba(255,255,255,.8)}
 
@@ -1568,6 +1569,90 @@ body.dark .ibar-send{background:rgba(255,255,255,.9)}
 .fn.on svg{color:#fff}
 .fn:active{transform:scale(.86)}
 .fn.on::after{content:'';position:absolute;bottom:4px;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.5)}
+
+
+/* ═══════════════════════════════════
+   CRITICAL OVERRIDES — must be last
+═══════════════════════════════════ */
+html,body{overflow:hidden!important;height:100%!important;max-height:100dvh!important}
+
+/* force app to be a real fullscreen shell */
+.app{
+  max-width:390px!important;width:100%!important;
+  height:100dvh!important;min-height:unset!important;
+  display:flex!important;flex-direction:column!important;
+  overflow:hidden!important;position:relative!important;
+  margin:0 auto!important;
+}
+
+/* topbar must be LTR flex with space-between */
+.topbar{
+  display:flex!important;flex-direction:row!important;
+  align-items:center!important;justify-content:space-between!important;
+  padding:max(env(safe-area-inset-top),14px) 20px 0!important;
+  position:relative!important;background:transparent!important;
+  border:none!important;direction:ltr!important;
+  width:100%!important;top:0!important;
+}
+
+/* chips: LTR flex-wrap, right aligned */
+.chips{
+  display:flex!important;flex-wrap:wrap!important;
+  gap:7px!important;justify-content:flex-end!important;
+  direction:ltr!important;
+}
+.chip{display:inline-flex!important}
+
+/* pages fill remaining space */
+.pages{
+  flex:1!important;min-height:0!important;
+  position:relative!important;z-index:5!important;
+  overflow:hidden!important;
+}
+
+/* old panes and nav MUST be hidden */
+.pane{display:none!important}
+.bottom-nav,.off-bar{display:none!important}
+
+/* pages system */
+.page{
+  position:absolute!important;inset:0!important;
+  display:flex!important;flex-direction:column!important;
+  opacity:0!important;pointer-events:none!important;
+  transition:opacity .28s ease!important;
+  padding-bottom:82px!important;
+}
+.page.on{opacity:1!important;pointer-events:all!important}
+
+/* search page layout */
+#pg-search{
+  padding:0 22px!important;
+  justify-content:space-between!important;
+  direction:rtl!important;
+}
+.search-top{flex:1!important;display:flex!important;align-items:center!important}
+.search-bottom{padding-bottom:14px!important}
+
+/* ibar positioning */
+.ibar{
+  position:absolute!important;bottom:0!important;
+  left:0!important;right:0!important;z-index:25!important;
+  padding:8px 16px max(env(safe-area-inset-bottom),14px)!important;
+}
+
+/* fnav positioning */
+.fnav{
+  position:absolute!important;
+  bottom:max(env(safe-area-inset-bottom),12px)!important;
+  left:50%!important;transform:translateX(-50%)!important;
+  z-index:40!important;
+}
+.fnav.hide{opacity:0!important;transform:translateX(-50%) translateY(16px)!important;pointer-events:none!important}
+
+/* result overlay */
+.result-overlay{
+  position:absolute!important;inset:0!important;z-index:50!important;
+}
 
 </style>
 </head>
