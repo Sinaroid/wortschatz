@@ -1755,37 +1755,39 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
   <!-- HOME -->
   <div class="pane on" id="pane-home">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)">
+
+    <!-- hero row — compact -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)">
       <div>
         <div style="font-size:10px;color:var(--ink3);font-weight:600;letter-spacing:.5px" id="hero-label">دستیار یادگیری آلمانی</div>
         <div style="font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);line-height:1.2" id="hero-title">لغت یاد بگیر</div>
       </div>
-
-    <div id="free-banner" style="display:none"></div>
-    <div style="position:relative;margin-bottom:var(--s2)" id="lang-badge-wrap">
-      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:4px;background:var(--bg2);color:var(--ink2);border:1px solid var(--bg3);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--sans)">
-        <span id="home-lang-flag">🇩🇪</span>
-        <span id="home-lang-label">آلمانی</span>
-        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </button>
-      <!-- Lang mini popover -->
-      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
-        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇩🇪</span>
-          <span>آلمانی</span>
-          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+      <div style="position:relative">
+        <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:4px;background:var(--bg2);color:var(--ink2);border:1px solid var(--bg3);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--sans)">
+          <span id="home-lang-flag">🇩🇪</span>
+          <span id="home-lang-label">آلمانی</span>
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
-        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇬🇧</span>
-          <div style="display:flex;flex-direction:column;align-items:flex-start">
-            <span>انگلیسی</span>
-            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
-          </div>
-          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
-        </button>
+        <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
+          <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink)">
+            <span style="font-size:16px">🇩🇪</span>
+            <span>آلمانی</span>
+            <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+          </button>
+          <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink)">
+            <span style="font-size:16px">🇬🇧</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-start">
+              <span>انگلیسی</span>
+              <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
+            </div>
+            <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+          </button>
+        </div>
       </div>
     </div>
-    <div class="s-wrap">
+
+    <div id="free-banner" style="display:none"></div>
+        <div class="s-wrap">
       <input class="s-field" id="s-inp"
         placeholder="لغت یا اصطلاح بنویس..."
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
