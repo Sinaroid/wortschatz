@@ -1416,17 +1416,7 @@ html,body{overflow:hidden!important;height:100dvh!important}
   pointer-events:none;
 }
 .grad-bg.dark{background:#0d0d0c}
-.gblob{
-  position:absolute;border-radius:50%;
-  filter:blur(80px);pointer-events:none;
-  transition:all 1.6s cubic-bezier(.4,0,.2,1);
-}
-.gb1{width:380px;height:380px;top:-120px;right:-90px;background:rgba(160,140,255,.34)}
-.gb2{width:300px;height:300px;top:50px;left:-110px;background:rgba(255,160,140,.28)}
-.gb3{width:260px;height:260px;bottom:140px;left:-40px;background:rgba(140,210,170,.22)}
-.grad-bg.dark .gb1{background:rgba(55,35,155,.5)}
-.grad-bg.dark .gb2{background:rgba(26,58,242,.25)}
-.grad-bg.dark .gb3{background:rgba(15,65,45,.34)}
+.gblob{display:none!important}
 
 /* 4. Topbar: LTR, space-between, transparent */
 .topbar{
@@ -1486,7 +1476,7 @@ body.dark .sp-unit{color:rgba(255,255,255,.32)!important}
 .pane,.bottom-nav,.off-bar,.reminder{display:none!important}
 
 /* 7. Search page */
-#pg-search{padding:0 22px!important;justify-content:space-between!important;direction:rtl!important}
+#pg-search{padding:0 22px!important;direction:rtl!important;justify-content:center!important}
 .big-q{
   font-family:'Fraunces',serif!important;font-size:52px!important;font-weight:700!important;
   color:#0f0f0e!important;line-height:.9!important;letter-spacing:-2.5px!important;
@@ -1495,7 +1485,12 @@ body.dark .sp-unit{color:rgba(255,255,255,.32)!important}
 .big-q em{font-style:italic!important;font-weight:300!important;opacity:.48!important;display:block!important;margin-top:6px!important}
 body.dark .big-q{color:#fff!important}
 .search-top{flex:1!important;display:flex!important;align-items:center!important}
-.search-bottom{padding-bottom:10px!important;flex-shrink:0!important}
+.search-bottom{
+  position:absolute!important;
+  bottom:152px!important;
+  left:22px!important;right:22px!important;
+  z-index:5!important;
+}
 .chips{display:flex!important;flex-wrap:wrap!important;gap:7px!important;direction:ltr!important;justify-content:flex-end!important}
 .chip{
   padding:9px 16px!important;border-radius:20px!important;
@@ -3520,7 +3515,8 @@ async function searchPhrase(q){
   btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن کل اصطلاح';
   btn.disabled=exists;btn.className='ph-add'+(exists?' done':'');
   Q('#ph-res').style.display='block';
-  setTimeout(function(){Q('#ph-res').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+  setTimeout(function(){
+  window.navTo = function(n){ uiNav(n); };Q('#ph-res').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
 }
 function rephrase(){
   if(window._phraseCorrection){
