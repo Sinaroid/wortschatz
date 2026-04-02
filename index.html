@@ -671,46 +671,46 @@ body.offline .topbar{top:36px}
 }
 .sum-card.show{display:block}
 
-/* ── STAT TABS ── */
-.stat-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:40px;padding:3px;margin-bottom:var(--s4)}
-.stat-tab{flex:1;padding:7px 4px;font-size:11px;color:var(--ink3);background:transparent;border:none;cursor:pointer;border-radius:40px;transition:all .18s;font-family:var(--sans);font-weight:400}
-.stat-tab.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:var(--sh1)}
-.stat-panel{display:none}.stat-panel.on{display:block}
-
-/* ── XP CARD ── */
-.xp-hero{background:var(--accent);border-radius:var(--r3);padding:var(--s4);margin-bottom:var(--s3);display:flex;align-items:center;gap:var(--s4)}
-.xp-hero-num{font-family:var(--serif);font-size:42px;font-weight:600;color:#fff;line-height:1}
-.xp-hero-right{flex:1}
-.xp-hero-lbl{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:6px}
-.xp-prog-wrap{height:5px;background:rgba(255,255,255,.2);border-radius:5px;overflow:hidden}
-.xp-prog-fill{height:100%;background:#fff;border-radius:5px;transition:width .5s var(--ease)}
-.xp-prog-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:4px}
-.xp-row{display:flex;align-items:center;gap:var(--s3);padding:9px 0;border-bottom:1px solid var(--bg2)}
-.xp-row:last-child{border-bottom:none}
-.xp-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.xp-info{flex:1}
-.xp-title{font-size:12px;font-weight:600;color:var(--ink)}
-.xp-sub{font-size:10px;color:var(--ink3);margin-top:1px}
-.xp-pts{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
-.xp-log-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bg2);font-size:12px}
-.xp-log-row:last-child{border-bottom:none}
-.xp-log-pts{font-weight:700;color:var(--accent)}
-
-/* ── HEATMAP ── */
-.hm-days-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}
-.hm-dl{font-size:9px;color:var(--ink4);text-align:center}
-.hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.hm-cell{aspect-ratio:1;border-radius:3px;background:var(--bg2)}
-.hm-cell.l1{background:rgba(26,58,242,.15)}
-.hm-cell.l2{background:rgba(26,58,242,.35)}
-.hm-cell.l3{background:rgba(26,58,242,.65)}
-.hm-cell.l4{background:var(--accent)}
-.hm-cell.cur{box-shadow:0 0 0 2px var(--accent),0 0 0 3px var(--card)}
-.hm-footer{display:flex;gap:8px;margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--bg2)}
-.hm-stat{flex:1;text-align:center}
-.hm-stat-n{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink)}
-.hm-stat-n.acc{color:var(--accent)}
-.hm-stat-l{font-size:10px;color:var(--ink3);margin-top:1px}
+/* ── COMPACT CARD v2 ── */
+.sc-streak-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
+.sc-streak-badge{display:flex;align-items:center;gap:10px}
+.sc-streak-num{font-family:var(--serif);font-size:36px;font-weight:600;color:var(--accent);line-height:1}
+.sc-streak-info{display:flex;flex-direction:column;gap:1px}
+.sc-streak-lvl{font-size:12px;font-weight:600;color:var(--ink)}
+.sc-streak-lbl{font-size:11px;color:var(--ink3)}
+.sc-next-pill{font-size:11px;color:var(--ink3);background:var(--bg2);border-radius:20px;padding:4px 10px;border:1px solid var(--bg3)}
+.sc-dots{display:flex;gap:4px;margin-bottom:var(--s3)}
+.sc-dot{flex:1;height:4px;border-radius:4px;background:var(--bg3)}
+.sc-dot.on{background:var(--accent)}
+.sc-dot.cur{background:var(--accent);box-shadow:0 0 0 2px var(--aglow)}
+.sc-btn-review{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:var(--s2);transition:background .15s}
+.sc-btn-review:hover{background:var(--accent2)}
+.sc-bottom-row{display:flex;gap:var(--s2)}
+.sc-stat{flex:1;background:var(--bg2);border-radius:var(--r2);padding:8px 10px;text-align:center}
+.sc-stat .n{font-size:18px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:2px}
+.sc-stat .n.ok{color:var(--ok)}
+.sc-stat .l{font-size:10px;color:var(--ink3)}
+.sc-btn-detail{padding:8px 14px;background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3);border-radius:var(--r2);font-size:12px;font-family:var(--sans);cursor:pointer;white-space:nowrap;transition:all .15s}
+.sc-btn-detail:hover{background:var(--bg3);color:var(--ink)}
+.sc-details{display:none;margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--bg3)}
+.sc-details.open{display:block}
+.sc-detail-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:30px;padding:3px;margin-bottom:var(--s3)}
+.sc-dt{flex:1;padding:6px 4px;font-size:11px;color:var(--ink3);background:transparent;border:none;border-radius:30px;cursor:pointer;font-family:var(--sans);transition:all .15s}
+.sc-dt.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:var(--sh1)}
+.sc-xp-hero{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.sc-xp-num{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--accent)}
+.sc-xp-bar-wrap{height:5px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:6px 0 4px}
+.sc-xp-bar{height:100%;background:var(--accent);border-radius:5px;transition:width .5s var(--ease)}
+.sc-xp-sub{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3)}
+.sc-xp-tip{margin-top:var(--s3);background:var(--abl);border-radius:var(--r2);padding:8px 10px;font-size:11px;color:var(--accent)}
+.sc-hm-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px}
+.sc-hm-dl{font-size:9px;color:var(--ink4);text-align:center}
+.sc-hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.sc-hm-c{aspect-ratio:1;border-radius:2px;background:var(--bg3)}
+.sc-hm-c.l2{background:rgba(26,58,242,.25)}
+.sc-hm-c.l4{background:var(--accent)}
+.sc-hm-c.t{box-shadow:0 0 0 1.5px var(--accent)}
+.sc-hm-foot{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--ink3)}
 
 /* header row */
 .sum-header{
@@ -1890,194 +1890,126 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     <!-- Stats card -->
     <div class="sum-card" id="sum-card">
 
-      <!-- tabs -->
-      <div class="stat-tabs">
-        <button class="stat-tab on" id="stab-streak" onclick="switchStatTab('streak')">streak</button>
-        <button class="stat-tab" id="stab-xp" onclick="switchStatTab('xp')">امتیاز</button>
-        <button class="stat-tab" id="stab-cal" onclick="switchStatTab('cal')">تقویم</button>
+      <!-- streak row -->
+      <div class="sc-streak-row">
+        <div class="sc-streak-badge">
+          <div id="sc-streak-empty" style="display:none">
+            <div style="font-size:28px">🌱</div>
+          </div>
+          <div id="sc-streak-num-wrap">
+            <div class="sc-streak-num" id="sn-streak">0</div>
+          </div>
+          <div class="sc-streak-info">
+            <div class="sc-streak-lvl" id="sc-streak-lvl">Anfänger 🌱</div>
+            <div class="sc-streak-lbl" id="sc-streak-lbl">روز متوالی</div>
+          </div>
+        </div>
+        <div class="sc-next-pill" id="sc-next-pill">امروز شروع کن</div>
       </div>
 
-      <!-- ══ STREAK PANEL ══ -->
-      <div class="stat-panel on" id="spanel-streak">
+      <!-- 7-day dots -->
+      <div class="sc-dots" id="sc-dots"></div>
 
-        <!-- hero cards row -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:var(--s3)">
-          <!-- streak card -->
-          <div style="background:var(--accent);border-radius:var(--r3);padding:var(--s4);position:relative;overflow:hidden">
-            <div style="position:absolute;top:-16px;right:-16px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
-            <div id="streak-empty-state" style="display:none;text-align:center;padding:4px 0">
-              <div style="font-size:24px;margin-bottom:4px">🌱</div>
-              <div style="font-size:12px;font-weight:600;color:#fff">امروز شروع کن</div>
-              <div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px">اولین مرور رو انجام بده</div>
-            </div>
-            <div id="streak-active-state">
-              <div style="font-family:var(--serif);font-size:46px;font-weight:600;color:#fff;line-height:1" id="sn-streak">0</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px" id="streak-level-name">روز متوالی</div>
-              <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:2px" id="streak-level-label">Anfänger 🌱</div>
-              <div id="streak-next-milestone" style="margin-top:8px;background:rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;display:inline-block">
-                <div style="font-size:10px;color:#fff" id="streak-next-text">۷ روز به Lerner</div>
-              </div>
+      <!-- primary CTA -->
+      <button class="sc-btn-review" onclick="sesOpenSmart()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="review-lbl">شروع مرور</span>
+      </button>
+
+      <!-- stats + detail toggle -->
+      <div class="sc-bottom-row">
+        <div class="sc-stat">
+          <div class="n" id="sn-total">0</div>
+          <div class="l">کل لغت</div>
+          <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:1px;display:none"></div>
+        </div>
+        <div class="sc-stat">
+          <div class="n ok" id="sn-learned">0</div>
+          <div class="l">یاد گرفتم</div>
+        </div>
+        <div class="sc-stat">
+          <div class="n" id="sn-due" style="color:var(--accent)">0</div>
+          <div class="l">مرور</div>
+        </div>
+        <button class="sc-btn-detail" onclick="scToggleDetail(this)">جزئیات ↓</button>
+      </div>
+
+      <!-- expandable details -->
+      <div class="sc-details" id="sc-details">
+        <div class="sc-detail-tabs">
+          <button class="sc-dt on" onclick="scTab('xp',this)">امتیاز XP</button>
+          <button class="sc-dt" onclick="scTab('cal',this)">تقویم</button>
+          <button class="sc-dt" onclick="scTab('freeze',this)">🧊 freeze</button>
+        </div>
+
+        <!-- XP panel -->
+        <div id="sc-panel-xp">
+          <div class="sc-xp-hero">
+            <div style="font-size:11px;color:var(--ink3)">امتیاز کل</div>
+            <div class="sc-xp-num"><span id="sc-xp-total">0</span> <span style="font-size:11px;font-weight:400;color:var(--ink3)">XP</span></div>
+          </div>
+          <div class="sc-xp-bar-wrap"><div class="sc-xp-bar" id="sc-xp-bar" style="width:0%"></div></div>
+          <div class="sc-xp-sub">
+            <span id="sc-xp-sub-left">—</span>
+            <span id="sc-xp-sub-pct">0%</span>
+          </div>
+          <div class="sc-xp-tip">هر ۱۰۰ XP = ۵ جستجوی رایگان اضافه ⚡</div>
+          <div style="margin-top:var(--s3);font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.3px;margin-bottom:6px">چطور XP بگیری</div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">📖 مرور روزانه</span><span style="color:var(--accent);font-weight:600">+10 XP</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">🔥 streak bonus</span><span style="color:var(--accent);font-weight:600">+5 XP</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">✅ تسلط لغت</span><span style="color:var(--accent);font-weight:600">+3 XP</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--ink2)">📦 تکمیل pack</span><span style="color:var(--accent);font-weight:600">+50 XP</span></div>
+          </div>
+        </div>
+
+        <!-- Calendar panel -->
+        <div id="sc-panel-cal" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-size:12px;font-weight:600;color:var(--ink)" id="sc-cal-title">—</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--ink3)">
+              کمتر
+              <div style="width:8px;height:8px;border-radius:2px;background:var(--bg3)"></div>
+              <div style="width:8px;height:8px;border-radius:2px;background:rgba(26,58,242,.25)"></div>
+              <div style="width:8px;height:8px;border-radius:2px;background:var(--accent)"></div>
+              بیشتر
             </div>
           </div>
-          <!-- stats card -->
-          <div style="background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r3);padding:var(--s4)">
-            <div style="font-size:11px;color:var(--ink3);margin-bottom:3px">کل لغت</div>
-            <div style="font-family:var(--serif);font-size:36px;font-weight:600;color:var(--ink);line-height:1" id="sn-total">0</div>
-            <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:3px;display:none"></div>
-            <div style="margin-top:10px;display:flex;justify-content:space-between">
+          <div class="sc-hm-days">
+            <div class="sc-hm-dl">ش</div><div class="sc-hm-dl">ی</div><div class="sc-hm-dl">د</div>
+            <div class="sc-hm-dl">س</div><div class="sc-hm-dl">چ</div><div class="sc-hm-dl">پ</div><div class="sc-hm-dl">ج</div>
+          </div>
+          <div class="sc-hm-grid" id="sc-hm-grid"></div>
+          <div class="sc-hm-foot">
+            <span>streak: <strong style="color:var(--accent)" id="sc-hm-streak">0</strong></span>
+            <span>بهترین: <strong style="color:var(--ink)" id="sc-hm-best">0</strong></span>
+            <span>روز فعال: <strong style="color:var(--ink)" id="sc-hm-active">0</strong></span>
+          </div>
+        </div>
+
+        <!-- Freeze panel -->
+        <div id="sc-panel-freeze" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:var(--r2);padding:10px 12px;margin-bottom:var(--s3)">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:20px">🧊</span>
               <div>
-                <div style="font-size:18px;font-weight:700;color:var(--ok)" id="sn-learned">0</div>
-                <div style="font-size:9px;color:var(--ink3)">یاد گرفتم</div>
-              </div>
-              <div style="text-align:left">
-                <div style="font-size:18px;font-weight:700;color:var(--accent)" id="sn-due">0</div>
-                <div style="font-size:9px;color:var(--ink3)">مرور</div>
+                <div style="font-size:12px;font-weight:600;color:var(--ink)">Streak Freeze</div>
+                <div style="font-size:10px;color:var(--ink3)" id="sc-freeze-desc">محافظت در برابر شکستن streak</div>
               </div>
             </div>
+            <div id="sc-freeze-dots" style="display:flex;gap:4px"></div>
           </div>
-        </div>
-
-        <!-- 7 day bars -->
-        <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s3) var(--s4);margin-bottom:var(--s3)">
-          <div style="font-size:10px;color:var(--ink3);font-weight:600;margin-bottom:8px;letter-spacing:.3px">۷ روز اخیر</div>
-          <div style="display:flex;gap:5px;align-items:flex-end;height:32px;margin-bottom:5px" id="sum-bars"></div>
-          <div style="display:flex;gap:5px" id="sum-bars-labels"></div>
-        </div>
-
-        <!-- freeze -->
-        <div id="freeze-status" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:10px;padding:8px 12px;margin-bottom:var(--s3)">
-          <div style="display:flex;align-items:center;gap:6px">
-            <span style="font-size:16px">🧊</span>
-            <div>
-              <div style="font-size:11px;font-weight:600;color:var(--ink)">Streak Freeze</div>
-              <div style="font-size:10px;color:var(--ink3)" id="freeze-desc">محافظت در برابر شکستن streak</div>
-            </div>
-          </div>
-          <div id="freeze-dots" style="display:flex;gap:4px"></div>
-        </div>
-
-        <!-- progress to next level -->
-        <div style="margin-bottom:var(--s4)">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <div style="font-size:10px;color:var(--ink3)" id="lvl-progress-label">پیشرفت به Lerner</div>
-            <div style="font-size:10px;font-weight:600;color:var(--accent)" id="lvl-progress-pct"></div>
+          <!-- progress to next level -->
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:5px">
+            <span id="sc-lvl-lbl">پیشرفت به Lerner</span>
+            <span id="sc-lvl-pct" style="color:var(--accent)"></span>
           </div>
           <div style="height:4px;background:var(--bg3);border-radius:4px;overflow:hidden">
-            <div id="lvl-progress-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .5s var(--ease);width:0%"></div>
+            <div id="sc-lvl-bar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width .5s"></div>
           </div>
         </div>
 
-        <div class="sum-acts">
-          <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">شروع مرور</span> →</button>
-          <button class="sum-all" onclick="sesOpen()">همه لغات</button>
-        </div>
       </div>
-
-      <!-- ══ XP PANEL ══ -->
-      <div class="stat-panel" id="spanel-xp">
-        <div class="xp-hero">
-          <div>
-            <div style="font-size:10px;color:rgba(255,255,255,.7);margin-bottom:2px">امتیاز کل</div>
-            <div class="xp-hero-num" id="xp-total">0</div>
-            <div style="font-size:10px;color:rgba(255,255,255,.7)">XP</div>
-          </div>
-          <div class="xp-hero-right">
-            <div class="xp-hero-lbl" id="xp-next-label">تا سطح بعدی</div>
-            <div class="xp-prog-wrap">
-              <div class="xp-prog-fill" id="xp-prog-fill" style="width:0%"></div>
-            </div>
-            <div class="xp-prog-sub" id="xp-prog-sub">— XP مونده</div>
-          </div>
-        </div>
-
-        <!-- how to earn -->
-        <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s3) var(--s4);margin-bottom:var(--s3)">
-          <div style="font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.5px;margin-bottom:8px">چطور XP بگیری</div>
-          <div class="xp-row">
-            <div class="xp-ic" style="background:var(--abl)">📖</div>
-            <div class="xp-info"><div class="xp-title">مرور روزانه</div><div class="xp-sub">هر سشن کامل</div></div>
-            <div class="xp-pts">+10 XP</div>
-          </div>
-          <div class="xp-row">
-            <div class="xp-ic" style="background:var(--warnbg)">🔥</div>
-            <div class="xp-info"><div class="xp-title">streak bonus</div><div class="xp-sub">هر روز متوالی اضافه</div></div>
-            <div class="xp-pts">+5 XP</div>
-          </div>
-          <div class="xp-row">
-            <div class="xp-ic" style="background:var(--okbg)">✅</div>
-            <div class="xp-info"><div class="xp-title">تسلط کامل لغت</div><div class="xp-sub">interval بالای ۷ روز</div></div>
-            <div class="xp-pts">+3 XP</div>
-          </div>
-          <div class="xp-row">
-            <div class="xp-ic" style="background:var(--bg3)">📦</div>
-            <div class="xp-info"><div class="xp-title">تکمیل Pack</div><div class="xp-sub">همه لغات یه pack</div></div>
-            <div class="xp-pts">+50 XP</div>
-          </div>
-          <div class="xp-row" style="border-bottom:none">
-            <div class="xp-ic" style="background:#fff8e6">🏆</div>
-            <div class="xp-info"><div class="xp-title">milestone streak</div><div class="xp-sub">۷، ۱۴، ۳۰ روز</div></div>
-            <div class="xp-pts">+100 XP</div>
-          </div>
-        </div>
-
-        <!-- جایزه XP -->
-        <div style="background:var(--abl);border:1px solid rgba(26,58,242,.15);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s3)">
-          <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:3px">جایزه XP چیه؟ ⚡</div>
-          <div style="font-size:11px;color:var(--ink2);line-height:1.6">هر <strong>100 XP</strong> = <strong>5 جستجوی اضافه</strong> برای Free users<br>XP بیشتر = جستجو بیشتر</div>
-        </div>
-
-        <!-- log -->
-        <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s3) var(--s4)">
-          <div style="font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:.5px;margin-bottom:8px">فعالیت اخیر</div>
-          <div id="xp-log-list"><div style="font-size:12px;color:var(--ink3);text-align:center;padding:8px">هنوز فعالیتی نیست</div></div>
-        </div>
-
-        <div class="sum-acts" style="margin-top:var(--s3)">
-          <button class="sum-review" onclick="sesOpenSmart()">مرور و XP بگیر ←</button>
-          <button class="sum-all" onclick="sesOpen()">همه لغات</button>
-        </div>
-      </div>
-
-      <!-- ══ CALENDAR PANEL ══ -->
-      <div class="stat-panel" id="spanel-cal">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="font-size:13px;font-weight:600;color:var(--ink)" id="cal-month-title">—</div>
-          <div style="display:flex;align-items:center;gap:3px;font-size:10px;color:var(--ink3)">
-            کمتر
-            <div style="width:9px;height:9px;border-radius:2px;background:var(--bg2)"></div>
-            <div style="width:9px;height:9px;border-radius:2px;background:rgba(26,58,242,.2)"></div>
-            <div style="width:9px;height:9px;border-radius:2px;background:rgba(26,58,242,.55)"></div>
-            <div style="width:9px;height:9px;border-radius:2px;background:var(--accent)"></div>
-            بیشتر
-          </div>
-        </div>
-        <div class="hm-days-hdr">
-          <div class="hm-dl">ش</div><div class="hm-dl">ی</div><div class="hm-dl">د</div>
-          <div class="hm-dl">س</div><div class="hm-dl">چ</div><div class="hm-dl">پ</div><div class="hm-dl">ج</div>
-        </div>
-        <div class="hm-grid" id="hm-grid"></div>
-        <div class="hm-footer">
-          <div class="hm-stat">
-            <div class="hm-stat-n acc" id="hm-streak">0</div>
-            <div class="hm-stat-l">streak فعلی</div>
-          </div>
-          <div style="width:1px;background:var(--bg3)"></div>
-          <div class="hm-stat">
-            <div class="hm-stat-n" id="hm-best">0</div>
-            <div class="hm-stat-l">بهترین streak</div>
-          </div>
-          <div style="width:1px;background:var(--bg3)"></div>
-          <div class="hm-stat">
-            <div class="hm-stat-n" id="hm-active">0</div>
-            <div class="hm-stat-l">روز فعال ماه</div>
-          </div>
-        </div>
-        <div class="sum-acts" style="margin-top:var(--s3)">
-          <button class="sum-review" onclick="sesOpenSmart()"><span>شروع مرور</span> →</button>
-          <button class="sum-all" onclick="sesOpen()">همه لغات</button>
-        </div>
-      </div>
-
     </div>
 
     <!-- Home empty state -->
@@ -3040,131 +2972,6 @@ function updateBadges(){
 /* ══════════════════════════════
    STATS / SUMMARY CARD
 ══════════════════════════════ */
-function updateStats(){
-  const card=Q('#sum-card');
-  const homeEmpty=Q('#home-empty');
-  const fw=filteredWords();
-  if(!fw.length){
-    card.classList.remove('show');
-    if(homeEmpty) homeEmpty.classList.add('show');
-    return;
-  }
-  card.classList.add('show');
-  if(homeEmpty) homeEmpty.classList.remove('show');
-  const now=new Date();
-  const due=fw.filter(w=>new Date(w.next_review||0)<=now);
-  const learned=fw.filter(w=>w.seen>0&&w.interval>3);
-
-  // stats
-  const totalEl=Q('#sn-total'); if(totalEl) totalEl.textContent=fw.length;
-  const learnedEl=Q('#sn-learned'); if(learnedEl) learnedEl.textContent=learned.length;
-  const dueEl=Q('#sn-due'); if(dueEl) dueEl.textContent=due.length;
-
-  // lang split
-  const splitEl=Q('#sn-lang-split');
-  if(splitEl && words.length>0){
-    const deC=words.filter(w=>(w.lang||'de')==='de').length;
-    const enC=words.filter(w=>w.lang==='en').length;
-    if(deC>0&&enC>0){splitEl.textContent='🇩🇪 '+deC+' · 🇬🇧 '+enC;splitEl.style.display='block';}
-    else splitEl.style.display='none';
-  }
-
-  // streak
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={};Object.keys(rl).forEach(k=>all[k]=1);Object.keys(ol).forEach(k=>all[k]=1);
-  const today=new Date().toDateString();
-  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
-  let s=0;const dd=new Date();
-  while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
-
-  // streak UI
-  const emptyEl=Q('#streak-empty-state');
-  const activeEl=Q('#streak-active-state');
-  if(s===0){
-    if(emptyEl)emptyEl.style.display='block';
-    if(activeEl)activeEl.style.display='none';
-  } else {
-    if(emptyEl)emptyEl.style.display='none';
-    if(activeEl)activeEl.style.display='block';
-    const snEl=Q('#sn-streak'); if(snEl) snEl.textContent=s;
-    const lvl=getStreakLevel(s);
-    const nameEl=Q('#streak-level-name'); if(nameEl){nameEl.textContent='روز متوالی';nameEl.style.color='rgba(255,255,255,.75)';}
-    const labelEl=Q('#streak-level-label'); if(labelEl) labelEl.textContent=lvl.name+' '+lvl.icon;
-    // next milestone progress bar
-    const nextM=MILESTONES.find(m=>m>s);
-    const barEl=Q('#lvl-progress-bar');
-    const pctEl=Q('#lvl-progress-pct');
-    const lblEl=Q('#lvl-progress-label');
-    const nextTextEl=Q('#streak-next-text');
-    if(nextM){
-      const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;
-      const pct=Math.round((s-prevM)/(nextM-prevM)*100);
-      const nextLvl=getStreakLevel(nextM);
-      if(barEl) barEl.style.width=pct+'%';
-      if(pctEl) pctEl.textContent=pct+'%';
-      if(lblEl) lblEl.textContent='پیشرفت به '+nextLvl.name;
-      if(nextTextEl) nextTextEl.textContent=(nextM-s)+' روز به '+nextLvl.name+' '+nextLvl.icon;
-    } else {
-      if(barEl) barEl.style.width='100%';
-      if(lblEl) lblEl.textContent='بالاترین سطح 👑';
-      if(nextTextEl) nextTextEl.textContent='به Legende رسیدی 👑';
-    }
-  }
-
-  // 7-day bars
-  const barsEl=Q('#sum-bars');
-  const barsLbl=Q('#sum-bars-labels');
-  if(barsEl){
-    const dn=['ش','ی','د','س','چ','پ','ج'];
-    let barsHtml='', lblsHtml='';
-    const maxCount = Math.max(1,...Array.from({length:7},(_,i)=>{
-      const d=new Date(); d.setDate(d.getDate()-(6-i));
-      return rl[d.toDateString()]||0;
-    }));
-    for(let i=6;i>=0;i--){
-      const d=new Date(); d.setDate(d.getDate()-i);
-      const isT=i===0;
-      const cnt=rl[d.toDateString()]||0;
-      const done=all[d.toDateString()];
-      const h=done?Math.max(30,Math.round((cnt/maxCount)*100))+'%':'20%';
-      const bg=done?'var(--accent)':'var(--bg3)';
-      const border=isT?'border:2px solid var(--accent);':'';
-      barsHtml+=`<div style="flex:1;height:${h};background:${bg};border-radius:5px;${border}transition:height .3s"></div>`;
-      lblsHtml+=`<div style="flex:1;text-align:center;font-size:9px;color:${isT?'var(--accent)':'var(--ink4)'};font-weight:${isT?'700':'400'}">${isT?'▲':dn[d.getDay()]}</div>`;
-    }
-    barsEl.innerHTML=barsHtml;
-    if(barsLbl) barsLbl.innerHTML=lblsHtml;
-  }
-
-  // freeze
-  const freezeData=getStreakFreezes();
-  const maxFreeze=userPlan==='pro'?3:1;
-  const freezeDotsEl=Q('#freeze-dots');
-  const freezeDesc=Q('#freeze-desc');
-  if(freezeDotsEl){
-    let fdHtml='';
-    for(let i=0;i<maxFreeze;i++){
-      const used=i<freezeData.count;
-      fdHtml+=`<div style="width:24px;height:24px;border-radius:50%;background:${used?'var(--bg3)':'var(--abl)'};border:2px solid ${used?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${used?'.3':'1'}">🧊</div>`;
-    }
-    freezeDotsEl.innerHTML=fdHtml;
-  }
-  if(freezeDesc){
-    const left=maxFreeze-freezeData.count;
-    if(userPlan!=='pro') freezeDesc.innerHTML=left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد · <span onclick="window.open(\'https://t.me/cinuxx\',\'_blank\')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Pro: ۳ تا</span>';
-    else freezeDesc.textContent=left+' تا Freeze مونده این هفته';
-  }
-
-  // review button
-  const lbl=Q('#review-lbl');
-  if(lbl){
-    const smartDeck=buildSmartDeck();
-    lbl.textContent=due.length>0?`مرور ${smartDeck.length} کارت`:`سشن ${smartDeck.length} کارتی`;
-  }
-
-  updateXPUI();
-}
 // ══════════════════════════════
 // STREAK SYSTEM
 // ══════════════════════════════
@@ -3285,20 +3092,6 @@ function closeMilestone(){ Q('#milestone-modal')?.classList.remove('open'); }
 function streakBreakUpgrade(){ closeStreakBreak(); window.open('https://t.me/cinuxx','_blank'); }
 function milestoneUpgrade(){ closeMilestone(); window.open('https://t.me/cinuxx','_blank'); }
 
-function logReview(){
-  const today=new Date().toDateString();
-  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const wasFirst = !log[today];
-  log[today]=(log[today]||0)+1;
-  const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
-  const t={};keys.forEach(k=>t[k]=log[k]);
-  localStorage.setItem('ws_rlog',JSON.stringify(t));
-  // XP برای اولین مرور روز
-  if(wasFirst) addXP(10, 'مرور روزانه');
-  // XP streak bonus
-  const streak = calcStreak();
-  if(wasFirst && streak > 1) addXP(5, 'streak bonus — '+streak+' روز');
-}
 
 /* ══════════════════════════════
    SEARCH
@@ -3846,14 +3639,10 @@ async function sesRate(good){
     else if(o.seen===1) o.interval = 3;
     else if(o.seen===2) o.interval = 7;
     else o.interval = Math.round(o.interval * o.easiness);
-    o.interval = Math.max(1, Math.min(30, o.interval));
+    o.interval = Math.max(1, Math.min(30, o.interval)); // حداکثر ۳۰ روز
     const next = new Date(); next.setDate(next.getDate()+o.interval);
     o.next_review = next.toISOString(); o.reviewed_at = new Date().toISOString();
     o.score += good ? 1 : -1; o.seen++;
-    // XP برای تسلط کامل
-    if(good && o.interval >= 7 && o.seen === Math.ceil(o.interval/3)){
-      addXP(3, 'تسلط روی «'+o.de+'»');
-    }
     logReview(); checkMilestone(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
   }
 
@@ -4129,140 +3918,215 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-/* ══════════════════════════════
-   XP SYSTEM
-══════════════════════════════ */
-const XP_LEVELS = [
-  {min:0,   max:99,  name:'مبتدی',    next:100},
-  {min:100, max:299, name:'یادگیر',   next:300},
-  {min:300, max:599, name:'پیشرفته',  next:600},
-  {min:600, max:999, name:'حرفه‌ای',  next:1000},
-  {min:1000,max:9999,name:'استاد',    next:null},
-];
-
-function getXP(){ return parseInt(localStorage.getItem('ws_xp')||'0'); }
-function setXP(v){ localStorage.setItem('ws_xp',String(v)); }
-
-function addXP(amount, reason){
-  const prev = getXP();
-  const next = prev + amount;
+/* ══ XP SYSTEM ══ */
+const XP_LEVELS=[{min:0,max:99,name:'مبتدی'},{min:100,max:299,name:'یادگیر'},{min:300,max:599,name:'پیشرفته'},{min:600,max:999,name:'حرفه‌ای'},{min:1000,max:9999,name:'استاد'}];
+function getXP(){return parseInt(localStorage.getItem('ws_xp')||'0');}
+function setXP(v){localStorage.setItem('ws_xp',String(v));}
+function addXP(amount,reason){
+  const prev=getXP(),next=prev+amount;
   setXP(next);
-  // log
-  const log = JSON.parse(localStorage.getItem('ws_xp_log')||'[]');
-  log.unshift({pts:amount, reason, ts:new Date().toISOString()});
-  if(log.length>20) log.pop();
-  localStorage.setItem('ws_xp_log', JSON.stringify(log));
-  // جایزه: هر 100 XP = 5 جستجوی اضافه برای free
-  const prevHundreds = Math.floor(prev/100);
-  const nextHundreds = Math.floor(next/100);
-  if(nextHundreds > prevHundreds && (userPlan==='free')){
-    const bonus = (nextHundreds - prevHundreds) * 5;
+  const log=JSON.parse(localStorage.getItem('ws_xp_log')||'[]');
+  log.unshift({pts:amount,reason,ts:new Date().toISOString()});
+  if(log.length>20)log.pop();
+  localStorage.setItem('ws_xp_log',JSON.stringify(log));
+  const prevH=Math.floor(prev/100),nextH=Math.floor(next/100);
+  if(nextH>prevH&&userPlan==='free'){
+    const bonus=(nextH-prevH)*5;
     if(currentUser?.id){
-      sb.from('profiles')
-        .update({search_count: Math.max(0, userSearchCount - bonus)})
-        .eq('id', currentUser.id)
-        .then(()=>{ userSearchCount = Math.max(0, userSearchCount - bonus); updateFreeBanner(); })
-        .catch(()=>{});
+      sb.from('profiles').update({search_count:Math.max(0,userSearchCount-bonus)}).eq('id',currentUser.id)
+        .then(()=>{userSearchCount=Math.max(0,userSearchCount-bonus);updateFreeBanner();}).catch(()=>{});
     }
-    showToast(`🎉 ${nextHundreds*100} XP! +${bonus} جستجوی رایگان گرفتی`, 3500, 'ok');
+    showToast('🎉 '+nextH*100+' XP! +'+bonus+' جستجوی رایگان گرفتی',3500,'ok');
   }
   updateXPUI();
 }
-
 function updateXPUI(){
-  const xp = getXP();
-  const lvl = XP_LEVELS.find(l=>xp>=l.min&&xp<=l.max) || XP_LEVELS[XP_LEVELS.length-1];
-  const el = Q('#xp-total'); if(el) el.textContent = xp;
-  const nextLabel = Q('#xp-next-label');
-  const fill = Q('#xp-prog-fill');
-  const sub = Q('#xp-prog-sub');
-  if(lvl.next){
-    const pct = Math.round((xp - lvl.min)/(lvl.next - lvl.min)*100);
-    if(fill) fill.style.width = pct+'%';
-    if(sub) sub.textContent = (lvl.next - xp)+' XP مونده به '+XP_LEVELS[XP_LEVELS.indexOf(lvl)+1]?.name;
-    if(nextLabel) nextLabel.textContent = 'تا سطح «'+XP_LEVELS[XP_LEVELS.indexOf(lvl)+1]?.name+'»';
+  const xp=getXP();
+  const lvlIdx=XP_LEVELS.findIndex(l=>xp>=l.min&&xp<=l.max);
+  const lvl=XP_LEVELS[lvlIdx>=0?lvlIdx:XP_LEVELS.length-1];
+  const nextLvl=XP_LEVELS[lvlIdx+1];
+  const el=Q('#sc-xp-total');if(el)el.textContent=xp;
+  const fill=Q('#sc-xp-bar'),sub1=Q('#sc-xp-sub-left'),sub2=Q('#sc-xp-sub-pct');
+  if(nextLvl){
+    const pct=Math.round((xp-lvl.min)/(nextLvl.min-lvl.min)*100);
+    if(fill)fill.style.width=pct+'%';
+    if(sub1)sub1.textContent=(nextLvl.min-xp)+' XP مونده به «'+nextLvl.name+'»';
+    if(sub2)sub2.textContent=pct+'%';
   } else {
-    if(fill) fill.style.width = '100%';
-    if(sub) sub.textContent = 'بالاترین سطح 🏆';
-    if(nextLabel) nextLabel.textContent = 'سطح نهایی';
-  }
-  // log list
-  const logEl = Q('#xp-log-list');
-  if(logEl){
-    const log = JSON.parse(localStorage.getItem('ws_xp_log')||'[]');
-    if(!log.length){ logEl.innerHTML='<div style="font-size:12px;color:var(--ink3);text-align:center;padding:8px">هنوز فعالیتی نیست</div>'; return; }
-    logEl.innerHTML = log.slice(0,5).map(l=>{
-      const ago = Math.round((Date.now()-new Date(l.ts))/60000);
-      const agoStr = ago<1?'همین الان':ago<60?ago+' دقیقه پیش':ago<1440?Math.round(ago/60)+' ساعت پیش':Math.round(ago/1440)+' روز پیش';
-      return `<div class="xp-log-row"><div style="color:var(--ink2)">${l.reason}</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:var(--ink4)">${agoStr}</span><span class="xp-log-pts">+${l.pts} XP</span></div></div>`;
-    }).join('');
+    if(fill)fill.style.width='100%';
+    if(sub1)sub1.textContent='بالاترین سطح 🏆';
+    if(sub2)sub2.textContent='100%';
   }
 }
 
-function switchStatTab(name){
-  ['streak','xp','cal'].forEach(n=>{
-    const p=Q('#spanel-'+n); if(p) p.classList.toggle('on',n===name);
-    const t=Q('#stab-'+n); if(t) t.classList.toggle('on',n===name);
-  });
-  if(name==='cal') buildHeatmap();
-  if(name==='xp') updateXPUI();
+function scToggleDetail(btn){
+  const d=Q('#sc-details');
+  const open=d.classList.toggle('open');
+  btn.textContent=open?'بستن ↑':'جزئیات ↓';
+  if(open){updateXPUI();buildScHeatmap();}
 }
 
-function buildHeatmap(){
-  const grid = Q('#hm-grid'); if(!grid) return;
-  const now = new Date();
-  const yr = now.getFullYear(), mo = now.getMonth();
-  const daysInMonth = new Date(yr, mo+1, 0).getDate();
-  const firstDay = new Date(yr, mo, 1).getDay(); // 0=Sun
-  // convert to Sat-start: Sat=0
-  const offset = (firstDay + 1) % 7;
+function scTab(name,el){
+  ['xp','cal','freeze'].forEach(n=>{const p=Q('#sc-panel-'+n);if(p)p.style.display='none';});
+  document.querySelectorAll('.sc-dt').forEach(t=>t.classList.remove('on'));
+  const p=Q('#sc-panel-'+name);if(p)p.style.display='block';
+  el.classList.add('on');
+  if(name==='cal')buildScHeatmap();
+}
 
-  // read logs
-  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all = {}; Object.keys(rl).forEach(k=>{ all[k]=(rl[k]||0); }); Object.keys(ol).forEach(k=>{ if(!all[k]) all[k]=1; });
-
-  // month label
+function buildScHeatmap(){
+  const grid=Q('#sc-hm-grid');if(!grid)return;
+  const now=new Date(),yr=now.getFullYear(),mo=now.getMonth();
+  const daysInMonth=new Date(yr,mo+1,0).getDate();
+  const firstDay=new Date(yr,mo,1).getDay();
+  const offset=(firstDay+1)%7;
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all={};Object.keys(rl).forEach(k=>all[k]=(rl[k]||0));Object.keys(ol).forEach(k=>{if(!all[k])all[k]=1;});
   const mNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
-  // approx Farsi month
-  const fMonth = mNames[(mo+9)%12];
-  const titleEl = Q('#cal-month-title'); if(titleEl) titleEl.textContent = fMonth+' '+yr;
-
-  grid.innerHTML = '';
-  // empty cells
-  for(let i=0;i<offset;i++){
-    const e=document.createElement('div'); e.className='hm-cell'; e.style.background='transparent'; grid.appendChild(e);
-  }
-  let activeCount = 0;
+  const t=Q('#sc-cal-title');if(t)t.textContent=mNames[(mo+9)%12]+' '+yr;
+  grid.innerHTML='';
+  for(let i=0;i<offset;i++){const e=document.createElement('div');e.className='sc-hm-c';e.style.background='transparent';grid.appendChild(e);}
+  let active=0;
   for(let d=1;d<=daysInMonth;d++){
-    const date = new Date(yr, mo, d);
-    const key = date.toDateString();
-    const c = document.createElement('div');
-    const cnt = all[key]||0;
-    let cls = 'hm-cell';
-    if(cnt>=10) cls+=' l4';
-    else if(cnt>=5) cls+=' l3';
-    else if(cnt>=1) cls+=' l2';
-    else if(cnt>0) cls+=' l1';
-    if(d===now.getDate()) cls+=' cur';
-    c.className = cls;
-    if(cnt>0) activeCount++;
+    const key=new Date(yr,mo,d).toDateString();
+    const cnt=all[key]||0;
+    const c=document.createElement('div');
+    let cls='sc-hm-c';
+    if(cnt>=5)cls+=' l4';
+    else if(cnt>=1)cls+=' l2';
+    if(d===now.getDate())cls+=' t';
+    c.className=cls;
+    if(cnt>0)active++;
     grid.appendChild(c);
   }
+  const streak=calcStreak();
+  const s1=Q('#sc-hm-streak');if(s1)s1.textContent=streak;
+  const allDays=Object.keys(all).sort((a,b)=>new Date(a)-new Date(b));
+  let best=0,cur2=0,prev2=null;
+  allDays.forEach(k=>{const d=new Date(k);if(prev2&&(d-prev2)===86400000)cur2++;else cur2=1;if(cur2>best)best=cur2;prev2=d;});
+  const s2=Q('#sc-hm-best');if(s2)s2.textContent=best;
+  const s3=Q('#sc-hm-active');if(s3)s3.textContent=active;
+}
 
-  // footer stats
-  const streak = calcStreak();
-  const el1=Q('#hm-streak'); if(el1) el1.textContent=streak;
-  // best streak
-  const allDays = Object.keys(all).sort((a,b)=>new Date(a)-new Date(b));
-  let best=0, cur2=0, prev2=null;
-  allDays.forEach(k=>{ const d=new Date(k); if(prev2&&(d-prev2)===86400000) cur2++; else cur2=1; if(cur2>best)best=cur2; prev2=d; });
-  const el2=Q('#hm-best'); if(el2) el2.textContent=best;
-  const el3=Q('#hm-active'); if(el3) el3.textContent=activeCount;
+function updateStats(){
+  const card=Q('#sum-card');
+  const homeEmpty=Q('#home-empty');
+  const fw=filteredWords();
+  if(!fw.length){card.classList.remove('show');if(homeEmpty)homeEmpty.classList.add('show');return;}
+  card.classList.add('show');
+  if(homeEmpty)homeEmpty.classList.remove('show');
+  const now=new Date();
+  const due=fw.filter(w=>new Date(w.next_review||0)<=now);
+  const learned=fw.filter(w=>w.seen>0&&w.interval>3);
+
+  const el=Q('#sn-total');if(el)el.textContent=fw.length;
+  const el2=Q('#sn-learned');if(el2)el2.textContent=learned.length;
+  const el3=Q('#sn-due');if(el3)el3.textContent=due.length;
+
+  const splitEl=Q('#sn-lang-split');
+  if(splitEl&&words.length>0){
+    const deC=words.filter(w=>(w.lang||'de')==='de').length;
+    const enC=words.filter(w=>w.lang==='en').length;
+    if(deC>0&&enC>0){splitEl.textContent='🇩🇪 '+deC+' · 🇬🇧 '+enC;splitEl.style.display='block';}
+    else splitEl.style.display='none';
+  }
+
+  // streak calc
+  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const all={};Object.keys(rl).forEach(k=>all[k]=1);Object.keys(ol).forEach(k=>all[k]=1);
+  const today=new Date().toDateString();
+  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
+  let s=0;const dd=new Date();
+  while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
+
+  // streak UI
+  const numEl=Q('#sn-streak');if(numEl)numEl.textContent=s||'0';
+  const emptyEl=Q('#sc-streak-empty'),numWrap=Q('#sc-streak-num-wrap');
+  if(s===0){
+    if(emptyEl)emptyEl.style.display='block';
+    if(numWrap)numWrap.style.display='none';
+  } else {
+    if(emptyEl)emptyEl.style.display='none';
+    if(numWrap)numWrap.style.display='block';
+  }
+  const lvl=getStreakLevel(s||0);
+  const lvlEl=Q('#sc-streak-lvl');if(lvlEl)lvlEl.textContent=lvl.name+' '+lvl.icon;
+  const lblEl=Q('#sc-streak-lbl');if(lblEl)lblEl.textContent=s>0?'روز متوالی':'شروع کن!';
+  const nextM=MILESTONES.find(m=>m>s);
+  const pillEl=Q('#sc-next-pill');
+  if(pillEl){
+    if(s===0)pillEl.textContent='اولین مرور رو انجام بده';
+    else if(nextM){const nLvl=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nLvl.name;}
+    else pillEl.textContent='به Legende رسیدی 👑';
+  }
+
+  // 7-day dots
+  const dotsEl=Q('#sc-dots');
+  if(dotsEl){
+    let h='';
+    for(let i=6;i>=0;i--){
+      const d=new Date();d.setDate(d.getDate()-i);
+      const isT=i===0,done=!!all[d.toDateString()];
+      h+=`<div class="sc-dot${done&&!isT?' on':isT?' cur':''}"></div>`;
+    }
+    dotsEl.innerHTML=h;
+  }
+
+  // review button
+  const lbl=Q('#review-lbl');
+  if(lbl){const deck=buildSmartDeck();lbl.textContent=due.length>0?`مرور ${deck.length} کارت`:`سشن ${deck.length} کارتی`;}
+
+  // freeze panel
+  const freezeData=getStreakFreezes();
+  const maxFreeze=userPlan==='pro'?3:1;
+  const fDotsEl=Q('#sc-freeze-dots');
+  if(fDotsEl){
+    let fh='';
+    for(let i=0;i<maxFreeze;i++){
+      const used=i<freezeData.count;
+      fh+=`<div style="width:22px;height:22px;border-radius:50%;background:${used?'var(--bg3)':'var(--abl)'};border:2px solid ${used?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${used?'.3':'1'}">🧊</div>`;
+    }
+    fDotsEl.innerHTML=fh;
+  }
+  const fDesc=Q('#sc-freeze-desc');
+  if(fDesc){
+    const left=maxFreeze-freezeData.count;
+    fDesc.innerHTML=userPlan!=='pro'?(left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد · <span onclick="window.open(\'https://t.me/cinuxx\',\'_blank\')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Pro: ۳ تا</span>'):left+' تا Freeze مونده';
+  }
+
+  // level progress bar
+  const barEl=Q('#sc-lvl-bar'),lblBar=Q('#sc-lvl-lbl'),pctEl=Q('#sc-lvl-pct');
+  if(nextM){
+    const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;
+    const pct=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;
+    const nLvl=getStreakLevel(nextM);
+    if(barEl)barEl.style.width=pct+'%';
+    if(lblBar)lblBar.textContent='پیشرفت به '+nLvl.name;
+    if(pctEl)pctEl.textContent=pct+'%';
+  } else {
+    if(barEl)barEl.style.width='100%';
+    if(lblBar)lblBar.textContent='بالاترین سطح 👑';
+  }
+
+  updateXPUI();
+}
+
+function logReview(){
+  const today=new Date().toDateString();
+  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
+  const wasFirst=!log[today];
+  log[today]=(log[today]||0)+1;
+  const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
+  const t={};keys.forEach(k=>t[k]=log[k]);
+  localStorage.setItem('ws_rlog',JSON.stringify(t));
+  if(wasFirst)addXP(10,'مرور روزانه');
+  const streak=calcStreak();
+  if(wasFirst&&streak>1)addXP(5,'streak bonus — '+streak+' روز');
 }
 
 init();
-
 
 
 /* ══════════════════════════════
