@@ -13,6 +13,7 @@
 <style>
 /* IRANYekan via Google Fonts fallback */
 </style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 /* ═══════════════════════════════════
@@ -1338,63 +1339,48 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
 /* ════════════════════════════════════════
-   FIX: فاصله سمت راست بعد از نتیجه
+   TELEGRAM MINI APP — OFFICIAL INTEGRATION
+   docs: core.telegram.org/bots/webapps
 ════════════════════════════════════════ */
 
-/* مشکل: overflow-x از direction:ltr روی res elements */
-html, body {
-  overflow-x: hidden !important;
-  max-width: 100% !important;
+/* Theme colors — از TG CSS variables */
+body.tg-mode {
+  --bg:   var(--tg-theme-bg-color, #f5f4f0);
+  --card: var(--tg-theme-secondary-bg-color, #ffffff);
+  --ink:  var(--tg-theme-text-color, #0f0f0e);
+  --ink3: var(--tg-theme-hint-color, #8a8a80);
+  --accent: var(--tg-theme-button-color, #1a3af2);
+  background: var(--tg-theme-bg-color, #f5f4f0);
 }
-.app {
-  overflow-x: hidden !important;
-  max-width: 600px !important;
-}
-
-/* res-word-block: padding متقارن */
-.res-word-block {
-  padding: var(--s4) var(--s5) var(--s3) var(--s5) !important;
-  overflow-x: hidden !important;
-}
-
-/* res-footer padding fix */
-.res-footer {
-  padding: var(--s3) var(--s4) !important;
+body.tg-mode.dark {
+  --bg:   var(--tg-theme-bg-color, #0d0d0c);
+  --card: var(--tg-theme-secondary-bg-color, #161614);
+  --ink:  var(--tg-theme-text-color, #f2efe8);
+  --ink3: var(--tg-theme-hint-color, #585850);
+  --accent: var(--tg-theme-button-color, #5570ff);
 }
 
-/* pane padding — کمی کمتر در افقی */
-.pane {
-  padding-right: var(--s4) !important;
-  padding-left: var(--s4) !important;
+/* Safe Area — از CSS variables رسمی تلگرام */
+body.tg-mode .topbar {
+  padding-top: max(var(--tg-safe-area-inset-top, 0px), var(--tg-content-safe-area-inset-top, 0px)) !important;
 }
-#pane-home {
-  padding-right: var(--s4) !important;
-  padding-left: var(--s4) !important;
+body.tg-mode .bottom-nav {
+  padding-bottom: max(var(--tg-safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)) !important;
 }
-
-/* res container */
-.res {
-  overflow-x: hidden !important;
-  width: 100% !important;
+body.tg-mode #session-overlay .ses-topbar {
+  padding-top: max(var(--tg-safe-area-inset-top, 0px), var(--tg-content-safe-area-inset-top, 0px)) !important;
 }
 
-/* ac-drop (autocomplete) */
-.ac-drop {
-  max-width: 100% !important;
-  overflow-x: hidden !important;
-}
+/* TG mode tweaks */
+body.tg-mode { overflow: hidden !important; }
+body.tg-mode .app { overflow: hidden !important; }
+body.tg-mode .btn-ic#settings-btn { display: none !important; }
 
-/* ─── UI REFRESH v2 ─── */
-.hero    { padding: var(--s2) 0 var(--s3) !important; }
+/* ════ UI REFRESH ════ */
+.hero     { padding: var(--s2) 0 var(--s3) !important; }
 .hero-eye { display: none !important; }
 .hero p   { display: none !important; }
-.hero h1  {
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  line-height: 1.25 !important;
-  margin-bottom: var(--s3) !important;
-  letter-spacing: -.3px !important;
-}
+.hero h1  { font-size: 26px !important; font-weight: 700 !important; line-height: 1.25 !important; margin-bottom: var(--s3) !important; letter-spacing: -.3px !important; }
 .hint-chips, #hint-chips, .hint { display: none !important; }
 .search-tip { font-size: 11px !important; margin-bottom: var(--s2) !important; }
 .sum-card   { padding: var(--s3) var(--s4) !important; border-radius: var(--r3) !important; margin-top: var(--s2) !important; }
@@ -1418,10 +1404,174 @@ html, body {
 .nav-item   { padding: 8px 4px 6px !important; gap: 2px !important; }
 .nav-label  { font-size: 10px !important; font-weight: 500 !important; display: block !important; }
 .nav-item svg { width: 19px !important; height: 19px !important; }
+html, body  { overflow-x: hidden !important; }
+.app        { overflow-x: hidden !important; }
+.res        { overflow-x: hidden !important; }
+.res-word-block { overflow-x: hidden !important; }
 
 </style>
 </head>
 <body>
+
+<script>
+/* ════════════════════════════════════════
+   TELEGRAM MINI APP INIT
+   طبق مستندات رسمی:
+   core.telegram.org/bots/webapps
+════════════════════════════════════════ */
+(function(){
+  const tg = window.Telegram?.WebApp;
+  if (!tg) { window.tgApp = null; return; }
+
+  /* 1. تعریف ready و expand — اول از همه */
+  tg.ready();
+  tg.expand();
+
+  /* 2. تشخیص dark/light از colorScheme رسمی */
+  const isDark = tg.colorScheme === 'dark';
+  if (isDark) document.body.classList.add('dark');
+  document.body.classList.add('tg-mode');
+
+  /* 3. رنگ‌های header/bg/bottomBar */
+  function applyTheme() {
+    const dark = tg.colorScheme === 'dark';
+    document.body.classList.toggle('dark', dark);
+    try {
+      tg.setHeaderColor(dark ? '#0d0d0c' : '#f5f4f0');
+      tg.setBackgroundColor(dark ? '#0d0d0c' : '#f5f4f0');
+      if (tg.setBottomBarColor) tg.setBottomBarColor(dark ? '#0d0d0c' : '#ffffff');
+    } catch(e) {}
+  }
+  applyTheme();
+
+  /* 4. Listen for theme change */
+  tg.onEvent('themeChanged', function() {
+    applyTheme();
+    // اگر کاربر theme تلگرام رو عوض کرد، dark mode اپ هم تغییر کنه
+    if (typeof setThemeIc === 'function') {
+      setThemeIc(tg.colorScheme === 'dark');
+    }
+  });
+
+  /* 5. Disable vertical swipes (از ورژن 7.7) */
+  try { tg.disableVerticalSwipes(); } catch(e) {}
+
+  /* 6. Closing confirmation — جلوگیری از بستن تصادفی */
+  try { tg.enableClosingConfirmation(); } catch(e) {}
+
+  /* 7. BackButton */
+  tg.BackButton.onClick(function() {
+    const els = [
+      {el: document.getElementById('session-overlay'), cls: 'open', fn: () => { if(typeof sesEnd==='function') sesEnd(); }},
+      {el: document.getElementById('drawer'),          cls: 'open', fn: () => { if(typeof drawerClose==='function') drawerClose(); }},
+      {el: document.getElementById('res'),             cls: 'show', fn: () => { if(typeof clearResult==='function') clearResult(); }},
+      {el: document.getElementById('ph-res'),          cls: 'show', fn: () => { document.getElementById('ph-res')?.classList.remove('show'); }},
+    ];
+    for (const item of els) {
+      if (item.el?.classList.contains(item.cls)) {
+        item.fn();
+        tg.BackButton.hide();
+        return;
+      }
+    }
+    tg.BackButton.hide();
+  });
+
+  /* 8. BottomButton (نام جدید MainButton از v7.10) */
+  const BottomBtn = tg.BottomButton || tg.MainButton;
+  if (BottomBtn) {
+    BottomBtn.setParams({
+      text: 'افزودن به فلش‌کارت',
+      color: tg.themeParams?.button_color || '#1a3af2',
+      text_color: tg.themeParams?.button_text_color || '#ffffff',
+      is_visible: false,
+      is_active: true,
+    });
+    BottomBtn.onClick(function() {
+      try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+      const phRes = document.getElementById('ph-res');
+      const isPhrase = phRes?.classList.contains('show');
+      if (isPhrase && typeof addPhrase === 'function') addPhrase();
+      else if (typeof addWord === 'function') addWord();
+      BottomBtn.hide();
+    });
+  }
+
+  /* 9. Haptic روی همه interactive elements */
+  document.addEventListener('click', function(e) {
+    const el = e.target.closest('button, .chip, .nav-item, .nav-dot, .word-row, .hint-chip, .ac-item');
+    if (el) {
+      try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
+    }
+  }, {passive: true});
+
+  /* 10. CloudStorage به عنوان backup */
+  function tgSave(key, val) {
+    try { localStorage.setItem(key, val); } catch(e) {}
+    if (tg.CloudStorage) {
+      tg.CloudStorage.setItem(key, String(val), function(){});
+    }
+  }
+
+  /* 11. Add to Home Screen — بعد از ۳ session */
+  if (tg.addToHomeScreen) {
+    const sessions = parseInt(localStorage.getItem('ws_sessions')||'0') + 1;
+    localStorage.setItem('ws_sessions', String(sessions));
+    if (sessions === 3) {
+      setTimeout(function() {
+        if (tg.checkHomeScreenStatus) {
+          tg.checkHomeScreenStatus(function(status) {
+            if (status === 'missed') tg.addToHomeScreen();
+          });
+        }
+      }, 4000);
+    }
+  }
+
+  /* 12. viewportChanged — resize اپ */
+  tg.onEvent('viewportChanged', function(params) {
+    if (params.isStateStable) {
+      const h = tg.viewportStableHeight;
+      if (h) document.getElementById('app')?.style.setProperty('height', h + 'px');
+    }
+  });
+
+  /* 13. activated / deactivated */
+  tg.onEvent('activated', function() {
+    // اپ دوباره active شد (از minimize)
+    if (typeof dbLoad === 'function') dbLoad();
+  });
+
+  /* expose API */
+  window.tgApp = {
+    tg: tg,
+    isTg: true,
+    user: tg.initDataUnsafe?.user || null,
+    initDataRaw: tg.initData || '',
+    colorScheme: tg.colorScheme,
+
+    setTheme: applyTheme,
+    showBack: function() { tg.BackButton.show(); },
+    hideBack: function() { tg.BackButton.hide(); },
+    showAdd: function(label) {
+      if (!BottomBtn) return;
+      if (label) BottomBtn.setText(label);
+      BottomBtn.show();
+    },
+    hideAdd: function() { if (BottomBtn) BottomBtn.hide(); },
+    haptic: function(type) {
+      try {
+        if (['success','error','warning'].includes(type)) tg.HapticFeedback.notificationOccurred(type);
+        else tg.HapticFeedback.impactOccurred(type || 'light');
+      } catch(e) {}
+    },
+    save: tgSave,
+    close: function() { tg.close(); },
+  };
+
+  console.log('[TG] v' + tg.version + ' | ' + tg.platform + ' | ' + tg.colorScheme);
+})();
+</script>
 
 
 <div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
@@ -2648,6 +2798,38 @@ function setUserUI(user){
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
+async function tgAutoLogin(tgUser, initDataRaw) {
+  const tgId  = tgUser.id;
+  const email = 'tg' + tgId + '@wortschatz.app';
+  const pass  = 'ws_tg_' + tgId + '_2025!';
+  const name  = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || tgUser.username || 'کاربر';
+  try {
+    let { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error?.message?.includes('Invalid login credentials')) {
+      const signup = await sb.auth.signUp({
+        email, password: pass,
+        options: { data: { full_name: name, tg_id: String(tgId), tg_username: tgUser.username || '' } }
+      });
+      data = signup.data; error = signup.error;
+    }
+    if (error) throw error;
+    if (data?.user) {
+      setUserUI(data.user);
+      hideGate();
+      const nm = document.getElementById('drw-profile-name');
+      const av = document.getElementById('drw-avatar-big');
+      if (nm) nm.textContent = name;
+      if (av) av.textContent = (name[0]||'T').toUpperCase();
+      await dbLoad();
+      await loadProfile();
+      setTimeout(checkReminder, 2500);
+      window.tgApp?.haptic('success');
+      showToast('سلام ' + (tgUser.first_name||'دوست') + '! 👋', 2200, 'ok');
+    } else { showGate(); }
+  } catch(e) { console.error('[TG login]', e.message); showGate(); }
+}
+
+
 async function init(){
   targetLang = localStorage.getItem('ws_target_lang')||'de';
   updateLangUI();
@@ -2681,7 +2863,13 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    showGate();
+    const tgU = window.tgApp?.user;
+    const tgFresh = tgU && (Math.floor(Date.now()/1000) - (tg.initDataUnsafe?.auth_date||0)) < 86400;
+    if (tgU && tgFresh) {
+      await tgAutoLogin(tgU, window.tgApp?.initDataRaw||'');
+    } else {
+      showGate();
+    }
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
@@ -2858,7 +3046,7 @@ function drawerUpdateLangToggle(){
   if(en){ en.classList.toggle('active', !isDE); }
 }
 
-function toggleDark(){const d=document.body.classList.toggle('dark');localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
+function toggleDark(){const d=document.body.classList.toggle('dark'); window.tgApp?.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
     ?'<circle cx="7" cy="7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
