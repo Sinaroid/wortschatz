@@ -1338,6 +1338,35 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
+/* ══ soft login prompt ══ */
+.login-prompt {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--abl);
+  border: 1px solid rgba(26,58,242,.15);
+  border-radius: var(--r2);
+  padding: 10px 14px;
+  margin-top: var(--s2);
+  animation: up .3s var(--ease) both;
+}
+.login-prompt.show { display: flex; }
+.login-prompt-txt { font-size: 12px; color: var(--accent); font-weight: 500; line-height: 1.4; }
+.login-prompt-btn {
+  background: var(--accent); color: #fff;
+  border: none; border-radius: var(--r1);
+  padding: 6px 12px; font-size: 12px; font-weight: 600;
+  font-family: var(--sans); cursor: pointer; white-space: nowrap;
+  flex-shrink: 0; transition: opacity .15s;
+}
+.login-prompt-btn:active { opacity: .75; }
+.login-prompt-x {
+  background: transparent; border: none;
+  color: var(--ink3); cursor: pointer;
+  font-size: 14px; padding: 2px 4px; flex-shrink: 0;
+}
+
 /* ══ reminder حذف ══ */
 .reminder, #reminder { display: none !important; }
 
@@ -1349,9 +1378,6 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .ws-empty-sub { font-size:13px; color:var(--ink3); line-height:1.6; max-width:260px; }
 .ws-empty-btn { margin-top:var(--s2); background:var(--accent); color:#fff; border:none; border-radius:var(--r2); padding:11px var(--s6); font-size:13px; font-weight:600; font-family:var(--sans); cursor:pointer; transition:opacity .15s; }
 .ws-empty-btn:active { opacity:.75; }
-
-/* ══ gate — بدون blur روی پس‌زمینه (چون app باز میشه) ══ */
-#gate { background: rgba(0,0,0,.55) !important; }
 
 /* ══ UI Refresh ══ */
 .hero { padding:var(--s2) 0 var(--s3) !important; }
@@ -1823,6 +1849,13 @@ html, body { overflow-x:hidden !important; }
     </div>
     <div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
     <div class="s-msg" id="s-msg"></div>
+    <!-- soft login prompt — بعد از اولین سرچ -->
+    <div class="login-prompt" id="login-prompt">
+      <div class="login-prompt-txt">برای ذخیره لغت‌هات وارد شو 👤</div>
+      <button class="login-prompt-btn" onclick="showGate();document.getElementById('login-prompt').classList.remove('show')">ورود</button>
+      <button class="login-prompt-x" onclick="this.parentElement.classList.remove('show');localStorage.setItem('ws_prompt_dismissed','1')">✕</button>
+    </div>
+
 
     <!-- Word result -->
     <div class="res" id="res">
@@ -1909,6 +1942,14 @@ html, body { overflow-x:hidden !important; }
     </div>
 
     <!-- Stats card -->
+    
+    <div class="ws-empty" id="ws-empty">
+      <div class="ws-empty-icon">🇩🇪</div>
+      <div class="ws-empty-title">اولین لغتت رو سرچ کن</div>
+      <div class="ws-empty-sub">یه لغت آلمانی بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن</div>
+      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus();window.scrollTo({top:0,behavior:'smooth'})">شروع کن ←</button>
+    </div>
+
     <div class="sum-card" id="sum-card">
       <div class="sum-header">
         <div class="sum-title">پیشرفت تو</div>
@@ -2584,6 +2625,9 @@ function hideGate(){
   const g=Q('#gate');
   g.style.opacity='0';g.style.transition='opacity .3s';
   setTimeout(()=>{g.classList.remove('open');g.style.opacity='';g.style.transition='';},300);
+  // prompt هم مخفی بشه
+  var p=document.getElementById('login-prompt');
+  if(p) p.classList.remove('show');
 }
 
 async function logout(){
@@ -2651,14 +2695,8 @@ function updateEmptyState() {
   var card  = document.getElementById('sum-card');
   if (!empty) return;
   var hasWords = window.words && window.words.length > 0;
-  if (hasWords) {
-    empty.classList.remove('show');
-    empty.style.display = 'none';
-    if (card) card.classList.add('show');
-  } else {
-    empty.classList.add('show');
-    if (card) card.classList.remove('show');
-  }
+  if (hasWords) { empty.classList.remove('show'); empty.style.display='none'; if(card) card.classList.add('show'); }
+  else { empty.classList.add('show'); if(card) card.classList.remove('show'); }
 }
 
 async function tgAutoLogin(u){
@@ -2668,14 +2706,7 @@ async function tgAutoLogin(u){
     var r=await sb.auth.signInWithPassword({email:email,password:pass});
     if(r.error)r=await sb.auth.signUp({email:email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
     if(r.error)throw r.error;
-    if(r.data&&r.data.user){
-      setUserUI(r.data.user);hideGate();
-      var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
-      var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
-      await dbLoad();await loadProfile();setTimeout(checkReminder,2500);
-      if(window.tgApp)window.tgApp.haptic('success');
-      showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
-    }
+    if(r.data&&r.data.user){setUserUI(r.data.user);hideGate();var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();await dbLoad();await loadProfile();setTimeout(checkReminder,2500);if(window.tgApp)window.tgApp.haptic('success');showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');}
   }catch(e){console.error('[TG]',e.message);}
 }
 
@@ -2712,11 +2743,8 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    // بدون login — app باز میشه، فقط add کردن gate داره
     var _tgu = window.tgApp && window.tgApp.user;
-    if (_tgu && _tgu.id) {
-      await tgAutoLogin(_tgu);
-    }
+    if (_tgu && _tgu.id) { await tgAutoLogin(_tgu); }
     // gate نشون نمیدیم — کاربر می‌تونه سرچ کنه
   }
 
@@ -2734,7 +2762,7 @@ async function init(){
     }
   });
 
-  setTimeout(()=>{ if(!currentUser) showGate(); }, 1500);
+  // gate اجباری حذف شد — فقط موقع addWord نشون داده میشه
 
   window.addEventListener('scroll',()=>Q('#topbar')?.classList.toggle('raised',window.scrollY>4));
   syncOnline();
@@ -3017,6 +3045,13 @@ async function doSearch(){
     if(detectMode(q)==='word') await searchWord(q);
     else await searchPhrase(q);
     setMsg('','');Q('#s-inp').value='';
+    // soft prompt بعد از اولین سرچ برای کاربر بدون login
+    if(!currentUser && !localStorage.getItem('ws_prompt_dismissed')) {
+      setTimeout(function(){
+        var p = document.getElementById('login-prompt');
+        if(p) p.classList.add('show');
+      }, 800);
+    }
     // لاگ کردن سرچ
     if(currentUser && navigator.onLine){
       sb.from('search_logs').insert({
@@ -3217,12 +3252,7 @@ function qs(w){Q('#s-inp').value=w;doSearch();}
 
 async function addWord(){
   if(!curWord)return;
-  // اگه login نیست → gate با پیام مناسب
-  if(!currentUser){
-    showGate();
-    showToast('برای ذخیره لغت، وارد شو 👤', 2500, 'warn');
-    return;
-  }
+  if(!currentUser){showGate();showToast('برای ذخیره لغت، وارد شو 👤',2500,'warn');return;}
   if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
