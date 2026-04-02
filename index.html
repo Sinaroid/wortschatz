@@ -1342,64 +1342,52 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .reminder, #reminder { display: none !important; }
 
 /* ══ empty state ══ */
-.ws-empty {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--s8) var(--s5);
-  gap: var(--s3);
-  animation: up .3s var(--ease) both;
-}
-.ws-empty.show { display: flex; }
-.ws-empty-icon { font-size: 40px; margin-bottom: var(--s2); }
-.ws-empty-title { font-size: 17px; font-weight: 700; color: var(--ink); }
-.ws-empty-sub { font-size: 13px; color: var(--ink3); line-height: 1.6; max-width: 260px; }
-.ws-empty-btn {
-  margin-top: var(--s2);
-  background: var(--accent); color: #fff;
-  border: none; border-radius: var(--r2);
-  padding: 11px var(--s6); font-size: 13px; font-weight: 600;
-  font-family: var(--sans); cursor: pointer; transition: opacity .15s;
-}
-.ws-empty-btn:active { opacity: .75; }
+.ws-empty { display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:var(--s8) var(--s5); gap:var(--s3); animation:up .3s var(--ease) both; }
+.ws-empty.show { display:flex; }
+.ws-empty-icon { font-size:40px; margin-bottom:var(--s2); }
+.ws-empty-title { font-size:17px; font-weight:700; color:var(--ink); }
+.ws-empty-sub { font-size:13px; color:var(--ink3); line-height:1.6; max-width:260px; }
+.ws-empty-btn { margin-top:var(--s2); background:var(--accent); color:#fff; border:none; border-radius:var(--r2); padding:11px var(--s6); font-size:13px; font-weight:600; font-family:var(--sans); cursor:pointer; transition:opacity .15s; }
+.ws-empty-btn:active { opacity:.75; }
+
+/* ══ gate — بدون blur روی پس‌زمینه (چون app باز میشه) ══ */
+#gate { background: rgba(0,0,0,.55) !important; }
 
 /* ══ UI Refresh ══ */
-.hero { padding: var(--s2) 0 var(--s3) !important; }
-.hero-eye { display: none !important; }
-.hero p { display: none !important; }
-.hero h1 { font-size: 24px !important; font-weight: 700 !important; line-height: 1.25 !important; margin-bottom: var(--s3) !important; letter-spacing: -.3px !important; }
-.hint-chips, #hint-chips, .hint { display: none !important; }
-.search-tip { font-size: 11px !important; margin-bottom: var(--s2) !important; }
-.sum-card { padding: var(--s3) var(--s4) !important; border-radius: var(--r3) !important; margin-top: var(--s2) !important; }
-.sum-header { margin-bottom: var(--s3) !important; }
-.sum-title { font-size: 12px !important; }
-.sum-streak { font-size: 11px !important; padding: 3px 8px !important; }
-.sum-nums { gap: var(--s1) !important; margin-bottom: var(--s3) !important; }
-.sum-nb { padding: var(--s2) var(--s1) !important; border-radius: var(--r2) !important; }
-.sum-n { font-size: 22px !important; }
-.sum-l { font-size: 9px !important; }
-.sum-dots { margin-bottom: var(--s3) !important; }
-.sd-c { width: 6px !important; height: 6px !important; }
-.sum-acts { gap: var(--s1) !important; }
-.sum-review { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
-.sum-all { padding: 10px var(--s3) !important; font-size: 12px !important; border-radius: var(--r2) !important; }
-.sync-dot { display: none !important; }
-.topbar { padding: 10px var(--s5) !important; }
-.logo-name { font-size: 16px !important; }
-.logo-mark { width: 24px !important; height: 24px !important; border-radius: 7px !important; }
-.nav-item { padding: 8px 4px 6px !important; gap: 2px !important; }
-.nav-label { font-size: 10px !important; font-weight: 500 !important; display: block !important; }
-.nav-item svg { width: 19px !important; height: 19px !important; }
-html, body { overflow-x: hidden !important; }
-.app { overflow-x: hidden !important; min-height: var(--tg-viewport-stable-height, 100dvh) !important; }
-.res { overflow-x: hidden !important; width: 100% !important; }
-.res-word-block { padding: var(--s4) var(--s4) var(--s3) !important; overflow-x: hidden !important; }
-.res-footer { padding: var(--s3) var(--s4) !important; }
-.pane { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
-#pane-home { padding-right: var(--s4) !important; padding-left: var(--s4) !important; }
-.low-perf *, .low-perf *::before, .low-perf *::after { animation: none !important; transition: none !important; }
+.hero { padding:var(--s2) 0 var(--s3) !important; }
+.hero-eye { display:none !important; }
+.hero p { display:none !important; }
+.hero h1 { font-size:24px !important; font-weight:700 !important; line-height:1.25 !important; margin-bottom:var(--s3) !important; letter-spacing:-.3px !important; }
+.hint-chips, #hint-chips, .hint { display:none !important; }
+.search-tip { font-size:11px !important; margin-bottom:var(--s2) !important; }
+.sum-card { padding:var(--s3) var(--s4) !important; border-radius:var(--r3) !important; margin-top:var(--s2) !important; }
+.sum-header { margin-bottom:var(--s3) !important; }
+.sum-title { font-size:12px !important; }
+.sum-streak { font-size:11px !important; padding:3px 8px !important; }
+.sum-nums { gap:var(--s1) !important; margin-bottom:var(--s3) !important; }
+.sum-nb { padding:var(--s2) var(--s1) !important; border-radius:var(--r2) !important; }
+.sum-n { font-size:22px !important; }
+.sum-l { font-size:9px !important; }
+.sum-dots { margin-bottom:var(--s3) !important; }
+.sd-c { width:6px !important; height:6px !important; }
+.sum-acts { gap:var(--s1) !important; }
+.sum-review { padding:10px var(--s3) !important; font-size:12px !important; border-radius:var(--r2) !important; }
+.sum-all { padding:10px var(--s3) !important; font-size:12px !important; border-radius:var(--r2) !important; }
+.sync-dot { display:none !important; }
+.topbar { padding:10px var(--s5) !important; }
+.logo-name { font-size:16px !important; }
+.logo-mark { width:24px !important; height:24px !important; border-radius:7px !important; }
+.nav-item { padding:8px 4px 6px !important; gap:2px !important; }
+.nav-label { font-size:10px !important; font-weight:500 !important; display:block !important; }
+.nav-item svg { width:19px !important; height:19px !important; }
+html, body { overflow-x:hidden !important; }
+.app { overflow-x:hidden !important; min-height:var(--tg-viewport-stable-height,100dvh) !important; }
+.res { overflow-x:hidden !important; width:100% !important; }
+.res-word-block { padding:var(--s4) var(--s4) var(--s3) !important; overflow-x:hidden !important; }
+.res-footer { padding:var(--s3) var(--s4) !important; }
+.pane { padding-right:var(--s4) !important; padding-left:var(--s4) !important; }
+#pane-home { padding-right:var(--s4) !important; padding-left:var(--s4) !important; }
+.low-perf *, .low-perf *::before, .low-perf *::after { animation:none !important; transition:none !important; }
 
 </style>
 </head>
@@ -1921,14 +1909,6 @@ html, body { overflow-x: hidden !important; }
     </div>
 
     <!-- Stats card -->
-    
-    <div class="ws-empty" id="ws-empty">
-      <div class="ws-empty-icon">🇩🇪</div>
-      <div class="ws-empty-title">اولین لغتت رو سرچ کن</div>
-      <div class="ws-empty-sub">یه لغت آلمانی بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن</div>
-      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus();window.scrollTo({top:0,behavior:'smooth'})">شروع کن ←</button>
-    </div>
-
     <div class="sum-card" id="sum-card">
       <div class="sum-header">
         <div class="sum-title">پیشرفت تو</div>
@@ -2672,12 +2652,10 @@ function updateEmptyState() {
   if (!empty) return;
   var hasWords = window.words && window.words.length > 0;
   if (hasWords) {
-    /* یه بار که لغت داشت، دیگه empty state نشون نده */
     empty.classList.remove('show');
     empty.style.display = 'none';
     if (card) card.classList.add('show');
   } else {
-    /* هنوز لغتی نداره — empty نشون بده */
     empty.classList.add('show');
     if (card) card.classList.remove('show');
   }
@@ -2687,11 +2665,18 @@ async function tgAutoLogin(u){
   var email='tg'+u.id+'@wortschatz.app',pass='ws_tg_'+u.id+'_2025!';
   var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'کاربر';
   try{
-    var r=await sb.auth.signInWithPassword({email,password:pass});
-    if(r.error)r=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
+    var r=await sb.auth.signInWithPassword({email:email,password:pass});
+    if(r.error)r=await sb.auth.signUp({email:email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
     if(r.error)throw r.error;
-    if(r.data?.user){setUserUI(r.data.user);hideGate();var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();await dbLoad();await loadProfile();setTimeout(checkReminder,2500);window.tgApp?.haptic('success');showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');}else showGate();
-  }catch(e){console.error('[TG]',e.message);showGate();}
+    if(r.data&&r.data.user){
+      setUserUI(r.data.user);hideGate();
+      var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
+      var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
+      await dbLoad();await loadProfile();setTimeout(checkReminder,2500);
+      if(window.tgApp)window.tgApp.haptic('success');
+      showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
+    }
+  }catch(e){console.error('[TG]',e.message);}
 }
 
 async function init(){
@@ -2727,8 +2712,12 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    var _u=window.tgApp&&window.tgApp.user;
-    if(_u&&_u.id){await tgAutoLogin(_u);}else{showGate();}
+    // بدون login — app باز میشه، فقط add کردن gate داره
+    var _tgu = window.tgApp && window.tgApp.user;
+    if (_tgu && _tgu.id) {
+      await tgAutoLogin(_tgu);
+    }
+    // gate نشون نمیدیم — کاربر می‌تونه سرچ کنه
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
@@ -2905,7 +2894,7 @@ function drawerUpdateLangToggle(){
   if(en){ en.classList.toggle('active', !isDE); }
 }
 
-function toggleDark(){const d=document.body.classList.toggle('dark');window.tgApp?.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
+function toggleDark(){const d=document.body.classList.toggle('dark');if(window.tgApp)window.tgApp.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
     ?'<circle cx="7" cy="7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
@@ -3228,6 +3217,12 @@ function qs(w){Q('#s-inp').value=w;doSearch();}
 
 async function addWord(){
   if(!curWord)return;
+  // اگه login نیست → gate با پیام مناسب
+  if(!currentUser){
+    showGate();
+    showToast('برای ذخیره لغت، وارد شو 👤', 2500, 'warn');
+    return;
+  }
   if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
@@ -3315,6 +3310,7 @@ function rephrase(){
 }
 async function addPhrase(){
   if(!curPhrase)return;
+  if(!currentUser){showGate();showToast('برای ذخیره اصطلاح، وارد شو 👤',2500,'warn');return;}
   if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const de=curPhrase.original;
   if(words.some(w=>w.de===de))return;
