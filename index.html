@@ -14,6 +14,7 @@
 /* IRANYekan via Google Fonts fallback */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 /* ═══════════════════════════════════
    DESIGN TOKENS
@@ -1337,9 +1338,229 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
+/* ══ TELEGRAM MINI APP ══ */
+.tg-mode body { overflow: hidden; }
+.tg-mode .btn-ic#settings-btn { display: none !important; }
+/* safe area handled via JS — see tgSafeArea() */
+.tg-mode .app { transition: none; }
+/* disable text selection for native feel */
+.tg-mode * { -webkit-user-select: none; user-select: none; }
+.tg-mode input, .tg-mode textarea { -webkit-user-select: text; user-select: text; }
+
 </style>
 </head>
 <body>
+
+<script>
+/* ════════════════════════════════════════
+   TELEGRAM MINI APP — PRODUCTION
+   Based on: core.telegram.org/bots/webapps
+════════════════════════════════════════ */
+(function() {
+  const tg = window.Telegram?.WebApp;
+  if (!tg) {
+    window.tgApp = null;
+    return; // running in normal browser — no changes
+  }
+
+  /* ── 1. Init & Expand ── */
+  tg.ready();
+  tg.expand();
+  document.body.classList.add('tg-mode');
+
+  /* ── 2. Safe Area (TG-native, env() doesn't work in TG) ── */
+  function tgSafeArea() {
+    const sa = tg.safeAreaInset || { top:0, bottom:0, left:0, right:0 };
+    const csa = tg.contentSafeAreaInset || { top:0, bottom:0, left:0, right:0 };
+    const top = Math.max(sa.top, csa.top, 0);
+    const bot = Math.max(sa.bottom, csa.bottom, 0);
+    document.documentElement.style.setProperty('--tg-safe-top', top + 'px');
+    document.documentElement.style.setProperty('--tg-safe-bot', bot + 'px');
+    // patch topbar
+    const tb = document.getElementById('topbar');
+    if (tb) tb.style.paddingTop = top + 'px';
+    // patch bottom nav
+    const bn = document.querySelector('.bottom-nav');
+    if (bn) bn.style.paddingBottom = bot + 'px';
+  }
+  tgSafeArea();
+  tg.onEvent('safeAreaChanged', tgSafeArea);
+  tg.onEvent('contentSafeAreaChanged', tgSafeArea);
+
+  /* ── 3. Theme sync with our dark/light ── */
+  function tgTheme(dark) {
+    const bg = dark ? '#0d0d0c' : '#f2f0ea';
+    const hdr = dark ? '#0d0d0c' : '#f2f0ea';
+    try { tg.setBackgroundColor(bg); } catch(e){}
+    try { tg.setHeaderColor(hdr); } catch(e){}
+    try { tg.setBottomBarColor(bg); } catch(e){}
+  }
+  // init with current theme
+  tgTheme(document.body.classList.contains('dark'));
+
+  /* ── 4. Prevent swipe-to-close ── */
+  try { tg.disableVerticalSwipes(); } catch(e){}
+  // also prevent pull-to-refresh
+  document.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1 && document.scrollingElement?.scrollTop === 0) {
+      // allow scroll inside scrollable elements
+    }
+  }, { passive: false });
+
+  /* ── 5. Back Button ── */
+  tg.BackButton.onClick(function() {
+    // Priority: session > drawer > result > go back
+    const ses = document.getElementById('session-overlay');
+    const drw = document.getElementById('drawer');
+    const resEl = document.getElementById('res');
+    const phRes = document.getElementById('ph-res');
+    const gate = document.getElementById('gate');
+
+    if (ses && ses.classList.contains('open')) {
+      if (typeof sesEnd === 'function') sesEnd();
+      else ses.classList.remove('open');
+      tg.BackButton.hide();
+      return;
+    }
+    if (drw && drw.classList.contains('open')) {
+      if (typeof drawerClose === 'function') drawerClose();
+      tg.BackButton.hide();
+      return;
+    }
+    if (resEl && resEl.classList.contains('show')) {
+      if (typeof clearResult === 'function') clearResult();
+      else { resEl.classList.remove('show'); }
+      tg.BackButton.hide();
+      return;
+    }
+    if (phRes && phRes.classList.contains('show')) {
+      phRes.classList.remove('show');
+      tg.BackButton.hide();
+      return;
+    }
+    tg.BackButton.hide();
+  });
+
+  /* ── 6. Bottom/Main Button for adding words ── */
+  // Support both old MainButton and new BottomButton
+  const BottomBtn = tg.BottomButton || tg.MainButton;
+  if (BottomBtn) {
+    BottomBtn.setParams({
+      text: 'افزودن به فلش‌کارت',
+      color: '#1a3af2',
+      text_color: '#ffffff',
+      is_active: true,
+      is_visible: false,
+    });
+    BottomBtn.onClick(function() {
+      tg.HapticFeedback.impactOccurred('medium');
+      // detect what to add
+      const phRes = document.getElementById('ph-res');
+      const isPhrase = phRes && phRes.classList.contains('show');
+      if (isPhrase && typeof addPhrase === 'function') addPhrase();
+      else if (typeof addWord === 'function') addWord();
+      BottomBtn.hide();
+    });
+  }
+
+  /* ── 7. Haptic on interactive elements ── */
+  document.addEventListener('click', function(e) {
+    const el = e.target.closest('button, .chip, .nav-item, .word-row, [onclick]');
+    if (el) {
+      tg.HapticFeedback.impactOccurred('light');
+    }
+  }, { passive: true });
+
+  /* ── 8. TG CloudStorage as backup for localStorage ── */
+  function tgStore(key, val) {
+    try {
+      localStorage.setItem(key, val);
+      if (tg.CloudStorage) {
+        tg.CloudStorage.setItem(key, String(val), function(){});
+      }
+    } catch(e) {}
+  }
+
+  /* ── 9. Add to Home Screen prompt ── */
+  function promptHomeScreen() {
+    if (!tg.addToHomeScreen) return;
+    try {
+      tg.checkHomeScreenStatus(function(status) {
+        if (status === 'missed') {
+          // Show after 3 sessions
+          const sessions = parseInt(localStorage.getItem('ws_sessions')||'0') + 1;
+          localStorage.setItem('ws_sessions', sessions);
+          if (sessions === 3) {
+            setTimeout(function() { tg.addToHomeScreen(); }, 2000);
+          }
+        }
+      });
+    } catch(e) {}
+  }
+  setTimeout(promptHomeScreen, 3000);
+
+  /* ── 10. initData validation (client-side check only) ── */
+  // Full validation must happen on server (Supabase Edge Function)
+  // This is a lightweight check to detect obvious tampering
+  function isTgDataFresh() {
+    const authDate = tg.initDataUnsafe?.auth_date;
+    if (!authDate) return false;
+    const now = Math.floor(Date.now() / 1000);
+    return (now - authDate) < 86400; // 24h
+  }
+
+  /* ── 11. Expose tgApp API ── */
+  window.tgApp = {
+    tg: tg,
+    isTg: true,
+    user: tg.initDataUnsafe?.user || null,
+    initDataRaw: tg.initData || '',
+    isFresh: isTgDataFresh(),
+
+    // theme
+    setTheme: tgTheme,
+
+    // back button
+    showBack: function() { tg.BackButton.show(); },
+    hideBack: function() { tg.BackButton.hide(); },
+
+    // bottom button
+    showAdd: function(label) {
+      if (!BottomBtn) return;
+      BottomBtn.setText(label || 'افزودن به فلش‌کارت');
+      BottomBtn.show();
+    },
+    hideAdd: function() { if (BottomBtn) BottomBtn.hide(); },
+
+    // haptic
+    haptic: function(type) {
+      try {
+        if (['success','error','warning'].includes(type)) {
+          tg.HapticFeedback.notificationOccurred(type);
+        } else {
+          tg.HapticFeedback.impactOccurred(type || 'medium');
+        }
+      } catch(e) {}
+    },
+
+    // share word
+    shareWord: function(de, fa) {
+      const text = de + ' — ' + fa + '\n\nیاد گرفتم با @WortschatzBot 🇩🇪';
+      try {
+        tg.shareMessage ? tg.shareMessage(text) : tg.openTelegramLink('https://t.me/share/url?url=https://wortschatz.space&text=' + encodeURIComponent(text));
+      } catch(e) {}
+    },
+
+    // close app
+    close: function() { tg.close(); },
+
+    // storage
+    store: tgStore,
+  };
+
+  console.log('[TG] Mini App ready —', tg.version, '— user:', window.tgApp.user?.first_name || 'anonymous');
+})();
+</script>
 
 
 <div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
@@ -2566,6 +2787,68 @@ function setUserUI(user){
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
+/* ════════════════════════════════════════
+   TG AUTO-LOGIN
+   Uses synthetic email/pass derived from TG user ID
+   Server-side: validate initDataRaw with HMAC-SHA256
+════════════════════════════════════════ */
+async function tgAutoLogin(tgUser, initDataRaw) {
+  const tgId = tgUser.id;
+  // Deterministic credentials — tied to TG user ID
+  const email = 'tg' + tgId + '@wortschatz.app';
+  const pass  = 'ws_tg_' + tgId + '_2025!';
+  const name  = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || tgUser.username || 'کاربر';
+
+  try {
+    // Try sign-in first (faster for returning users)
+    let { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+
+    if (error && error.message.includes('Invalid login credentials')) {
+      // New user — sign up
+      const signup = await sb.auth.signUp({
+        email, password: pass,
+        options: {
+          data: {
+            full_name: name,
+            tg_id: String(tgId),
+            tg_username: tgUser.username || '',
+            tg_photo: tgUser.photo_url || '',
+          }
+        }
+      });
+      data = signup.data;
+      error = signup.error;
+    }
+
+    if (error) throw error;
+
+    if (data?.user) {
+      setUserUI(data.user);
+      hideGate();
+      // Update UI with TG name
+      const nm = document.getElementById('drw-profile-name');
+      const av = document.getElementById('drw-avatar-big');
+      const un = document.getElementById('user-name');
+      const ua = document.getElementById('user-avatar');
+      if (nm) nm.textContent = name;
+      if (av) av.textContent = (name[0] || 'T').toUpperCase();
+      if (un) un.textContent = tgUser.username ? '@' + tgUser.username : name;
+      if (ua) ua.textContent = (name[0] || 'T').toUpperCase();
+      await dbLoad();
+      await loadProfile();
+      setTimeout(checkReminder, 2500);
+      window.tgApp?.haptic('success');
+      showToast('سلام ' + (tgUser.first_name || 'دوست') + '! 👋', 2200, 'ok');
+    } else {
+      showGate();
+    }
+  } catch(e) {
+    console.error('[TG login]', e.message);
+    showGate();
+  }
+}
+
+
 async function init(){
   targetLang = localStorage.getItem('ws_target_lang')||'de';
   updateLangUI();
@@ -2599,7 +2882,12 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    showGate();
+    // Telegram auto-login
+    if (window.tgApp?.isTg && window.tgApp?.user && window.tgApp?.isFresh) {
+      await tgAutoLogin(window.tgApp.user, window.tgApp.initDataRaw);
+    } else {
+      showGate();
+    }
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
@@ -2776,7 +3064,7 @@ function drawerUpdateLangToggle(){
   if(en){ en.classList.toggle('active', !isDE); }
 }
 
-function toggleDark(){const d=document.body.classList.toggle('dark');localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
+function toggleDark(){const d=document.body.classList.toggle('dark'); window.tgApp?.setTheme(document.body.classList.contains('dark'));localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
     ?'<circle cx="7" cy="7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
