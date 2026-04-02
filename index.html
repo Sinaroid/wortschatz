@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Wortschatz</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0f0f0e">
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d0d0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* IRANYekan via Google Fonts fallback */
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Vazirmatn',sans-serif;-webkit-font-smoothing:antialiased;background:#f2f0ea;color:#0f0f0e;direction:rtl}
-button,input,textarea{font-family:inherit}
-
 /* ═══════════════════════════════════
    DESIGN TOKENS
 ═══════════════════════════════════ */
@@ -419,8 +417,17 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{display:none}
-.hero-eye{display:none}
+.hero{padding:var(--s2) 0 var(--s2);animation:up .4s var(--ease) both}
+.hero-eye{
+  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:var(--s3);opacity:.8;
+}
+.hero h1{
+  font-family:var(--sans);font-size:clamp(28px,7vw,40px);font-weight:700;
+  color:var(--ink);line-height:1.15;letter-spacing:0;margin-bottom:var(--s2);
+}
+.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.75}
+.hero p{font-size:13px;color:var(--ink3);line-height:1.6}
 
 /* ═══════════════════════════════════
    SEARCH
@@ -664,51 +671,6 @@ body.offline .topbar{top:36px}
 }
 .sum-card.show{display:block}
 
-/* ── COMPACT CARD ── */
-@keyframes scFadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@keyframes scFadeIn{from{opacity:0}to{opacity:1}}
-.sc-streak-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s3)}
-.sc-streak-badge{display:flex;align-items:center;gap:10px}
-.sc-streak-num{font-family:var(--serif);font-size:36px;font-weight:600;color:var(--accent);line-height:1}
-.sc-streak-info{display:flex;flex-direction:column;gap:1px}
-.sc-streak-lvl{font-size:12px;font-weight:600;color:var(--ink)}
-.sc-streak-lbl{font-size:11px;color:var(--ink3)}
-.sc-next-pill{font-size:11px;color:var(--ink3);background:var(--bg2);border-radius:20px;padding:4px 10px;border:1px solid var(--bg3);white-space:nowrap}
-.sc-dots{display:flex;gap:4px;margin-bottom:var(--s3)}
-.sc-dot{flex:1;height:4px;border-radius:4px;background:var(--bg3)}
-.sc-dot.on{background:var(--accent)}
-.sc-dot.cur{background:var(--accent);box-shadow:0 0 0 2px var(--aglow)}
-.sc-btn-review{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:var(--s2);transition:all .18s}
-.sc-btn-review:hover{background:var(--accent2);transform:translateY(-1px)}
-.sc-btn-review:active{transform:scale(.98)}
-.sc-bottom-row{display:flex;gap:var(--s2)}
-.sc-stat{flex:1;background:var(--bg2);border-radius:var(--r2);padding:8px 6px;text-align:center}
-.sc-stat .n{font-size:18px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:2px}
-.sc-stat .n.ok{color:var(--ok)}
-.sc-stat .l{font-size:10px;color:var(--ink3)}
-.sc-btn-detail{padding:8px 12px;background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3);border-radius:var(--r2);font-size:11px;font-family:var(--sans);cursor:pointer;white-space:nowrap;transition:all .15s}
-.sc-btn-detail:hover{background:var(--bg3)}
-.sc-details{display:none;margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--bg3)}
-.sc-details.open{display:block;animation:scFadeUp .22s var(--ease) both}
-.sc-detail-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:30px;padding:3px;margin-bottom:var(--s3)}
-.sc-dt{flex:1;padding:6px 4px;font-size:11px;color:var(--ink3);background:transparent;border:none;border-radius:30px;cursor:pointer;font-family:var(--sans);transition:all .2s}
-.sc-dt.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:var(--sh1)}
-.sc-panel{animation:scFadeIn .2s var(--ease) both}
-.sc-xp-hero{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
-.sc-xp-num{font-family:var(--serif);font-size:28px;font-weight:600;color:var(--accent)}
-.sc-xp-bar-wrap{height:5px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:6px 0 4px}
-.sc-xp-bar{height:100%;background:var(--accent);border-radius:5px;transition:width .6s var(--ease)}
-.sc-xp-sub{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3)}
-.sc-xp-tip{margin-top:var(--s3);background:var(--abl);border-radius:var(--r2);padding:8px 10px;font-size:11px;color:var(--accent)}
-.sc-xp-list{margin-top:var(--s3);display:flex;flex-direction:column;gap:5px}
-.sc-xp-item{display:flex;justify-content:space-between;font-size:11px}
-.sc-xp-item span:first-child{color:var(--ink2)}
-.sc-xp-item span:last-child{color:var(--accent);font-weight:600}
-.sc-freeze-box{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:var(--r2);padding:10px 12px;margin-bottom:var(--s3)}
-.sc-lvl-row{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:5px}
-.sc-lvl-bar-wrap{height:4px;background:var(--bg3);border-radius:4px;overflow:hidden}
-.sc-lvl-bar{height:100%;background:var(--accent);border-radius:4px;transition:width .6s var(--ease)}
-
 /* header row */
 .sum-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -869,24 +831,6 @@ body.offline .topbar{top:36px}
   0%{transform:translateX(-100%) rotate(45deg)}
   100%{transform:translateX(100%) rotate(45deg)}
 }
-/* ── Streak System ── */
-@keyframes streakPop{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-@keyframes shakeX{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-.streak-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:999;padding:0}
-.streak-modal.open{display:flex}
-.streak-box{background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;animation:up .3s var(--spring)}
-.streak-icon{font-size:56px;text-align:center;margin-bottom:12px;animation:streakPop .4s var(--spring)}
-.streak-title{font-size:22px;font-weight:700;color:var(--ink);text-align:center;font-family:var(--sans);margin-bottom:6px}
-.streak-sub{font-size:14px;color:var(--ink2);text-align:center;line-height:1.6;margin-bottom:20px}
-.streak-level-badge{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--bg2);border-radius:12px;padding:10px 16px;margin-bottom:16px}
-.streak-freeze-bar{display:flex;gap:6px;justify-content:center;margin-bottom:20px}
-.streak-freeze-dot{width:32px;height:32px;border-radius:50%;background:var(--abl);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px}
-.streak-freeze-dot.used{background:var(--bg3);border-color:var(--bg3);opacity:.4}
-.streak-cta{width:100%;padding:14px;border-radius:var(--r2);background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px}
-.streak-skip{width:100%;padding:10px;border-radius:var(--r2);background:transparent;color:var(--ink3);border:none;font-family:var(--sans);font-size:13px;cursor:pointer}
-.milestone-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:999;padding:24px}
-.milestone-modal.open{display:flex}
-.milestone-box{background:var(--card);border-radius:24px;padding:32px 24px;width:100%;max-width:360px;text-align:center;animation:streakPop .4s var(--spring)}
 /* ─── DRAWER REDESIGN v2 ─── */
 
 /* Hero profile block */
@@ -1393,123 +1337,129 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-
-.pane,.bottom-nav,.off-bar,.reminder,.sum-card,.search-tip,.s-msg,.s-wrap,.hint{display:none!important}
-.app{max-width:480px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:relative;background:var(--bg)}
-.topbar{height:52px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 20px;direction:ltr;background:var(--bg);border-bottom:1px solid transparent;transition:background .3s,border-color .2s;position:relative;z-index:20}
-.topbar.raised{border-color:var(--bg3)}
-.logo{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.4px;text-decoration:none}
-.top-right{display:flex;align-items:center;gap:8px}
-.streak-pill{display:flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;background:var(--bg2);border:1px solid var(--bg3);font-size:11px;cursor:pointer}
-.sp-n{font-family:var(--serif);font-size:15px;font-weight:700;color:var(--ink)}
-.sp-u{font-size:10px;color:var(--ink3)}
-.top-av{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.content{flex:1;min-height:0;position:relative;overflow:hidden}
-.page{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .25s ease;background:var(--bg);overflow:hidden}
-.page.on{opacity:1;pointer-events:all}
-#pg-search{direction:rtl}
-.hero{flex:1;display:flex;align-items:center;padding:0 24px;min-height:0}
-.hero-txt{font-family:var(--serif);font-size:52px;font-weight:700;color:var(--ink);line-height:.9;letter-spacing:-2.5px;text-align:right}
-.hero-txt em{display:block;font-style:italic;font-weight:300;opacity:.44;margin-top:6px}
-.chips-row{height:66px;flex-shrink:0;display:flex;align-items:center;padding:0 24px;overflow:hidden}
-.chips-inner{display:flex;flex-wrap:wrap;gap:7px;direction:ltr;justify-content:flex-end;width:100%}
-.chip{padding:8px 16px;border-radius:20px;background:var(--card);border:1px solid var(--bg3);font-size:13px;color:var(--ink);cursor:pointer;font-family:var(--serif);font-style:italic;transition:all .15s;white-space:nowrap}
-.chip:active{transform:scale(.93)}
-.ibar{height:74px;flex-shrink:0;padding:8px 16px;background:var(--bg);border-top:1px solid var(--bg3);display:flex;flex-direction:column;justify-content:center;gap:6px;direction:rtl}
-.ibar-meta{display:flex;justify-content:space-between;align-items:center}
-.ibar-cred{font-size:10px;color:var(--ink3)}
-.ibar-pro{font-size:10px;font-weight:700;color:var(--accent);cursor:pointer}
-.ibar-row{display:flex;align-items:center;gap:8px;direction:ltr}
-.ibar-inp{flex:1;border:none;outline:none;resize:none;font-family:var(--sans);font-size:14px;color:var(--ink);background:transparent;direction:rtl;text-align:right;line-height:1.4;max-height:44px;overflow-y:auto;scrollbar-width:none}
-.ibar-inp::placeholder{color:var(--ink3)}
-.ibar-flags{display:flex;gap:3px;flex-shrink:0}
-.ibar-flag{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;border:1.5px solid transparent;transition:all .15s}
-.ibar-flag.on{background:var(--bg2);border-color:var(--bg3)}
-.ibar-send{width:34px;height:34px;border-radius:50%;background:var(--ink);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;flex-shrink:0}
-.ibar-send:active{transform:scale(.88)}
-#pg-review{direction:rtl;background:#0d0d0c;padding:22px 22px 0;justify-content:flex-end}
-.rv-n{font-family:var(--serif);font-size:96px;font-weight:700;color:#fff;line-height:.85;letter-spacing:-5px}
-.rv-lbl{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:1.8px;margin-top:4px;margin-bottom:20px}
-.rv-track{height:2px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-bottom:5px}
-.rv-fill{height:100%;background:rgba(255,255,255,.5);border-radius:2px;width:0;transition:width 1s ease}
-.rv-meta{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.25);margin-bottom:18px}
-.rv-stats{display:flex;gap:8px;margin-bottom:20px}
-.rv-stat{flex:1;padding:12px 6px;text-align:center;background:rgba(255,255,255,.07);border-radius:12px}
-.rv-stat .n{font-family:var(--serif);font-size:28px;font-weight:700;color:#fff;line-height:1}
-.rv-stat .l{font-size:9px;color:rgba(255,255,255,.3);margin-top:3px}
-.rv-cta{width:100%;padding:15px;border-radius:14px;border:none;background:#fff;color:#0f0f0e;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:16px;transition:opacity .15s}
-.rv-cta:active{opacity:.75}
-.rv-dots{display:flex;gap:4px;margin-bottom:22px}
-.rv-d{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.12)}
-.rv-d.on{background:rgba(255,255,255,.6)}
-#pg-packs{direction:rtl;padding:20px 20px 0}
-.pk-ttl{font-family:var(--serif);font-size:40px;font-weight:700;color:var(--ink);letter-spacing:-1.5px;line-height:.9;margin-bottom:18px}
-.pk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;overflow-y:auto;flex:1}
-.pk-card{border-radius:16px;padding:14px 13px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:transform .15s;min-height:108px}
-.pk-card:active{transform:scale(.96)}
-.pk-card.c1{background:rgba(195,178,255,.35);border:1px solid rgba(180,162,255,.3)}
-.pk-card.c2{background:rgba(162,228,190,.35);border:1px solid rgba(145,212,172,.3)}
-.pk-card.c3{background:rgba(255,213,165,.35);border:1px solid rgba(240,196,148,.3)}
-.pk-card.c4{background:rgba(178,208,255,.35);border:1px solid rgba(162,192,240,.3)}
-.pk-card.c5{background:var(--ink);grid-column:span 2;flex-direction:row;align-items:center;min-height:auto;padding:13px 16px;gap:10px;border:none}
-.pk-ico{font-size:20px}
-.pk-nm{font-size:12px;font-weight:600;color:var(--ink);line-height:1.2}
-.pk-ct{font-size:10px;color:var(--ink3)}
-.pk-card.c5 .pk-nm{color:#fff;flex:1;font-size:13px}
-#pg-list{direction:rtl;background:#0d0d0c}
-.ls-top{flex-shrink:0;padding:10px 20px 8px;background:#0d0d0c}
-.ls-box{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:9px 13px}
-.ls-box svg{color:rgba(255,255,255,.3);flex-shrink:0}
-.ls-inp{flex:1;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.85);direction:rtl}
-.ls-inp::placeholder{color:rgba(255,255,255,.22)}
-.ls-body{flex:1;overflow-y:auto;padding:0 20px;scrollbar-width:none}
-.ls-body::-webkit-scrollbar{display:none}
-.wrow{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:opacity .12s}
-.wrow:last-child{border-bottom:none}
-.wrow:active{opacity:.55}
-.wrow-de{font-family:var(--serif);font-size:16px;font-weight:600;color:#fff;direction:ltr;flex:1.2}
-.wrow-fa{font-size:11px;color:rgba(255,255,255,.35);flex:1;text-align:right}
-.wrow-lv{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(100,120,255,.16);color:rgba(160,180,255,.8);flex-shrink:0}
-.rov{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .38s cubic-bezier(.32,1,.58,1);pointer-events:none;direction:rtl;background:#0d0d0c;overflow:hidden}
-.rov.open{transform:none;pointer-events:all}
-.rov-b1{position:absolute;width:300px;height:300px;top:-80px;right:-60px;border-radius:50%;filter:blur(60px);background:rgba(55,35,170,.45);pointer-events:none}
-.rov-b2{position:absolute;width:240px;height:240px;top:40px;left:-50px;border-radius:50%;filter:blur(60px);background:rgba(26,58,242,.25);pointer-events:none}
-.rov-inner{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:0 22px 20px;overflow-y:auto;scrollbar-width:none}
-.rov-inner::-webkit-scrollbar{display:none}
-.rov-back{display:flex;align-items:center;gap:5px;padding:max(env(safe-area-inset-top),14px) 0 16px;cursor:pointer;width:fit-content;flex-shrink:0}
-.rov-back svg{color:rgba(255,255,255,.35);width:16px;height:16px}
-.rov-back span{font-size:12px;color:rgba(255,255,255,.35)}
-.rov-typing{display:flex;align-items:center;gap:5px;padding:12px 0}
-.rov-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);animation:rovdot .9s ease-in-out infinite}
-.rov-dot:nth-child(2){animation-delay:.15s}.rov-dot:nth-child(3){animation-delay:.3s}
-@keyframes rovdot{0%,80%,100%{transform:scale(.55);opacity:.2}40%{transform:scale(1);opacity:1}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.rov-body{animation:fadeUp .35s ease both}
-.rov-word{font-family:var(--serif);font-size:56px;font-weight:700;color:#fff;line-height:.88;letter-spacing:-2.5px;direction:ltr;margin-bottom:6px}
-.rov-art{font-size:12px;color:rgba(255,255,255,.28);direction:ltr;margin-bottom:10px}
-.rov-meaning{font-size:22px;font-weight:500;color:rgba(255,255,255,.88);margin-bottom:18px;line-height:1.2}
-.rov-ex{background:rgba(255,255,255,.06);border-radius:13px;padding:13px 15px;margin-bottom:14px;border-right:2px solid rgba(100,120,255,.4)}
-.rov-ex-de{font-size:13px;color:rgba(255,255,255,.65);direction:ltr;font-style:italic;line-height:1.65;margin-bottom:4px}
-.rov-ex-fa{font-size:11px;color:rgba(255,255,255,.28)}
-.rov-badges{display:flex;gap:7px;margin-bottom:22px}
-.rov-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.08);color:rgba(255,255,255,.44)}
-.rov-badge.hi{background:rgba(100,120,255,.2);color:rgba(165,185,255,.85)}
-.rov-add{width:100%;padding:15px;border-radius:13px;border:none;background:#fff;color:#0f0f0e;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .18s}
-.rov-add:active{transform:scale(.98);opacity:.8}
-.rov-add.done{background:#1a3af2;color:#fff}
-.bnav{height:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#0f0f0e;padding-bottom:env(safe-area-inset-bottom)}
-.bnav-pill{display:flex;align-items:center;padding:4px;gap:2px}
-.bn{width:48px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:28px;cursor:pointer;transition:all .2s;position:relative}
-.bn svg{width:18px;height:18px;color:rgba(255,255,255,.24);transition:color .2s}
-.bn.on{background:rgba(255,255,255,.1)}
-.bn.on svg{color:#fff}
-.bn:active{transform:scale(.88)}
-.bn.on::after{content:"";position:absolute;bottom:4px;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.5)}
-.drawer-bg,.modal-bg{z-index:300!important}
 </style>
 </head>
 <body>
 
+
+<div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
+
+<!-- Auth Gate -->
+<div id="gate">
+
+  
+<div style="position:relative;z-index:1;width:100%;max-width:360px;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3)">
+
+  <!-- TOP: Blue section -->
+  <div style="background:linear-gradient(135deg,#1a3af2,#3d5af5);padding:16px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
+    <div style="position:absolute;bottom:-25px;left:-10px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.05)"></div>
+
+    <!-- Phone -->
+    <div id="lp-phone" style="width:160px;margin:0 auto;background:rgba(255,255,255,.96);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 8px 28px rgba(0,0,0,.22)">
+      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40px;height:11px;background:#1a1916;border-radius:0 0 7px 7px;z-index:10"></div>
+      <div style="background:#f5f3ee;padding:15px 9px 6px;display:flex;align-items:center;border-bottom:1px solid #eceae3">
+        <div style="display:flex;align-items:center;gap:3px">
+          <div style="width:11px;height:11px;background:#1a3af2;border-radius:2px;color:white;font-size:6px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif">W</div>
+          <span style="font-family:'Fraunces',serif;font-size:8px;font-weight:700;color:#1a1916">Wortschatz</span>
+        </div>
+      </div>
+      <div style="padding:8px;height:130px;overflow:hidden;position:relative">
+
+        <div class="lp-step active" id="lps0">
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:15%;background:#1a3af2;border-radius:2px"></div></div>
+          <div id="lp-searchbox" style="background:#eceae3;border-radius:7px;padding:4px 7px;display:flex;align-items:center;gap:4px;margin-bottom:5px">
+            <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><circle cx="2.8" cy="2.8" r="1.8" stroke="#8a8780" stroke-width=".7"/><path d="M4 4L5.8 5.8" stroke="#8a8780" stroke-width=".7" stroke-linecap="round"/></svg>
+            <span style="font-size:8px;direction:ltr;color:#1a1916" id="lp-typetext"></span><span style="width:1px;height:8px;background:#1a3af2;animation:blink .7s infinite;display:inline-block;flex-shrink:0"></span>
+          </div>
+          <div style="font-size:7px;color:#8a8780;text-align:center;padding:8px 0">در حال تایپ...</div>
+        </div>
+
+        <div class="lp-step" id="lps1">
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:40%;background:#1a3af2;border-radius:2px"></div></div>
+          <div style="background:#eceae3;border-radius:7px;padding:7px">
+            <div style="font-family:'Fraunces',serif;font-size:10px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
+            <div style="font-size:7px;color:#4a4843;margin:2px 0 3px">مهلت فسخ قرارداد</div>
+            <div style="font-size:6px;color:#8a8780;font-style:italic;direction:ltr;background:white;border-radius:3px;padding:2px 4px;margin-bottom:4px">...beträgt drei Monate</div>
+            <button id="lp-addbtn" style="width:100%;background:#1a3af2;color:white;border:none;border-radius:4px;padding:4px;font-size:7px;font-weight:600;cursor:pointer;font-family:var(--sans)">+ فلش‌کارت</button>
+          </div>
+        </div>
+
+        <div class="lp-step" id="lps2">
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:65%;background:#1a3af2;border-radius:2px"></div></div>
+          <div id="lp-flashcard" style="background:#eceae3;border-radius:7px;padding:10px;text-align:center;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
+            <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
+            <div style="font-size:6px;color:#8a8780;margin-top:2px">کلیک برای معنی</div>
+          </div>
+          <div style="display:flex;gap:3px;opacity:.35">
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">بلدم</button>
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
+          </div>
+        </div>
+
+        <div class="lp-step" id="lps3">
+          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:85%;background:#1a3af2;border-radius:2px"></div></div>
+          <div style="background:#e6ebff;border-radius:7px;padding:10px;text-align:center;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
+            <div style="font-size:9px;color:#1a3af2;font-weight:600">مهلت فسخ قرارداد</div>
+            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
+            <div style="font-size:6px;color:#1a3af2;opacity:.7;margin-top:2px">فردا مرور کن</div>
+          </div>
+          <div style="display:flex;gap:3px">
+            <button id="lp-knowbtn" style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">✓ بلدم</button>
+            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
+          </div>
+        </div>
+
+        <div class="lp-step" id="lps4">
+          <div style="text-align:center;padding:16px 0">
+            <div style="font-size:22px">🎉</div>
+            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;color:#1a1916;margin-top:4px">یاد گرفتی!</div>
+            <div style="font-size:7px;color:#8a8780;margin-top:2px">SM-2 بهترین وقت مرور رو یادت میاره</div>
+          </div>
+        </div>
+
+      </div>
+      <!-- cursor -->
+      <div id="lp-mouse" style="position:absolute;pointer-events:none;z-index:50;opacity:0;transition:left .5s cubic-bezier(.4,0,.2,1),top .5s cubic-bezier(.4,0,.2,1),opacity .3s">
+        <svg width="11" height="14" viewBox="0 0 11 14" fill="none"><path d="M1 1l3.5 9.8 1.6-3.5 3.5-.9L1 1z" fill="white" stroke="#1a1916" stroke-width=".8" stroke-linejoin="round"/></svg>
+      </div>
+      <div id="lp-ripple" style="position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(26,58,242,.25);transform:scale(0);pointer-events:none;z-index:49;transition:transform .3s,opacity .3s"></div>
+    </div>
+
+    <!-- Dots + dynamic description -->
+    <div style="margin-top:10px;text-align:center">
+      <div style="display:flex;gap:4px;justify-content:center;margin-bottom:8px">
+        <div class="lp-dot active" id="lpd0"></div>
+        <div class="lp-dot" id="lpd1"></div>
+        <div class="lp-dot" id="lpd2"></div>
+        <div class="lp-dot" id="lpd3"></div>
+        <div class="lp-dot" id="lpd4"></div>
+      </div>
+      <!-- Dynamic description per slide -->
+      <div id="lp-slide-desc" style="min-height:40px;transition:opacity .3s">
+        <div style="font-family:var(--sans);font-size:15px;font-weight:700;color:white;line-height:1.3">لغت جستجو کن</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">فارسی، آلمانی یا انگلیسی — AI توضیح میده</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: White login section -->
+  <div style="background:var(--card);padding:16px">
+    <button onclick="loginGoogle()" class="btn-google" style="margin-bottom:10px">
+      <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
+      ورود با Google
+    </button>
+    <div class="gate-or">یا با ایمیل</div>
+    <input class="inp ltr" id="gate-email" type="email" placeholder="your@email.com" style="margin-bottom:8px">
+    <button class="btn btn-p btn-full" onclick="loginMagicLink()" id="gate-btn">ارسال لینک ورود</button>
+    <div id="gate-err" style="font-size:11px;color:var(--ok);text-align:center;margin-top:6px;min-height:14px"></div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- Drawer -->
 <div class="drawer-bg" id="drawer" onclick="if(event.target===this)drawerClose()">
   <div class="drawer">
     <div class="drw-handle"></div>
@@ -1619,6 +1569,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
   </div>
 </div>
+
+<!-- Edit modal -->
 <div class="modal-bg" id="edit-modal" onclick="if(event.target===this)editClose()">
   <div class="modal">
     <div class="modal-title">ویرایش لغت</div>
@@ -1632,209 +1584,420 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </div>
   </div>
 </div>
-<div class="milestone-modal" id="milestone-modal">
-  <div class="milestone-box">
-    <div style="font-size:60px;margin-bottom:12px" id="mm-icon">🏆</div>
-    <div style="font-size:22px;font-weight:700;color:var(--ink);font-family:var(--sans);margin-bottom:6px" id="mm-title">عالی!</div>
-    <div style="font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:20px" id="mm-sub">به یه milestone مهم رسیدی</div>
-    <div style="background:var(--abl);border-radius:12px;padding:12px;margin-bottom:16px;text-align:right">
-      <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:4px">Pro بگیر — streak رو محافظت کن 🧊</div>
-      <div style="font-size:11px;color:var(--ink3)">۳ تا Freeze + بازیابی streak در صورت شکستن</div>
-    </div>
-    <button class="streak-cta" onclick="milestoneUpgrade()">✨ Pro بگیر</button>
-    <button class="streak-skip" onclick="closeMilestone()">بعداً</button>
+
+
+
+
+  <!-- PACKS -->
+<!-- Word Packs Section -->
+<!-- Session -->
+<!-- Session Intro -->
+<div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
+  <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
+  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
+  <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
+  <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
+    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">شروع مرور →</button>
+    <button class="btn btn-full" onclick="introClose()">بعداً</button>
   </div>
 </div>
-<div id="pack-learn-modal">
-  <div class="pack-learn-wrap">
+
+<div id="session">
+  <div class="ses-topbar">
+    <button class="ses-close" onclick="sesClose()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="ses-info">
+      <div class="ses-cnt" id="ses-cnt">۱/۱</div>
+      <div class="ses-sub" id="ses-sub"></div>
+    </div>
+    <!-- دکمه دوباره حذف شد -->
+  </div>
+  <div class="ses-prog"><div class="ses-fill" id="ses-fill" style="width:0%"></div></div>
+
+
+  <div class="ses-body" id="ses-body">
+    <div class="card-scene" onclick="sesFlip()">
+      <div class="card-wrap" id="card-wrap">
+        <div class="card-face card-front">
+          <span class="c-type" id="c-type"></span>
+          <span class="c-hint">برای دیدن معنی کلیک کن</span>
+          <span class="c-word" id="ses-word"></span>
+        </div>
+        <div class="card-face card-back">
+          <span class="c-hint">معنی</span>
+          <span class="c-mean" id="ses-mean"></span>
+          <span class="c-sent" id="ses-sent"></span>
+        </div>
+      </div>
+    </div>
+    <div class="swipe-row"><span>← بلد نبودم</span><span>بلد بودم →</span></div>
+    <div class="ses-acts">
+      <button class="sa bad" onclick="sesRate(false)">
+        <span class="sa-ic">✗</span><span>بلد نبودم</span><span class="sa-next">دوباره میاد</span>
+      </button>
+      <button class="flip-btn" onclick="sesFlip()">↺</button>
+      <button class="sa good" onclick="sesRate(true)">
+        <span class="sa-ic">✓</span><span>بلد بودم</span><span class="sa-next" id="ses-next">فردا</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="ses-end" id="ses-end">
+    <div class="end-icon">🎉</div>
+    <div class="end-title">دور تموم شد!</div>
+    <div class="end-msg" id="end-msg"></div>
+    <div class="end-stats">
+      <div class="es"><div class="es-n g" id="end-g">0</div><div class="es-l">بلد بودم</div></div>
+      <div class="es"><div class="es-n b" id="end-b">0</div><div class="es-l">بلد نبودم</div></div>
+      <div class="es"><div class="es-n" id="end-t">0</div><div class="es-l">کل</div></div>
+    </div>
+    <div class="end-next" id="end-next"></div>
+    <div class="end-btns">
+      <button class="btn btn-p" id="end-more-btn" onclick="sesOpenSmart()" style="display:none">سشن بعدی ←</button>
+      <button class="btn btn-p" onclick="sesRestart()">دوباره همین</button>
+      <button class="btn" onclick="sesClose(true)">بستن</button>
+    </div>
+  </div>
+
+  <div class="ses-confirm" id="ses-confirm">
+    <div style="font-size:48px">🤔</div>
+    <div class="con-title">می‌خوای بری؟</div>
+    <div class="con-sub">یادگیری نصفه میمونه — مطمئنی؟</div>
+    <div class="con-btns">
+      <button class="btn btn-p" onclick="sesResume()">ادامه میدم 💪</button>
+      <button class="btn btn-danger" onclick="sesClose(true)">خروج</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div class="app">
+  <header class="topbar" id="topbar">
+    <a class="logo" href="#">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 5L5.5 13L8 7.5L10.5 13L14 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="logo-name">Wortschatz</span>
+    </a>
+    <div class="top-r">
+      <div class="sync-dot" id="sync-dot"></div>
+      <button class="btn-ic" id="theme-btn" onclick="toggleDark()">
+        <svg id="theme-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M12.5 8.5A5.5 5.5 0 116.5 3a4.5 4.5 0 006 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="user-chip" id="user-chip" onclick="drawerOpen()" style="display:none">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span class="user-name" id="user-name"></span>
+      </div>
+      <button class="btn-ic" id="settings-btn" onclick="drawerOpen()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <div class="pane on" id="pane-home">
+    <div class="hero">
+      <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
+      <h1 id="hero-title">لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
+      <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
+    </div>
+
+    <div id="free-banner" style="display:none"></div>
+    <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
+      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
+        <span id="home-lang-flag">🇩🇪</span>
+        <span id="home-lang-label">آلمانی</span>
+        <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <!-- Lang mini popover -->
+      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
+        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇩🇪</span>
+          <span>آلمانی</span>
+          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+        </button>
+        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇬🇧</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-start">
+            <span>انگلیسی</span>
+            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
+          </div>
+          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+        </button>
+      </div>
+    </div>
+    <div class="s-wrap">
+      <input class="s-field" id="s-inp"
+        placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
+        oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
+      <div class="ac-drop" id="ac-drop"></div>
+      <button class="s-btn" id="s-btn" onclick="doSearch()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
+    <div class="s-msg" id="s-msg"></div>
+
+    <!-- Word result -->
+    <div class="res" id="res">
+      <div class="res-fix" id="res-fix"></div>
+
+      <!-- اسم لغت -->
+      <div class="res-word-block">
+        <div class="res-art-word">
+          <span class="res-art" id="res-art"></span>
+          <span class="res-word" id="res-word"></span>
+        </div>
+        <div class="res-principal" id="res-principal"></div>
+        <div class="res-plural" id="res-plural"></div>
+      </div>
+
+      <div class="res-divider"></div>
+
+      <!-- معنی و اطلاعات -->
+      <div class="res-info-block">
+        <div class="res-meaning" id="res-meaning"></div>
+        <div class="res-synonym" id="res-synonym"></div>
+        <div class="res-usage-line" id="res-usage-line"></div>
+        <div class="res-example" id="res-example"></div>
+        <div class="res-tip-line" id="res-tip-line"></div>
+      </div>
+
+      <div class="res-divider"></div>
+
+      <!-- badges + priority -->
+      <div class="res-footer">
+        <div class="res-footer-left">
+          <span class="res-badge level" id="res-level"></span>
+          <span class="res-badge type" id="res-type"></span>
+        </div>
+        <div class="res-priority" id="res-priority"></div>
+      </div>
+
+      <div class="res-add-wrap">
+        <button class="add-btn" id="add-btn" onclick="addWord()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          افزودن به فلش‌کارت‌ها
+        </button>
+      </div>
+    </div>
+
+    <!-- Phrase result -->
+    <div class="ph-res" id="ph-res">
+      <div class="ph-top">
+        <!-- correction banner -->
+        <div id="ph-correction" style="display:none">
+          <span style="opacity:.8">غلط املایی داشتی — اصلاح شد:</span> <span id="ph-corrected" style="font-weight:700;direction:ltr;cursor:pointer" onclick="rephrase()"></span>
+        </div>
+        <div class="ph-orig" id="ph-orig"></div>
+        <div class="ph-meaning" id="ph-meaning"></div>
+        <div class="ph-priority" id="ph-priority" style="display:none"></div>
+        <!-- similar phrases -->
+        <div id="ph-similar" style="display:none;margin-top:8px">
+          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:5px">عبارات مشابه:</div>
+          <div id="ph-similar-chips" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        </div>
+        <span class="ph-syn" id="ph-syn"></span>
+        <!-- example -->
+        <div id="ph-example" style="display:none;margin-top:8px;background:rgba(255,255,255,.08);border-radius:8px;padding:8px 10px">
+          <div id="ph-ex-de" style="font-size:12px;color:rgba(255,255,255,.85);direction:ltr;text-align:left;font-style:italic"></div>
+          <div id="ph-ex-fa" style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px"></div>
+        </div>
+      </div>
+      <div class="ph-body">
+        <button class="ph-add" id="ph-add" onclick="addPhrase()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          افزودن کل اصطلاح به فلش‌کارت‌ها
+        </button>
+      </div>
+    </div>
+
+    <!-- Reminder -->
+    <div class="reminder" id="reminder">
+      <div class="rem-head">
+        <div><div class="rem-title" id="rem-title">وقت مرور! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
+        <button class="rem-x" onclick="remDismiss()">✕</button>
+      </div>
+      <div class="rem-chips" id="rem-chips"></div>
+      <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
+    </div>
+
+    <!-- Stats card -->
+    <div class="sum-card" id="sum-card">
+      <div class="sum-header">
+        <div class="sum-title">پیشرفت تو</div>
+        <div class="sum-streak">
+          🔥 <span id="sn-streak">0</span> روز
+        </div>
+      </div>
+      <div class="sum-nums">
+        <div class="sum-nb">
+          <div class="sum-n" id="sn-total">0</div>
+          <div class="sum-l">کل لغت</div>
+          <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:2px;display:none"></div>
+        </div>
+        <div class="sum-nb ok">
+          <div class="sum-n" id="sn-learned">0</div>
+          <div class="sum-l">یاد گرفتم</div>
+        </div>
+        <div class="sum-nb warn" id="sn-due-wrap">
+          <div class="sum-n" id="sn-due">0</div>
+          <div class="sum-l">برای مرور</div>
+        </div>
+      </div>
+      <div class="sum-dots" id="sum-dots"></div>
+      <div class="sum-acts">
+        <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">شروع مرور</span> →</button>
+        <button class="sum-all" onclick="sesOpen()">همه لغات</button>
+      </div>
+    </div>
+
+    <!-- Home empty state -->
+    <div id="home-empty">
+      <div class="hint" style="padding:var(--s2) 0 calc(var(--nav-h) + var(--s4))">
+        <div class="hint-chips" id="home-empty-chips"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="pane" id="pane-list">
+    <div class="list-topbar">
+      <div class="list-title">لیست لغات</div>
+      <span class="list-count" id="list-count"></span>
+    </div>
+    <div class="due-banner" id="due-banner">
+      <div class="due-head">
+        <div class="due-label">⏰ نیاز به مرور</div>
+        <button class="due-btn" onclick="sesOpenDue()">شروع مرور ←</button>
+      </div>
+      <div class="due-chips" id="due-chips"></div>
+    </div>
+    <div class="sort-tabs">
+      <button class="sort-tab on" id="st-new"   onclick="setSort('new')">جدیدترین</button>
+      <button class="sort-tab"    id="st-due"   onclick="setSort('due')">دیر شده</button>
+      <button class="sort-tab"    id="st-weak"  onclick="setSort('weak')">ضعیف‌ترین</button>
+      <button class="sort-tab"    id="st-best"  onclick="setSort('best')">بهترین</button>
+      <button class="sort-tab"    id="st-alpha" onclick="setSort('alpha')">الفبا</button>
+    </div>
+    <div class="list-s-wrap">
+      <svg class="list-s-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input class="list-s" id="list-q" placeholder="جستجو در لغات..." oninput="renderList()">
+    </div>
+    <div id="wlist"></div>
+  </div>
+
+
+  <!-- PACKS -->
+  <div id="pane-packs" class="pane" style="padding-top:0">
+
+  <!-- Header -->
+  <div style="padding:12px 16px 10px;border-bottom:1px solid var(--bg3);margin-bottom:12px">
+    <div style="font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px">📦 جعبه لغت‌ها</div>
+    <div style="font-size:12px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
+  </div>
+
+  <!-- Pack Grid -->
+  <div id="packs-grid-container" style="padding:0 12px;margin-bottom:var(--s5)"></div>
+
+
+  <!-- AI Pack Section -->
+  <div style="padding:0 12px var(--s8)">
 
     <!-- Header -->
-    <div class="pl-header">
-      <button class="pl-close" onclick="packLearnClose()">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-          <path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <div class="pl-progress-wrap">
-        <div class="pl-progress-bar">
-          <div class="pl-progress-fill" id="pl-fill"></div>
-        </div>
-        <div class="pl-counter" id="pl-counter">1 / 50</div>
+    <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✨</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink)">ساخت Pack با AI</div>
+        <div style="font-size:11px;color:var(--ink3)">از کتاب، سریال یا هر موضوعی</div>
       </div>
-      <div class="pl-score">
-        <span id="pl-saved-count">0</span>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M7 1l1.8 3.6L13 5.4l-3 2.9.7 4.1L7 10.4 3.3 12.4l.7-4.1L1 5.4l4.2-.8L7 1z" fill="currentColor"/>
-        </svg>
-      </div>
+      <div style="margin-right:auto;font-size:10px;background:var(--abl);color:var(--accent);padding:3px 8px;border-radius:20px;font-weight:600">Pro</div>
     </div>
 
-    <!-- Card Area -->
-    <div class="pl-card-area" id="pl-card-area">
-      <div class="pl-card" id="pl-card" onclick="packLearnFlip()" ontouchend="packLearnFlip();event.preventDefault()">
-
-        <!-- Front -->
-        <div class="pl-front" id="pl-front">
-          <div class="pl-word" id="pl-word">Hallo</div>
-          <div class="pl-hint">برای دیدن معنی کلیک کن</div>
-          <div class="pl-tap-icon">👆</div>
-        </div>
-
-        <!-- Back -->
-        <div class="pl-back" id="pl-back" style="display:none">
-          <div class="pl-word" id="pl-word-back">Hallo</div>
-          <div class="pl-meaning" id="pl-meaning">سلام</div>
-          <div class="pl-divider"></div>
-          <div class="pl-example" id="pl-example">
-            <div class="pl-ex-de" id="pl-ex-de"></div>
-            <div class="pl-ex-fa" id="pl-ex-fa"></div>
-          </div>
-          <div class="pl-tip" id="pl-tip"></div>
-        </div>
-
+    <!-- Book Presets -->
+    <div style="margin-bottom:var(--s4)">
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600" id="pack-presets-label">📚 کتاب‌های محبوب آلمانی:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--s2)" id="pack-presets-wrap">
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Nicos Weg سطح A1')">Nicos Weg A1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Menschen A1 آلمانی')">Menschen A1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Schritte Plus A2')">Schritte Plus A2</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Sicher B1 آلمانی')">Sicher B1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Aspekte B2 آلمانی')">Aspekte B2</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('سریال Dark آلمانی')">Dark 🎬</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات پزشکی آلمانی')">پزشکی 🏥</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات حقوقی آلمانی')">حقوق ⚖️</button>
       </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="pl-actions" id="pl-actions" style="display:none">
-      <button class="pl-btn pl-btn-flash" onclick="packLearnAddFlash()" style="flex:1.5">
-        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-          <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        یاد می‌گیرم
-      </button>
-      <button class="pl-btn pl-btn-know" onclick="packLearnKnow()" style="flex:1">
-        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        بلدم
-      </button>
-    </div>
-
-    <!-- Summary Screen -->
-    <div class="pl-summary" id="pl-summary" style="display:none">
-      <div class="pl-sum-emoji" id="pl-sum-emoji">🎉</div>
-      <div class="pl-sum-title" id="pl-sum-title">عالی بود!</div>
-      <div class="pl-sum-stats">
-        <div class="pl-sum-stat">
-          <div class="pl-sum-n" id="pl-sum-flash">0</div>
-          <div class="pl-sum-l">فلش‌کارت</div>
-        </div>
-        <div class="pl-sum-stat">
-          <div class="pl-sum-n" id="pl-sum-saved">0</div>
-          <div class="pl-sum-l">ذخیره‌شده</div>
-        </div>
-        <div class="pl-sum-stat">
-          <div class="pl-sum-n" id="pl-sum-skip">0</div>
-          <div class="pl-sum-l">بلد بودم</div>
-        </div>
+    <!-- Custom Input -->
+    <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s4);border:1px solid var(--bg3)">
+      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600">یا خودت بنویس:</div>
+      <div style="display:flex;gap:var(--s2)">
+        <input class="inp" id="ai-pack-tab-inp" placeholder="مثلاً: Sicher B2، لغات فوتبال، محیط زیست..." style="margin:0;flex:1;font-size:13px">
+        <button class="btn btn-p" onclick="generateAIPackTab()" id="ai-pack-tab-btn" style="white-space:nowrap;padding:0 var(--s4)">
+          <span id="ai-pack-btn-txt">ساخت ✨</span>
+        </button>
       </div>
-      <div class="pl-sum-msg" id="pl-sum-msg"></div>
-      <div style="display:flex;flex-direction:column;gap:var(--s3);width:100%">
-        <button class="btn btn-p btn-full" onclick="packLearnClose()">بازگشت به جعبه‌ها</button>
-        <button class="btn btn-full" onclick="packLearnRestart()" id="pl-restart-btn">دوباره از اول</button>
-      </div>
+      <div id="ai-pack-tab-err" style="font-size:11px;color:var(--err);margin-top:var(--s2);min-height:14px"></div>
     </div>
 
+    <!-- Result -->
+    <div id="ai-pack-tab-result" style="margin-top:var(--s4)"></div>
+
   </div>
-</div>
 
-<div style="display:none" aria-hidden="true">
-<div id="pane-home"><div class="s-wrap"><input id="s-inp" class="s-field" autocomplete="off"><button id="s-btn" onclick="doSearch()"></button></div><div id="free-banner"></div><div class="res" id="res"><div class="res-art-word"><span id="res-art"></span><span id="res-word"></span></div><div id="res-principal"></div><div id="res-plural"></div><div id="res-meaning"></div><div id="res-synonym"></div><div id="res-usage-line"></div><div id="res-example"></div><div id="res-tip-line"></div><div id="res-fix"></div><div class="res-footer-left"><span id="res-level"></span><span id="res-type"></span></div><div id="res-priority"></div><button id="add-btn" onclick="addWord()"></button></div><div class="ph-res" id="ph-res"><div id="ph-correction" style="display:none"><span id="ph-corrected"></span></div><div id="ph-orig"></div><div id="ph-meaning"></div><div id="ph-priority" style="display:none"></div><div id="ph-similar" style="display:none"><div id="ph-similar-chips"></div></div><span id="ph-syn"></span><div id="ph-example" style="display:none"><div id="ph-ex-de"></div><div id="ph-ex-fa"></div></div><button id="ph-add" onclick="addPhrase()"></button></div><div id="reminder" style="display:none"><div id="rem-title"></div><div id="rem-sub"></div><div id="rem-chips"></div><button onclick="remStart()"></button><button onclick="remDismiss()"></button></div><div id="sum-card"><div id="sc-streak-num">0</div><div id="sc-streak-lvl"></div><div id="sc-streak-lbl"></div><div id="sc-next-pill"></div><div id="sc-dots"></div><button onclick="sesOpenSmart()"></button><div id="sn-total">0</div><div id="sn-learned">0</div><div id="sn-due">0</div><div id="sc-xp-total">0</div><div id="sc-xp-bar" style="width:0%"></div><div id="sc-xp-sub"></div><div id="sc-xp-pct">0%</div><div id="sc-freeze-dots"></div><div id="sc-lvl-lbl"></div><div id="sc-lvl-pct"></div><div id="sc-lvl-bar" style="width:0%"></div><div id="sc-lvl-sub"></div><div id="sc-empty-icon"></div></div><div id="home-empty"><div id="home-empty-chips"></div></div><div id="home-lang-badge"><span id="home-lang-flag">🇩🇪</span><span id="home-lang-label">آلمانی</span></div><div id="lang-popover" style="display:none"><button id="pop-de" onclick="langPopoverPick('de')"><span id="pop-de-check">✓</span></button><button id="pop-en" onclick="langPopoverPick('en')"><span id="pop-en-check" style="visibility:hidden">✓</span></button></div><div id="ac-drop"></div><div id="search-tip"></div><div id="s-msg"></div></div><div id="pane-list"><div id="wlist"></div><input id="list-q" oninput="renderList()"><div id="due-banner"><div id="due-chips"></div></div></div><div id="pane-packs"><div id="packs-grid-container"></div><input id="ai-pack-tab-inp"><button id="ai-pack-tab-btn" onclick="generateAIPackTab()"></button><div id="ai-pack-tab-result"></div><div id="ai-pack-tab-err"></div><div id="pack-presets-wrap"></div><div id="pack-presets-label"></div></div><div id="session-overlay" style="display:none"><div id="ses-progress"></div><div id="ses-card-area"></div><div id="ses-front"></div><div id="ses-back"></div><div id="ses-de"></div><div id="ses-fa"></div><div id="ses-art"></div><div id="ses-ex"></div><button id="ses-flip-btn" onclick="sesFlip()"></button><button onclick="sesRate(1)"></button><button onclick="sesRate(3)"></button><button onclick="sesRate(5)"></button><div id="ses-counter"></div><div id="ses-pct"></div><div id="ses-bar"></div></div><div id="end-screen" style="display:none"><div id="end-count"></div><div id="end-xp"></div><div id="end-streak"></div><div id="end-list"></div><div id="end-more-btn"></div></div><div id="drw-avatar-big">?</div><div id="drw-profile-name">—</div><div id="drw-email">—</div><div id="drw-hero-plan-badge">Free</div><div id="drw-stat-total">—</div><div id="drw-stat-learned">—</div><div id="drw-stat-streak">—</div><div id="drw-stat-xp">—</div><div id="drw-streak-bar" style="width:0%"></div><span id="drw-streak-lbl"></span><div id="drw-plan-pill-wrap"></div><div id="drw-profile"></div><div id="user-chip"></div><div class="off-bar" id="off-bar"></div><div id="sync-dot" class="sync-dot"></div><button id="settings-btn"></button><div id="nd-home"></div><div id="nd-packs"></div><div id="nd-cards"></div><div id="nd-list"></div><div id="t-home"></div><div id="t-packs"></div><div id="t-cards"></div><div id="t-list"></div><div id="beta-gate" style="display:none"></div><div id="streak-modal" class="streak-modal" style="display:none"><div class="streak-box"><div id="sm-icon"></div><div id="sm-title"></div><div id="sm-sub"></div><div id="sm-level"></div><div id="sm-freeze"></div><button class="streak-cta" onclick="document.getElementById('streak-modal').classList.remove('open')"></button><button class="streak-skip" onclick="document.getElementById('streak-modal').classList.remove('open')"></button></div></div><div id="milestone-modal" class="milestone-modal" style="display:none"><div class="milestone-box"><div id="ms-icon"></div><div id="ms-title"></div><div id="ms-sub"></div><button onclick="document.getElementById('milestone-modal').classList.remove('open')"></button></div></div><div class="btn-ic" id="btn-lang-de"></div><div class="btn-ic" id="btn-lang-en"></div><input id="beta-code-inp"><button onclick="redeemBeta()"></button><div id="beta-code-err"></div></div>
 
-<div class="app" id="app">
-
-<header class="topbar" id="topbar">
-  <a class="logo" href="#">Wortschatz</a>
-  <div class="top-right">
-    <div class="streak-pill" id="streak-pill" style="display:none" onclick="drawerOpen()">
-      <span style="font-size:14px">🔥</span>
-      <span class="sp-n" id="sp-n">0</span>
-      <span class="sp-u">روز</span>
-    </div>
-    <div class="top-av" id="top-av" onclick="drawerOpen()">S</div>
   </div>
-</header>
 
-<div class="content">
 
-<div class="page on" id="pg-search">
-  <div class="hero"><div class="hero-txt">امروز<br>چه لغتی<br><em>می‌گیری؟</em></div></div>
-  <div class="chips-row"><div class="chips-inner">
-    <div class="chip" onclick="uiSearch('Sehnsucht')">Sehnsucht</div>
-    <div class="chip" onclick="uiSearch('Fernweh')">Fernweh</div>
-    <div class="chip" onclick="uiSearch('قرارداد')">قرارداد</div>
-    <div class="chip" onclick="uiSearch('Weltschmerz')">Weltschmerz</div>
-    <div class="chip" onclick="uiSearch('Heimweh')">Heimweh</div>
-  </div></div>
-  <div class="ibar">
-    <div class="ibar-meta"><span class="ibar-cred" id="ibar-cred">۱۰ جستجو باقی‌مانده</span><span class="ibar-pro" onclick="drawerOpen()">✦ Pro</span></div>
-    <div class="ibar-row">
-      <textarea class="ibar-inp" id="ibar-inp" rows="1" placeholder="لغت یا اصطلاح..." onkeydown="uiKey(event)" oninput="uiResize(this)"></textarea>
-      <div class="ibar-flags"><div class="ibar-flag on" onclick="uiFlag(this,'de')">🇩🇪</div><div class="ibar-flag" onclick="uiFlag(this,'en')">🇬🇧</div></div>
-      <button class="ibar-send" onclick="uiSend()"><svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 12V2M2 7l5-5 5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </div>
-  </div>
-</div>
+</div><!-- .app -->
 
-<div class="page" id="pg-review">
-  <div class="rv-n" id="rv-n">0</div>
-  <div class="rv-lbl">STREAK · روز متوالی</div>
-  <div class="rv-track"><div class="rv-fill" id="rv-fill"></div></div>
-  <div class="rv-meta"><span id="rv-lvl">Anfänger → Lerner</span><span id="rv-pct">0%</span></div>
-  <div class="rv-stats">
-    <div class="rv-stat"><div class="n" id="rv-total">0</div><div class="l">لغت</div></div>
-    <div class="rv-stat"><div class="n" id="rv-learned">0</div><div class="l">یاد گرفتم</div></div>
-    <div class="rv-stat"><div class="n" id="rv-due">0</div><div class="l">مرور</div></div>
-  </div>
-  <button class="rv-cta" onclick="sesOpenSmart()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>شروع مرور</button>
-  <div class="rv-dots" id="rv-dots"><div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div><div class="rv-d"></div></div>
-</div>
-
-<div class="page" id="pg-packs">
-  <div class="pk-ttl">جعبه‌های<br>لغت</div>
-  <div class="pk-grid" id="pk-grid">
-    <div class="pk-card c1" onclick="go('packs')"><div class="pk-ico">🌱</div><div class="pk-nm">پایه A1</div><div class="pk-ct">—</div></div>
-    <div class="pk-card c2" onclick="go('packs')"><div class="pk-ico">💬</div><div class="pk-nm">مکالمه</div><div class="pk-ct">—</div></div>
-    <div class="pk-card c3" onclick="go('packs')"><div class="pk-ico">💼</div><div class="pk-nm">کار و شغل</div><div class="pk-ct">—</div></div>
-    <div class="pk-card c4" onclick="go('packs')"><div class="pk-ico">✈️</div><div class="pk-nm">سفر</div><div class="pk-ct">—</div></div>
-    <div class="pk-card c5" onclick="go('packs')"><div class="pk-ico">✨</div><div class="pk-nm">با AI بساز</div><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  </div>
-</div>
-
-<div class="page" id="pg-list">
-  <div class="ls-top"><div class="ls-box"><svg width="14" height="14" viewBox="0 0 18 18" fill="none"><circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11.5 11.5L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input class="ls-inp" id="ls-q" placeholder="جستجو در لغات..." oninput="uiList()"></div></div>
-  <div class="ls-body" id="ls-body"></div>
-</div>
-
-</div>
-
-<div class="rov" id="rov">
-  <div class="rov-b1"></div><div class="rov-b2"></div>
-  <div class="rov-inner">
-    <div class="rov-back" onclick="uiClose()"><svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>برگشت</span></div>
-    <div id="rov-typing" class="rov-typing"><div class="rov-dot"></div><div class="rov-dot"></div><div class="rov-dot"></div></div>
-    <div id="rov-body" class="rov-body" style="display:none">
-      <div class="rov-word" id="rov-word"></div>
-      <div class="rov-art" id="rov-art"></div>
-      <div class="rov-meaning" id="rov-meaning"></div>
-      <div class="rov-ex"><div class="rov-ex-de" id="rov-ex-de"></div><div class="rov-ex-fa" id="rov-ex-fa"></div></div>
-      <div class="rov-badges"><div class="rov-badge hi" id="rov-lvl"></div><div class="rov-badge" id="rov-type"></div></div>
-      <button class="rov-add" id="rov-add" onclick="uiAdd()"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>افزودن به فلش‌کارت</button>
-    </div>
-  </div>
-</div>
-
-<nav class="bnav">
-  <div class="bnav-pill">
-    <div class="bn on" id="bn-search" onclick="uiNav('search')"><svg viewBox="0 0 18 18" fill="none"><circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11.5 11.5L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-    <div class="bn" id="bn-review" onclick="uiNav('review')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 5V4a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-    <div class="bn" id="bn-packs" onclick="uiNav('packs')"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg></div>
-    <div class="bn" id="bn-list" onclick="uiNav('list')"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h12M3 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-  </div>
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <button class="nav-item on" id="t-home" onclick="go('home')">
+    <div class="nav-dot" id="nd-home"></div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M7 18v-6h6v6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+    <span class="nav-label">خانه</span>
+  </button>
+  <button class="nav-item" id="t-packs" onclick="go('packs')">
+    <div class="nav-dot" id="nd-packs"></div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <span class="nav-label">جعبه‌ها</span>
+  </button>
+  <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
+    <div class="nav-dot" id="nd-cards"></div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="3" y="6" width="14" height="11" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M6 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-label">کارت‌ها</span>
+  </button>
+  <button class="nav-item" id="t-list" onclick="go('list')">
+    <div class="nav-dot" id="nd-list"></div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-label">لیست</span>
+  </button>
 </nav>
 
-</div>
 
 <script>
 function wordDetail(idx){
@@ -2040,7 +2203,6 @@ async function loadProfile(){
   }catch(e){console.error('loadProfile:',e);}
   updateFreeBanner();
   updateDrawerPlan();
-  setTimeout(checkAndShowStreakBreak, 1500);
 }
 
 function canAddMore(){
@@ -2185,22 +2347,14 @@ function updateDrawerStats(){
   const fw = filteredWords();
   const due = fw.filter(w=>new Date(w.next_review||0)<=now).length;
   const learned = fw.filter(w=>w.seen>0&&w.interval>3).length;
-  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const rl = JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  const ol = JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
   const all = {}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
   let streak=0; const dd=new Date();
   while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
   Q('#drw-stat-total').textContent  = fw.length;
   Q('#drw-stat-learned').textContent= learned;
   Q('#drw-stat-streak').textContent = streak;
-  // level badge
-  const lvl = getStreakLevel(streak);
-  const lvlEl = Q('#drw-stat-streak');
-  if(lvlEl && streak > 0){
-    lvlEl.innerHTML = streak + ' <span style="font-size:11px">' + lvl.icon + '</span>';
-    const lbl = lvlEl.nextElementSibling;
-    if(lbl) lbl.innerHTML = '🔥 streak · <span style="font-size:10px;color:' + lvl.color + '">' + lvl.name + '</span>';
-  }
   Q('#drw-stat-due').textContent    = due;
 }
 
@@ -2655,126 +2809,73 @@ function updateBadges(){
 /* ══════════════════════════════
    STATS / SUMMARY CARD
 ══════════════════════════════ */
-// ══════════════════════════════
-// STREAK SYSTEM
-// ══════════════════════════════
-
-const STREAK_LEVELS = [
-  {min:1,  max:6,  icon:'🌱', name:'Anfänger',  color:'#16a34a'},
-  {min:7,  max:13, icon:'📚', name:'Lerner',    color:'#1a3af2'},
-  {min:14, max:29, icon:'⚡', name:'Fleißig',   color:'#7c3aed'},
-  {min:30, max:59, icon:'🏆', name:'Meister',   color:'#d97706'},
-  {min:60, max:89, icon:'💎', name:'Experte',   color:'#0891b2'},
-  {min:90, max:999,icon:'👑', name:'Legende',   color:'#dc2626'},
-];
-
-const MILESTONES = [7, 14, 30, 60, 90, 180, 365];
-
-function getStreakLevel(streak){
-  return STREAK_LEVELS.find(l => streak >= l.min && streak <= l.max) || STREAK_LEVELS[0];
-}
-
-function calcStreak(){
-  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all = {}; 
-  Object.keys(rl).forEach(k=>all[k]=1);
-  Object.keys(ol).forEach(k=>all[k]=1);
-  let s = 0; const dd = new Date();
-  while(all[dd.toDateString()] && s < 365){ s++; dd.setDate(dd.getDate()-1); }
-  return s;
-}
-
-function getStreakFreezes(){
-  const data = JSON.parse(localStorage.getItem('ws_freezes')||'{"count":0,"lastReset":""}');
-  const week = new Date(); week.setDate(week.getDate() - week.getDay());
-  const weekStr = week.toDateString();
-  if(data.lastReset !== weekStr){ data.count = 0; data.lastReset = weekStr; localStorage.setItem('ws_freezes', JSON.stringify(data)); }
-  return data;
-}
-
-function useStreakFreeze(){
-  const maxFreeze = userPlan === 'pro' ? 3 : 1;
-  const data = getStreakFreezes();
-  if(data.count >= maxFreeze) return false;
-  data.count++;
-  localStorage.setItem('ws_freezes', JSON.stringify(data));
-  // log freeze day
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  ol[yesterday.toDateString()] = 1;
-  localStorage.setItem('ws_olog', JSON.stringify(ol));
-  return true;
-}
-
-function checkStreakBreak(){
-  const rl = JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol = JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all = {}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
-  const today = new Date().toDateString();
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-  const yStr = yesterday.toDateString();
-  // اگه دیروز یه چیزی داشت ولی امروز هیچی نداشت → شاید freeze
-  if(!all[today] && all[yStr]){
-    // چک کن آیا قبل از امروز streak داشت
-    let prevStreak = 0; const dd = new Date(yesterday);
-    while(all[dd.toDateString()] && prevStreak < 365){ prevStreak++; dd.setDate(dd.getDate()-1); }
-    return prevStreak;
+function updateStats(){
+  const card=Q('#sum-card');
+  const homeEmpty=Q('#home-empty');
+  const fw=filteredWords();
+  if(!fw.length){
+    card.classList.remove('show');
+    if(homeEmpty) homeEmpty.classList.add('show');
+    return;
   }
-  return 0;
-}
-
-function checkAndShowStreakBreak(){
-  const shown = localStorage.getItem('ws_streak_break_shown');
-  const today = new Date().toDateString();
-  if(shown === today) return;
-  const prevStreak = checkStreakBreak();
-  if(prevStreak >= 3){
-    localStorage.setItem('ws_streak_break_shown', today);
-    const freezes = getStreakFreezes();
-    const maxFreeze = userPlan === 'pro' ? 3 : 1;
-    const canFreeze = freezes.count < maxFreeze;
-    const modal = Q('#streak-break-modal');
-    const title = Q('#sbm-title');
-    const sub = Q('#sbm-sub');
-    if(!modal) return;
-    title.textContent = 'streak ' + prevStreak + ' روزت شکست 💔';
-    if(canFreeze && userPlan === 'free'){
-      sub.innerHTML = 'یه Freeze مونده — میتونی نجاتش بدی<br><small style="color:var(--ink3)">Pro داری ۳ تا Freeze</small>';
-      modal.querySelector('.streak-cta').textContent = '🧊 Freeze استفاده کن';
-      modal.querySelector('.streak-cta').onclick = function(){
-        if(useStreakFreeze()){ showToast('streak نجات پیدا کرد! 🧊'); closeStreakBreak(); updateSummary(); }
-      };
+  card.classList.add('show');
+  if(homeEmpty) homeEmpty.classList.remove('show');
+  const now=new Date();
+  const due=fw.filter(w=>new Date(w.next_review||0)<=now);
+  const learned=fw.filter(w=>w.seen>0&&w.interval>3);
+  Q('#sn-total').textContent=fw.length;
+  // Lang split
+  const splitEl=Q('#sn-lang-split');
+  if(splitEl && words.length > 0){
+    const deCount = words.filter(w=>(w.lang||'de')==='de').length;
+    const enCount = words.filter(w=>w.lang==='en').length;
+    if(deCount>0 && enCount>0){
+      splitEl.textContent = '🇩🇪 '+deCount+' · 🇬🇧 '+enCount;
+      splitEl.style.display='block';
     } else {
-      sub.innerHTML = 'streak ' + prevStreak + ' روزت از دست رفت<br><small style="color:var(--ink3)">Pro داشتی میتونستی با Freeze نجاتش بدی</small>';
-      modal.querySelector('.streak-cta').textContent = '✨ Pro بگیر — streak رو برگردون';
-      modal.querySelector('.streak-cta').onclick = streakBreakUpgrade;
+      splitEl.style.display='none';
     }
-    setTimeout(() => modal.classList.add('open'), 800);
+  }
+  Q('#sn-learned').textContent=learned.length;
+  // due count
+  const dueEl=Q('#sn-due');
+  const dueWrap=Q('#sn-due-wrap');
+  if(dueEl) dueEl.textContent=due.length;
+  if(dueWrap) dueWrap.classList.toggle('warn', due.length>0);
+  // streak
+  const rl=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
+  const all={};Object.keys(rl).forEach(k=>all[k]=1);Object.keys(ol).forEach(k=>all[k]=1);
+  const today=new Date().toDateString();
+  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog_'+uid(),JSON.stringify(ol));}
+  let s=0;const dd=new Date();
+  while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
+  Q('#sn-streak').textContent=s;
+  // dots
+  const dn=['ی','د','س','چ','پ','ج','ش'];
+  const dotsEl=Q('#sum-dots');
+  let html='';
+  for(let i=6;i>=0;i--){
+    const day=new Date();day.setDate(day.getDate()-i);
+    const isT=i===0,done=!!all[day.toDateString()];
+    html+=`<div class="sd"><div class="sd-c ${isT?'today':done?'done':''}"></div><div class="sd-l${isT?' t':''}">${isT?'▲':dn[day.getDay()]}</div></div>`;
+  }
+  dotsEl.innerHTML=html;
+  // review button
+  const lbl=Q('#review-lbl');
+  if(lbl){
+    const smartDeck=buildSmartDeck();
+    lbl.textContent=due.length>0?`مرور ${smartDeck.length} کارت`:`سشن ${smartDeck.length} کارتی`;
   }
 }
-
-function checkMilestone(){
-  const streak = calcStreak();
-  const shown = JSON.parse(localStorage.getItem('ws_milestones_shown')||'[]');
-  const hit = MILESTONES.find(m => streak === m && !shown.includes(m));
-  if(!hit) return;
-  shown.push(hit); localStorage.setItem('ws_milestones_shown', JSON.stringify(shown));
-  const level = getStreakLevel(streak);
-  const modal = Q('#milestone-modal');
-  if(!modal) return;
-  Q('#mm-icon').textContent = level.icon;
-  Q('#mm-title').textContent = hit + ' روز متوالی! ' + level.icon;
-  const msgs = {7:'یه هفته تموم — خیلی‌ها همین‌جا quit میکنن',14:'دو هفته — الان عادت شده',30:'یه ماه — جزء ۵٪ بالایی هستی',60:'دو ماه — Experte واقعی',90:'۹۰ روز — افسانه شدی 👑',180:'۶ ماه — باورنکردنیه',365:'یه سال! — تو واقعاً استثنایی هستی'};
-  Q('#mm-sub').textContent = (msgs[hit] || 'عالی بود') + ' — ' + level.name;
-  setTimeout(() => modal.classList.add('open'), 500);
+function logReview(){
+  const today=new Date().toDateString();
+  const log=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  log[today]=(log[today]||0)+1;
+  const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
+  const t={};keys.forEach(k=>t[k]=log[k]);
+  localStorage.setItem('ws_rlog_'+uid(),JSON.stringify(t));
 }
-
-function closeStreakBreak(){ Q('#streak-break-modal')?.classList.remove('open'); }
-function closeMilestone(){ Q('#milestone-modal')?.classList.remove('open'); }
-function streakBreakUpgrade(){ closeStreakBreak(); window.open('https://t.me/cinuxx','_blank'); }
-function milestoneUpgrade(){ closeMilestone(); window.open('https://t.me/cinuxx','_blank'); }
-
 
 /* ══════════════════════════════
    SEARCH
@@ -2798,6 +2899,15 @@ async function doSearch(){
     if(detectMode(q)==='word') await searchWord(q);
     else await searchPhrase(q);
     setMsg('','');Q('#s-inp').value='';
+    // لاگ کردن سرچ
+    if(currentUser && navigator.onLine){
+      sb.from('search_logs').insert({
+        user_id:currentUser.id,
+        query:q,
+        lang:targetLang,
+        result_type:detectMode(q)
+      }).then(()=>{}).catch(()=>{});
+    }
   }catch(e){
     const {fa,type} = classifyError(e);
     if(type==='limit'){
@@ -2831,6 +2941,26 @@ function setMsg(t,cls){
 }
 
 async function searchWord(q){
+  // normalize umlauts — همه جای کلمه
+  if(targetLang==='de'){
+    // لیست کلمات رایج که ue/oe/ae واقعاً umlaut هستن
+    const umlautMap = {
+      'ae':'ä','oe':'ö','ue':'ü',
+      'Ae':'Ä','Oe':'Ö','Ue':'Ü'
+    };
+    // replace همه جا — ساده‌ترین روش
+    q = q
+      .replace(/ue/gi, (m,o,s) => {
+        // استثنا: que (query)، fuel، blue — اگه قبلش q یا b داشت نگه‌دار
+        const prev = s[o-1]||'';
+        if('qb'.includes(prev.toLowerCase())) return m;
+        return m[0]==='U'?'Ü':'ü';
+      })
+      .replace(/oe/gi, m => m[0]==='O'?'Ö':'ö')
+      .replace(/ae/gi, m => m[0]==='A'?'Ä':'ä')
+      .replace(/ss/g,'ß');
+  }
+
   const ck='wc_'+targetLang+'_'+q.toLowerCase();
   const cached=localStorage.getItem(ck);
   if(cached){try{curWord=JSON.parse(cached);renderWord(curWord);return;}catch(e){localStorage.removeItem(ck);}}
@@ -2851,12 +2981,18 @@ async function searchWord(q){
    +'- synonyms: حداکثر ۲ تا\n'
    +'- examples: دقیقاً ۱ جمله\n'
    +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
-   +'فقط JSON.';
+   +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
 
-  const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
-  const jsonMatch=raw.match(/\{[\s\S]*\}/);
-  if(!jsonMatch) throw new Error('parse error');
-  try{ curWord=JSON.parse(jsonMatch[0]); } catch(e){ throw new Error('parse error'); }
+  // retry تا ۲ بار اگه parse fail شد
+  let curWord2=null;
+  for(let attempt=0; attempt<2; attempt++){
+    const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
+    const jsonMatch=raw.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) continue;
+    try{ curWord2=JSON.parse(jsonMatch[0]); break; }catch(e){ continue; }
+  }
+  if(!curWord2) throw new Error('parse error');
+  curWord=curWord2;
   try{
     const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
     if(keys.length>100)localStorage.removeItem(keys[0]);
@@ -3326,7 +3462,7 @@ async function sesRate(good){
     const next = new Date(); next.setDate(next.getDate()+o.interval);
     o.next_review = next.toISOString(); o.reviewed_at = new Date().toISOString();
     o.score += good ? 1 : -1; o.seen++;
-    logReview(); checkMilestone(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
+    logReview(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
   }
 
   if(!good && !sesRepeat.has(w.de)){
@@ -3360,8 +3496,8 @@ function sesAgain(){
 
 function checkStreakReward(){
   if(userPlan==='pro'||userPlan==='beta') return; // نامحدود نیاز به جایزه نداره
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
+  const rl=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
+  const ol=JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
   const all={}; Object.keys(rl).forEach(k=>all[k]=1); Object.keys(ol).forEach(k=>all[k]=1);
   let streak=0; const dd=new Date();
   while(all[dd.toDateString()]&&streak<365){streak++;dd.setDate(dd.getDate()-1);}
@@ -3443,7 +3579,7 @@ function sesSummary(){
     Q('#end-next').textContent = 'سشن بعدی بر اساس SM-2 زمان‌بندی میشه';
   }
 
-  logReview(); checkMilestone(); updateStats();
+  logReview(); updateStats();
 
   // Streak reward check
   checkStreakReward();
@@ -3601,105 +3737,6 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-/* ══ XP SYSTEM ══ */
-const XP_LEVELS=[{min:0,max:99,name:'مبتدی'},{min:100,max:299,name:'یادگیر'},{min:300,max:599,name:'پیشرفته'},{min:600,max:999,name:'حرفه‌ای'},{min:1000,max:9999,name:'استاد'}];
-function getXP(){return parseInt(localStorage.getItem('ws_xp')||'0');}
-function setXP(v){localStorage.setItem('ws_xp',String(v));}
-function addXP(amount,reason){
-  const prev=getXP(),next=prev+amount;
-  setXP(next);
-  const log=JSON.parse(localStorage.getItem('ws_xp_log')||'[]');
-  log.unshift({pts:amount,reason,ts:new Date().toISOString()});
-  if(log.length>20)log.pop();
-  localStorage.setItem('ws_xp_log',JSON.stringify(log));
-  const prevH=Math.floor(prev/100),nextH=Math.floor(next/100);
-  if(nextH>prevH&&userPlan==='free'){
-    const bonus=(nextH-prevH)*5;
-    if(currentUser?.id){sb.from('profiles').update({search_count:Math.max(0,userSearchCount-bonus)}).eq('id',currentUser.id).then(()=>{userSearchCount=Math.max(0,userSearchCount-bonus);updateFreeBanner();}).catch(()=>{});}
-    showToast('🎉 '+nextH*100+' XP! +'+bonus+' جستجوی رایگان گرفتی',3500,'ok');
-  }
-  updateXPUI();
-}
-function updateXPUI(){
-  const xp=getXP();
-  const li=XP_LEVELS.findIndex(l=>xp>=l.min&&xp<=l.max);
-  const lvl=XP_LEVELS[li>=0?li:XP_LEVELS.length-1];
-  const nxt=XP_LEVELS[li+1];
-  const el=Q('#sc-xp-total');if(el)el.textContent=xp;
-  const fill=Q('#sc-xp-bar'),sub=Q('#sc-xp-sub'),pct=Q('#sc-xp-pct');
-  if(nxt){const p=Math.round((xp-lvl.min)/(nxt.min-lvl.min)*100);if(fill)fill.style.width=p+'%';if(sub)sub.textContent=(nxt.min-xp)+' XP مونده به «'+nxt.name+'»';if(pct)pct.textContent=p+'%';}
-  else{if(fill)fill.style.width='100%';if(sub)sub.textContent='بالاترین سطح 🏆';if(pct)pct.textContent='100%';}
-}
-function scToggleDetail(btn){
-  const d=Q('#sc-details');
-  const open=d.classList.toggle('open');
-  btn.textContent=open?'بستن ↑':'جزئیات ↓';
-  if(open){updateXPUI();scUpdateFreeze();}
-}
-function scTab(name,el){
-  ['xp','freeze'].forEach(n=>{const p=Q('#sc-panel-'+n);if(p){p.style.display='none';p.style.animation='none';}});
-  document.querySelectorAll('.sc-dt').forEach(t=>t.classList.remove('on'));
-  const p=Q('#sc-panel-'+name);
-  if(p){p.style.display='block';void p.offsetWidth;p.style.animation='scFadeIn .2s var(--ease) both';}
-  el.classList.add('on');
-}
-function scUpdateFreeze(){
-  const fd=getStreakFreezes(),maxF=userPlan==='pro'?3:1;
-  const fDotsEl=Q('#sc-freeze-dots');
-  if(fDotsEl){let fh='';for(let i=0;i<maxF;i++){const u=i<fd.count;fh+=`<div style="width:22px;height:22px;border-radius:50%;background:${u?'var(--bg3)':'var(--abl)'};border:2px solid ${u?'var(--bg3)':'var(--accent)'};display:flex;align-items:center;justify-content:center;font-size:11px;opacity:${u?'.3':'1'}">🧊</div>`;}fDotsEl.innerHTML=fh;}
-  const fDesc=Q('#sc-freeze-desc');
-  if(fDesc){const left=maxF-fd.count;if(userPlan!=='pro'){fDesc.textContent=left>0?'این هفته ۱ Freeze داری':'این هفته تموم شد';}else{fDesc.textContent=left+' تا Freeze مونده';}}
-}
-function updateStats(){
-  const card=Q('#sum-card'),homeEmpty=Q('#home-empty');
-  const fw=filteredWords();
-  if(!fw.length){card.classList.remove('show');if(homeEmpty)homeEmpty.classList.add('show');return;}
-  card.classList.add('show');if(homeEmpty)homeEmpty.classList.remove('show');
-  const now=new Date();
-  const due=fw.filter(w=>new Date(w.next_review||0)<=now);
-  const learned=fw.filter(w=>w.seen>0&&w.interval>3);
-  const e1=Q('#sn-total');if(e1)e1.textContent=fw.length;
-  const e2=Q('#sn-learned');if(e2)e2.textContent=learned.length;
-  const e3=Q('#sn-due');if(e3)e3.textContent=due.length;
-  const splitEl=Q('#sn-lang-split');
-  if(splitEl&&words.length>0){const deC=words.filter(w=>(w.lang||'de')==='de').length,enC=words.filter(w=>w.lang==='en').length;if(deC>0&&enC>0){splitEl.textContent='🇩🇪 '+deC+' · 🇬🇧 '+enC;splitEl.style.display='block';}else splitEl.style.display='none';}
-  const rl=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const ol=JSON.parse(localStorage.getItem('ws_olog')||'{}');
-  const all={};Object.keys(rl).forEach(k=>all[k]=1);Object.keys(ol).forEach(k=>all[k]=1);
-  const today=new Date().toDateString();
-  if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog',JSON.stringify(ol));}
-  let s=0;const dd=new Date();
-  while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
-  const numEl=Q('#sc-streak-num');if(numEl)numEl.textContent=s||'0';
-  const emptyIc=Q('#sc-empty-icon');
-  if(emptyIc)emptyIc.style.display=s===0?'block':'none';
-  if(numEl)numEl.style.display=s===0?'none':'block';
-  const lvl=getStreakLevel(s);
-  const lvlEl=Q('#sc-streak-lvl');if(lvlEl)lvlEl.textContent=lvl.name+' '+lvl.icon;
-  const lblEl=Q('#sc-streak-lbl');if(lblEl)lblEl.textContent=s>0?'روز متوالی':'شروع کن!';
-  const nextM=MILESTONES.find(m=>m>s);
-  const pillEl=Q('#sc-next-pill');
-  if(pillEl){if(s===0)pillEl.textContent='اولین مرور رو انجام بده';else if(nextM){const nL=getStreakLevel(nextM);pillEl.textContent=(nextM-s)+' روز به '+nL.name;}else pillEl.textContent='به Legende رسیدی 👑';}
-  const dotsEl=Q('#sc-dots');
-  if(dotsEl){let h='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const isT=i===0,done=!!all[d.toDateString()];h+=`<div class="sc-dot${done&&!isT?' on':isT?' cur':''}"></div>`;}dotsEl.innerHTML=h;}
-  const lbl=Q('#review-lbl');
-  if(lbl){const deck=buildSmartDeck();lbl.textContent=due.length>0?`مرور ${deck.length} کارت`:`سشن ${deck.length} کارتی`;}
-  if(nextM){const prevM=MILESTONES.slice().reverse().find(m=>m<=s)||1;const p=s>0?Math.round((s-prevM)/(nextM-prevM)*100):0;const nLvl=getStreakLevel(nextM);const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width=p+'%';const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='پیشرفت به '+nLvl.name;const pctEl=Q('#sc-lvl-pct');if(pctEl)pctEl.textContent=p+'%';const subEl=Q('#sc-lvl-sub');if(subEl)subEl.textContent=(nextM-s)+' روز دیگه';}
-  else{const barEl=Q('#sc-lvl-bar');if(barEl)barEl.style.width='100%';const lblB=Q('#sc-lvl-lbl');if(lblB)lblB.textContent='بالاترین سطح 👑';}
-  scUpdateFreeze();updateXPUI();
-}
-function logReview(){
-  const today=new Date().toDateString();
-  const log=JSON.parse(localStorage.getItem('ws_rlog')||'{}');
-  const wasFirst=!log[today];
-  log[today]=(log[today]||0)+1;
-  const keys=Object.keys(log).sort((a,b)=>new Date(b)-new Date(a)).slice(0,30);
-  const t={};keys.forEach(k=>t[k]=log[k]);
-  localStorage.setItem('ws_rlog',JSON.stringify(t));
-  if(wasFirst)addXP(10,'مرور روزانه');
-  const streak=calcStreak();
-  if(wasFirst&&streak>1)addXP(5,'streak bonus — '+streak+' روز');
-}
 init();
 
 
@@ -3932,7 +3969,7 @@ function renderPackGrid(){
   ];
 
   const inFlashcard = new Set(words.map(w=>w.de));
-  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
 
   var packHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
   packList.forEach(function(pack){
@@ -4315,15 +4352,17 @@ let plFlipped = false;
 let plFlashCount = 0;
 let plSaveCount = 0;
 let plSkipCount = 0;
-let plSavedWords = JSON.parse(localStorage.getItem('ws_saved_words')||'[]');
+let plSavedWords = [];
 
 function getSeenPackWords(packId){
-  return new Set(JSON.parse(localStorage.getItem('ws_seen_'+packId)||'[]'));
+  const key='ws_seen_'+packId+'_'+uid();
+  return new Set(JSON.parse(localStorage.getItem(key)||'[]'));
 }
 function markPackWordSeen(packId, word){
-  const seen = getSeenPackWords(packId);
+  const key='ws_seen_'+packId+'_'+uid();
+  const seen=getSeenPackWords(packId);
   seen.add(word);
-  localStorage.setItem('ws_seen_'+packId, JSON.stringify([...seen]));
+  localStorage.setItem(key, JSON.stringify([...seen]));
 }
 
 function openPack(id){
@@ -4342,7 +4381,7 @@ function openPack(id){
   plPack = pack;
   plPackId = id;
   const inFlash = new Set(words.map(w=>w.de));
-  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words')||'[]').map(w=>w.de));
+  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
   const inSeen  = getSeenPackWords(id);
   plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
 
@@ -4509,7 +4548,7 @@ function packLearnSave(){
   }
 
   plSavedWords.push({de:w.de, fa:w.fa, ex:w.ex||'', savedAt:new Date().toISOString()});
-  localStorage.setItem('ws_saved_words', JSON.stringify(plSavedWords));
+  localStorage.setItem('ws_saved_words_'+uid(), JSON.stringify(plSavedWords));
   plSaveCount++;
   Q('#pl-saved-count').textContent = plFlashCount + plSaveCount;
 
@@ -4722,122 +4761,7 @@ function packLearnRestart(){
   }
 })();
 
-
 </script>
-
-<script>
-(function(){
-var _tab="search",DARK=["review","list"];
-window.uiNav=function(n){
-  if(_tab===n)return;_tab=n;
-  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("on")});
-  document.getElementById("pg-"+n).classList.add("on");
-  document.querySelectorAll(".bn").forEach(function(b){b.classList.remove("on")});
-  document.getElementById("bn-"+n).classList.add("on");
-  document.body.classList.toggle("dark",DARK.indexOf(n)>=0);
-  if(n==="review")setTimeout(uiSyncRv,120);
-  if(n==="list")uiList();
-};
-var _go=window.go;
-window.go=function(t){if(t==="home")uiNav("search");else if(t==="packs")uiNav("packs");else if(t==="list")uiNav("list");else if(_go)_go(t)};
-window.uiResize=function(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,44)+"px"};
-window.uiKey=function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();uiSend()}};
-window.uiFlag=function(el,l){document.querySelectorAll(".ibar-flag").forEach(function(f){f.classList.remove("on")});el.classList.add("on");if(typeof setTargetLang==="function")setTargetLang(l)};
-window.uiSend=function(){var q=document.getElementById("ibar-inp").value.trim();if(!q)return;document.getElementById("ibar-inp").value="";document.getElementById("ibar-inp").style.height="auto";uiSearch(q)};
-window.uiSearch=function(q){var si=document.getElementById("s-inp");if(si)si.value=q;uiShowRov(q);if(typeof doSearch==="function")doSearch()};
-window.uiShowRov=function(q){
-  var rov=document.getElementById("rov");
-  document.getElementById("rov-typing").style.display="flex";
-  document.getElementById("rov-body").style.display="none";
-  var btn=document.getElementById("rov-add");
-  btn.className="rov-add";
-  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>افزودن به فلش‌کارت';
-  rov.classList.add("open");
-  var prev=document.getElementById("res-word").textContent||"";
-  var tries=0;
-  var t=setInterval(function(){
-    tries++;
-    var word=document.getElementById("res-word").textContent||"";
-    var ph=document.getElementById("ph-orig").textContent||"";
-    if((word&&word!==prev)||ph||tries>30){
-      clearInterval(t);
-      if(word){
-        document.getElementById("rov-word").textContent=word;
-        document.getElementById("rov-art").textContent=document.getElementById("res-art").textContent||"";
-        document.getElementById("rov-meaning").textContent=document.getElementById("res-meaning").textContent||"";
-        var exEl=document.getElementById("res-example");
-        var de=exEl?exEl.querySelector('[dir="ltr"]'):null;
-        document.getElementById("rov-ex-de").textContent=de?de.textContent:"";
-        document.getElementById("rov-lvl").textContent=document.getElementById("res-level").textContent||"";
-        document.getElementById("rov-type").textContent=document.getElementById("res-type").textContent||"";
-      } else if(ph){
-        document.getElementById("rov-word").textContent=ph;
-        document.getElementById("rov-art").textContent="";
-        document.getElementById("rov-meaning").textContent=document.getElementById("ph-meaning").textContent||"";
-        document.getElementById("rov-lvl").textContent="";
-        document.getElementById("rov-type").textContent="";
-      } else {
-        document.getElementById("rov-word").textContent=q;
-        document.getElementById("rov-meaning").textContent="نتیجه‌ای پیدا نشد";
-      }
-      document.getElementById("rov-typing").style.display="none";
-      var body=document.getElementById("rov-body");
-      body.style.display="block";body.style.animation="none";
-      requestAnimationFrame(function(){body.style.animation="fadeUp .35s ease both"});
-    }
-  },200);
-};
-window.uiClose=function(){document.getElementById("rov").classList.remove("open")};
-window.uiAdd=function(){
-  if(typeof addWord==="function")addWord();
-  var btn=document.getElementById("rov-add");
-  btn.className="rov-add done";
-  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>اضافه شد!';
-  setTimeout(uiClose,1600);
-};
-window.uiSyncRv=function(){
-  var ws=window.words||[],s=parseInt(localStorage.getItem("ws_streak")||"0");
-  var n=document.getElementById("rv-n");if(n)n.textContent=s;
-  var t=document.getElementById("rv-total");if(t)t.textContent=ws.length;
-  var l=document.getElementById("rv-learned");if(l)l.textContent=ws.filter(function(w){return w.seen>=3}).length;
-  var d=document.getElementById("rv-due");if(d)d.textContent=ws.filter(function(w){return w.next_review&&new Date(w.next_review)<=new Date()}).length;
-  var pct=Math.min(100,Math.round((s/7)*100));
-  var fill=document.getElementById("rv-fill");if(fill)fill.style.width=pct+"%";
-  var pe=document.getElementById("rv-pct");if(pe)pe.textContent=pct+"%";
-  var dots=document.getElementById("rv-dots");
-  if(dots)dots.querySelectorAll(".rv-d").forEach(function(d,i){d.classList.toggle("on",i<Math.min(s,7))});
-};
-window.uiList=function(){
-  var ws=window.words||[],q=(document.getElementById("ls-q").value||"").toLowerCase();
-  var body=document.getElementById("ls-body");if(!body)return;
-  var f=q?ws.filter(function(w){return(w.de||"").toLowerCase().includes(q)||(w.fa||"").includes(q)}):ws;
-  var s=[].concat(f).sort(function(a,b){return new Date(b.created_at||0)-new Date(a.created_at||0)});
-  var LV=["A1","A1","A2","A2","B1","B1","B2","B2","C1","C2"];
-  body.innerHTML=s.slice(0,100).map(function(w){
-    var idx=ws.indexOf(w),lv=w.level||LV[Math.min(w.seen||0,9)]||"—";
-    return '<div class="wrow" onclick="wordDetail('+idx+')"><div class="wrow-de">'+(w.de||"")+'</div><div class="wrow-fa">'+(w.fa||"")+'</div><div class="wrow-lv">'+lv+'</div></div>';
-  }).join("");
-};
-function syncUI(){
-  var s=parseInt(localStorage.getItem("ws_streak")||"0");
-  var pill=document.getElementById("streak-pill"),spn=document.getElementById("sp-n");
-  if(pill)pill.style.display=s>0?"flex":"none";
-  if(spn)spn.textContent=s;
-  var free=parseInt(localStorage.getItem("ws_free_searches")||"10");
-  var xp=parseInt(localStorage.getItem("ws_xp")||"0");
-  var bonus=Math.floor(xp/100)*5;
-  var ce=document.getElementById("ibar-cred");
-  if(ce)ce.textContent=(free+bonus)+" جستجو باقی‌مانده";
-  var em=document.getElementById("drw-email"),av=document.getElementById("top-av");
-  if(av&&em&&em.textContent&&em.textContent!=="—")av.textContent=em.textContent[0].toUpperCase();
-}
-setInterval(syncUI,2000);setTimeout(syncUI,800);
-var _rl=window.renderList;
-window.renderList=function(){if(_rl)_rl();uiList();uiSyncRv()};
-setTimeout(function(){uiList();uiSyncRv()},3000);
-})();
-</script>
-
 <script>if('serviceWorker'in navigator){
   navigator.serviceWorker.register('/sw.js').catch(()=>{});
   navigator.serviceWorker.addEventListener('message', e => {
@@ -5050,32 +4974,6 @@ document.addEventListener('click', function(e){
   }
 });
 </script>
-<!-- Streak Break Modal -->
-<div class="streak-modal" id="streak-break-modal">
-  <div class="streak-box">
-    <div class="streak-icon">💔</div>
-    <div class="streak-title" id="sbm-title">streak شکست</div>
-    <div class="streak-sub" id="sbm-sub">streak از دست رفت<br><small style="color:var(--ink3);font-size:12px">Pro داشتی میتونستی بازیابیش کنی</small></div>
-    <button class="streak-cta" onclick="streakBreakUpgrade()">✨ Pro بگیر — streak رو برگردون</button>
-    <button class="streak-skip" onclick="closeStreakBreak()">بیخیال، از صفر شروع میکنم</button>
-  </div>
-</div>
-
-<!-- Milestone Modal -->
-<div class="milestone-modal" id="milestone-modal">
-  <div class="milestone-box">
-    <div style="font-size:60px;margin-bottom:12px" id="mm-icon">🏆</div>
-    <div style="font-size:22px;font-weight:700;color:var(--ink);font-family:var(--sans);margin-bottom:6px" id="mm-title">عالی!</div>
-    <div style="font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:20px" id="mm-sub">به یه milestone مهم رسیدی</div>
-    <div style="background:var(--abl);border-radius:12px;padding:12px;margin-bottom:16px;text-align:right">
-      <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:4px">Pro بگیر — streak رو محافظت کن 🧊</div>
-      <div style="font-size:11px;color:var(--ink3)">۳ تا Freeze + بازیابی streak در صورت شکستن</div>
-    </div>
-    <button class="streak-cta" onclick="milestoneUpgrade()">✨ Pro بگیر</button>
-    <button class="streak-skip" onclick="closeMilestone()">بعداً</button>
-  </div>
-</div>
-
 <script>
 // ── Global error safety net ──────────────────
 window.addEventListener('unhandledrejection', e => {
@@ -5087,5 +4985,3 @@ window.addEventListener('unhandledrejection', e => {
   console.warn('[Wortschatz] unhandled:', err.message);
 });
 </script>
-</body>
-</html>
