@@ -1,3 +1,4 @@
+// Node.js serverless — نه edge
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 const SB_URL = process.env.SUPABASE_URL
 const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -24,21 +25,26 @@ const E = {
 }
 const tg = k => E[k] || ''
 
-async function send(chatId, text, extra = {}) {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+async function tgCall(method, body) {
+  const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/${method}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', ...extra }),
+    body: JSON.stringify(body),
   })
+  return res.json()
 }
 
-async function setMenuButton(chatId) {
-  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setChatMenuButton`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, menu_button: { type: 'web_app', text: '🇩🇪 Wortschatz', web_app: { url: APP_URL } } }),
+const send = (chatId, text, extra = {}) =>
+  tgCall('sendMessage', { chat_id: chatId, text, parse_mode: 'HTML', ...extra })
+
+const sendDraft = (chatId, text) =>
+  tgCall('sendMessageDraft', { chat_id: chatId, text, parse_mode: 'HTML' })
+
+const setMenuButton = (chatId) =>
+  tgCall('setChatMenuButton', {
+    chat_id: chatId,
+    menu_button: { type: 'web_app', text: '🇩🇪 Wortschatz', web_app: { url: APP_URL } }
   })
-}
 
 const MAIN_KB = {
   keyboard: [
@@ -51,8 +57,16 @@ const MAIN_KB = {
 }
 
 async function sbFetch(path, options = {}) {
-  const headers = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', ...options.headers }
-  return fetch(`${SB_URL}${path}`, { ...options, headers })
+  const { headers = {}, ...rest } = options
+  return fetch(`${SB_URL}${path}`, {
+    ...rest,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      ...headers
+    },
+  })
 }
 
 async function findUser(tgId) {
@@ -97,10 +111,8 @@ function progressBar(val, max, len = 10) {
   return '█'.repeat(f) + '░'.repeat(len - f)
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(200).send('ok')
-  }
+module.exports = async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(200).send('ok')
 
   const update = req.body
   const msg = update?.message
@@ -123,51 +135,66 @@ export default async function handler(req, res) {
         `${tg('arrow')} از منوی پایین شروع کن`,
         { reply_markup: MAIN_KB }
       )
-    } else if (text === '🔔 یادآوری' || text === '/notify') {
+    }
+    else if (text === '🔔 یادآوری' || text === '/notify') {
       const user = await findUser(tgId)
       if (!user) {
         await send(chatId,
           `<blockquote>${tg('warn')} اول باید وارد اپ بشی</blockquote>\nبعد از ورود، دوباره بزن.`,
-          { reply_markup: { inline_keyboard: [[{ text: '🔑 ورود', web_app: { url: APP_URL } }]] } }
+          { reply_markup: { inline_keyboard: [[{ text: '🔑 ورود به Wortschatz', web_app: { url: APP_URL } }]] } }
         )
       } else {
         await saveNotif(user.id, chatId)
         await send(chatId,
           `${tg('green')} <b>یادآوری روزانه فعال شد!</b>\n\n` +
-          `<blockquote>${tg('bell')} هر شب ساعت ۸:۳۰ یادآوری میفرستم</blockquote>`,
+          `<blockquote>${tg('bell')} هر شب ساعت ۸:۳۰ یادآوری میفرستم</blockquote>\n` +
+          `برای خاموش کردن: 🔕 <i>خاموش کردن</i>`,
           { reply_markup: MAIN_KB }
         )
       }
-    } else if (text === '🔕 خاموش کردن' || text === '/off_notify') {
+    }
+    else if (text === '🔕 خاموش کردن' || text === '/off_notify') {
       await disableNotif(chatId)
       await send(chatId,
-        `${tg('nobell')} <b>یادآوری خاموش شد.</b>`,
+        `${tg('nobell')} <b>یادآوری خاموش شد.</b>\n<i>هر وقت خواستی ${tg('bell')} یادآوری رو دوباره بزن.</i>`,
         { reply_markup: MAIN_KB }
       )
-    } else if (text === '📊 آمار من' || text === '/stats') {
+    }
+    else if (text === '📊 آمار من' || text === '/stats') {
       const user = await findUser(tgId)
       if (!user) {
-        await send(chatId, `<blockquote>${tg('warn')} اول وارد اپ بشی</blockquote>`,
-          { reply_markup: { inline_keyboard: [[{ text: '🔑 ورود', web_app: { url: APP_URL } }]] } }
+        await send(chatId,
+          `<blockquote>${tg('warn')} اول وارد اپ بشی</blockquote>`,
+          { reply_markup: { inline_keyboard: [[{ text: '🔑 ورود به Wortschatz', web_app: { url: APP_URL } }]] } }
         )
       } else {
+        await sendDraft(chatId, `${tg('chart_up')} <b>آمار ${name}</b>\n\n<i>در حال محاسبه...</i>`)
         const s = await getUserStats(user.id)
         const pct = s.total > 0 ? Math.round((s.learned / s.total) * 100) : 0
         const bar = progressBar(s.learned, s.total)
         const planBadge = s.plan === 'pro' ? `${tg('crown')} Pro` : `${tg('green')} Free`
         const notifBadge = s.notifEnabled ? `${tg('bell')} فعال` : `${tg('nobell')} غیرفعال`
-        const dueLine = s.due > 0 ? `\n\n${tg('fire')} امروز <b>${s.due} لغت</b> باید مرور بشن!` : `\n\n${tg('party')} <b>همه لغاتت رو مرور کردی!</b>`
+        const dueLine = s.due > 0
+          ? `\n\n${tg('fire')} امروز <b>${s.due} لغت</b> باید مرور بشن!`
+          : `\n\n${tg('party')} <b>همه لغاتت رو مرور کردی!</b> ${tg('star')}`
+        await sendDraft(chatId,
+          `${tg('chart_up')} <b>آمار ${name}</b>\n\n` +
+          `<blockquote>🎓 یادگیری: <b>${s.learned}</b> از <b>${s.total}</b> لغت\n${bar} ${pct}%</blockquote>\n\n` +
+          `<i>در حال بارگذاری...</i>`
+        )
+        await new Promise(r => setTimeout(r, 400))
         await send(chatId,
           `${tg('chart_up')} <b>آمار ${name}</b>\n\n` +
           `<blockquote>🎓 یادگیری: <b>${s.learned}</b> از <b>${s.total}</b> لغت\n${bar} ${pct}%</blockquote>\n\n` +
-          `${tg('clock')} امروز: <b>${s.due}</b> لغت\n` +
+          `${tg('clock')} امروز باید مرور کنی: <b>${s.due}</b>\n` +
           `${tg('zap')} سطح: <b>${s.level}</b>\n` +
           `${tg('gem')} پلن: <b>${planBadge}</b>\n` +
           `${tg('bell')} یادآوری: <b>${notifBadge}</b>` + dueLine,
           { reply_markup: { inline_keyboard: [[{ text: s.due > 0 ? `▶️ شروع مرور (${s.due} لغت)` : '📚 دیدن لغات', web_app: { url: APP_URL } }]] } }
         )
       }
-    } else if (text === '❓ راهنما' || text === '/help') {
+    }
+    else if (text === '❓ راهنما' || text === '/help') {
       await send(chatId,
         `${tg('idea')} <b>راهنمای Wortschatz</b>\n\n` +
         `<blockquote>🚀 <b>باز کردن</b> — اپ رو مستقیم باز کن\n` +
@@ -176,12 +203,13 @@ export default async function handler(req, res) {
         `${tg('nobell')} <b>خاموش کردن</b> — یادآوری رو خاموش کن</blockquote>`,
         { reply_markup: MAIN_KB }
       )
-    } else {
+    }
+    else {
       await send(chatId, `${tg('arrow')} از منوی پایین استفاده کن`, { reply_markup: MAIN_KB })
     }
   } catch (e) {
-    console.error('telegram handler error:', e)
+    console.error('TG handler error:', e)
   }
 
-  return res.status(200).send('ok')
+  res.status(200).send('ok')
 }
