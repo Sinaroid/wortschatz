@@ -1338,123 +1338,11 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-/* ── ONBOARDING ── */
-.ob{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;background:#0f0f0e}
-.ob.hide{display:none}
-.ob-prog{height:2px;background:rgba(255,255,255,.08);flex-shrink:0}
-.ob-prog-fill{height:100%;background:#1a3af2;border-radius:2px;transition:width .4s ease}
-.ob-track{flex:1;overflow:hidden;cursor:grab;min-height:0}
-.ob-track:active{cursor:grabbing}
-.ob-reel{display:flex;height:100%;transition:transform .4s cubic-bezier(.4,0,.2,1)}
-.ob-reel.drag{transition:none}
-.ob-slide{min-width:100%;height:100%;display:flex;flex-direction:column;padding:22px 22px 10px}
-.ob-vis{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.ob-vi{width:100%}
-.ob-txt{flex-shrink:0;text-align:center}
-.ob-step{font-size:9px;font-weight:700;letter-spacing:2.5px;color:rgba(255,255,255,.18);margin-bottom:5px}
-.ob-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.2}
-.ob-sub{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6}
-.ob-foot{padding:10px 22px 20px;display:flex;flex-direction:column;align-items:center;gap:9px;flex-shrink:0}
-.ob-dots{display:flex;gap:4px;align-items:center}
-.ob-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.14);transition:all .3s}
-.ob-dot.on{width:16px;border-radius:3px;background:#1a3af2}
-.ob-btn{width:100%;padding:13px;border-radius:13px;border:none;background:#1a3af2;color:#fff;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s,transform .15s}
-.ob-btn:active{opacity:.8;transform:scale(.98)}
-.ob-skip{font-size:11px;color:rgba(255,255,255,.2);cursor:pointer;background:transparent;border:none;font-family:var(--sans);padding:3px 10px}
-/* slide 1 */
-.s1-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px}
-.s1-row{display:flex;align-items:center;gap:10px}
-.s1-inp{font-family:var(--serif);font-style:italic;font-size:18px;color:rgba(255,255,255,.9);flex:1;min-height:26px}
-.s1-cur{display:inline-block;width:2px;height:17px;background:#fff;vertical-align:middle;margin-right:1px}
-.s1-cur.blink{animation:obblk .7s step-end infinite}
-@keyframes obblk{0%,100%{opacity:1}50%{opacity:0}}
-.s1-btn{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.s1-btn.pop{animation:obbp .25s cubic-bezier(.34,1.56,.64,1)}
-@keyframes obbp{0%{transform:scale(1)}50%{transform:scale(.82)}100%{transform:scale(1)}}
-.s1-res{max-height:0;overflow:hidden;opacity:0;margin-top:0;transition:max-height .5s ease,opacity .4s ease,margin-top .4s ease}
-.s1-res.show{max-height:150px;opacity:1;margin-top:12px}
-.s1-card{background:rgba(255,255,255,.05);border-radius:12px;padding:14px;border-right:2px solid var(--accent)}
-.s1-word{font-family:var(--serif);font-size:26px;font-weight:700;color:#fff;direction:ltr;line-height:1;margin-bottom:4px}
-.s1-fa{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:8px}
-.s1-tags{display:flex;gap:5px}
-.s1-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(26,58,242,.28);color:rgba(150,170,255,.9)}
-/* slide 2: زبان */
-.ob-lang-list{display:flex;flex-direction:column;gap:10px;width:100%}
-.ob-lc{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:14px;padding:15px 16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.ob-lc::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
-.ob-lc.sel{border-color:var(--accent)}
-.ob-lc.sel::before{opacity:1}
-.ob-lc:active{transform:scale(.97)}
-.ob-lc-flag{font-size:26px;flex-shrink:0;position:relative;z-index:1}
-.ob-lc-info{flex:1;position:relative;z-index:1}
-.ob-lc-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
-.ob-lc-sub{font-size:11px;color:rgba(255,255,255,.35)}
-.ob-lc-radio{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;position:relative;z-index:1}
-.ob-lc.sel .ob-lc-radio{background:var(--accent);border-color:var(--accent)}
-.ob-lc.sel .ob-lc-radio::after{content:'';display:block;width:5px;height:8px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg) translateY(-1px)}
-/* slide 3: سطح */
-.ob-lv-list{display:flex;flex-direction:column;gap:7px;width:100%}
-.ob-lvcard{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.ob-lvcard::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
-.ob-lvcard.sel{border-color:var(--accent)}
-.ob-lvcard.sel::before{opacity:1}
-.ob-lvcard:active{transform:scale(.97)}
-.ob-lv-tag{font-family:var(--serif);font-size:16px;font-weight:700;color:#fff;min-width:28px;position:relative;z-index:1}
-.ob-lvcard.sel .ob-lv-tag{color:#7090ff}
-.ob-lv-info{flex:1;position:relative;z-index:1}
-.ob-lv-name{font-size:12px;font-weight:600;color:#fff}
-.ob-lv-desc{font-size:10px;color:rgba(255,255,255,.35);margin-top:1px}
-.ob-lv-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:4px;overflow:hidden}
-.ob-lv-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .3s}
-/* slide 4: هدف multi-select */
-.ob-goal-hint{font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:8px}
-.ob-goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%}
-.ob-gc{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 8px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.ob-gc::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
-.ob-gc.sel{border-color:var(--accent)}
-.ob-gc.sel::before{opacity:1}
-.ob-gc:active{transform:scale(.95)}
-.ob-gc-chk{position:absolute;top:6px;left:6px;width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:all .2s cubic-bezier(.34,1.56,.64,1);z-index:2}
-.ob-gc.sel .ob-gc-chk{opacity:1;transform:scale(1)}
-.ob-gc-ico{font-size:20px;position:relative;z-index:1}
-.ob-gc-name{font-size:11px;font-weight:600;color:#fff;text-align:center;line-height:1.3;position:relative;z-index:1}
-.ob-gc.sel .ob-gc-name{color:#a0b4ff}
-/* slide 5: خلاصه */
-.ob-sum-wrap{display:flex;flex-direction:column;gap:8px;width:100%}
-.ob-sum-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 16px}
-.ob-sum-row{display:flex;align-items:flex-start;gap:10px}
-.ob-sum-ico{font-size:18px;flex-shrink:0;margin-top:1px}
-.ob-sum-lbl{font-size:10px;color:rgba(255,255,255,.3);margin-bottom:3px;letter-spacing:.3px}
-.ob-sum-val{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
-.ob-sum-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
-.ob-sum-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(26,58,242,.2);color:rgba(130,160,255,.9)}
-.ob-sum-ai{display:flex;align-items:center;gap:8px;background:rgba(26,58,242,.1);border:1px solid rgba(26,58,242,.2);border-radius:12px;padding:11px 13px}
-.ob-sum-ai-ico{font-size:16px;flex-shrink:0}
-.ob-sum-ai-txt{font-size:11px;color:rgba(100,140,255,.85);line-height:1.5}
+/* ══ TG MINI APP ══ */
+.low-perf *,.low-perf *::before,.low-perf *::after{animation:none!important;transition:none!important}
 
-/* ── TOPBAR STATES ── */
-.btn-login{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r6);background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s;flex-shrink:0}
-.btn-login:active{opacity:.75}
-.top-pro-badge{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
-.top-free-badge{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:var(--bg2);border:1px solid var(--bg3);color:var(--ink3);font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .15s}
-.top-free-badge.warn{background:var(--warnbg);border-color:var(--warn);color:var(--warn)}
-.top-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;overflow:hidden;border:1.5px solid transparent;transition:border-color .2s}
-.top-avatar.pro{border-color:#f59e0b}
-
-/* ── UI FIXES ── */
+/* ══ UI REFRESH ══ */
 .reminder,#reminder{display:none!important}
-.ws-empty{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--s8) var(--s5);gap:var(--s3);animation:up .3s var(--ease) both}
-.ws-empty.show{display:flex}
-.ws-empty-icon{font-size:40px;margin-bottom:var(--s2)}
-.ws-empty-title{font-size:17px;font-weight:700;color:var(--ink)}
-.ws-empty-sub{font-size:13px;color:var(--ink3);line-height:1.6;max-width:260px}
-.ws-empty-btn{margin-top:var(--s2);background:var(--accent);color:#fff;border:none;border-radius:var(--r2);padding:11px var(--s6);font-size:13px;font-weight:600;font-family:var(--sans);cursor:pointer;transition:opacity .15s}
-.ws-empty-btn:active{opacity:.75}
-.login-prompt{display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--abl);border:1px solid rgba(26,58,242,.15);border-radius:var(--r2);padding:10px 14px;margin-top:var(--s2);animation:up .3s var(--ease) both}
-.login-prompt.show{display:flex}
-.login-prompt-txt{font-size:12px;color:var(--accent);font-weight:500;line-height:1.4}
-.login-prompt-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r1);padding:6px 12px;font-size:12px;font-weight:600;font-family:var(--sans);cursor:pointer;white-space:nowrap;flex-shrink:0}
-.login-prompt-x{background:transparent;border:none;color:var(--ink3);cursor:pointer;font-size:14px;padding:2px 4px;flex-shrink:0}
 .hero{padding:var(--s2) 0 var(--s3)!important}
 .hero-eye{display:none!important}
 .hero p{display:none!important}
@@ -1488,7 +1376,127 @@ html,body{overflow-x:hidden!important}
 .res-footer{padding:var(--s3) var(--s4)!important}
 .pane{padding-right:var(--s4)!important;padding-left:var(--s4)!important}
 #pane-home{padding-right:var(--s4)!important;padding-left:var(--s4)!important}
-.low-perf *,.low-perf *::before,.low-perf *::after{animation:none!important;transition:none!important}
+
+/* ══ TOPBAR STATES ══ */
+.btn-login{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r6);background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0}
+.btn-login:active{opacity:.75}
+.top-pro-badge{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
+.top-free-badge{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:var(--bg2);border:1px solid var(--bg3);color:var(--ink3);font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .15s}
+.top-free-badge.warn{background:var(--warnbg);border-color:var(--warn);color:var(--warn)}
+.top-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:1.5px solid transparent;transition:border-color .2s}
+.top-avatar.pro{border-color:#f59e0b}
+
+/* ══ EMPTY STATE ══ */
+.ws-empty{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--s8) var(--s5);gap:var(--s3)}
+.ws-empty.show{display:flex}
+.ws-empty-icon{font-size:40px;margin-bottom:var(--s2)}
+.ws-empty-title{font-size:17px;font-weight:700;color:var(--ink)}
+.ws-empty-sub{font-size:13px;color:var(--ink3);line-height:1.6;max-width:260px}
+.ws-empty-btn{margin-top:var(--s2);background:var(--accent);color:#fff;border:none;border-radius:var(--r2);padding:11px var(--s6);font-size:13px;font-weight:600;font-family:var(--sans);cursor:pointer}
+
+/* ══ LOGIN PROMPT ══ */
+.login-prompt{display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--abl);border:1px solid rgba(26,58,242,.15);border-radius:var(--r2);padding:10px 14px;margin-top:var(--s2)}
+.login-prompt.show{display:flex}
+.login-prompt-txt{font-size:12px;color:var(--accent);font-weight:500;line-height:1.4}
+.login-prompt-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r1);padding:6px 12px;font-size:12px;font-weight:600;font-family:var(--sans);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.login-prompt-x{background:transparent;border:none;color:var(--ink3);cursor:pointer;font-size:14px;padding:2px 4px;flex-shrink:0}
+
+/* ══ NOTIFICATION PROMPT ══ */
+.notif-prompt{display:none;flex-direction:column;gap:10px;background:linear-gradient(135deg,rgba(26,58,242,.08),rgba(26,58,242,.04));border:1px solid rgba(26,58,242,.18);border-radius:var(--r3);padding:var(--s4);margin-top:var(--s3)}
+.notif-prompt.show{display:flex}
+.notif-prompt-top{display:flex;align-items:flex-start;gap:10px}
+.notif-prompt-ico{font-size:22px;flex-shrink:0;margin-top:1px}
+.notif-prompt-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.notif-prompt-sub{font-size:11px;color:var(--ink3);line-height:1.5}
+.notif-prompt-actions{display:flex;gap:8px}
+.notif-prompt-yes{flex:1;padding:9px;border-radius:var(--r2);background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer}
+.notif-prompt-no{padding:9px 14px;border-radius:var(--r2);background:var(--bg2);border:1px solid var(--bg3);color:var(--ink3);font-family:var(--sans);font-size:12px;cursor:pointer}
+
+/* ══ ONBOARDING ══ */
+.ob{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;background:#0f0f0e}
+.ob.hide{display:none}
+.ob-prog{height:2px;background:rgba(255,255,255,.08);flex-shrink:0}
+.ob-prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease}
+.ob-track{flex:1;overflow:hidden;cursor:grab;min-height:0}
+.ob-track:active{cursor:grabbing}
+.ob-reel{display:flex;height:100%;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.ob-reel.drag{transition:none}
+.ob-slide{min-width:100%;height:100%;display:flex;flex-direction:column;padding:22px 22px 10px}
+.ob-vis{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.ob-vi{width:100%}
+.ob-txt{flex-shrink:0;text-align:center}
+.ob-step{font-size:9px;font-weight:700;letter-spacing:2.5px;color:rgba(255,255,255,.18);margin-bottom:5px}
+.ob-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.2}
+.ob-sub{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6}
+.ob-foot{padding:10px 22px 20px;display:flex;flex-direction:column;align-items:center;gap:9px;flex-shrink:0}
+.ob-dots{display:flex;gap:4px;align-items:center}
+.ob-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.14);transition:all .3s}
+.ob-dot.on{width:16px;border-radius:3px;background:var(--accent)}
+.ob-btn{width:100%;padding:13px;border-radius:13px;border:none;background:var(--accent);color:#fff;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s,transform .15s}
+.ob-btn:active{opacity:.8;transform:scale(.98)}
+.ob-skip{font-size:11px;color:rgba(255,255,255,.2);cursor:pointer;background:transparent;border:none;font-family:var(--sans);padding:3px 10px}
+.s1-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px}
+.s1-row{display:flex;align-items:center;gap:10px}
+.s1-inp{font-family:var(--serif);font-style:italic;font-size:18px;color:rgba(255,255,255,.9);flex:1;min-height:26px}
+.s1-cur{display:inline-block;width:2px;height:17px;background:#fff;vertical-align:middle;margin-right:1px}
+.s1-cur.blink{animation:obblk .7s step-end infinite}
+@keyframes obblk{0%,100%{opacity:1}50%{opacity:0}}
+.s1-btn{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s1-btn.pop{animation:obbp .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes obbp{0%{transform:scale(1)}50%{transform:scale(.82)}100%{transform:scale(1)}}
+.s1-res{max-height:0;overflow:hidden;opacity:0;margin-top:0;transition:max-height .5s ease,opacity .4s ease,margin-top .4s ease}
+.s1-res.show{max-height:150px;opacity:1;margin-top:12px}
+.s1-card{background:rgba(255,255,255,.05);border-radius:12px;padding:14px;border-right:2px solid var(--accent)}
+.s1-word{font-family:var(--serif);font-size:26px;font-weight:700;color:#fff;direction:ltr;line-height:1;margin-bottom:4px}
+.s1-fa{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:8px}
+.s1-tags{display:flex;gap:5px}
+.s1-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(26,58,242,.28);color:rgba(150,170,255,.9)}
+.ob-lang-list{display:flex;flex-direction:column;gap:10px;width:100%}
+.ob-lc{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:14px;padding:15px 16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.ob-lc::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
+.ob-lc.sel{border-color:var(--accent)}.ob-lc.sel::before{opacity:1}
+.ob-lc:active{transform:scale(.97)}
+.ob-lc-flag{font-size:26px;flex-shrink:0;position:relative;z-index:1}
+.ob-lc-info{flex:1;position:relative;z-index:1}
+.ob-lc-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+.ob-lc-sub{font-size:11px;color:rgba(255,255,255,.35)}
+.ob-lc-radio{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;position:relative;z-index:1}
+.ob-lc.sel .ob-lc-radio{background:var(--accent);border-color:var(--accent)}
+.ob-lc.sel .ob-lc-radio::after{content:'';display:block;width:5px;height:8px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg) translateY(-1px)}
+.ob-lv-list{display:flex;flex-direction:column;gap:7px;width:100%}
+.ob-lvcard{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.ob-lvcard::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
+.ob-lvcard.sel{border-color:var(--accent)}.ob-lvcard.sel::before{opacity:1}
+.ob-lvcard:active{transform:scale(.97)}
+.ob-lv-tag{font-family:var(--serif);font-size:16px;font-weight:700;color:#fff;min-width:28px;position:relative;z-index:1}
+.ob-lvcard.sel .ob-lv-tag{color:#7090ff}
+.ob-lv-info{flex:1;position:relative;z-index:1}
+.ob-lv-name{font-size:12px;font-weight:600;color:#fff}
+.ob-lv-desc{font-size:10px;color:rgba(255,255,255,.35);margin-top:1px}
+.ob-lv-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:4px;overflow:hidden}
+.ob-lv-fill{height:100%;border-radius:2px;background:var(--accent)}
+.ob-goal-hint{font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:8px}
+.ob-goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%}
+.ob-gc{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 8px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.ob-gc::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
+.ob-gc.sel{border-color:var(--accent)}.ob-gc.sel::before{opacity:1}
+.ob-gc:active{transform:scale(.95)}
+.ob-gc-chk{position:absolute;top:6px;left:6px;width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:all .2s cubic-bezier(.34,1.56,.64,1);z-index:2}
+.ob-gc.sel .ob-gc-chk{opacity:1;transform:scale(1)}
+.ob-gc-ico{font-size:20px;position:relative;z-index:1}
+.ob-gc-name{font-size:11px;font-weight:600;color:#fff;text-align:center;line-height:1.3;position:relative;z-index:1}
+.ob-gc.sel .ob-gc-name{color:#a0b4ff}
+.ob-sum-wrap{display:flex;flex-direction:column;gap:8px;width:100%}
+.ob-sum-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 16px}
+.ob-sum-row{display:flex;align-items:flex-start;gap:10px}
+.ob-sum-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.ob-sum-lbl{font-size:10px;color:rgba(255,255,255,.3);margin-bottom:3px}
+.ob-sum-val{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.ob-sum-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.ob-sum-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(26,58,242,.2);color:rgba(130,160,255,.9)}
+.ob-sum-ai{display:flex;align-items:center;gap:8px;background:rgba(26,58,242,.1);border:1px solid rgba(26,58,242,.2);border-radius:12px;padding:11px 13px}
+.ob-sum-ai-ico{font-size:16px;flex-shrink:0}
+.ob-sum-ai-txt{font-size:11px;color:rgba(100,140,255,.85);line-height:1.5}
 
 </style>
 </head>
@@ -1518,92 +1526,75 @@ html,body{overflow-x:hidden!important}
   if(BB){BB.setParams({text:'افزودن به فلش‌کارت',color:'#1a3af2',text_color:'#ffffff',is_active:true,is_visible:false});BB.onClick(function(){tg.HapticFeedback.impactOccurred('medium');var ph=document.getElementById('ph-res');if(ph&&ph.classList.contains('show')){try{addPhrase();}catch(e){}}else{try{addWord();}catch(e){}}BB.hide();});}
   document.addEventListener('click',function(e){if(e.target.closest('button,.nav-item,.s-btn'))tg.HapticFeedback.impactOccurred('light');},{passive:true});
   window.tgApp={tg:tg,isTg:true,user:tg.initDataUnsafe&&tg.initDataUnsafe.user,showBack:function(){tg.BackButton.show();},hideBack:function(){tg.BackButton.hide();},showAdd:function(t){if(BB){BB.setText(t||'افزودن به فلش‌کارت');BB.show();}},hideAdd:function(){if(BB)BB.hide();},haptic:function(t){try{if(['success','error','warning'].includes(t))tg.HapticFeedback.notificationOccurred(t);else tg.HapticFeedback.impactOccurred(t||'medium');}catch(e){}},setTheme:syncHeader};
+  console.log('[TG]',tg.version,tg.platform,tg.colorScheme);
 })();
 </script>
-
-<!-- ═══════ ONBOARDING ═══════ -->
+<!-- ══ ONBOARDING ══ -->
 <div class="ob hide" id="ob">
   <div class="ob-prog"><div class="ob-prog-fill" id="ob-prog" style="width:20%"></div></div>
-  <div class="ob-track" id="ob-track">
-    <div class="ob-reel" id="ob-reel">
+  <div class="ob-track" id="ob-track"><div class="ob-reel" id="ob-reel">
 
-      <!-- S1: demo -->
-      <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-        <div class="s1-box">
-          <div class="s1-row">
-            <div class="s1-inp" id="s1i"><span class="s1-cur blink"></span></div>
-            <div class="s1-btn" id="s1b"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          </div>
-          <div class="s1-res" id="s1r"><div class="s1-card">
-            <div class="s1-word">Sehnsucht</div>
-            <div class="s1-fa">دلتنگی عمیق · اشتیاق</div>
-            <div class="s1-tags"><span class="s1-tag">C1</span><span class="s1-tag">اسم · مؤنث</span></div>
-          </div></div>
+    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
+      <div class="s1-box">
+        <div class="s1-row">
+          <div class="s1-inp" id="s1i"><span class="s1-cur blink"></span></div>
+          <div class="s1-btn" id="s1b"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         </div>
-      </div></div>
-      <div class="ob-txt"><div class="ob-step">۱ از ۵</div><div class="ob-title">به Wortschatz خوش اومدی 👋</div><div class="ob-sub">چند سوال کوتاه تا بهترین تجربه رو برات بسازیم</div></div></div>
+        <div class="s1-res" id="s1r"><div class="s1-card">
+          <div class="s1-word">Sehnsucht</div><div class="s1-fa">دلتنگی عمیق · اشتیاق</div>
+          <div class="s1-tags"><span class="s1-tag">C1</span><span class="s1-tag">اسم · مؤنث</span></div>
+        </div></div>
+      </div>
+    </div></div>
+    <div class="ob-txt"><div class="ob-step">۱ از ۵</div><div class="ob-title">به Wortschatz خوش اومدی 👋</div><div class="ob-sub">چند سوال کوتاه تا بهترین تجربه رو برات بسازیم</div></div></div>
 
-      <!-- S2: زبان -->
-      <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-        <div class="ob-lang-list">
-          <div class="ob-lc sel" id="ob-lde" onclick="obPickLang('de')">
-            <div class="ob-lc-flag">🇩🇪</div>
-            <div class="ob-lc-info"><div class="ob-lc-name">آلمانی یاد می‌گیرم</div><div class="ob-lc-sub">Deutsch lernen</div></div>
-            <div class="ob-lc-radio"></div>
-          </div>
-          <div class="ob-lc" id="ob-len" onclick="obPickLang('en')">
-            <div class="ob-lc-flag">🇬🇧</div>
-            <div class="ob-lc-info"><div class="ob-lc-name">انگلیسی یاد می‌گیرم</div><div class="ob-lc-sub">Learning English</div></div>
-            <div class="ob-lc-radio"></div>
-          </div>
-        </div>
-      </div></div>
-      <div class="ob-txt"><div class="ob-step">۲ از ۵</div><div class="ob-title">کدوم زبان؟</div><div class="ob-sub">بعداً از تنظیمات می‌تونی تغییر بدی</div></div></div>
+    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
+      <div class="ob-lang-list">
+        <div class="ob-lc sel" id="ob-lde" onclick="obPickLang('de')"><div class="ob-lc-flag">🇩🇪</div><div class="ob-lc-info"><div class="ob-lc-name">آلمانی یاد می‌گیرم</div><div class="ob-lc-sub">Deutsch lernen</div></div><div class="ob-lc-radio"></div></div>
+        <div class="ob-lc" id="ob-len" onclick="obPickLang('en')"><div class="ob-lc-flag">🇬🇧</div><div class="ob-lc-info"><div class="ob-lc-name">انگلیسی یاد می‌گیرم</div><div class="ob-lc-sub">Learning English</div></div><div class="ob-lc-radio"></div></div>
+      </div>
+    </div></div>
+    <div class="ob-txt"><div class="ob-step">۲ از ۵</div><div class="ob-title">کدوم زبان؟</div><div class="ob-sub">بعداً از تنظیمات می‌تونی تغییر بدی</div></div></div>
 
-      <!-- S3: سطح -->
-      <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-        <div class="ob-lv-list">
-          <div class="ob-lvcard" id="ob-la1" onclick="obPickLevel('A1')"><div class="ob-lv-tag">A1</div><div class="ob-lv-info"><div class="ob-lv-name">تازه شروع کردم</div><div class="ob-lv-desc">هیچ پیش‌زمینه‌ای ندارم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:8%"></div></div></div></div>
-          <div class="ob-lvcard" id="ob-la2" onclick="obPickLevel('A2')"><div class="ob-lv-tag">A2</div><div class="ob-lv-info"><div class="ob-lv-name">یه کم بلدم</div><div class="ob-lv-desc">جملات ساده رو می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:22%"></div></div></div></div>
-          <div class="ob-lvcard sel" id="ob-lb1" onclick="obPickLevel('B1')"><div class="ob-lv-tag">B1</div><div class="ob-lv-info"><div class="ob-lv-name">متوسطم</div><div class="ob-lv-desc">می‌تونم صحبت کنم ولی محدودم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:45%"></div></div></div></div>
-          <div class="ob-lvcard" id="ob-lb2" onclick="obPickLevel('B2')"><div class="ob-lv-tag">B2</div><div class="ob-lv-info"><div class="ob-lv-name">نسبتاً خوبم</div><div class="ob-lv-desc">روان صحبت می‌کنم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:65%"></div></div></div></div>
-          <div class="ob-lvcard" id="ob-lc1" onclick="obPickLevel('C1')"><div class="ob-lv-tag">C1</div><div class="ob-lv-info"><div class="ob-lv-name">پیشرفته‌ام</div><div class="ob-lv-desc">فیلم و کتاب می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:82%"></div></div></div></div>
-        </div>
-      </div></div>
-      <div class="ob-txt"><div class="ob-step">۳ از ۵</div><div class="ob-title">سطحت الان کجاست؟</div><div class="ob-sub">صادقانه انتخاب کن — روی لغات پیشنهادی تأثیر مستقیم داره</div></div></div>
+    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
+      <div class="ob-lv-list">
+        <div class="ob-lvcard" id="ob-la1" onclick="obPickLevel('A1')"><div class="ob-lv-tag">A1</div><div class="ob-lv-info"><div class="ob-lv-name">تازه شروع کردم</div><div class="ob-lv-desc">هیچ پیش‌زمینه‌ای ندارم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:8%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-la2" onclick="obPickLevel('A2')"><div class="ob-lv-tag">A2</div><div class="ob-lv-info"><div class="ob-lv-name">یه کم بلدم</div><div class="ob-lv-desc">جملات ساده رو می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:22%"></div></div></div></div>
+        <div class="ob-lvcard sel" id="ob-lb1" onclick="obPickLevel('B1')"><div class="ob-lv-tag">B1</div><div class="ob-lv-info"><div class="ob-lv-name">متوسطم</div><div class="ob-lv-desc">می‌تونم صحبت کنم ولی محدودم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:45%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-lb2" onclick="obPickLevel('B2')"><div class="ob-lv-tag">B2</div><div class="ob-lv-info"><div class="ob-lv-name">نسبتاً خوبم</div><div class="ob-lv-desc">روان صحبت می‌کنم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:65%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-lc1" onclick="obPickLevel('C1')"><div class="ob-lv-tag">C1</div><div class="ob-lv-info"><div class="ob-lv-name">پیشرفته‌ام</div><div class="ob-lv-desc">فیلم و کتاب می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:82%"></div></div></div></div>
+      </div>
+    </div></div>
+    <div class="ob-txt"><div class="ob-step">۳ از ۵</div><div class="ob-title">سطحت الان کجاست؟</div><div class="ob-sub">صادقانه انتخاب کن — روی لغات پیشنهادی تأثیر داره</div></div></div>
 
-      <!-- S4: هدف multi-select -->
-      <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-        <div class="ob-goal-hint">می‌تونی چند تا انتخاب کنی</div>
-        <div class="ob-goal-grid">
-          <div class="ob-gc sel" id="ob-g-travel" onclick="obToggleGoal('travel',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">✈️</div><div class="ob-gc-name">سفر و مهاجرت</div></div>
-          <div class="ob-gc" id="ob-g-work" onclick="obToggleGoal('work',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💼</div><div class="ob-gc-name">کار و تجارت</div></div>
-          <div class="ob-gc" id="ob-g-exam" onclick="obToggleGoal('exam',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">📝</div><div class="ob-gc-name">آزمون Goethe</div></div>
-          <div class="ob-gc" id="ob-g-daily" onclick="obToggleGoal('daily',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💬</div><div class="ob-gc-name">مکالمه روزمره</div></div>
-          <div class="ob-gc" id="ob-g-study" onclick="obToggleGoal('study',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">🎓</div><div class="ob-gc-name">تحصیل در خارج</div></div>
-          <div class="ob-gc" id="ob-g-fun" onclick="obToggleGoal('fun',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">❤️</div><div class="ob-gc-name">علاقه شخصی</div></div>
-        </div>
-      </div></div>
-      <div class="ob-txt"><div class="ob-step">۴ از ۵</div><div class="ob-title">هدفت چیه؟</div><div class="ob-sub">بر اساس انتخابت بهترین لغات رو پیشنهاد میدیم</div></div></div>
+    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
+      <div class="ob-goal-hint">می‌تونی چند تا انتخاب کنی</div>
+      <div class="ob-goal-grid">
+        <div class="ob-gc sel" id="ob-g-travel" onclick="obToggleGoal('travel',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">✈️</div><div class="ob-gc-name">سفر و مهاجرت</div></div>
+        <div class="ob-gc" id="ob-g-work" onclick="obToggleGoal('work',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💼</div><div class="ob-gc-name">کار و تجارت</div></div>
+        <div class="ob-gc" id="ob-g-exam" onclick="obToggleGoal('exam',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">📝</div><div class="ob-gc-name">آزمون Goethe</div></div>
+        <div class="ob-gc" id="ob-g-daily" onclick="obToggleGoal('daily',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💬</div><div class="ob-gc-name">مکالمه روزمره</div></div>
+        <div class="ob-gc" id="ob-g-study" onclick="obToggleGoal('study',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">🎓</div><div class="ob-gc-name">تحصیل در خارج</div></div>
+        <div class="ob-gc" id="ob-g-fun" onclick="obToggleGoal('fun',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">❤️</div><div class="ob-gc-name">علاقه شخصی</div></div>
+      </div>
+    </div></div>
+    <div class="ob-txt"><div class="ob-step">۴ از ۵</div><div class="ob-title">هدفت چیه؟</div><div class="ob-sub">بر اساس انتخابت بهترین لغات رو پیشنهاد میدیم</div></div></div>
 
-      <!-- S5: خلاصه -->
-      <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-        <div class="ob-sum-wrap">
-          <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico" id="ob-sum-flag">🇩🇪</div><div><div class="ob-sum-lbl">زبان</div><div class="ob-sum-val" id="ob-sum-lang">آلمانی</div></div></div></div>
-          <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">📊</div><div><div class="ob-sum-lbl">سطح فعلی</div><div class="ob-sum-val" id="ob-sum-level">B1 — متوسط</div></div></div></div>
-          <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">🎯</div><div><div class="ob-sum-lbl">اهداف</div><div class="ob-sum-tags" id="ob-sum-goals"></div></div></div></div>
-          <div class="ob-sum-ai"><div class="ob-sum-ai-ico">✨</div><div class="ob-sum-ai-txt">یه مجموعه لغت شخصی‌سازی‌شده بر اساس پروفایلت آماده کردیم</div></div>
-        </div>
-      </div></div>
-      <div class="ob-txt"><div class="ob-step">۵ از ۵</div><div class="ob-title">همه چیز آماده‌ست 🚀</div><div class="ob-sub">می‌تونی هر وقت از پروفایلت تغییر بدی</div></div></div>
+    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
+      <div class="ob-sum-wrap">
+        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico" id="ob-sum-flag">🇩🇪</div><div><div class="ob-sum-lbl">زبان</div><div class="ob-sum-val" id="ob-sum-lang">آلمانی</div></div></div></div>
+        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">📊</div><div><div class="ob-sum-lbl">سطح فعلی</div><div class="ob-sum-val" id="ob-sum-level">B1 — متوسط</div></div></div></div>
+        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">🎯</div><div><div class="ob-sum-lbl">اهداف</div><div class="ob-sum-tags" id="ob-sum-goals"></div></div></div></div>
+        <div class="ob-sum-ai"><div class="ob-sum-ai-ico">✨</div><div class="ob-sum-ai-txt">یه مجموعه لغت شخصی‌سازی‌شده بر اساس پروفایلت آماده کردیم</div></div>
+      </div>
+    </div></div>
+    <div class="ob-txt"><div class="ob-step">۵ از ۵</div><div class="ob-title">همه چیز آماده‌ست 🚀</div><div class="ob-sub">می‌تونی هر وقت از پروفایلت تغییر بدی</div></div></div>
 
-    </div>
-  </div>
+  </div></div>
   <div class="ob-foot">
     <div class="ob-dots">
       <div class="ob-dot on" id="obd0"></div><div class="ob-dot" id="obd1"></div>
-      <div class="ob-dot" id="obd2"></div><div class="ob-dot" id="obd3"></div>
-      <div class="ob-dot" id="obd4"></div>
+      <div class="ob-dot" id="obd2"></div><div class="ob-dot" id="obd3"></div><div class="ob-dot" id="obd4"></div>
     </div>
     <button class="ob-btn" onclick="obNext()">
       <span id="ob-btntxt">بعدی</span>
@@ -2121,11 +2112,23 @@ html,body{overflow-x:hidden!important}
       <div class="ws-empty-sub">یه لغت آلمانی بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن</div>
       <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()">شروع کن ←</button>
     </div>
-
     <div class="login-prompt" id="login-prompt">
       <div class="login-prompt-txt">برای ذخیره لغت‌هات وارد شو 👤</div>
       <button class="login-prompt-btn" onclick="showGate();document.getElementById('login-prompt').classList.remove('show')">ورود</button>
       <button class="login-prompt-x" onclick="this.parentElement.classList.remove('show');localStorage.setItem('ws_prompt_dismissed','1')">✕</button>
+    </div>
+    <div class="notif-prompt" id="notif-prompt">
+      <div class="notif-prompt-top">
+        <div class="notif-prompt-ico">🔔</div>
+        <div>
+          <div class="notif-prompt-title">یادآوری روزانه فعال کن</div>
+          <div class="notif-prompt-sub">هر روز ساعت ۸:۳۰ شب یادت میاره لغاتت رو مرور کنی</div>
+        </div>
+      </div>
+      <div class="notif-prompt-actions">
+        <button class="notif-prompt-yes" onclick="enableNotifications()">فعال کن 🔔</button>
+        <button class="notif-prompt-no" onclick="dismissNotifPrompt()">بعداً</button>
+      </div>
     </div>
 
     <div class="sum-card" id="sum-card">
@@ -2867,66 +2870,138 @@ function setUserUI(user){ updateTopStatus();
    INIT
 ══════════════════════════════ */
 /* ── User Profile ── */
-var userProfile = {
-  lang:  localStorage.getItem('ws_lang')  || 'de',
-  level: localStorage.getItem('ws_level') || 'B1',
-  goals: JSON.parse(localStorage.getItem('ws_goals') || '["travel"]'),
-};
-
-function saveUserProfile(lang, level, goals) {
-  userProfile = { lang: lang, level: level, goals: goals };
-  localStorage.setItem('ws_lang',  lang);
-  localStorage.setItem('ws_level', level);
-  localStorage.setItem('ws_goals', JSON.stringify(goals));
-  // sync to Supabase profiles table
-  if (currentUser) {
-    sb.from('profiles').update({ lang: lang, level: level, goals: goals, onboarded: true })
-      .eq('id', currentUser.id).then(function(){}).catch(function(){});
+function saveUserProfile(lang,level,goals){
+  localStorage.setItem('ws_lang',lang);
+  localStorage.setItem('ws_level',level);
+  localStorage.setItem('ws_goals',JSON.stringify(goals));
+  if(window.currentUser&&window.sb){
+    sb.from('profiles').update({lang:lang,level:level,goals:goals,onboarded:true}).eq('id',currentUser.id).catch(function(){});
   }
+  if(typeof setTargetLang==='function')setTargetLang(lang);
 }
 
 /* ── Empty State ── */
-function updateEmptyState() {
-  var empty = document.getElementById('ws-empty');
-  var card  = document.getElementById('sum-card');
-  if (!empty) return;
-  var has = window.words && window.words.length > 0;
-  if (has) { empty.classList.remove('show'); empty.style.display='none'; if(card) card.classList.add('show'); }
-  else { empty.classList.add('show'); if(card) card.classList.remove('show'); }
+function updateEmptyState(){
+  var empty=document.getElementById('ws-empty'),card=document.getElementById('sum-card');
+  if(!empty)return;
+  var has=window.words&&window.words.length>0;
+  if(has){empty.classList.remove('show');empty.style.display='none';if(card)card.classList.add('show');}
+  else{empty.classList.add('show');if(card)card.classList.remove('show');}
 }
 
 /* ── Topbar Status ── */
-function updateTopStatus() {
-  var loginBtn  = document.getElementById('top-login-btn');
-  var freeBadge = document.getElementById('top-free-badge');
-  var proBadge  = document.getElementById('top-pro-badge');
-  var avatarEl  = document.getElementById('top-avatar-el');
-  var avatarLt  = document.getElementById('top-avatar-lt');
-  var freeN     = document.getElementById('top-free-n');
-  if (!loginBtn) return;
-  if (!currentUser) {
-    loginBtn.style.display  = 'flex';
-    freeBadge.style.display = 'none';
-    proBadge.style.display  = 'none';
-    avatarEl.style.display  = 'none';
-  } else {
-    loginBtn.style.display = 'none';
-    avatarEl.style.display = 'flex';
-    var nm = document.getElementById('drw-profile-name');
-    var name = (nm && nm.textContent && nm.textContent !== '—') ? nm.textContent
-      : (currentUser.user_metadata && currentUser.user_metadata.full_name) || currentUser.email.split('@')[0] || '?';
-    if (avatarLt) avatarLt.textContent = (name[0]||'?').toUpperCase();
-    if (userPlan === 'pro' || userPlan === 'beta') {
-      freeBadge.style.display = 'none'; proBadge.style.display = 'flex'; avatarEl.classList.add('pro');
-    } else {
-      proBadge.style.display  = 'none'; avatarEl.classList.remove('pro');
-      var left = Math.max(0, (window.FREE_LIMIT||10) - (userSearchCount||0));
-      if (freeN) freeN.textContent = left;
-      freeBadge.classList.toggle('warn', left <= 2);
-      freeBadge.style.display = 'flex';
-    }
+function updateTopStatus(){
+  var lb=document.getElementById('top-login-btn'),fb=document.getElementById('top-free-badge');
+  var pb=document.getElementById('top-pro-badge'),av=document.getElementById('top-avatar-el');
+  var al=document.getElementById('top-avatar-lt'),fn=document.getElementById('top-free-n');
+  if(!lb)return;
+  if(!currentUser){lb.style.display='flex';fb.style.display='none';pb.style.display='none';av.style.display='none';}
+  else{
+    lb.style.display='none';av.style.display='flex';
+    var nm=document.getElementById('drw-profile-name');
+    var name=(nm&&nm.textContent&&nm.textContent!=='—')?nm.textContent:(currentUser.user_metadata&&currentUser.user_metadata.full_name)||currentUser.email.split('@')[0]||'?';
+    if(al)al.textContent=(name[0]||'?').toUpperCase();
+    if(userPlan==='pro'||userPlan==='beta'){fb.style.display='none';pb.style.display='flex';av.classList.add('pro');}
+    else{pb.style.display='none';av.classList.remove('pro');var left=Math.max(0,(window.FREE_LIMIT||10)-(userSearchCount||0));if(fn)fn.textContent=left;fb.classList.toggle('warn',left<=2);fb.style.display='flex';}
   }
 }
+
+/* ── Notifications ── */
+var _notifDismissed=!!localStorage.getItem('ws_notif_dismissed');
+var _notifEnabled=!!localStorage.getItem('ws_notif_enabled');
+function checkNotifPrompt(){
+  if(_notifDismissed||_notifEnabled)return;
+  if(!window.tgApp||!currentUser)return;
+  if(!window.words||window.words.length<1)return;
+  setTimeout(function(){var el=document.getElementById('notif-prompt');if(el)el.classList.add('show');},2000);
+}
+function enableNotifications(){
+  var el=document.getElementById('notif-prompt');if(el)el.classList.remove('show');
+  localStorage.setItem('ws_notif_enabled','1');_notifEnabled=true;
+  if(window.tgApp&&window.tgApp.user&&currentUser){
+    sb.from('notifications').upsert({user_id:currentUser.id,telegram_chat_id:window.tgApp.user.id,enabled:true,hour:17},{onConflict:'user_id'}).then(function(){showToast('🔔 یادآوری روزانه فعال شد! هر شب ۸:۳۰',3000,'ok');if(window.tgApp)window.tgApp.haptic('success');}).catch(function(e){console.error('notif',e);});
+  }
+}
+function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(el)el.classList.remove('show');localStorage.setItem('ws_notif_dismissed','1');_notifDismissed=true;}
+
+/* ── Onboarding ── */
+(function(){
+  var KEY='ws_ob_seen',cur=0,TOTAL=5,s1done=false;
+  var obLang='de',obLevel='B1',obGoals=new Set(['travel']);
+  var LEVEL_NAMES={A1:'مبتدی',A2:'پایه',B1:'متوسط',B2:'بالاتر از متوسط',C1:'پیشرفته'};
+  var GOAL_NAMES={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
+  var reel,track;
+
+  window._obTryShow=function(){
+    if(localStorage.getItem(KEY))return;
+    if(window.words&&window.words.length>0){localStorage.setItem(KEY,'1');return;}
+    if(window.currentUser&&window.sb){
+      sb.from('profiles').select('onboarded,lang,level,goals').eq('id',currentUser.id).single().then(function(r){
+        if(r.data&&r.data.onboarded){
+          localStorage.setItem(KEY,'1');
+          if(r.data.lang)localStorage.setItem('ws_lang',r.data.lang);
+          if(r.data.level)localStorage.setItem('ws_level',r.data.level);
+          if(r.data.goals)localStorage.setItem('ws_goals',JSON.stringify(r.data.goals));
+          if(typeof setTargetLang==='function')setTargetLang(r.data.lang||'de');
+          return;
+        }
+        _obShow();
+      }).catch(function(){_obShow();});
+    } else { _obShow(); }
+  };
+  function _obShow(){
+    reel=document.getElementById('ob-reel');track=document.getElementById('ob-track');
+    document.getElementById('ob').classList.remove('hide');
+    setTimeout(_obA1,500);
+  }
+  function _obA1(){
+    if(s1done)return;s1done=true;
+    var inp=document.getElementById('s1i'),btn=document.getElementById('s1b'),res=document.getElementById('s1r'),w='Sehnsucht',i=0;
+    inp.innerHTML='<span class="s1-cur blink"></span>';
+    var t=setInterval(function(){if(i<w.length){inp.innerHTML=w.slice(0,++i)+'<span class="s1-cur blink"></span>';}else{clearInterval(t);setTimeout(function(){btn.classList.add('pop');setTimeout(function(){btn.classList.remove('pop');res.classList.add('show');},220);},350);}},80);
+  }
+  window.obPickLang=function(l){obLang=l;document.getElementById('ob-lde').classList.toggle('sel',l==='de');document.getElementById('ob-len').classList.toggle('sel',l==='en');};
+  window.obPickLevel=function(l){obLevel=l;['a1','a2','b1','b2','c1'].forEach(function(x){document.getElementById('ob-l'+x).classList.remove('sel');});document.getElementById('ob-l'+l.toLowerCase()).classList.add('sel');};
+  window.obToggleGoal=function(g,el){if(obGoals.has(g)){if(obGoals.size===1)return;obGoals.delete(g);el.classList.remove('sel');}else{obGoals.add(g);el.classList.add('sel');}};
+  function _obSummary(){
+    document.getElementById('ob-sum-flag').textContent=obLang==='de'?'🇩🇪':'🇬🇧';
+    document.getElementById('ob-sum-lang').textContent=obLang==='de'?'آلمانی':'انگلیسی';
+    document.getElementById('ob-sum-level').textContent=obLevel+' — '+(LEVEL_NAMES[obLevel]||'');
+    var el=document.getElementById('ob-sum-goals');el.innerHTML='';
+    obGoals.forEach(function(g){var t=document.createElement('span');t.className='ob-sum-tag';t.textContent=GOAL_NAMES[g]||g;el.appendChild(t);});
+  }
+  function _obGo(n){
+    if(!reel){reel=document.getElementById('ob-reel');track=document.getElementById('ob-track');}
+    reel.classList.remove('drag');reel.style.transform='translateX('+n*100+'%)';
+    for(var i=0;i<TOTAL;i++)document.getElementById('obd'+i).classList.toggle('on',i===n);
+    document.getElementById('ob-prog').style.width=((n+1)/TOTAL*100)+'%';
+    var last=n===TOTAL-1;
+    document.getElementById('ob-btntxt').textContent=last?'شروع کن 🇩🇪':'بعدی';
+    document.getElementById('ob-btnarr').style.display=last?'none':'';
+    document.getElementById('ob-skip').style.display=n===0?'':'none';
+    if(last)_obSummary();
+    if(n===0)setTimeout(_obA1,300);
+    cur=n;
+  }
+  window.obNext=function(){if(cur<TOTAL-1)_obGo(cur+1);else obClose();};
+  window.obClose=function(){
+    localStorage.setItem(KEY,'1');
+    if(typeof saveUserProfile==='function')saveUserProfile(obLang,obLevel,Array.from(obGoals));
+    var ob=document.getElementById('ob');
+    ob.style.transition='opacity .3s,transform .3s';ob.style.opacity='0';ob.style.transform='scale(.97)';
+    setTimeout(function(){ob.classList.add('hide');ob.style.cssText='';},320);
+    if(window.tgApp)window.tgApp.haptic('success');
+  };
+  var dx=null,dc=0;
+  function gx(e){return e.touches?e.touches[0].clientX:e.clientX;}
+  setTimeout(function(){
+    var tr=document.getElementById('ob-track');if(!tr)return;
+    tr.addEventListener('mousedown',function(e){dx=gx(e);dc=0;if(reel)reel.classList.add('drag');document.addEventListener('mousemove',dm);document.addEventListener('mouseup',de);});
+    tr.addEventListener('touchstart',function(e){dx=gx(e);dc=0;if(reel)reel.classList.add('drag');document.addEventListener('touchmove',dm,{passive:false});document.addEventListener('touchend',de);},{passive:true});
+  },200);
+  function dm(e){if(dx===null)return;dc=gx(e)-dx;if(e.cancelable)e.preventDefault();var r=((cur===0&&dc>0)||(cur===TOTAL-1&&dc<0))?0.2:1;if(reel)reel.style.transform='translateX(calc('+cur*100+'% + '+(dc*r)+'px))';}
+  function de(){document.removeEventListener('mousemove',dm);document.removeEventListener('touchmove',dm);document.removeEventListener('mouseup',de);document.removeEventListener('touchend',de);var th=(track?track.offsetWidth:300)*0.22;if(dc<-th&&cur<TOTAL-1)_obGo(cur+1);else if(dc>th&&cur>0)_obGo(cur-1);else _obGo(cur);dx=null;}
+})();
 
 async function tgAutoLogin(u){
   var email='tg'+u.id+'@wortschatz.app',pass='ws_tg_'+u.id+'_2025!';
@@ -2940,11 +3015,11 @@ async function tgAutoLogin(u){
       var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
       var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
       await dbLoad();await loadProfile();
-      // بعد از load profile، چک کن آیا onboarding لازمه
       setTimeout(function(){if(window._obTryShow)window._obTryShow();},600);
       setTimeout(checkReminder,2500);
       if(window.tgApp)window.tgApp.haptic('success');
       showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
+      updateTopStatus();
     }
   }catch(e){console.error('[TG]',e.message);}
 }
@@ -2982,8 +3057,8 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    var _tgu = window.tgApp && window.tgApp.user;
-    if (_tgu && _tgu.id) { await tgAutoLogin(_tgu); }
+    var _tgu=window.tgApp&&window.tgApp.user;
+    if(_tgu&&_tgu.id){await tgAutoLogin(_tgu);}
     updateTopStatus();
   }
 
@@ -3357,30 +3432,25 @@ async function searchWord(q){
     : '{"word":"word without article","corrected_from":"null or original word","article":"null (English has no grammatical gender)","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs only: past tense and past participle e.g. go – went – gone","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"important grammar note or null","priority":{"score":3,"reason":"why important"}}';
 
   const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
-  const userLevel = localStorage.getItem('ws_level')||'B1';
-  const userGoals = JSON.parse(localStorage.getItem('ws_goals')||'["travel"]');
-  const goalCtx = {travel:'سفر و مهاجرت',work:'کار و تجارت',exam:'آزمون زبان',daily:'مکالمه روزمره',study:'تحصیل در خارج',fun:'علاقه شخصی'};
-  const goalsText = userGoals.map(g=>goalCtx[g]||g).join('، ');
-  const p = [
+  var _ul=localStorage.getItem('ws_level')||'B1';
+  var _ug=JSON.parse(localStorage.getItem('ws_goals')||'["travel"]');
+  var _gc={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
+  var _gt=_ug.map(function(g){return _gc[g]||g;}).join('، ');
+  const p=[
     'ورودی: "'+q+'"',
     'زبان ورودی: ممکنه '+langLabel+'، فارسی یا انگلیسی باشه.',
-    isDE ? 'اگه تایپ انگلیسی بود تصحیح کن: ae→ä, oe→ö, ue→ü, ss→ß' : '',
+    isDE?'اگه تایپ انگلیسی بود تصحیح کن: ae→ä, oe→ö, ue→ü, ss→ß':'',
     'اگه فارسی بود: معادل '+langLabel+' پیدا کن.',
-    '',
-    'پروفایل کاربر: سطح '+userLevel+' — هدف: '+goalsText,
-    'مثال‌ها و توضیحات متناسب با این سطح و اهداف باشن.',
-    '',
-    'خروجی: فقط JSON خالص بدون ``` :',
-    schema,
-    '',
+    'پروفایل کاربر: سطح '+_ul+' — هدف: '+_gt,
+    'مثال‌ها و توضیحات متناسب با سطح '+_ul+' و هدف '+_gt+' باشن.',
+    'خروجی: فقط JSON خالص بدون ```:',
+    schema,'',
     'قوانین:',
-    isDE ? '- synonyms: مترادف‌های آلمانی — de: آلمانی، fa: فارسی' : '- synonyms: مترادف‌های انگلیسی — de: انگلیسی، fa: فارسی',
-    isDE ? '- examples: جمله آلمانی متناسب با context '+goalsText : '- examples: جمله انگلیسی طبیعی',
-    isDE ? '- principal_parts: فقط Verb — Präteritum و Perfekt' : '- principal_parts: فقط irregular Verb — 3 شکل',
-    '- synonyms: حداکثر ۲ تا',
-    '- examples: دقیقاً ۱ جمله',
-    '- level: بر اساس CEFR واقعی',
-    '- priority.score: 5=روزمره 4=مهم 3=متوسط 2=کم 1=نادر',
+    isDE?'- synonyms: مترادف‌های آلمانی — de: آلمانی، fa: فارسی':'- synonyms: مترادف‌های انگلیسی — de: انگلیسی، fa: فارسی',
+    isDE?'- examples: جمله آلمانی متناسب با هدف '+_gt:'- examples: جمله انگلیسی طبیعی',
+    isDE?'- principal_parts: فقط Verb — Präteritum و Perfekt':'- principal_parts: فقط irregular Verb — 3 شکل',
+    '- synonyms: حداکثر ۲ تا','- examples: دقیقاً ۱ جمله',
+    '- level: بر اساس CEFR واقعی','- priority.score: 5=روزمره 4=مهم 3=متوسط 2=کم 1=نادر',
     'فقط JSON.',
   ].filter(Boolean).join('\n');
 
@@ -5337,121 +5407,6 @@ function packLearnRestart(){
     <div id="word-detail-body"></div>
   </div>
 </div>
-
-<script>
-/* ════ ONBOARDING ════ */
-(function(){
-  var KEY='ws_ob_seen',cur=0,TOTAL=5,s1done=false;
-  var reel=document.getElementById('ob-reel'),track=document.getElementById('ob-track');
-  var obLang='de', obLevel='B1', obGoals=new Set(['travel']);
-
-  var LEVEL_NAMES={A1:'مبتدی',A2:'پایه',B1:'متوسط',B2:'بالاتر از متوسط',C1:'پیشرفته'};
-  var GOAL_NAMES={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
-
-  /* نشون بده فقط برای user جدید بعد از login */
-  window._obTryShow = function(){
-    if(localStorage.getItem(KEY)) return;
-    var ws = window.words||[];
-    if(ws.length > 0){ localStorage.setItem(KEY,'1'); return; }
-    /* بار کن profile از Supabase اگه داشت */
-    if(window.currentUser && window.sb){
-      window.sb.from('profiles').select('lang,level,goals,onboarded').eq('id',window.currentUser.id).single()
-        .then(function(res){
-          if(res.data && res.data.onboarded){
-            localStorage.setItem(KEY,'1');
-            /* apply saved profile */
-            if(res.data.lang) localStorage.setItem('ws_lang', res.data.lang);
-            if(res.data.level) localStorage.setItem('ws_level', res.data.level);
-            if(res.data.goals) localStorage.setItem('ws_goals', JSON.stringify(res.data.goals));
-            if(typeof setTargetLang==='function') setTargetLang(res.data.lang||'de');
-            return;
-          }
-          /* نشون بده */
-          document.getElementById('ob').classList.remove('hide');
-          setTimeout(obA1,500);
-        }).catch(function(){
-          document.getElementById('ob').classList.remove('hide');
-          setTimeout(obA1,500);
-        });
-    } else {
-      document.getElementById('ob').classList.remove('hide');
-      setTimeout(obA1,500);
-    }
-  };
-
-  /* انیمیشن‌ها */
-  function obA1(){
-    if(s1done)return; s1done=true;
-    var inp=document.getElementById('s1i'),btn=document.getElementById('s1b'),res=document.getElementById('s1r'),w='Sehnsucht',i=0;
-    inp.innerHTML='<span class="s1-cur blink"></span>';
-    var t=setInterval(function(){
-      if(i<w.length){inp.innerHTML=w.slice(0,++i)+'<span class="s1-cur blink"></span>';}
-      else{clearInterval(t);setTimeout(function(){btn.classList.add('pop');setTimeout(function(){btn.classList.remove('pop');res.classList.add('show');},220);},350);}
-    },80);
-  }
-
-  /* انتخاب‌ها */
-  window.obPickLang=function(l){
-    obLang=l;
-    document.getElementById('ob-lde').classList.toggle('sel',l==='de');
-    document.getElementById('ob-len').classList.toggle('sel',l==='en');
-  };
-  window.obPickLevel=function(l){
-    obLevel=l;
-    ['a1','a2','b1','b2','c1'].forEach(function(x){document.getElementById('ob-l'+x).classList.remove('sel');});
-    document.getElementById('ob-l'+l.toLowerCase()).classList.add('sel');
-  };
-  window.obToggleGoal=function(g,el){
-    if(obGoals.has(g)){if(obGoals.size===1)return; obGoals.delete(g); el.classList.remove('sel');}
-    else{obGoals.add(g); el.classList.add('sel');}
-  };
-
-  function updateSummary(){
-    document.getElementById('ob-sum-flag').textContent=obLang==='de'?'🇩🇪':'🇬🇧';
-    document.getElementById('ob-sum-lang').textContent=obLang==='de'?'آلمانی':'انگلیسی';
-    document.getElementById('ob-sum-level').textContent=obLevel+' — '+(LEVEL_NAMES[obLevel]||'');
-    var el=document.getElementById('ob-sum-goals'); el.innerHTML='';
-    obGoals.forEach(function(g){var t=document.createElement('span');t.className='ob-sum-tag';t.textContent=GOAL_NAMES[g]||g;el.appendChild(t);});
-  }
-
-  function obGoTo(n){
-    reel.classList.remove('drag');
-    reel.style.transform='translateX('+n*100+'%)';
-    for(var i=0;i<TOTAL;i++) document.getElementById('obd'+i).classList.toggle('on',i===n);
-    document.getElementById('ob-prog').style.width=((n+1)/TOTAL*100)+'%';
-    var last=n===TOTAL-1;
-    document.getElementById('ob-btntxt').textContent=last?'شروع کن 🇩🇪':'بعدی';
-    document.getElementById('ob-btnarr').style.display=last?'none':'';
-    document.getElementById('ob-skip').style.display=n===0?'':'none';
-    if(last) updateSummary();
-    if(n===0) setTimeout(obA1,300);
-    cur=n;
-  }
-
-  window.obNext=function(){if(cur<TOTAL-1)obGoTo(cur+1);else obClose();};
-
-  window.obClose=function(){
-    localStorage.setItem(KEY,'1');
-    /* ذخیره پروفایل */
-    if(typeof saveUserProfile==='function') saveUserProfile(obLang, obLevel, Array.from(obGoals));
-    if(typeof setTargetLang==='function') setTargetLang(obLang);
-    var ob=document.getElementById('ob');
-    ob.style.transition='opacity .3s,transform .3s';
-    ob.style.opacity='0'; ob.style.transform='scale(.97)';
-    setTimeout(function(){ob.classList.add('hide');ob.style.cssText='';},320);
-    if(window.tgApp) window.tgApp.haptic('success');
-  };
-
-  /* drag */
-  var dx=null,dc=0;
-  function gx(e){return e.touches?e.touches[0].clientX:e.clientX;}
-  track.addEventListener('mousedown',function(e){dx=gx(e);dc=0;reel.classList.add('drag');document.addEventListener('mousemove',dm);document.addEventListener('mouseup',de);});
-  track.addEventListener('touchstart',function(e){dx=gx(e);dc=0;reel.classList.add('drag');document.addEventListener('touchmove',dm,{passive:false});document.addEventListener('touchend',de);},{passive:true});
-  function dm(e){if(dx===null)return;dc=gx(e)-dx;if(e.cancelable)e.preventDefault();var r=((cur===0&&dc>0)||(cur===TOTAL-1&&dc<0))?0.2:1;reel.style.transform='translateX(calc('+cur*100+'% + '+(dc*r)+'px))';}
-  function de(){document.removeEventListener('mousemove',dm);document.removeEventListener('touchmove',dm);document.removeEventListener('mouseup',de);document.removeEventListener('touchend',de);var th=track.offsetWidth*0.22;if(dc<-th&&cur<TOTAL-1)obGoTo(cur+1);else if(dc>th&&cur>0)obGoTo(cur-1);else obGoTo(cur);dx=null;}
-})();
-</script>
-
 </body>
 </html>
 <script>
