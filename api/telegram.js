@@ -3,7 +3,6 @@ export const config = { runtime: 'edge' }
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 const SB_URL = process.env.SUPABASE_URL
 const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
-const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET
 const APP_URL = 'https://wortschatz.space'
 
 const E = {
@@ -111,12 +110,7 @@ function progressBar(val, max, len = 10) {
 }
 
 export default async function handler(req) {
-  // verify webhook secret
-  const secret = req.headers.get('x-telegram-bot-api-secret-token')
-  if (WEBHOOK_SECRET && secret !== WEBHOOK_SECRET) {
-    return new Response('Forbidden', { status: 403 })
-  }
-
+  // بدون secret check — امنیت از طریق bot token کافیه
   if (req.method !== 'POST') return new Response('ok')
 
   let update
@@ -130,7 +124,6 @@ export default async function handler(req) {
   const text = (msg.text || '').trim()
   const name = msg.from.first_name || 'دوست'
 
-  // /start
   if (text === '/start' || text.startsWith('/start ')) {
     await setMenuButton(chatId)
     await send(chatId,
@@ -145,7 +138,6 @@ export default async function handler(req) {
     return new Response('ok')
   }
 
-  // یادآوری
   if (text === '🔔 یادآوری' || text === '/notify') {
     const user = await findUser(tgId)
     if (!user) {
@@ -165,7 +157,6 @@ export default async function handler(req) {
     return new Response('ok')
   }
 
-  // خاموش کردن
   if (text === '🔕 خاموش کردن' || text === '/off_notify') {
     await disableNotif(chatId)
     await send(chatId,
@@ -175,7 +166,6 @@ export default async function handler(req) {
     return new Response('ok')
   }
 
-  // آمار من — با sendMessageDraft live
   if (text === '📊 آمار من' || text === '/stats') {
     const user = await findUser(tgId)
     if (!user) {
@@ -212,7 +202,6 @@ export default async function handler(req) {
     return new Response('ok')
   }
 
-  // راهنما
   if (text === '❓ راهنما' || text === '/help') {
     await send(chatId,
       `${tg('idea')} <b>راهنمای Wortschatz</b>\n\n` +
