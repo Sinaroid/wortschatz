@@ -1,134 +1,230 @@
-/**
- * /api/telegram.js — Telegram Bot Webhook
- * دریافت پیام‌های تلگرام و ذخیره chat_id برای notifications
- */
 export const config = { runtime: 'edge' }
 
-const BOT_TOKEN   = process.env.TELEGRAM_BOT_TOKEN
-const SB_URL      = process.env.SUPABASE_URL
-const SB_KEY      = process.env.SUPABASE_SERVICE_ROLE_KEY
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
+const SB_URL = process.env.SUPABASE_URL
+const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET
+const APP_URL = 'https://wortschatz.space'
 
-async function sendMessage(chatId, text, markup) {
-  const body = { chat_id: chatId, text, parse_mode: 'HTML' }
-  if (markup) body.reply_markup = markup
+const E = {
+  warn:    '<tg-emoji emoji-id="5447644880824181073">⚠️</tg-emoji>',
+  smile:   '<tg-emoji emoji-id="5461117441612462242">🙂</tg-emoji>',
+  zap:     '<tg-emoji emoji-id="5456140674028019486">⚡️</tg-emoji>',
+  search:  '<tg-emoji emoji-id="5188217332748527444">🔍</tg-emoji>',
+  folder:  '<tg-emoji emoji-id="5433653135799228968">📁</tg-emoji>',
+  bell:    '<tg-emoji emoji-id="5280922999241859582">🔔</tg-emoji>',
+  nobell:  '<tg-emoji emoji-id="5260293700088935305">🔕</tg-emoji>',
+  clock:   '<tg-emoji emoji-id="5413704112220949842">⏰</tg-emoji>',
+  gem:     '<tg-emoji emoji-id="5231200819986047254">💎</tg-emoji>',
+  fire:    '<tg-emoji emoji-id="5199778225158562097">🔥</tg-emoji>',
+  chart_up:'<tg-emoji emoji-id="5197023338074566929">📈</tg-emoji>',
+  green:   '<tg-emoji emoji-id="5197392703007793263">🟢</tg-emoji>',
+  arrow:   '<tg-emoji emoji-id="5197512102619048748">➡️</tg-emoji>',
+  star:    '<tg-emoji emoji-id="5199785826172428773">✨</tg-emoji>',
+  crown:   '<tg-emoji emoji-id="5199973698344030158">👑</tg-emoji>',
+  idea:    '<tg-emoji emoji-id="5200074733783928015">💡</tg-emoji>',
+  party:   '<tg-emoji emoji-id="5200407600325997312">🎉</tg-emoji>',
+}
+const tg = k => E[k] || ''
+
+async function send(chatId, text, extra = {}) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', ...extra }),
   })
 }
 
-async function sbQuery(endpoint, options = {}) {
-  const res = await fetch(`${SB_URL}/rest/v1/${endpoint}`, {
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal',
-      ...options.headers,
-    },
-    ...options,
+async function sendDraft(chatId, text) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessageDraft`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
   })
-  if (res.status !== 204) return res.json()
-  return null
+}
+
+async function setMenuButton(chatId) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setChatMenuButton`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, menu_button: { type: 'web_app', text: '🇩🇪 Wortschatz', web_app: { url: APP_URL } } }),
+  })
+}
+
+const MAIN_KB = {
+  keyboard: [
+    [{ text: '🚀 باز کردن Wortschatz', web_app: { url: APP_URL }, style: 'primary' }],
+    [{ text: '🔔 یادآوری', style: 'success' }, { text: '🔕 خاموش کردن', style: 'danger' }],
+    [{ text: '📊 آمار من' }, { text: '❓ راهنما' }],
+  ],
+  resize_keyboard: true,
+  persistent: true,
+}
+
+async function sbFetch(path, options = {}) {
+  return fetch(`${SB_URL}${path}`, {
+    ...options,
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', ...options.headers },
+  })
+}
+
+async function findUser(tgId) {
+  const res = await sbFetch('/auth/v1/admin/users?page=1&per_page=1000')
+  const data = await res.json()
+  return data.users?.find(u => u.user_metadata?.tg_id === String(tgId))
+}
+
+async function saveNotif(userId, chatId) {
+  await sbFetch('/rest/v1/notifications', {
+    method: 'POST',
+    headers: { 'Prefer': 'resolution=merge-duplicates' },
+    body: JSON.stringify({ user_id: userId, telegram_chat_id: chatId, enabled: true, hour: 17 }),
+  })
+}
+
+async function disableNotif(chatId) {
+  await sbFetch(`/rest/v1/notifications?telegram_chat_id=eq.${chatId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ enabled: false }),
+  })
+}
+
+async function getUserStats(userId) {
+  const [wRes, pRes, nRes] = await Promise.all([
+    sbFetch(`/rest/v1/words?user_id=eq.${userId}&select=id,next_review,score`),
+    sbFetch(`/rest/v1/profiles?id=eq.${userId}&select=*`),
+    sbFetch(`/rest/v1/notifications?user_id=eq.${userId}&select=enabled`),
+  ])
+  const [words, profiles, notifs] = await Promise.all([wRes.json(), pRes.json(), nRes.json()])
+  const now = new Date().toISOString()
+  const due = Array.isArray(words) ? words.filter(w => w.next_review <= now).length : 0
+  const total = Array.isArray(words) ? words.length : 0
+  const learned = Array.isArray(words) ? words.filter(w => (w.score || 0) >= 3).length : 0
+  const profile = Array.isArray(profiles) ? profiles[0] : null
+  const notifEnabled = Array.isArray(notifs) && notifs.length > 0 && notifs[0].enabled
+  return { total, due, learned, plan: profile?.plan || 'free', level: profile?.level || 'B1', notifEnabled }
+}
+
+function progressBar(val, max, len = 10) {
+  const f = max > 0 ? Math.round((val / max) * len) : 0
+  return '█'.repeat(f) + '░'.repeat(len - f)
 }
 
 export default async function handler(req) {
-  // verify secret
+  // verify webhook secret
   const secret = req.headers.get('x-telegram-bot-api-secret-token')
-  if (secret !== WEBHOOK_SECRET) {
+  if (WEBHOOK_SECRET && secret !== WEBHOOK_SECRET) {
     return new Response('Forbidden', { status: 403 })
   }
 
-  const update = await req.json()
-  const msg = update.message || update.callback_query?.message
+  if (req.method !== 'POST') return new Response('ok')
+
+  let update
+  try { update = await req.json() } catch { return new Response('ok') }
+
+  const msg = update.message
   if (!msg) return new Response('ok')
 
-  const chatId   = msg.chat.id
-  const userId   = msg.from.id
-  const text     = msg.text || ''
-  const firstName = msg.from.first_name || 'دوست'
+  const chatId = msg.chat.id
+  const tgId = msg.from.id
+  const text = (msg.text || '').trim()
+  const name = msg.from.first_name || 'دوست'
 
-  // /start — باز کردن mini app
-  if (text.startsWith('/start')) {
-    await sendMessage(chatId,
-      `سلام ${firstName}! 👋\n\nبه Wortschatz خوش اومدی 🇩🇪\n\nیادگیری لغت آلمانی با AI — سریع و هوشمند.`,
-      {
-        inline_keyboard: [[
-          { text: '🚀 باز کردن Wortschatz', web_app: { url: 'https://wortschatz.space' } }
-        ]]
-      }
+  // /start
+  if (text === '/start' || text.startsWith('/start ')) {
+    await setMenuButton(chatId)
+    await send(chatId,
+      `${tg('smile')} سلام <b>${name}</b>!\n\n` +
+      `<blockquote>${tg('zap')} <b>Wortschatz</b> — یادگیری لغت آلمانی با هوش مصنوعی</blockquote>\n\n` +
+      `${tg('search')} هر لغت رو سرچ کن — <i>AI معنی، سطح، مثال و نکته گرامری بهت میده</i>\n` +
+      `${tg('folder')} فلش‌کارت بساز — <i>الگوریتم یادت میاره کِی مرور کنی</i>\n` +
+      `${tg('bell')} یادآوری روزانه — <i>هر شب ساعت ۸:۳۰ پیام میدم</i>\n\n` +
+      `${tg('arrow')} از منوی پایین شروع کن`,
+      { reply_markup: MAIN_KB }
     )
     return new Response('ok')
   }
 
-  // /notify — فعال کردن notification
-  if (text.startsWith('/notify')) {
-    // پیدا کردن user در Supabase بر اساس tg_id
-    const users = await sbQuery(
-      `profiles?select=id&tg_id=eq.${userId}`,
-      { method: 'GET', headers: { 'tg_id': `eq.${userId}` } }
-    )
-
-    // جستجو در user metadata
-    const authRes = await fetch(`${SB_URL}/auth/v1/admin/users?page=1&per_page=1000`, {
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    })
-    const authData = await authRes.json()
-    const matchedUser = authData.users?.find(u =>
-      u.user_metadata?.tg_id === String(userId)
-    )
-
-    if (!matchedUser) {
-      await sendMessage(chatId,
-        `برای فعال کردن notification، اول از داخل app وارد شو:\n\n👇`,
-        {
-          inline_keyboard: [[
-            { text: '🔑 ورود به Wortschatz', web_app: { url: 'https://wortschatz.space' } }
-          ]]
-        }
+  // یادآوری
+  if (text === '🔔 یادآوری' || text === '/notify') {
+    const user = await findUser(tgId)
+    if (!user) {
+      await send(chatId,
+        `<blockquote>${tg('warn')} اول باید وارد اپ بشی</blockquote>\nبعد از ورود، دوباره بزن.`,
+        { reply_markup: { inline_keyboard: [[{ text: '🔑 ورود به Wortschatz', web_app: { url: APP_URL } }]] } }
       )
       return new Response('ok')
     }
-
-    // ذخیره chat_id
-    await sbQuery('notifications', {
-      method: 'POST',
-      headers: { 'Prefer': 'resolution=merge-duplicates' },
-      body: JSON.stringify({
-        user_id: matchedUser.id,
-        telegram_chat_id: chatId,
-        enabled: true,
-        hour: 17, // UTC 17 = Tehran 20:30
-      })
-    })
-
-    await sendMessage(chatId,
-      `✅ <b>Notification فعال شد!</b>\n\nهر روز ساعت ۸:۳۰ شب یادآوری می‌فرستم که لغاتت رو مرور کنی.\n\n/off_notify برای خاموش کردن`,
+    await saveNotif(user.id, chatId)
+    await send(chatId,
+      `${tg('green')} <b>یادآوری روزانه فعال شد!</b>\n\n` +
+      `<blockquote>${tg('bell')} هر شب ساعت ۸:۳۰ یادآوری میفرستم</blockquote>\n` +
+      `برای خاموش کردن: 🔕 <i>خاموش کردن</i>`,
+      { reply_markup: MAIN_KB }
     )
     return new Response('ok')
   }
 
-  // /off_notify — غیرفعال کردن
-  if (text.startsWith('/off_notify')) {
-    await sbQuery(`notifications?telegram_chat_id=eq.${chatId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ enabled: false })
-    })
-    await sendMessage(chatId, '🔕 Notification خاموش شد.\n\n/notify برای فعال کردن مجدد.')
+  // خاموش کردن
+  if (text === '🔕 خاموش کردن' || text === '/off_notify') {
+    await disableNotif(chatId)
+    await send(chatId,
+      `${tg('nobell')} <b>یادآوری خاموش شد.</b>\n<i>هر وقت خواستی ${tg('bell')} یادآوری رو دوباره بزن.</i>`,
+      { reply_markup: MAIN_KB }
+    )
     return new Response('ok')
   }
 
-  // پیام نامشخص
-  await sendMessage(chatId,
-    `دستورات:\n/start — باز کردن app\n/notify — فعال کردن یادآوری روزانه\n/off_notify — خاموش کردن`,
-    {
-      inline_keyboard: [[
-        { text: '📖 باز کردن Wortschatz', web_app: { url: 'https://wortschatz.space' } }
-      ]]
+  // آمار من — با sendMessageDraft live
+  if (text === '📊 آمار من' || text === '/stats') {
+    const user = await findUser(tgId)
+    if (!user) {
+      await send(chatId,
+        `<blockquote>${tg('warn')} اول وارد اپ بشی</blockquote>`,
+        { reply_markup: { inline_keyboard: [[{ text: '🔑 ورود به Wortschatz', web_app: { url: APP_URL } }]] } }
+      )
+      return new Response('ok')
     }
-  )
+    await sendDraft(chatId, `${tg('chart_up')} <b>آمار ${name}</b>\n\n<i>در حال محاسبه...</i>`)
+    const s = await getUserStats(user.id)
+    const pct = s.total > 0 ? Math.round((s.learned / s.total) * 100) : 0
+    const bar = progressBar(s.learned, s.total)
+    const planBadge = s.plan === 'pro' ? `${tg('crown')} Pro` : `${tg('green')} Free`
+    const notifBadge = s.notifEnabled ? `${tg('bell')} فعال` : `${tg('nobell')} غیرفعال`
+    const dueLine = s.due > 0
+      ? `\n\n${tg('fire')} امروز <b>${s.due} لغت</b> باید مرور بشن!`
+      : `\n\n${tg('party')} <b>همه لغاتت رو مرور کردی!</b> ${tg('star')}`
+    await sendDraft(chatId,
+      `${tg('chart_up')} <b>آمار ${name}</b>\n\n` +
+      `<blockquote>🎓 یادگیری: <b>${s.learned}</b> از <b>${s.total}</b> لغت\n${bar} ${pct}%</blockquote>\n\n` +
+      `<i>در حال بارگذاری...</i>`
+    )
+    await new Promise(r => setTimeout(r, 400))
+    await send(chatId,
+      `${tg('chart_up')} <b>آمار ${name}</b>\n\n` +
+      `<blockquote>🎓 یادگیری: <b>${s.learned}</b> از <b>${s.total}</b> لغت\n${bar} ${pct}%</blockquote>\n\n` +
+      `${tg('clock')} امروز باید مرور کنی: <b>${s.due}</b>\n` +
+      `${tg('zap')} سطح: <b>${s.level}</b>\n` +
+      `${tg('gem')} پلن: <b>${planBadge}</b>\n` +
+      `${tg('bell')} یادآوری: <b>${notifBadge}</b>` + dueLine,
+      { reply_markup: { inline_keyboard: [[{ text: s.due > 0 ? `▶️ شروع مرور (${s.due} لغت)` : '📚 دیدن لغات', web_app: { url: APP_URL } }]] } }
+    )
+    return new Response('ok')
+  }
 
+  // راهنما
+  if (text === '❓ راهنما' || text === '/help') {
+    await send(chatId,
+      `${tg('idea')} <b>راهنمای Wortschatz</b>\n\n` +
+      `<blockquote>🚀 <b>باز کردن</b> — اپ رو مستقیم باز کن\n` +
+      `${tg('bell')} <b>یادآوری</b> — هر شب ساعت ۸:۳۰\n` +
+      `${tg('chart_up')} <b>آمار من</b> — وضعیت یادگیریت\n` +
+      `${tg('nobell')} <b>خاموش کردن</b> — یادآوری رو خاموش کن</blockquote>`,
+      { reply_markup: MAIN_KB }
+    )
+    return new Response('ok')
+  }
+
+  await send(chatId, `${tg('arrow')} از منوی پایین استفاده کن`, { reply_markup: MAIN_KB })
   return new Response('ok')
 }
