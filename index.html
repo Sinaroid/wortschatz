@@ -370,6 +370,27 @@ body.offline .topbar{top:36px}
 }
 .gate-privacy a{color:rgba(255,255,255,.35);text-decoration:underline;}
 
+
+/* ── SETTINGS PANE ── */
+#pane-settings{display:none}
+#pane-settings.on{display:block}
+.lang-opt-btn{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card);border:1.5px solid var(--bg3);
+  border-radius:var(--r3);padding:12px 14px;
+  cursor:pointer;transition:all .15s;text-align:left;
+  font-family:var(--sans);width:100%;
+}
+.lang-opt-btn:hover{border-color:var(--accent);background:var(--abl)}
+.lang-opt-btn.active{border-color:var(--accent);background:var(--abl)}
+.lang-opt-check{
+  margin-right:auto;font-size:13px;font-weight:700;
+  color:var(--accent);opacity:0;transition:opacity .15s;
+}
+.lang-opt-btn.active .lang-opt-check{opacity:1}
+[dir="rtl"] .lang-opt-btn{text-align:right}
+[dir="rtl"] .lang-opt-check{margin-right:0;margin-left:auto}
+
 /* Old classes - keep for compat */
 .gate-err{font-size:12px;color:var(--err);min-height:14px;margin-bottom:var(--s2)}
 .btn-google{display:none}
@@ -1880,9 +1901,24 @@ var STRINGS = {
 
   // ─── NAV ───
   nav_home:     { en:'Home', fa:'خانه', ar:'الرئيسية', tr:'Ana Sayfa', de:'Startseite', fr:'Accueil' },
+  nav_packs:    { en:'Packs', fa:'جعبه‌ها', ar:'الحزم', tr:'Paketler', de:'Pakete', fr:'Packs' },
   nav_cards:    { en:'Cards', fa:'کارت‌ها', ar:'البطاقات', tr:'Kartlar', de:'Karten', fr:'Cartes' },
-  nav_progress: { en:'Progress', fa:'پیشرفت', ar:'التقدم', tr:'İlerleme', de:'Fortschritt', fr:'Progrès' },
-  nav_profile:  { en:'Profile', fa:'پروفایل', ar:'الملف الشخصي', tr:'Profil', de:'Profil', fr:'Profil' },
+  nav_list:     { en:'List', fa:'لیست', ar:'القائمة', tr:'Liste', de:'Liste', fr:'Liste' },
+  nav_settings: { en:'Settings', fa:'تنظیمات', ar:'الإعدادات', tr:'Ayarlar', de:'Einstellungen', fr:'Paramètres' },
+
+  // ─── SETTINGS ───
+  set_ui_lang:    { en:'Interface Language', fa:'زبان نمایش', ar:'لغة الواجهة', tr:'Arayüz Dili', de:'Anzeigesprache', fr:'Langue d\'interface' },
+  set_target_lang:{ en:'Learning Language', fa:'زبان یادگیری', ar:'لغة التعلم', tr:'Öğrenme Dili', de:'Lernsprache', fr:'Langue d\'apprentissage' },
+  set_theme:      { en:'Appearance', fa:'ظاهر', ar:'المظهر', tr:'Görünüm', de:'Erscheinungsbild', fr:'Apparence' },
+  set_light:      { en:'Light', fa:'روشن', ar:'فاتح', tr:'Açık', de:'Hell', fr:'Clair' },
+  set_dark:       { en:'Dark', fa:'تاریک', ar:'داكن', tr:'Koyu', de:'Dunkel', fr:'Sombre' },
+
+  // ─── SORT TABS ───
+  sort_new:   { en:'Newest', fa:'جدیدترین', ar:'الأحدث', tr:'En Yeni', de:'Neueste', fr:'Récents' },
+  sort_due:   { en:'Overdue', fa:'دیر شده', ar:'متأخر', tr:'Gecikmiş', de:'Überfällig', fr:'En retard' },
+  sort_weak:  { en:'Weakest', fa:'ضعیف‌ترین', ar:'الأضعف', tr:'En Zayıf', de:'Schwächste', fr:'Plus faibles' },
+  sort_best:  { en:'Best', fa:'بهترین', ar:'الأفضل', tr:'En İyi', de:'Beste', fr:'Meilleurs' },
+  sort_alpha: { en:'A-Z', fa:'الفبا', ar:'أبجدي', tr:'A-Z', de:'A-Z', fr:'A-Z' },
 };
 
 // ── CORE FUNCTION ──
@@ -1920,17 +1956,56 @@ function detectLang() {
 function setLang(lang) {
   FLUENTA_LANG = lang;
   localStorage.setItem('fluenta_ui_lang', lang);
-  // RTL برای فارسی و عربی
   var isRTL = lang === 'fa' || lang === 'ar';
   document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
   document.documentElement.setAttribute('lang', lang);
-  // font برای فارسی
   if (lang === 'fa') {
     document.documentElement.style.setProperty('--sans', "'Vazirmatn',system-ui,sans-serif");
   } else {
-    document.documentElement.style.setProperty('--sans', "system-ui,sans-serif");
+    document.documentElement.style.setProperty('--sans', "system-ui,-apple-system,sans-serif");
   }
   applyTranslations();
+  // refresh dynamic UI
+  updateLangChecks();
+  if(typeof updateStats==='function') updateStats();
+  if(typeof updateLangUI==='function') updateLangUI();
+  if(typeof updateTopStatus==='function') updateTopStatus();
+  // search placeholder
+  var sinp=document.getElementById('s-inp');
+  if(sinp) sinp.placeholder=t('search_ph');
+  // list search placeholder
+  var linp=document.getElementById('list-q');
+  if(linp) linp.placeholder=t('list_search_ph');
+  // nav labels
+  var navMap={home:'nav_home',packs:'nav_packs',cards:'nav_cards',list:'nav_list',settings:'nav_settings'};
+  Object.keys(navMap).forEach(function(id){
+    var el=document.querySelector('#t-'+id+' .nav-label');
+    if(el) el.textContent=t(navMap[id]);
+  });
+  // hero
+  var heroLabel=document.getElementById('hero-label');
+  if(heroLabel) heroLabel.textContent=t('hero_badge');
+  var heroTitle=document.getElementById('hero-title');
+  if(heroTitle) heroTitle.innerHTML=t('hero_t1')+'<br><em>'+t('hero_t2')+'</em>';
+  var heroSub=document.getElementById('hero-sub');
+  if(heroSub) heroSub.textContent=t('hero_sub');
+  // stats
+  var statLabels=document.querySelectorAll('.sum-l');
+  if(statLabels[0]) statLabels[0].textContent=t('stat_total');
+  if(statLabels[1]) statLabels[1].textContent=t('stat_due');
+  // offline bar
+  var offBar=document.getElementById('off-bar');
+  if(offBar) offBar.textContent=t('offline_bar');
+  // drawer
+  var drwWords=document.querySelector('.drw-hstat-l');
+  if(drwWords) drwWords.textContent=t('drw_words');
+  // sort tabs
+  var sortNew=document.getElementById('st-new');
+  if(sortNew) sortNew.textContent=t('sort_new')||'Newest';
+  var sortDue=document.getElementById('st-due');
+  if(sortDue) sortDue.textContent=t('sort_due')||'Overdue';
+  // toast confirmation
+  showToast('🌐 '+t('lang_'+lang));
 }
 
 // ── APPLY TRANSLATIONS TO DOM ──
@@ -2609,11 +2684,11 @@ function initI18n() {
       <div class="due-chips" id="due-chips"></div>
     </div>
     <div class="sort-tabs">
-      <button class="sort-tab on" id="st-new"   onclick="setSort('new')">جدیدترین</button>
-      <button class="sort-tab"    id="st-due"   onclick="setSort('due')">دیر شده</button>
-      <button class="sort-tab"    id="st-weak"  onclick="setSort('weak')">ضعیف‌ترین</button>
-      <button class="sort-tab"    id="st-best"  onclick="setSort('best')">بهترین</button>
-      <button class="sort-tab"    id="st-alpha" onclick="setSort('alpha')">الفبا</button>
+      <button class="sort-tab on" id="st-new"   onclick="setSort('new')" data-i18n="sort_new">Newest</button>
+      <button class="sort-tab"    id="st-due"   onclick="setSort('due')" data-i18n="sort_due">Overdue</button>
+      <button class="sort-tab"    id="st-weak"  onclick="setSort('weak')" data-i18n="sort_weak">Weakest</button>
+      <button class="sort-tab"    id="st-best"  onclick="setSort('best')" data-i18n="sort_best">Best</button>
+      <button class="sort-tab"    id="st-alpha" onclick="setSort('alpha')" data-i18n="sort_alpha">A-Z</button>
     </div>
     <div class="list-s-wrap">
       <svg class="list-s-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -2691,6 +2766,133 @@ function initI18n() {
 </div><!-- .app -->
 
 <!-- Bottom nav -->
+
+<!-- Settings Pane -->
+<div id="pane-settings" class="pane" style="display:none">
+<div style="padding:24px 20px;max-width:600px;margin:0 auto">
+
+  <!-- Language Section -->
+  <div style="margin-bottom:28px">
+    <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_ui_lang">Interface Language</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="ui-lang-grid">
+      <button class="lang-opt-btn" onclick="setLang('en')" id="lo-en">
+        <span style="font-size:20px">🇬🇧</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">English</div>
+          <div style="font-size:11px;color:var(--ink3)">English</div>
+        </div>
+        <div class="lang-opt-check" id="loc-en">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setLang('fa')" id="lo-fa">
+        <span style="font-size:20px">🇮🇷</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">فارسی</div>
+          <div style="font-size:11px;color:var(--ink3)">Persian</div>
+        </div>
+        <div class="lang-opt-check" id="loc-fa">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setLang('ar')" id="lo-ar">
+        <span style="font-size:20px">🇸🇦</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">العربية</div>
+          <div style="font-size:11px;color:var(--ink3)">Arabic</div>
+        </div>
+        <div class="lang-opt-check" id="loc-ar">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setLang('tr')" id="lo-tr">
+        <span style="font-size:20px">🇹🇷</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">Türkçe</div>
+          <div style="font-size:11px;color:var(--ink3)">Turkish</div>
+        </div>
+        <div class="lang-opt-check" id="loc-tr">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setLang('de')" id="lo-de">
+        <span style="font-size:20px">🇩🇪</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">Deutsch</div>
+          <div style="font-size:11px;color:var(--ink3)">German</div>
+        </div>
+        <div class="lang-opt-check" id="loc-de">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setLang('fr')" id="lo-fr">
+        <span style="font-size:20px">🇫🇷</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">Français</div>
+          <div style="font-size:11px;color:var(--ink3)">French</div>
+        </div>
+        <div class="lang-opt-check" id="loc-fr">✓</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Target Language Section -->
+  <div style="margin-bottom:28px">
+    <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_target_lang">Learning Language</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="lang-opt-btn" onclick="setTargetLang('de')" id="tlo-de">
+        <span style="font-size:20px">🇩🇪</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="lang_de">German</div>
+        </div>
+        <div class="lang-opt-check" id="tloc-de">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setTargetLang('en')" id="tlo-en">
+        <span style="font-size:20px">🇬🇧</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="lang_en">English</div>
+        </div>
+        <div class="lang-opt-check" id="tloc-en">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setTargetLang('fr')" id="tlo-fr">
+        <span style="font-size:20px">🇫🇷</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="lang_fr">French</div>
+        </div>
+        <div class="lang-opt-check" id="tloc-fr">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setTargetLang('tr')" id="tlo-tr">
+        <span style="font-size:20px">🇹🇷</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="lang_tr">Turkish</div>
+        </div>
+        <div class="lang-opt-check" id="tloc-tr">✓</div>
+      </button>
+      <button class="lang-opt-btn" onclick="setTargetLang('ar')" id="tlo-ar">
+        <span style="font-size:20px">🇸🇦</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="lang_ar">Arabic</div>
+        </div>
+        <div class="lang-opt-check" id="tloc-ar">✓</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Theme Section -->
+  <div style="margin-bottom:28px">
+    <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_theme">Appearance</div>
+    <div style="display:flex;gap:8px">
+      <button class="lang-opt-btn" style="flex:1" onclick="setThemeMode('light')">
+        <span style="font-size:20px">☀️</span>
+        <div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="set_light">Light</div>
+      </button>
+      <button class="lang-opt-btn" style="flex:1" onclick="setThemeMode('dark')">
+        <span style="font-size:20px">🌙</span>
+        <div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="set_dark">Dark</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- App Info -->
+  <div style="text-align:center;padding:16px 0;border-top:1px solid var(--bg3)">
+    <div style="font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:4px">Fluenta</div>
+    <div style="font-size:11px;color:var(--ink4)" data-i18n="tagline">Learn any language, in yours</div>
+    <div style="font-size:10px;color:var(--ink4);margin-top:8px">v2.0 · Powered by Claude AI</div>
+  </div>
+
+</div>
+</div>
+
 <nav class="bottom-nav">
   <button class="nav-item on" id="t-home" onclick="go('home')">
     <div class="nav-dot" id="nd-home"></div>
@@ -2698,7 +2900,7 @@ function initI18n() {
       <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
       <path d="M7 18v-6h6v6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
     </svg>
-    <span class="nav-label">خانه</span>
+    <span class="nav-label" data-i18n="nav_home">Home</span>
   </button>
   <button class="nav-item" id="t-packs" onclick="go('packs')">
     <div class="nav-dot" id="nd-packs"></div>
@@ -2708,7 +2910,7 @@ function initI18n() {
       <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
       <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
     </svg>
-    <span class="nav-label">جعبه‌ها</span>
+    <span class="nav-label" data-i18n="nav_packs">Packs</span>
   </button>
   <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
     <div class="nav-dot" id="nd-cards"></div>
@@ -2716,14 +2918,22 @@ function initI18n() {
       <rect x="3" y="6" width="14" height="11" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
       <path d="M6 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
-    <span class="nav-label">کارت‌ها</span>
+    <span class="nav-label" data-i18n="nav_cards">Cards</span>
   </button>
   <button class="nav-item" id="t-list" onclick="go('list')">
     <div class="nav-dot" id="nd-list"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
-    <span class="nav-label">لیست</span>
+    <span class="nav-label" data-i18n="nav_list">List</span>
+  </button>
+  <button class="nav-item" id="t-settings" onclick="go('settings')">
+    <div class="nav-dot" id="nd-settings"></div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M10 2v1.5M10 16.5V18M18 10h-1.5M3.5 10H2M15.07 4.93l-1.06 1.06M6 14l-1.07 1.07M15.07 15.07l-1.06-1.06M6 6 4.93 4.93" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-label" data-i18n="nav_settings">Settings</span>
   </button>
 </nav>
 
@@ -3731,7 +3941,7 @@ function setThemeIc(d){
    NAV
 ══════════════════════════════ */
 function go(t){
-  ['home','list','packs'].forEach(id=>{
+  ['home','list','packs','settings'].forEach(id=>{
     const pane=Q('#pane-'+id);
     if(pane) pane.classList.toggle('on',id===t);
     const tab=Q('#t-'+id);
@@ -3741,6 +3951,39 @@ function go(t){
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='list') renderList();
   if(t==='packs') renderPackGrid();
+  if(t==='settings') updateLangChecks();
+}
+
+function updateLangChecks(){
+  // UI lang buttons
+  ['en','fa','ar','tr','de','fr'].forEach(function(l){
+    var btn=Q('#lo-'+l);
+    if(btn) btn.classList.toggle('active', l===FLUENTA_LANG);
+  });
+  // Target lang buttons
+  ['de','en','fr','tr','ar'].forEach(function(l){
+    var btn=Q('#tlo-'+l);
+    if(btn) btn.classList.toggle('active', l===targetLang);
+  });
+}
+
+function setTargetLang(lang){
+  targetLang=lang;
+  localStorage.setItem('ws_target_lang'+uid(),lang);
+  updateLangUI();
+  updateLangChecks();
+  showToast('🎯 '+t('lang_'+lang));
+}
+
+function setThemeMode(mode){
+  if(mode==='dark'){
+    document.body.classList.add('dark');
+    localStorage.setItem('ws_dark','1');
+  } else {
+    document.body.classList.remove('dark');
+    localStorage.removeItem('ws_dark');
+  }
+  if(window.tgApp) window.tgApp.setTheme();
 }
 function updateBadges(){
   const has=filteredWords().length>0;
