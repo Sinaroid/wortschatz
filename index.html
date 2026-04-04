@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -1633,7 +1633,339 @@ html,body{overflow-x:hidden!important}
 .ob-sum-ai-ico{font-size:16px;flex-shrink:0}
 .ob-sum-ai-txt{font-size:11px;color:rgba(100,140,255,.85);line-height:1.5}
 
+
 </style>
+<script>
+// ═══════════════════════════════════════════════════════
+//  FLUENTA i18n SYSTEM
+//  همه متن‌های app در یه جا — engineering grade
+// ═══════════════════════════════════════════════════════
+
+var FLUENTA_LANG = 'en'; // default
+
+// ── زبان‌های interface ──
+// fa = فارسی | en = English | ar = Arabic | tr = Turkish | de = German | fr = French
+
+var STRINGS = {
+
+  // ─── APP META ───
+  app_name: { en:'Fluenta', fa:'Fluenta', ar:'Fluenta', tr:'Fluenta', de:'Fluenta', fr:'Fluenta' },
+  tagline:  { en:'Learn any language, in yours', fa:'هر زبانی رو به زبان خودت یاد بگیر', ar:'تعلم أي لغة بلغتك', tr:'Kendi dilinde herhangi bir dil öğren', de:'Lerne jede Sprache in deiner Sprache', fr:'Apprenez n\'importe quelle langue dans la vôtre' },
+
+  // ─── GATE ───
+  gate_tagline:   { en:'LEXICON AI', fa:'LEXICON AI', ar:'LEXICON AI', tr:'LEXICON AI', de:'LEXICON AI', fr:'LEXICON AI' },
+  gate_headline1: { en:'Master vocabulary,', fa:'لغت یاد بگیر،', ar:'أتقن المفردات،', tr:'Kelime dağarcığını geliştir,', de:'Wortschatz meistern,', fr:'Maîtrisez le vocabulaire,' },
+  gate_headline2: { en:'one word at a time.', fa:'یه کلمه در روز.', ar:'كلمة واحدة في كل مرة.', tr:'bir kelime, bir adım.', de:'ein Wort nach dem anderen.', fr:'un mot à la fois.' },
+  btn_tg:         { en:'Continue with Telegram', fa:'ادامه با تلگرام', ar:'المتابعة مع تيليغرام', tr:'Telegram ile devam et', de:'Mit Telegram fortfahren', fr:'Continuer avec Telegram' },
+  btn_google:     { en:'Continue with Google', fa:'ادامه با گوگل', ar:'المتابعة مع جوجل', tr:'Google ile devam et', de:'Mit Google fortfahren', fr:'Continuer avec Google' },
+  btn_email:      { en:'Use email instead', fa:'ورود با ایمیل', ar:'استخدام البريد الإلكتروني', tr:'E-posta ile giriş', de:'E-Mail verwenden', fr:'Utiliser l\'e-mail' },
+  btn_magic_link: { en:'Send magic link', fa:'ارسال لینک ورود', ar:'إرسال رابط تسجيل الدخول', tr:'Giriş bağlantısı gönder', de:'Magic Link senden', fr:'Envoyer le lien magique' },
+  gate_privacy:   { en:"By continuing, you agree to Fluenta's Terms of Service and Privacy Policy.", fa:'با ادامه، با شرایط استفاده و حریم خصوصی Fluenta موافقت می‌کنی.', ar:'بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية.', tr:'Devam ederek Hizmet Şartları ve Gizlilik Politikasını kabul edersiniz.', de:'Mit der Fortsetzung stimmen Sie den Nutzungsbedingungen und der Datenschutzrichtlinie zu.', fr:'En continuant, vous acceptez les Conditions d\'utilisation et la Politique de confidentialité.' },
+  gate_signing_in:{ en:'Signing in...', fa:'در حال ورود...', ar:'جارٍ تسجيل الدخول...', tr:'Giriş yapılıyor...', de:'Anmelden...', fr:'Connexion en cours...' },
+  gate_link_sent: { en:'✓ Link sent!', fa:'✓ لینک ارسال شد!', ar:'✓ تم إرسال الرابط!', tr:'✓ Bağlantı gönderildi!', de:'✓ Link gesendet!', fr:'✓ Lien envoyé !' },
+  gate_resend:    { en:'Didn\'t get it? Resend 🔁', fa:'لینک نرسید؟ دوباره ارسال کن 🔁', ar:'لم تصله؟ أعد الإرسال 🔁', tr:'Almadın mı? Yeniden gönder 🔁', de:'Nicht erhalten? Erneut senden 🔁', fr:'Pas reçu ? Renvoyer 🔁' },
+  gate_err_email: { en:t('gate_err_email'), fa:'ایمیل معتبر وارد کن', ar:'أدخل بريدًا إلكترونيًا صالحًا', tr:'Geçerli bir e-posta girin', de:'Bitte gültige E-Mail eingeben', fr:'Veuillez entrer un e-mail valide' },
+  gate_err_rate:  { en:'Too many requests — please wait', fa:'تعداد درخواست زیاده — صبر کن', ar:'طلبات كثيرة — انتظر قليلاً', tr:'Çok fazla istek — lütfen bekleyin', de:'Zu viele Anfragen — bitte warten', fr:'Trop de requêtes — veuillez patienter' },
+  gate_err_net:   { en:'Network error — try again', fa:'خطای شبکه — دوباره امتحان کن', ar:'خطأ في الشبكة — حاول مجددًا', tr:'Ağ hatası — tekrar deneyin', de:'Netzwerkfehler — erneut versuchen', fr:'Erreur réseau — réessayez' },
+
+  // ─── ONBOARDING ───
+  ob_step:       { en:'{{n}} of 5', fa:'{{n}} از ۵', ar:'{{n}} من 5', tr:'5\'te {{n}}', de:'{{n}} von 5', fr:'{{n}} sur 5' },
+  ob_welcome_t:  { en:'Welcome to Fluenta 👋', fa:'به Fluenta خوش اومدی 👋', ar:'مرحباً بك في Fluenta 👋', tr:'Fluenta\'ya Hoş Geldiniz 👋', de:'Willkommen bei Fluenta 👋', fr:'Bienvenue sur Fluenta 👋' },
+  ob_welcome_s:  { en:'A few quick questions to personalize your experience', fa:'چند سوال کوتاه برای شخصی‌سازی تجربه‌ات', ar:'بعض الأسئلة السريعة لتخصيص تجربتك', tr:'Deneyiminizi kişiselleştirmek için birkaç soru', de:'Einige schnelle Fragen zur Personalisierung', fr:'Quelques questions rapides pour personnaliser votre expérience' },
+  ob_lang_t:     { en:'Which language?', fa:'کدوم زبان؟', ar:'أي لغة؟', tr:'Hangi dil?', de:'Welche Sprache?', fr:'Quelle langue ?' },
+  ob_lang_s:     { en:'You can change this anytime in settings', fa:'بعداً از تنظیمات می‌تونی تغییر بدی', ar:'يمكنك تغييره في أي وقت من الإعدادات', tr:'Daha sonra ayarlardan değiştirebilirsiniz', de:'Kann jederzeit in den Einstellungen geändert werden', fr:'Vous pouvez changer cela dans les paramètres' },
+  ob_level_t:    { en:'What is your level?', fa:'سطحت الان کجاست؟', ar:'ما مستواك الحالي؟', tr:'Seviyeniz nedir?', de:'Was ist dein aktuelles Niveau?', fr:'Quel est votre niveau ?' },
+  ob_level_s:    { en:'Be honest — this affects your suggestions', fa:'صادق باش — روی پیشنهادات تأثیر داره', ar:'كن صادقًا — هذا يؤثر على اقتراحاتك', tr:'Dürüst ol — bu önerilerini etkiler', de:'Sei ehrlich — das beeinflusst deine Vorschläge', fr:'Soyez honnête — cela affecte vos suggestions' },
+  ob_goal_t:     { en:'What is your goal?', fa:'هدفت چیه؟', ar:'ما هدفك؟', tr:'Hedefiniz nedir?', de:'Was ist dein Ziel?', fr:'Quel est votre objectif ?' },
+  ob_goal_s:     { en:'Select all that apply', fa:'می‌تونی چند تا انتخاب کنی', ar:'اختر ما ينطبق', tr:'Birden fazla seçebilirsiniz', de:'Mehrere Auswahl möglich', fr:'Sélectionnez tout ce qui s\'applique' },
+  ob_ready_t:    { en:'All set! 🚀', fa:'همه چیز آماده‌ست 🚀', ar:'كل شيء جاهز! 🚀', tr:'Hazır! 🚀', de:'Alles bereit! 🚀', fr:'C\'est parti ! 🚀' },
+  ob_ready_s:    { en:'You can change this anytime from your profile', fa:'هر وقت از پروفایلت می‌تونی تغییر بدی', ar:'يمكنك تغييره في أي وقت من ملفك الشخصي', tr:'Profilinizden istediğiniz zaman değiştirebilirsiniz', de:'Jederzeit im Profil änderbar', fr:'Vous pouvez changer cela depuis votre profil' },
+  ob_next:       { en:'Next', fa:'بعدی', ar:'التالي', tr:'İleri', de:'Weiter', fr:'Suivant' },
+  ob_start:      { en:'Get Started 🚀', fa:'شروع کن 🚀', ar:'ابدأ 🚀', tr:'Başla 🚀', de:'Loslegen 🚀', fr:'Commencer 🚀' },
+  ob_skip:       { en:'Skip', fa:'رد کن', ar:'تخطي', tr:'Atla', de:'Überspringen', fr:'Passer' },
+  ob_sum_lang:   { en:'Language', fa:'زبان', ar:'اللغة', tr:'Dil', de:'Sprache', fr:'Langue' },
+  ob_sum_level:  { en:'Current Level', fa:'سطح فعلی', ar:'المستوى الحالي', tr:'Mevcut Seviye', de:'Aktuelles Niveau', fr:'Niveau actuel' },
+  ob_sum_goals:  { en:'Goals', fa:'اهداف', ar:'الأهداف', tr:'Hedefler', de:'Ziele', fr:'Objectifs' },
+  ob_sum_ai:     { en:'Your personalized word collection is ready', fa:'مجموعه لغت شخصی‌سازی‌شده آماده‌ست', ar:'مجموعة كلماتك المخصصة جاهزة', tr:'Kişiselleştirilmiş kelime koleksiyonunuz hazır', de:'Deine personalisierte Wortsammlung ist bereit', fr:'Votre collection de mots personnalisée est prête' },
+
+  // ─── LEVELS ───
+  level_a1: { en:'Beginner', fa:'مبتدی', ar:'مبتدئ', tr:'Başlangıç', de:'Anfänger', fr:'Débutant' },
+  level_a1s:{ en:'No prior knowledge', fa:'هیچ پیش‌زمینه‌ای ندارم', ar:'لا معرفة مسبقة', tr:'Önceki bilgi yok', de:'Keine Vorkenntnisse', fr:'Aucune connaissance préalable' },
+  level_a2: { en:'Elementary', fa:'پایه', ar:'أساسي', tr:'Temel', de:'Grundlagen', fr:'Élémentaire' },
+  level_a2s:{ en:'I understand simple sentences', fa:'جملات ساده رو می‌فهمم', ar:'أفهم الجمل البسيطة', tr:'Basit cümleleri anlıyorum', de:'Ich verstehe einfache Sätze', fr:'Je comprends des phrases simples' },
+  level_b1: { en:'Intermediate', fa:'متوسط', ar:'متوسط', tr:'Orta', de:'Mittelstufe', fr:'Intermédiaire' },
+  level_b1s:{ en:'I can speak with limits', fa:'می‌تونم صحبت کنم ولی محدودم', ar:'أستطيع التحدث مع بعض القيود', tr:'Sınırlamalarla konuşabiliyorum', de:'Ich kann mit Einschränkungen sprechen', fr:'Je peux parler avec des limites' },
+  level_b2: { en:'Upper Intermediate', fa:'نسبتاً خوبم', ar:'فوق المتوسط', tr:'Üst Orta', de:'Obere Mittelstufe', fr:'Supérieur intermédiaire' },
+  level_b2s:{ en:'I speak fluently', fa:'روان صحبت می‌کنم', ar:'أتحدث بطلاقة', tr:'Akıcı konuşuyorum', de:'Ich spreche fließend', fr:'Je parle couramment' },
+  level_c1: { en:'Advanced', fa:'پیشرفته', ar:'متقدم', tr:'İleri', de:'Fortgeschritten', fr:'Avancé' },
+  level_c1s:{ en:'I understand films and books', fa:'فیلم و کتاب می‌فهمم', ar:'أفهم الأفلام والكتب', tr:'Filmleri ve kitapları anlıyorum', de:'Ich verstehe Filme und Bücher', fr:'Je comprends les films et les livres' },
+
+  // ─── GOALS ───
+  goal_travel: { en:'Travel & Immigration', fa:'سفر و مهاجرت', ar:'السفر والهجرة', tr:'Seyahat & Göçmenlik', de:'Reisen & Einwanderung', fr:'Voyage & Immigration' },
+  goal_work:   { en:'Work & Business', fa:'کار و تجارت', ar:'العمل والأعمال', tr:'İş & Ticaret', de:'Arbeit & Geschäft', fr:'Travail & Affaires' },
+  goal_exam:   { en:'Language Exam', fa:'آزمون زبان', ar:'امتحان اللغة', tr:'Dil Sınavı', de:'Sprachprüfung', fr:'Examen de langue' },
+  goal_daily:  { en:'Daily Conversation', fa:'مکالمه روزمره', ar:'المحادثة اليومية', tr:'Günlük Konuşma', de:'Alltagsgespräch', fr:'Conversation quotidienne' },
+  goal_study:  { en:'Study Abroad', fa:'تحصیل در خارج', ar:'الدراسة في الخارج', tr:'Yurt Dışında Eğitim', de:'Studium im Ausland', fr:'Études à l\'étranger' },
+  goal_fun:    { en:'Personal Interest', fa:'علاقه شخصی', ar:'اهتمام شخصي', tr:'Kişisel İlgi', de:'Persönliches Interesse', fr:'Intérêt personnel' },
+
+  // ─── HOME ───
+  hero_badge:  { en:'AI Language Learning', fa:'یادگیری زبان با AI', ar:'تعلم اللغة بالذكاء الاصطناعي', tr:'AI Dil Öğrenimi', de:'KI-Sprachlernapp', fr:'Apprentissage des langues par IA' },
+  hero_t1:     { en:'Master vocabulary,', fa:'لغت یاد بگیر،', ar:'أتقن المفردات،', tr:'Kelime dağarcığını geliştir,', de:'Wortschatz meistern,', fr:'Maîtrisez le vocabulaire,' },
+  hero_t2:     { en:'powered by AI', fa:'با هوش مصنوعی', ar:'مدعوم بالذكاء الاصطناعي', tr:'yapay zeka destekli', de:'unterstützt durch KI', fr:'propulsé par l\'IA' },
+  hero_sub:    { en:'Search any word in any language', fa:'هر لغتی رو به هر زبانی سرچ کن', ar:'ابحث عن أي كلمة بأي لغة', tr:'Herhangi bir dilde herhangi bir kelime ara', de:'Suche jedes Wort in jeder Sprache', fr:'Recherchez n\'importe quel mot dans n\'importe quelle langue' },
+  search_ph:   { en:'Search a word or phrase...', fa:'لغت یا اصطلاح بنویس...', ar:'ابحث عن كلمة أو عبارة...', tr:'Bir kelime veya cümle ara...', de:'Ein Wort oder Satz suchen...', fr:'Chercher un mot ou une phrase...' },
+  search_tip:  { en:'Try searching <strong>Arbeit</strong>, <strong>bonjour</strong> or <strong>merhaba</strong>', fa:'مثلاً <strong>Arbeit</strong>، <strong>کار</strong> یا <strong>bonjour</strong>', ar:'جرب البحث عن <strong>Arbeit</strong> أو <strong>مرحبا</strong>', tr:'<strong>Arbeit</strong>, <strong>bonjour</strong> veya <strong>merhaba</strong> arayın', de:'Versuche <strong>Arbeit</strong>, <strong>merci</strong> oder <strong>merhaba</strong>', fr:'Essayez <strong>Arbeit</strong>, <strong>merhaba</strong> ou <strong>شكراً</strong>' },
+  offline_bar: { en:'📡 Offline — words available but search needs internet', fa:'📡 آفلاین — لغات قابل مروره ولی جستجو نیاز به اینترنت داره', ar:'📡 غير متصل — الكلمات متاحة لكن البحث يحتاج إنترنت', tr:'📡 Çevrimdışı — kelimeler mevcut ama arama internet gerektiriyor', de:'📡 Offline — Wörter verfügbar, aber Suche braucht Internet', fr:'📡 Hors ligne — mots disponibles mais la recherche nécessite Internet' },
+
+  // ─── TOPBAR ───
+  top_searches_left: { en:' left', fa:' مانده', ar:' متبقية', tr:' kaldı', de:' übrig', fr:' restants' },
+  top_login:         { en:'Sign in', fa:'ورود', ar:'تسجيل الدخول', tr:'Giriş Yap', de:'Anmelden', fr:'Se connecter' },
+
+  // ─── STATS ───
+  stat_total:  { en:'Total Words', fa:'کل لغت', ar:'إجمالي الكلمات', tr:'Toplam Kelime', de:'Gesamtwörter', fr:'Total des mots' },
+  stat_due:    { en:'Due Today', fa:'برای مرور', ar:'مستحق اليوم', tr:'Bugün Yapılacak', de:'Heute fällig', fr:'À réviser aujourd\'hui' },
+
+  // ─── WORD LIST ───
+  recent_title:{ en:'Recent Learning', fa:'اخیراً یاد گرفتی', ar:'التعلم الأخير', tr:'Son Öğrenilenler', de:'Zuletzt gelernt', fr:'Apprentissage récent' },
+  view_all:    { en:'View All', fa:'همه', ar:'عرض الكل', tr:'Tümünü Gör', de:'Alle anzeigen', fr:'Voir tout' },
+  next_review: { en:'Next Review', fa:'مرور بعدی', ar:'المراجعة التالية', tr:'Sonraki Tekrar', de:'Nächste Wiederholung', fr:'Prochaine révision' },
+  review_count:{ en:'Review Count', fa:'تعداد مرور', ar:'عدد المراجعات', tr:'Tekrar Sayısı', de:'Wiederholungsanzahl', fr:'Nombre de révisions' },
+  not_reviewed:{ en:'Not reviewed yet', fa:'هنوز مرور نشده', ar:'لم تتم مراجعته بعد', tr:'Henüz tekrar edilmedi', de:'Noch nicht wiederholt', fr:'Pas encore révisé' },
+  overdue:     { en:'Overdue', fa:'دیر شده', ar:'متأخر', tr:'Gecikmiş', de:'Überfällig', fr:'En retard' },
+  tomorrow:    { en:'Tomorrow', fa:'فردا', ar:'غداً', tr:'Yarın', de:'Morgen', fr:'Demain' },
+  days_left:   { en:'{{n}} days', fa:'{{n}} روز دیگه', ar:'{{n}} أيام', tr:'{{n}} gün', de:'{{n}} Tage', fr:'{{n}} jours' },
+  review_in:   { en:'Review in {{n}} days', fa:'{{n}} روز دیگه مرور', ar:'راجع بعد {{n}} أيام', tr:'{{n}} gün sonra tekrar et', de:'In {{n}} Tagen wiederholen', fr:'Réviser dans {{n}} jours' },
+  review_today:{ en:'Review Today', fa:'امروز مرور کن', ar:'راجع اليوم', tr:'Bugün Tekrar Et', de:'Heute wiederholen', fr:'Réviser aujourd\'hui' },
+
+  // ─── EMPTY STATES ───
+  empty_title: { en:'Search your first word', fa:'اولین لغتت رو سرچ کن', ar:'ابحث عن كلمتك الأولى', tr:'İlk kelimenizi arayın', de:'Suche dein erstes Wort', fr:'Cherchez votre premier mot' },
+  empty_sub:   { en:'Search any word above and add it to your flashcards', fa:'یه لغت سرچ کن و به فلش‌کارت‌هات اضافه‌اش کن', ar:'ابحث عن أي كلمة وأضفها إلى بطاقاتك', tr:'Herhangi bir kelime arayın ve kartlarınıza ekleyin', de:'Suche ein Wort und füge es zu deinen Karten hinzu', fr:'Cherchez un mot et ajoutez-le à vos fiches' },
+  empty_btn:   { en:'Get started →', fa:'شروع کن ←', ar:'ابدأ ←', tr:'Başla ←', de:'Loslegen →', fr:'Commencer →' },
+  login_prompt:{ en:'Sign in to save your words 👤', fa:'برای ذخیره لغت‌هات وارد شو 👤', ar:'سجّل الدخول لحفظ كلماتك 👤', tr:'Kelimelerinizi kaydetmek için giriş yapın 👤', de:'Anmelden um Wörter zu speichern 👤', fr:'Connectez-vous pour sauvegarder vos mots 👤' },
+  sign_in_btn: { en:'Sign in', fa:'ورود', ar:'تسجيل الدخول', tr:'Giriş Yap', de:'Anmelden', fr:'Se connecter' },
+
+  // ─── ADD WORD ───
+  add_flashcard:   { en:'Add to Flashcards', fa:'افزودن به فلش‌کارت‌ها', ar:'أضف إلى البطاقات', tr:'Kartlara Ekle', de:'Zu Karten hinzufügen', fr:'Ajouter aux fiches' },
+  add_phrase:      { en:'Add phrase to Flashcards', fa:'افزودن اصطلاح به فلش‌کارت‌ها', ar:'أضف العبارة إلى البطاقات', tr:'İfadeyi Kartlara Ekle', de:'Ausdruck zu Karten hinzufügen', fr:'Ajouter l\'expression aux fiches' },
+  already_added:   { en:'Already added ✓', fa:'قبلاً اضافه شده ✓', ar:'تمت الإضافة مسبقاً ✓', tr:'Zaten eklendi ✓', de:'Bereits hinzugefügt ✓', fr:'Déjà ajouté ✓' },
+  word_exists:     { en:'This word already exists', fa:'این لغت قبلاً هست', ar:'هذه الكلمة موجودة بالفعل', tr:'Bu kelime zaten var', de:'Dieses Wort existiert bereits', fr:'Ce mot existe déjà' },
+  adding:          { en:'Adding...', fa:'در حال افزودن...', ar:'جارٍ الإضافة...', tr:'Ekleniyor...', de:'Hinzufügen...', fr:'Ajout en cours...' },
+  added_ok:        { en:'✓ Added', fa:'✓ اضافه شد', ar:'✓ تمت الإضافة', tr:'✓ Eklendi', de:'✓ Hinzugefügt', fr:'✓ Ajouté' },
+  add_err:         { en:'Error adding — try again', fa:'خطا در افزودن — دوباره امتحان کن', ar:'خطأ في الإضافة — حاول مجددًا', tr:'Ekleme hatası — tekrar deneyin', de:'Fehler beim Hinzufügen — erneut versuchen', fr:'Erreur d\'ajout — réessayez' },
+  add_all:         { en:'+ Add all to Flashcards', fa:'+ افزودن همه به فلش‌کارت‌ها', ar:'+ أضف الكل إلى البطاقات', tr:'+ Hepsini Kartlara Ekle', de:'+ Alle zu Karten hinzufügen', fr:'+ Tout ajouter aux fiches' },
+  sign_in_first:   { en:'Sign in first', fa:'اول وارد شو', ar:'سجّل الدخول أولاً', tr:'Önce giriş yapın', de:'Zuerst anmelden', fr:'Connectez-vous d\'abord' },
+
+  // ─── REVIEW SESSION ───
+  review_time:   { en:'Review Time! 🌙', fa:'وقت مرور! 🌙', ar:'وقت المراجعة! 🌙', tr:'Tekrar Zamanı! 🌙', de:'Wiederholungszeit! 🌙', fr:'Temps de révision ! 🌙' },
+  start_review:  { en:'Start Review →', fa:'شروع مرور ←', ar:'ابدأ المراجعة ←', tr:'Tekrara Başla ←', de:'Wiederholung starten →', fr:'Commencer la révision →' },
+  review_title:  { en:'Review Time!', fa:'وقت مرور!', ar:'وقت المراجعة!', tr:'Tekrar Zamanı!', de:'Wiederholungszeit!', fr:'Temps de révision !' },
+  review_later:  { en:'Later', fa:'بعداً', ar:'لاحقاً', tr:'Sonra', de:'Später', fr:'Plus tard' },
+  tap_reveal:    { en:'Tap to reveal meaning', fa:'برای دیدن معنی کلیک کن', ar:'انقر للكشف عن المعنى', tr:'Anlamı görmek için dokunun', de:'Tippe um die Bedeutung zu sehen', fr:'Appuyez pour révéler la signification' },
+  meaning_lbl:   { en:'Meaning', fa:'معنی', ar:'المعنى', tr:'Anlam', de:'Bedeutung', fr:'Signification' },
+  i_know:        { en:'I knew it', fa:'بلدم', ar:'عرفتها', tr:'Biliyordum', de:'Ich wusste es', fr:'Je savais' },
+  i_knew:        { en:'✓ I knew it', fa:'✓ بلدم', ar:'✓ عرفتها', tr:'✓ Biliyordum', de:'✓ Ich wusste es', fr:'✓ Je savais' },
+  forgot:        { en:'Didn\'t know', fa:'بلد نبودم', ar:'لم أعرفها', tr:'Bilmiyordum', de:'Wusste nicht', fr:'Je ne savais pas' },
+  forgot_x:      { en:'✗ Didn\'t know', fa:'✗ بلد نبودم', ar:'✗ لم أعرفها', tr:'✗ Bilmiyordum', de:'✗ Wusste nicht', fr:'✗ Je ne savais pas' },
+  swipe_know:    { en:'I knew it →', fa:'بلدم →', ar:'عرفتها ←', tr:'Biliyordum →', de:'Wusste →', fr:'Savais →' },
+  swipe_forgot:  { en:'← Didn\'t know', fa:'← بلد نبودم', ar:'لم أعرفها ←', tr:'← Bilmiyordum', de:'← Wusste nicht', fr:'← Ne savais pas' },
+  ses_next:      { en:'Next →', fa:'بعدی ←', ar:'التالي →', tr:'Sonraki →', de:'Weiter →', fr:'Suivant →' },
+  ses_again:     { en:'Review again', fa:'دوباره مرور', ar:'راجع مجدداً', tr:'Yeniden tekrar et', de:'Nochmal wiederholen', fr:'Réviser à nouveau' },
+  session_done:  { en:'All reviewed! 🎉', fa:'همه لغت‌ها رو مرور کردی 🎉', ar:'تمت مراجعة الكل! 🎉', tr:'Hepsi tekrar edildi! 🎉', de:'Alles wiederholt! 🎉', fr:'Tout révisé ! 🎉' },
+  ses_due_title: { en:'⏰ Due for Review', fa:'⏰ نیاز به مرور', ar:'⏰ مواعيد المراجعة', tr:'⏰ Tekrar Zamanı', de:'⏰ Zur Wiederholung fällig', fr:'⏰ À réviser' },
+  ses_exit_q:    { en:'Session not complete — are you sure?', fa:'یادگیری نصفه میمونه — مطمئنی؟', ar:'الجلسة غير مكتملة — هل أنت متأكد؟', tr:'Oturum tamamlanmadı — emin misiniz?', de:'Sitzung unvollständig — bist du sicher?', fr:'Session incomplète — êtes-vous sûr ?' },
+  btn_exit:      { en:'Exit', fa:'خروج', ar:'خروج', tr:'Çıkış', de:'Beenden', fr:'Quitter' },
+  btn_cancel:    { en:'Cancel', fa:'انصراف', ar:'إلغاء', tr:'İptal', de:'Abbrechen', fr:'Annuler' },
+  btn_close:     { en:'Close', fa:'بستن', ar:'إغلاق', tr:'Kapat', de:'Schließen', fr:'Fermer' },
+  next_session:  { en:'Next Session ←', fa:'سشن بعدی ←', ar:'الجلسة التالية ←', tr:'Sonraki Oturum ←', de:'Nächste Sitzung →', fr:'Session suivante ←' },
+  sm2_hint:      { en:'SM-2 schedules your perfect review time', fa:'SM-2 بهترین وقت مرور رو یادت میاره', ar:'SM-2 يجدول وقت مراجعتك المثالي', tr:'SM-2 mükemmel tekrar zamanınızı planlar', de:'SM-2 plant deine perfekte Wiederholungszeit', fr:'SM-2 planifie votre temps de révision idéal' },
+
+  // ─── NOTIFICATIONS ───
+  notif_title:  { en:'Daily Reminder', fa:'یادآوری روزانه', ar:'تذكير يومي', tr:'Günlük Hatırlatma', de:'Tägliche Erinnerung', fr:'Rappel quotidien' },
+  notif_sub:    { en:'Daily reminder at 8:30 PM to review your words', fa:'هر روز ساعت ۸:۳۰ شب یادت میاره مرور کنی', ar:'تذكير يومي الساعة 8:30 م لمراجعة كلماتك', tr:'Kelimelerinizi tekrar etmek için her gün 20:30\'da hatırlatma', de:'Tägliche Erinnerung um 20:30 Uhr zur Wiederholung', fr:'Rappel quotidien à 20h30 pour réviser vos mots' },
+  notif_enable: { en:'Enable', fa:'فعال کن', ar:'تفعيل', tr:'Etkinleştir', de:'Aktivieren', fr:'Activer' },
+  notif_later:  { en:'Later', fa:'بعداً', ar:'لاحقاً', tr:'Sonra', de:'Später', fr:'Plus tard' },
+  notif_on:     { en:'🔔 Daily reminder enabled! Every night at 8:30', fa:'🔔 یادآوری روزانه فعال شد! هر شب ۸:۳۰', ar:'🔔 تم تفعيل التذكير اليومي! كل ليلة 8:30', tr:'🔔 Günlük hatırlatma aktif! Her gece 20:30', de:'🔔 Tägliche Erinnerung aktiviert! Jeden Abend 20:30', fr:'🔔 Rappel quotidien activé ! Chaque soir à 20h30' },
+
+  // ─── DRAWER / PROFILE ───
+  drw_words:    { en:'Total Words', fa:'کل لغت', ar:'إجمالي الكلمات', tr:'Toplam Kelime', de:'Gesamtwörter', fr:'Total des mots' },
+  drw_due:      { en:'Due Today', fa:'برای مرور', ar:'مستحق اليوم', tr:'Bugünkü', de:'Heute fällig', fr:'Aujourd\'hui' },
+  drw_learned:  { en:'Learned', fa:'یاد گرفتم', ar:'تعلمتها', tr:'Öğrenildi', de:'Gelernt', fr:'Appris' },
+  drw_searches: { en:'Today: {{n}} searches used', fa:'امروز {{n}} جستجو', ar:'اليوم: {{n}} بحث', tr:'Bugün: {{n}} arama kullanıldı', de:'Heute: {{n}} Suchen genutzt', fr:'Aujourd\'hui : {{n}} recherches utilisées' },
+  drw_unlimited:{ en:'Unlimited searches & words', fa:'جستجو و لغت نامحدود', ar:'بحث وكلمات غير محدودة', tr:'Sınırsız arama ve kelime', de:'Unbegrenzte Suchen & Wörter', fr:'Recherches et mots illimités' },
+  drw_pro_btn:  { en:'Get Fluenta Pro', fa:'دریافت Pro', ar:'احصل على Pro', tr:'Pro\'yu Al', de:'Fluenta Pro holen', fr:'Obtenir Fluenta Pro' },
+  drw_pro_sub:  { en:'Unlimited searches · All packs', fa:'جستجوی نامحدود · همه pack‌ها', ar:'بحث غير محدود · جميع الحزم', tr:'Sınırsız arama · Tüm paketler', de:'Unbegrenzt Suchen · Alle Pakete', fr:'Recherches illimitées · Tous les packs' },
+  drw_lang:     { en:'Target Language', fa:'زبان هدف', ar:'اللغة المستهدفة', tr:'Hedef Dil', de:'Zielsprache', fr:'Langue cible' },
+  drw_beta:     { en:'Beta access', fa:'دسترسی آزمایشی', ar:'وصول تجريبي', tr:'Beta erişimi', de:'Beta-Zugang', fr:'Accès bêta' },
+  drw_active:   { en:'Active ✓', fa:'فعال ✓', ar:'نشط ✓', tr:'Aktif ✓', de:'Aktiv ✓', fr:'Actif ✓' },
+  drw_beta_thx: { en:'Thank you for testing the app', fa:'ممنون که اپ رو تست می‌کنی', ar:'شكراً لاختبار التطبيق', tr:'Uygulamayı test ettiğiniz için teşekkürler', de:'Danke fürs Testen der App', fr:'Merci de tester l\'application' },
+  drw_pro_until:{ en:'Pro until:', fa:'اشتراک تا:', ar:'Pro حتى:', tr:'Pro süresi:', de:'Pro bis:', fr:'Pro jusqu\'au :' },
+  drw_clear:    { en:'Clear all words', fa:'پاک کردن لغات', ar:'مسح جميع الكلمات', tr:'Tüm kelimeleri sil', de:'Alle Wörter löschen', fr:'Effacer tous les mots' },
+  drw_contact:  { en:'Contact us on Telegram', fa:'ارتباط با ما در تلگرام', ar:'تواصل معنا على تيليغرام', tr:'Telegram\'dan bize ulaşın', de:'Kontakt per Telegram', fr:'Contactez-nous sur Telegram' },
+  drw_signout:  { en:'Sign out', fa:'خروج', ar:'تسجيل الخروج', tr:'Çıkış Yap', de:'Abmelden', fr:'Se déconnecter' },
+
+  // ─── EDIT MODAL ───
+  edit_title:   { en:'Edit Word', fa:'ویرایش لغت', ar:'تعديل الكلمة', tr:'Kelimeyi Düzenle', de:'Wort bearbeiten', fr:'Modifier le mot' },
+  edit_word:    { en:'Word', fa:'لغت', ar:'الكلمة', tr:'Kelime', de:'Wort', fr:'Mot' },
+  edit_trans:   { en:'Translation', fa:'ترجمه', ar:'الترجمة', tr:'Çeviri', de:'Übersetzung', fr:'Traduction' },
+  edit_example: { en:'Example sentence (optional)', fa:'جمله نمونه (اختیاری)', ar:'جملة مثال (اختياري)', tr:'Örnek cümle (isteğe bağlı)', de:'Beispielsatz (optional)', fr:'Phrase exemple (optionnel)' },
+  edit_save:    { en:'Save', fa:'ذخیره', ar:'حفظ', tr:'Kaydet', de:'Speichern', fr:'Enregistrer' },
+  edit_saved:   { en:'✓ Saved', fa:'✓ ذخیره شد', ar:'✓ تم الحفظ', tr:'✓ Kaydedildi', de:'✓ Gespeichert', fr:'✓ Enregistré' },
+
+  // ─── PACKS ───
+  packs_title:  { en:'Word Packs', fa:'جعبه لغت‌ها', ar:'حزم الكلمات', tr:'Kelime Paketleri', de:'Wortpakete', fr:'Packs de mots' },
+  packs_sub:    { en:'Ready-made collections for faster learning', fa:'مجموعه‌های آماده برای یادگیری سریع‌تر', ar:'مجموعات جاهزة للتعلم الأسرع', tr:'Daha hızlı öğrenme için hazır koleksiyonlar', de:'Fertige Sammlungen zum schnelleren Lernen', fr:'Collections prêtes pour apprendre plus vite' },
+  pack_coming:  { en:'This pack is coming soon 🔜', fa:'این pack به‌زودی اضافه میشه 🔜', ar:'هذه الحزمة قريباً 🔜', tr:'Bu paket yakında geliyor 🔜', de:'Dieses Paket kommt bald 🔜', fr:'Ce pack arrive bientôt 🔜' },
+  pack_done:    { en:'You\'ve reviewed all words in this pack! 🎉', fa:'همه لغات این pack رو قبلاً خوندی! 🎉', ar:'راجعت جميع الكلمات في هذه الحزمة! 🎉', tr:'Bu paketteki tüm kelimeleri tekrar ettin! 🎉', de:'Du hast alle Wörter in diesem Paket wiederholt! 🎉', fr:'Vous avez révisé tous les mots de ce pack ! 🎉' },
+
+  // ─── UPGRADE ───
+  pro_title:      { en:'Fluenta Pro', fa:'Fluenta Pro', ar:'Fluenta Pro', tr:'Fluenta Pro', de:'Fluenta Pro', fr:'Fluenta Pro' },
+  pro_price:      { en:'250 ⭐ / month', fa:'۲۵۰ ⭐ در ماه', ar:'250 ⭐ / شهر', tr:'250 ⭐ / ay', de:'250 ⭐ / Monat', fr:'250 ⭐ / mois' },
+  pro_f1:         { en:'Unlimited AI searches', fa:'جستجوی نامحدود با AI', ar:'بحث غير محدود بالذكاء الاصطناعي', tr:'Sınırsız AI araması', de:'Unbegrenzte KI-Suchen', fr:'Recherches IA illimitées' },
+  pro_f2:         { en:'All vocabulary packs', fa:'همه pack های لغت', ar:'جميع حزم المفردات', tr:'Tüm kelime paketleri', de:'Alle Wortpakete', fr:'Tous les packs de vocabulaire' },
+  pro_f3:         { en:'Sync across all devices', fa:'sync روی همه دستگاه‌ها', ar:'المزامنة عبر جميع الأجهزة', tr:'Tüm cihazlarda senkronizasyon', de:'Synchronisation auf allen Geräten', fr:'Synchronisation sur tous les appareils' },
+  pro_btn:        { en:'Pay with Telegram Stars ⭐', fa:'پرداخت با Telegram Stars ⭐', ar:'الدفع بنجوم تيليغرام ⭐', tr:'Telegram Yıldızlarıyla öde ⭐', de:'Mit Telegram Stars bezahlen ⭐', fr:'Payer avec les Étoiles Telegram ⭐' },
+  pro_instant:    { en:'⚡ Instant activation', fa:'⚡ فعال‌سازی فوری', ar:'⚡ تفعيل فوري', tr:'⚡ Anında aktivasyon', de:'⚡ Sofortige Aktivierung', fr:'⚡ Activation instantanée' },
+  pro_activated:  { en:'🎉 Fluenta Pro activated! Unlimited searches unlocked', fa:'🎉 Fluenta Pro فعال شد! جستجوی نامحدود داری', ar:'🎉 تم تفعيل Fluenta Pro! البحث غير المحدود متاح', tr:'🎉 Fluenta Pro etkinleştirildi! Sınırsız arama açıldı', de:'🎉 Fluenta Pro aktiviert! Unbegrenzte Suchen freigeschaltet', fr:'🎉 Fluenta Pro activé ! Recherches illimitées débloquées' },
+  pro_cancelled:  { en:'Payment cancelled', fa:'پرداخت لغو شد', ar:'تم إلغاء الدفع', tr:'Ödeme iptal edildi', de:'Zahlung abgebrochen', fr:'Paiement annulé' },
+  beta_code:      { en:'Have a beta code?', fa:'کد بتا داری؟', ar:'هل لديك رمز بيتا؟', tr:'Beta kodunuz var mı?', de:'Hast du einen Beta-Code?', fr:'Vous avez un code bêta ?' },
+  beta_activate:  { en:'Activate', fa:'فعال', ar:'تفعيل', tr:'Etkinleştir', de:'Aktivieren', fr:'Activer' },
+  beta_ok:        { en:'Beta code activated! Unlimited searches ✅', fa:'کد بتا فعال شد! جستجو نامحدوده ✅', ar:'تم تفعيل رمز البيتا! بحث غير محدود ✅', tr:'Beta kodu etkinleştirildi! Sınırsız arama ✅', de:'Beta-Code aktiviert! Unbegrenzte Suchen ✅', fr:'Code bêta activé ! Recherches illimitées ✅' },
+  upgrade_prompt: { en:'Upgrade to Pro →', fa:'ارتقا به Pro →', ar:'الترقية إلى Pro ←', tr:'Pro\'ya yükselt →', de:'Auf Pro upgraden →', fr:'Passer à Pro →' },
+
+  // ─── SEARCH COUNTER ───
+  search_limit_2: { en:'⚠ Only 2 searches left today', fa:'⚠ فقط ۲ جستجو امروز مونده', ar:'⚠ متبقي بحثان فقط اليوم', tr:'⚠ Bugün yalnızca 2 arama kaldı', de:'⚠ Nur noch 2 Suchen heute', fr:'⚠ Seulement 2 recherches restantes aujourd\'hui' },
+  search_limit_3: { en:'⚠ Only 3 searches left today', fa:'⚠ فقط ۳ جستجو امروز مونده', ar:'⚠ متبقية 3 بحثات فقط اليوم', tr:'⚠ Bugün yalnızca 3 arama kaldı', de:'⚠ Nur noch 3 Suchen heute', fr:'⚠ Seulement 3 recherches restantes aujourd\'hui' },
+  search_last:    { en:'🔴 Last search for today!', fa:'🔴 آخرین جستجوی امروز!', ar:'🔴 آخر بحث لهذا اليوم!', tr:'🔴 Bugünkü son arama!', de:'🔴 Letzte Suche für heute!', fr:'🔴 Dernière recherche pour aujourd\'hui !' },
+  search_done:    { en:'No searches left today 😔', fa:'جستجوی امروز تموم شد 😔', ar:'لا بحثات متبقية اليوم 😔', tr:'Bugünkü aramalar tükendi 😔', de:'Keine Suchen mehr heute 😔', fr:'Plus de recherches aujourd\'hui 😔' },
+  search_counter: { en:'Today: {{used}} / {{max}} searches', fa:'امروز {{used}} از {{max}} جستجو', ar:'اليوم: {{used}} / {{max}} بحث', tr:'Bugün: {{used}} / {{max}} arama', de:'Heute: {{used}} / {{max}} Suchen', fr:'Aujourd\'hui : {{used}} / {{max}} recherches' },
+  search_timeout: { en:'Search timed out — please try again', fa:'زمان جستجو تموم شد — دوباره امتحان کن', ar:'انتهت مهلة البحث — حاول مجددًا', tr:'Arama zaman aşımına uğradı — tekrar deneyin', de:'Suche abgelaufen — erneut versuchen', fr:'Délai de recherche dépassé — réessayez' },
+  searching:      { en:'Searching...', fa:'در حال جستجو...', ar:'جارٍ البحث...', tr:'Aranıyor...', de:'Suche läuft...', fr:'Recherche en cours...' },
+  limit_reached:  { en:'Daily limit reached. Resets in {{h}} hours', fa:'سقف روزانه رسید. {{h}} ساعت دیگه reset میشه', ar:'تم الوصول للحد اليومي. إعادة تعيين خلال {{h}} ساعة', tr:'Günlük limit doldu. {{h}} saat sonra sıfırlanır', de:'Tageslimit erreicht. Reset in {{h}} Stunden', fr:'Limite quotidienne atteinte. Réinitialisation dans {{h}} heures' },
+  free_limit:     { en:'Free limit: {{n}} words — upgrade to Pro', fa:'سقف رایگان: {{n}} لغت — ارتقا به Pro', ar:'حد الاستخدام المجاني: {{n}} كلمة — قم بالترقية', tr:'Ücretsiz limit: {{n}} kelime — Pro\'ya yükselt', de:'Kostenlos-Limit: {{n}} Wörter — Upgrade auf Pro', fr:'Limite gratuite : {{n}} mots — passez à Pro' },
+  offline_err:    { en:'Offline — no internet connection', fa:'آفلاین — اتصال اینترنت نداری', ar:'غير متصل — لا يوجد اتصال بالإنترنت', tr:'Çevrimdışı — internet bağlantısı yok', de:'Offline — keine Internetverbindung', fr:'Hors ligne — pas de connexion Internet' },
+
+  // ─── TOASTS ───
+  toast_hello:     { en:'Hello {{name}}! 👋', fa:'سلام {{name}}! 👋', ar:'مرحباً {{name}}! 👋', tr:'Merhaba {{name}}! 👋', de:'Hallo {{name}}! 👋', fr:'Bonjour {{name}} ! 👋' },
+  toast_login_err: { en:'Login error: ', fa:'خطا در ورود: ', ar:'خطأ في تسجيل الدخول: ', tr:'Giriş hatası: ', de:'Anmeldefehler: ', fr:'Erreur de connexion : ' },
+  toast_no_words:  { en:'You have not added any words yet!', fa:'هنوز لغتی اضافه نکردی!', ar:'لم تضف أي كلمات بعد!', tr:'Henüz kelime eklemedin!', de:'Du hast noch keine Wörter hinzugefügt!', fr:'Vous n\'avez pas encore ajouté de mots !' },
+  toast_all_done:  { en:'You\'ve reviewed all your words! 🎉', fa:'همه لغت‌هات رو مرور کردی 🎉', ar:'راجعت جميع كلماتك! 🎉', tr:'Tüm kelimelerini tekrar ettin! 🎉', de:'Du hast alle Wörter wiederholt! 🎉', fr:'Vous avez révisé tous vos mots ! 🎉' },
+  toast_tg_err:    { en:'Telegram data not found', fa:'اطلاعات تلگرام یافت نشد', ar:'لم يتم العثور على بيانات تيليغرام', tr:'Telegram verisi bulunamadı', de:'Telegram-Daten nicht gefunden', fr:'Données Telegram introuvables' },
+  toast_save_phrase:{ en:'Sign in to save phrases 👤', fa:'برای ذخیره اصطلاح، وارد شو 👤', ar:'سجّل الدخول لحفظ العبارات 👤', tr:'İfadeleri kaydetmek için giriş yapın 👤', de:'Anmelden um Ausdrücke zu speichern 👤', fr:'Connectez-vous pour sauvegarder les expressions 👤' },
+
+  // ─── GREETINGS ───
+  greet_morning:  { en:'Good morning ☀️', fa:'صبح بخیر ☀️', ar:'صباح الخير ☀️', tr:'Günaydın ☀️', de:'Guten Morgen ☀️', fr:'Bonjour ☀️' },
+  greet_afternoon:{ en:'Good afternoon 🌤', fa:'عصر بخیر 🌤', ar:'مساء الخير 🌤', tr:'İyi öğleden sonralar 🌤', de:'Guten Nachmittag 🌤', fr:'Bon après-midi 🌤' },
+  greet_review:   { en:'Review time 🧠', fa:'وقت مرور 🧠', ar:'وقت المراجعة 🧠', tr:'Tekrar zamanı 🧠', de:'Wiederholungszeit 🧠', fr:'Temps de révision 🧠' },
+  greet_evening:  { en:'Good evening 🌙', fa:'شب بخیر 🌙', ar:'مساء النور 🌙', tr:'İyi akşamlar 🌙', de:'Guten Abend 🌙', fr:'Bonne soirée 🌙' },
+
+  // ─── REVIEW REMINDER CARDS ───
+  rem_waiting:    { en:'🔥 {{n}} words waiting', fa:'🔥 {{n}} لغت منتظرته', ar:'🔥 {{n}} كلمات في انتظارك', tr:'🔥 {{n}} kelime bekliyor', de:'🔥 {{n}} Wörter warten', fr:'🔥 {{n}} mots attendent' },
+  rem_earn:       { en:'Review now, earn {{pts}} points', fa:'مرور کن {{pts}} امتیاز بگیر', ar:'راجع الآن، اكسب {{pts}} نقطة', tr:'Şimdi tekrar et, {{pts}} puan kazan', de:'Jetzt wiederholen, {{pts}} Punkte verdienen', fr:'Révisez maintenant, gagnez {{pts}} points' },
+  rem_due:        { en:'⏰ Review time!', fa:'⏰ وقت مرور رسیده', ar:'⏰ حان وقت المراجعة!', tr:'⏰ Tekrar zamanı!', de:'⏰ Wiederholungszeit!', fr:'⏰ Temps de révision !' },
+  rem_due_sub:    { en:'{{n}} words — just a few minutes', fa:'{{n}} لغت — فقط چند دقیقه', ar:'{{n}} كلمات — بضع دقائق فقط', tr:'{{n}} kelime — sadece birkaç dakika', de:'{{n}} Wörter — nur ein paar Minuten', fr:'{{n}} mots — quelques minutes seulement' },
+  rem_remember:   { en:'🧠 Remember these words?', fa:'🧠 یادته این لغت‌ها رو؟', ar:'🧠 هل تتذكر هذه الكلمات؟', tr:'🧠 Bu kelimeleri hatırlıyor musun?', de:'🧠 Erinnerst du dich an diese Wörter?', fr:'🧠 Vous souvenez-vous de ces mots ?' },
+  rem_forget:     { en:'Review before you forget', fa:'مرور کن تا فراموش نشن', ar:'راجع قبل أن تنسى', tr:'Unutmadan tekrar et', de:'Wiederholen bevor du vergisst', fr:'Révisez avant d\'oublier' },
+  rem_streak:     { en:'💪 {{n}} words ready to review', fa:'💪 {{n}} لغت آماده مروره', ar:'💪 {{n}} كلمات جاهزة للمراجعة', tr:'💪 {{n}} kelime tekrar için hazır', de:'💪 {{n}} Wörter zur Wiederholung bereit', fr:'💪 {{n}} mots prêts à réviser' },
+  rem_streak_sub: { en:'Keep your streak!', fa:'streak رو حفظ کن!', ar:'حافظ على تسلسلك!', tr:'Serisini koru!', de:'Halte deine Serie aufrecht!', fr:'Maintenez votre série !' },
+
+  // ─── SEARCH LIST ───
+  list_search_ph: { en:'Search words...', fa:'جستجو در لغات...', ar:'ابحث في الكلمات...', tr:'Kelime ara...', de:'Wörter suchen...', fr:'Chercher des mots...' },
+
+  // ─── LANG SWITCHER ───
+  lang_de: { en:'German', fa:'آلمانی', ar:'الألمانية', tr:'Almanca', de:'Deutsch', fr:'Allemand' },
+  lang_en: { en:'English', fa:'انگلیسی', ar:'الإنجليزية', tr:'İngilizce', de:'Englisch', fr:'Anglais' },
+  lang_fr: { en:'French', fa:'فرانسوی', ar:'الفرنسية', tr:'Fransızca', de:'Französisch', fr:'Français' },
+  lang_tr: { en:'Turkish', fa:'ترکی', ar:'التركية', tr:'Türkçe', de:'Türkisch', fr:'Turc' },
+  lang_ar: { en:'Arabic', fa:'عربی', ar:'العربية', tr:'Arapça', de:'Arabisch', fr:'Arabe' },
+
+  // ─── NAV ───
+  nav_home:     { en:'Home', fa:'خانه', ar:'الرئيسية', tr:'Ana Sayfa', de:'Startseite', fr:'Accueil' },
+  nav_cards:    { en:'Cards', fa:'کارت‌ها', ar:'البطاقات', tr:'Kartlar', de:'Karten', fr:'Cartes' },
+  nav_progress: { en:'Progress', fa:'پیشرفت', ar:'التقدم', tr:'İlerleme', de:'Fortschritt', fr:'Progrès' },
+  nav_profile:  { en:'Profile', fa:'پروفایل', ar:'الملف الشخصي', tr:'Profil', de:'Profil', fr:'Profil' },
+};
+
+// ── CORE FUNCTION ──
+function t(key, vars) {
+  var lang = FLUENTA_LANG;
+  var entry = STRINGS[key];
+  if (!entry) { console.warn('[i18n] missing key:', key); return key; }
+  var str = entry[lang] || entry['en'] || key;
+  if (vars) {
+    Object.keys(vars).forEach(function(k) {
+      str = str.replace(new RegExp('\\{\\{' + k + '\\}\\}', 'g'), vars[k]);
+    });
+  }
+  return str;
+}
+
+// ── DETECT LANGUAGE ──
+function detectLang() {
+  // 1. از localStorage
+  var saved = localStorage.getItem('fluenta_ui_lang');
+  if (saved && STRINGS.app_name[saved]) return saved;
+  // 2. از Telegram language code
+  if (window.tgApp && window.tgApp.user && window.tgApp.user.language_code) {
+    var tgLang = window.tgApp.user.language_code.split('-')[0];
+    if (STRINGS.app_name[tgLang]) return tgLang;
+    if (tgLang === 'fa' || tgLang === 'ir') return 'fa';
+  }
+  // 3. از browser
+  var bl = (navigator.language || 'en').split('-')[0];
+  if (STRINGS.app_name[bl]) return bl;
+  return 'en';
+}
+
+// ── SET LANGUAGE ──
+function setLang(lang) {
+  FLUENTA_LANG = lang;
+  localStorage.setItem('fluenta_ui_lang', lang);
+  // RTL برای فارسی و عربی
+  var isRTL = lang === 'fa' || lang === 'ar';
+  document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', lang);
+  // font برای فارسی
+  if (lang === 'fa') {
+    document.documentElement.style.setProperty('--sans', "'Vazirmatn',system-ui,sans-serif");
+  } else {
+    document.documentElement.style.setProperty('--sans', "system-ui,sans-serif");
+  }
+  applyTranslations();
+}
+
+// ── APPLY TRANSLATIONS TO DOM ──
+function applyTranslations() {
+  // همه المان‌هایی که data-i18n دارن
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    var vars = {};
+    // data-i18n-vars برای متغیرها
+    var varsAttr = el.getAttribute('data-i18n-vars');
+    if (varsAttr) {
+      try { vars = JSON.parse(varsAttr); } catch(e) {}
+    }
+    var str = t(key, vars);
+    // HTML یا text؟
+    if (el.getAttribute('data-i18n-html') === 'true') {
+      el.innerHTML = str;
+    } else {
+      el.textContent = str;
+    }
+  });
+  // placeholder ها
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+    el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph')));
+  });
+}
+
+// ── INIT ──
+function initI18n() {
+  var lang = detectLang();
+  setLang(lang);
+}
+
+
+</script>
 </head>
 <body>
 <script>
@@ -1681,7 +2013,7 @@ html,body{overflow-x:hidden!important}
         </div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">1 of 5</div><div class="ob-title">Welcome to Fluenta 👋</div><div class="ob-sub">A few quick questions to personalize your experience</div></div></div>
+    <div class="ob-txt"><div class="ob-step">1 of 5</div><div class="ob-title" data-i18n="ob_welcome_t">Welcome to Fluenta 👋</div><div class="ob-sub" data-i18n="ob_welcome_s">A few quick questions to personalize your experience</div></div></div>
 
     <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
       <div class="ob-lang-list">
@@ -1692,15 +2024,15 @@ html,body{overflow-x:hidden!important}
         <div class="ob-lc" id="ob-lar" onclick="obPickLang('ar')"><div class="ob-lc-flag">🇸🇦</div><div class="ob-lc-info"><div class="ob-lc-name">Arabic</div><div class="ob-lc-sub">العربية</div></div><div class="ob-lc-radio"></div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">2 of 5</div><div class="ob-title">Which language?</div><div class="ob-sub">You can change this later in settings</div></div></div>
+    <div class="ob-txt"><div class="ob-step">2 of 5</div><div class="ob-title" data-i18n="ob_lang_t">Which language?</div><div class="ob-sub">You can change this later in settings</div></div></div>
 
     <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
       <div class="ob-lv-list">
-        <div class="ob-lvcard" id="ob-la1" onclick="obPickLevel('A1')"><div class="ob-lv-tag">A1</div><div class="ob-lv-info"><div class="ob-lv-name">Just starting out</div><div class="ob-lv-desc">No prior knowledge</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:8%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-la2" onclick="obPickLevel('A2')"><div class="ob-lv-tag">A2</div><div class="ob-lv-info"><div class="ob-lv-name">Know a little</div><div class="ob-lv-desc">I understand simple sentences</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:22%"></div></div></div></div>
-        <div class="ob-lvcard sel" id="ob-lb1" onclick="obPickLevel('B1')"><div class="ob-lv-tag">B1</div><div class="ob-lv-info"><div class="ob-lv-name">Intermediate</div><div class="ob-lv-desc">I can speak but with limits</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:45%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-lb2" onclick="obPickLevel('B2')"><div class="ob-lv-tag">B2</div><div class="ob-lv-info"><div class="ob-lv-name">Upper intermediate</div><div class="ob-lv-desc">I speak fluently</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:65%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-lc1" onclick="obPickLevel('C1')"><div class="ob-lv-tag">C1</div><div class="ob-lv-info"><div class="ob-lv-name">Advanced</div><div class="ob-lv-desc">I understand films and books</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:82%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-la1" onclick="obPickLevel('A1')"><div class="ob-lv-tag">A1</div><div class="ob-lv-info"><div class="ob-lv-name">Just starting out</div><div class="ob-lv-desc" data-i18n="level_a1s">No prior knowledge</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:8%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-la2" onclick="obPickLevel('A2')"><div class="ob-lv-tag">A2</div><div class="ob-lv-info"><div class="ob-lv-name">Know a little</div><div class="ob-lv-desc" data-i18n="level_a2s">I understand simple sentences</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:22%"></div></div></div></div>
+        <div class="ob-lvcard sel" id="ob-lb1" onclick="obPickLevel('B1')"><div class="ob-lv-tag">B1</div><div class="ob-lv-info"><div class="ob-lv-name" data-i18n="level_b1">Intermediate</div><div class="ob-lv-desc">I can speak but with limits</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:45%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-lb2" onclick="obPickLevel('B2')"><div class="ob-lv-tag">B2</div><div class="ob-lv-info"><div class="ob-lv-name">Upper intermediate</div><div class="ob-lv-desc" data-i18n="level_b2s">I speak fluently</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:65%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-lc1" onclick="obPickLevel('C1')"><div class="ob-lv-tag">C1</div><div class="ob-lv-info"><div class="ob-lv-name" data-i18n="level_c1">Advanced</div><div class="ob-lv-desc" data-i18n="level_c1s">I understand films and books</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:82%"></div></div></div></div>
       </div>
     </div></div>
     <div class="ob-txt"><div class="ob-step">3 of 5</div><div class="ob-title">What is your current level?</div><div class="ob-sub">Be honest — this affects your word suggestions</div></div></div>
@@ -1711,12 +2043,12 @@ html,body{overflow-x:hidden!important}
         <div class="ob-gc sel" id="ob-g-travel" onclick="obToggleGoal('travel',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">✈️</div><div class="ob-gc-name">Travel & Immigration</div></div>
         <div class="ob-gc" id="ob-g-work" onclick="obToggleGoal('work',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💼</div><div class="ob-gc-name">Work & Business</div></div>
         <div class="ob-gc" id="ob-g-exam" onclick="obToggleGoal('exam',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">📝</div><div class="ob-gc-name">Goethe / IELTS Exam</div></div>
-        <div class="ob-gc" id="ob-g-daily" onclick="obToggleGoal('daily',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💬</div><div class="ob-gc-name">Daily Conversation</div></div>
-        <div class="ob-gc" id="ob-g-study" onclick="obToggleGoal('study',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">🎓</div><div class="ob-gc-name">Study Abroad</div></div>
-        <div class="ob-gc" id="ob-g-fun" onclick="obToggleGoal('fun',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">❤️</div><div class="ob-gc-name">Personal Interest</div></div>
+        <div class="ob-gc" id="ob-g-daily" onclick="obToggleGoal('daily',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💬</div><div class="ob-gc-name" data-i18n="goal_daily">Daily Conversation</div></div>
+        <div class="ob-gc" id="ob-g-study" onclick="obToggleGoal('study',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">🎓</div><div class="ob-gc-name" data-i18n="goal_study">Study Abroad</div></div>
+        <div class="ob-gc" id="ob-g-fun" onclick="obToggleGoal('fun',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">❤️</div><div class="ob-gc-name" data-i18n="goal_fun">Personal Interest</div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">4 of 5</div><div class="ob-title">What is your goal?</div><div class="ob-sub">We will suggest the best words based on your choice</div></div></div>
+    <div class="ob-txt"><div class="ob-step">4 of 5</div><div class="ob-title" data-i18n="ob_goal_t">What is your goal?</div><div class="ob-sub">We will suggest the best words based on your choice</div></div></div>
 
     <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
       <div class="ob-sum-wrap">
@@ -1726,7 +2058,7 @@ html,body{overflow-x:hidden!important}
         <div class="ob-sum-ai"><div class="ob-sum-ai-ico">✨</div><div class="ob-sum-ai-txt">Your personalized word collection is ready based on your profile</div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">5 of 5</div><div class="ob-title">All set! 🚀</div><div class="ob-sub">You can change this anytime from your profile</div></div></div>
+    <div class="ob-txt"><div class="ob-step">5 of 5</div><div class="ob-title" data-i18n="ob_ready_t">All set! 🚀</div><div class="ob-sub" data-i18n="ob_ready_s">You can change this anytime from your profile</div></div></div>
 
   </div></div>
   <div class="ob-foot">
@@ -1735,10 +2067,10 @@ html,body{overflow-x:hidden!important}
       <div class="ob-dot" id="obd2"></div><div class="ob-dot" id="obd3"></div><div class="ob-dot" id="obd4"></div>
     </div>
     <button class="ob-btn" onclick="obNext()">
-      <span id="ob-btntxt">Next</span>
+      <span id="ob-btntxt" data-i18n="ob_next">Next</span>
       <svg id="ob-btnarr" width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <button class="ob-skip" id="ob-skip" onclick="obClose()">Skip</button>
+    <button class="ob-skip" id="ob-skip" onclick="obClose()" data-i18n="ob_skip">Skip</button>
   </div>
 </div>
 
@@ -1757,7 +2089,7 @@ html,body{overflow-x:hidden!important}
 
   <!-- Hero card -->
   <div class="gate-hero-card">
-    <div class="gate-badge">LEXICON AI</div>
+    <div class="gate-badge" data-i18n="gate_tagline">LEXICON AI</div>
     <div class="gate-icon-wrap">
       <div class="gate-icon-char">文A</div>
     </div>
@@ -1769,8 +2101,8 @@ html,body{overflow-x:hidden!important}
 
   <!-- Headline -->
   <div class="gate-headline-wrap">
-    <div class="gate-h1">Master vocabulary,</div>
-    <div class="gate-h1-cyan">one word at a time.</div>
+    <div class="gate-h1" data-i18n="gate_headline1">Master vocabulary,</div>
+    <div class="gate-h1-cyan" data-i18n="gate_headline2">one word at a time.</div>
   </div>
 
   <!-- Buttons -->
@@ -1796,13 +2128,13 @@ html,body{overflow-x:hidden!important}
 
     <!-- Email toggle -->
     <div class="gate-email-link">
-      <button onclick="gateToggleEmail()" id="gate-email-toggle-btn">Use email instead</button>
+      <button onclick="gateToggleEmail()" id="gate-email-toggle-btn" data-i18n="btn_email">Use email instead</button>
     </div>
 
     <!-- Email section -->
     <div id="gate-email-section">
       <input class="gate-inp" id="gate-email" type="email" placeholder="your@email.com">
-      <button class="gate-btn-magic" onclick="loginMagicLink()" id="gate-btn">Send magic link</button>
+      <button class="gate-btn-magic" onclick="loginMagicLink()" id="gate-btn" data-i18n="btn_magic_link">Send magic link</button>
       <div class="gate-msg" id="gate-err"></div>
     </div>
 
@@ -1810,7 +2142,7 @@ html,body{overflow-x:hidden!important}
 
   <!-- Privacy -->
   <div class="gate-privacy">
-    By continuing, you agree to Fluenta's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+    <span data-i18n="gate_privacy">By continuing, you agree to Fluenta's Terms of Service and Privacy Policy.</span>
   </div>
 
 </div>
@@ -1886,8 +2218,8 @@ html,body{overflow-x:hidden!important}
     <!-- Beta card -->
     <div id="drw-plan-beta" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:11px;color:var(--ink3)">Beta access</span>
-        <span style="font-size:11px;color:var(--ok);font-weight:600">Active ✓</span>
+        <span style="font-size:11px;color:var(--ink3)" data-i18n="drw_beta">Beta access</span>
+        <span style="font-size:11px;color:var(--ok);font-weight:600" data-i18n="drw_active">Active ✓</span>
       </div>
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-top:8px">
         <div style="height:100%;background:var(--ok);border-radius:4px;width:100%"></div>
@@ -1898,7 +2230,7 @@ html,body{overflow-x:hidden!important}
     <!-- Plan card — PRO -->
     <div id="drw-plan-pro" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:11px;color:var(--ink3)">Pro until:</span>
+        <span style="font-size:11px;color:var(--ink3)" data-i18n="drw_pro_until">Pro until:</span>
         <span style="font-size:11px;font-weight:600" id="drw-pro-until">—</span>
       </div>
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden">
@@ -1931,10 +2263,10 @@ html,body{overflow-x:hidden!important}
 <!-- Edit modal -->
 <div class="modal-bg" id="edit-modal" onclick="if(event.target===this)editClose()">
   <div class="modal">
-    <div class="modal-title">Edit Word</div>
+    <div class="modal-title" data-i18n="edit_title">Edit Word</div>
     <div class="drw-lbl">Word</div><input class="inp ltr" id="ed-de">
     <div class="drw-lbl">Translation</div><input class="inp" id="ed-fa">
-    <div class="drw-lbl">Example sentence (optional)</div><input class="inp ltr" id="ed-ex">
+    <div class="drw-lbl" data-i18n="edit_example">Example sentence (optional)</div><input class="inp ltr" id="ed-ex">
     <div class="modal-err" id="ed-err"></div>
     <div class="modal-acts">
       <button class="btn btn-p" style="flex:1" onclick="editSave()">Save</button>
@@ -1952,10 +2284,10 @@ html,body{overflow-x:hidden!important}
 <!-- Session Intro -->
 <div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
   <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
-  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">Review Time!</div>
+  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title" data-i18n="review_title">Review Time!</div>
   <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
   <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
-    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">Start Review →</button>
+    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()" data-i18n="start_review" data-i18n="start_review">Start Review →</button>
     <button class="btn btn-full" onclick="introClose()">بعداً</button>
   </div>
 </div>
@@ -1979,20 +2311,20 @@ html,body{overflow-x:hidden!important}
       <div class="card-wrap" id="card-wrap">
         <div class="card-face card-front">
           <span class="c-type" id="c-type"></span>
-          <span class="c-hint">Tap to reveal meaning</span>
+          <span class="c-hint" data-i18n="tap_reveal">Tap to reveal meaning</span>
           <span class="c-word" id="ses-word"></span>
         </div>
         <div class="card-face card-back">
-          <span class="c-hint">Meaning</span>
+          <span class="c-hint" data-i18n="meaning_lbl">Meaning</span>
           <span class="c-mean" id="ses-mean"></span>
           <span class="c-sent" id="ses-sent"></span>
         </div>
       </div>
     </div>
-    <div class="swipe-row"><span>← Didn't know</span><span>I knew it →</span></div>
+    <div class="swipe-row"><span data-i18n="swipe_forgot">← Didn't know</span><span data-i18n="swipe_know">I knew it →</span></div>
     <div class="ses-acts">
       <button class="sa bad" onclick="sesRate(false)">
-        <span class="sa-ic">✗</span><span>Didn't know</span><span class="sa-next">دوباره میاد</span>
+        <span class="sa-ic">✗</span><span data-i18n="forgot">Didn't know</span><span class="sa-next">دوباره میاد</span>
       </button>
       <button class="flip-btn" onclick="sesFlip()">↺</button>
       <button class="sa good" onclick="sesRate(true)">
@@ -2048,7 +2380,7 @@ html,body{overflow-x:hidden!important}
           Sign in
         </button>
         <div class="top-free-badge" id="top-free-badge" onclick="drawerOpen()" style="display:none">
-          <span id="top-free-n">10</span><span> left</span>
+          <span id="top-free-n">10</span><span data-i18n="top_searches_left"> left</span>
         </div>
         <div class="top-pro-badge" id="top-pro-badge" style="display:none">✦ Pro</div>
         <div class="top-avatar" id="top-avatar-el" onclick="drawerOpen()" style="display:none">
@@ -2073,7 +2405,7 @@ html,body{overflow-x:hidden!important}
   <!-- HOME -->
   <div class="pane on" id="pane-home">
     <div class="hero">
-      <div class="hero-eye" id="hero-label">AI-powered language learning</div>
+      <div class="hero-eye" id="hero-label" data-i18n="hero_badge">AI Language Learning</div>
       <h1 id="hero-title">Master vocabulary,<br><em>powered by AI</em></h1>
       <p id="hero-sub">Word, phrase or expression — search in any language</p>
     </div>
@@ -2105,14 +2437,14 @@ html,body{overflow-x:hidden!important}
     </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
-        placeholder="Search a word or phrase..."
+        placeholder="Search a word or phrase..." data-i18n-ph="search_ph"
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
       <div class="ac-drop" id="ac-drop"></div>
       <button class="s-btn" id="s-btn" onclick="doSearch()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <div class="search-tip" id="search-tip">💡 Try searching <strong>Arbeit</strong>, <strong>bonjour</strong> or <strong>merhaba</strong></div>
+    <div class="search-tip" id="search-tip" data-i18n="search_tip" data-i18n-html="true">💡 Try searching <strong>Arbeit</strong>, <strong>bonjour</strong> or <strong>merhaba</strong></div>
     <div class="s-msg" id="s-msg"></div>
 
     <!-- Word result -->
@@ -2196,19 +2528,19 @@ html,body{overflow-x:hidden!important}
         <button class="rem-x" onclick="remDismiss()">✕</button>
       </div>
       <div class="rem-chips" id="rem-chips"></div>
-      <button class="rem-btn" onclick="remStart()">Start Review →</button>
+      <button class="rem-btn" onclick="remStart()" data-i18n="start_review" data-i18n="start_review">Start Review →</button>
     </div>
 
     <!-- Stats card -->
     
     <div class="ws-empty" id="ws-empty">
       <div class="ws-empty-icon">🇩🇪</div>
-      <div class="ws-empty-title">Search your first word</div>
-      <div class="ws-empty-sub">Search any word above and add it to your flashcards</div>
-      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()">Get started →</button>
+      <div class="ws-empty-title" data-i18n="empty_title">Search your first word</div>
+      <div class="ws-empty-sub" data-i18n="empty_sub">Search any word above and add it to your flashcards</div>
+      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()" data-i18n="empty_btn">Get started →</button>
     </div>
     <div class="login-prompt" id="login-prompt">
-      <div class="login-prompt-txt">Sign in to save your words 👤</div>
+      <div class="login-prompt-txt" data-i18n="login_prompt">Sign in to save your words 👤</div>
       <button class="login-prompt-btn" onclick="showGate();document.getElementById('login-prompt').classList.remove('show')">ورود</button>
       <button class="login-prompt-x" onclick="this.parentElement.classList.remove('show');localStorage.setItem('ws_prompt_dismissed','1')">✕</button>
     </div>
@@ -2272,7 +2604,7 @@ html,body{overflow-x:hidden!important}
     <div class="due-banner" id="due-banner">
       <div class="due-head">
         <div class="due-label">⏰ Due for Review</div>
-        <button class="due-btn" onclick="sesOpenDue()">Start Review →</button>
+        <button class="due-btn" onclick="sesOpenDue()" data-i18n="start_review" data-i18n="start_review">Start Review →</button>
       </div>
       <div class="due-chips" id="due-chips"></div>
     </div>
@@ -2288,7 +2620,7 @@ html,body{overflow-x:hidden!important}
         <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
         <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      <input class="list-s" id="list-q" placeholder="Search words..." oninput="renderList()">
+      <input class="list-s" id="list-q" placeholder="Search words..." data-i18n-ph="list_search_ph" oninput="renderList()">
     </div>
     <div id="wlist"></div>
   </div>
@@ -2300,7 +2632,7 @@ html,body{overflow-x:hidden!important}
   <!-- Header -->
   <div style="padding:12px 16px 10px;border-bottom:1px solid var(--bg3);margin-bottom:12px">
     <div style="font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px">📦 جعبه لغت‌ها</div>
-    <div style="font-size:12px;color:var(--ink3)">Ready-made collections for faster learning</div>
+    <div style="font-size:12px;color:var(--ink3)" data-i18n="packs_sub">Ready-made collections for faster learning</div>
   </div>
 
   <!-- Pack Grid -->
@@ -2403,7 +2735,7 @@ function wordDetail(idx){
   const now = new Date();
   const nr = new Date(w.next_review||0);
   const diff = Math.round((nr-now)/(1000*60*60*24));
-  const nextStr = !w.seen?'Not reviewed':diff<=0?'Overdue':diff===1?'Tomorrow':diff+' days';
+  const nextStr = !w.seen?t('not_reviewed'):diff<=0?t('overdue'):diff===1?t('tomorrow'):t('days_left',{n:diff});
   const level = Math.min(5,Math.max(0,w.seen||0));
   const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
 
@@ -2619,9 +2951,9 @@ function updateFreeBanner(){ updateTopStatus();
     // تموم شد — upgrade modal
     showUpgrade();
   } else if(left===2){
-    showToast('⚠ Only 2 searches left today',2800,'warn');
+    showToast(t('search_limit_2'),2800,'warn');
   } else if(left===1){
-    showToast('🔴 Last search for today!',2800,'warn');
+    showToast(t('search_last'),2800,'warn');
   }
   updateDrawerPlan();
 }
@@ -2665,7 +2997,7 @@ async function redeemBeta(){
     if(error)throw error;
     if(data?.success){
       userPlan='beta';
-      showToast('Beta code activated! Unlimited searches ✅',2800,'ok');
+      showToast(t('beta_ok'),2800,'ok');
       Q('#upgrade-modal').classList.remove('open');
       updateFreeBanner();updateDrawerPlan();
     } else {
@@ -2725,9 +3057,9 @@ function updateDrawerPlan(){
     const bar = Q('#drw-free-bar');
     const pct = Math.round(used/FREE_LIMIT*100);
     if(msg){
-      if(left<=0) msg.textContent='No searches left today 😔';
-      else if(left<=3) msg.textContent='⚠ Only '+left+' searches left';
-      else msg.textContent='Today: '+used+' / '+FREE_LIMIT+' searches';
+      if(left<=0) msg.textContent=t('search_done');
+      else if(left<=3) msg.textContent=t('search_limit_2').replace('2',left);
+      else msg.textContent=t('search_counter',{used:used,max:FREE_LIMIT});
     }
     if(bar){
       bar.style.width = pct+'%';
@@ -2798,7 +3130,7 @@ async function ai(prompt,tokens=900){
     const d=await r.json().catch(()=>({}));
     userSearchCount=FREE_LIMIT; updateFreeBanner();
     const hours=d.reset_hours||24;
-    throw new Error(d.message||`Daily search limit reached. Resets in ${hours} hours`);
+    throw new Error(d.message||t('limit_reached',{h:hours}));
   }
   if(!r.ok) throw new Error('HTTP '+r.status);
 
@@ -2809,8 +3141,8 @@ async function ai(prompt,tokens=900){
   const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
   if(used>0){userSearchCount=used;updateFreeBanner();}
   const rem=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
-  if(rem===3) showToast('⚠ Only 3 searches left today',2800,'warn');
-  else if(rem===0) showToast('Daily searches used up 😔',3000,'warn');
+  if(rem===3) showToast(t('search_limit_3'),2800,'warn');
+  else if(rem===0) showToast(t('search_done'),3000,'warn');
 
   const txt = d.content?.map(b=>b.text||'').join('').trim();
   if(!txt) throw new Error('empty response');
@@ -2829,7 +3161,7 @@ function gateToggleEmail(){
 
 async function tgLoginBtn(){
   var btn=Q('#gate-tg-section button');
-  if(btn){btn.disabled=true;btn.textContent='Signing in...';}
+  if(btn){btn.disabled=true;btn.textContent=t('gate_signing_in');}
   var u=window.tgApp&&window.tgApp.user;
   if(u&&u.id){
     await tgAutoLogin(u);
@@ -2866,7 +3198,7 @@ async function loginGoogle(){
 async function loginMagicLink(){
   const email = Q('#gate-email').value.trim();
   if(!email || !email.includes('@')){
-    Q('#gate-err').textContent = 'Please enter a valid email';
+    Q('#gate-err').textContent = t('gate_err_email');
     Q('#gate-err').style.color = 'var(--err)';
     return;
   }
@@ -2891,7 +3223,7 @@ async function loginMagicLink(){
     errEl.textContent = fa;
     errEl.style.color = 'var(--err)';
     btn.disabled = false;
-    btn.textContent = 'Send magic link';
+    btn.textContent = t('btn_magic_link');
     return;
   }
 
@@ -3058,8 +3390,8 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
 (function(){
   var KEY='ws_ob_seen',cur=0,TOTAL=5,s1done=false;
   var obLang='de',obLevel='B1',obGoals=new Set(['travel']);
-  var LEVEL_NAMES={A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced'};
-  var GOAL_NAMES={travel:'Travel',work:'Work',exam:'Exam',daily:'Daily',study:'Study',fun:'Interest'};
+  var LEVEL_NAMES={A1:function(){return t('level_a1')},A2:function(){return t('level_a2')},B1:function(){return t('level_b1')},B2:function(){return t('level_b2')},C1:function(){return t('level_c1')}};
+  var GOAL_NAMES={travel:function(){return t('goal_travel')},work:function(){return t('goal_work')},exam:function(){return t('goal_exam')},daily:function(){return t('goal_daily')},study:function(){return t('goal_study')},fun:function(){return t('goal_fun')}};
   var reel,track;
 
   window._obTryShow=function(){
@@ -3098,9 +3430,9 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
     document.getElementById('ob-sum-flag').textContent=flagMap[obLang]||'🌐';
     var langNameMap={de:'German',en:'English',fr:'French',tr:'Turkish',ar:'Arabic'};
     document.getElementById('ob-sum-lang').textContent=langNameMap[obLang]||obLang;
-    document.getElementById('ob-sum-level').textContent=obLevel+' — '+(LEVEL_NAMES[obLevel]||'');
+    document.getElementById('ob-sum-level').textContent=obLevel+' — '+(typeof LEVEL_NAMES[obLevel]==='function'?LEVEL_NAMES[obLevel]():LEVEL_NAMES[obLevel]||'');
     var el=document.getElementById('ob-sum-goals');el.innerHTML='';
-    obGoals.forEach(function(g){var t=document.createElement('span');t.className='ob-sum-tag';t.textContent=GOAL_NAMES[g]||g;el.appendChild(t);});
+    obGoals.forEach(function(g){var t=document.createElement('span');t.className='ob-sum-tag';t.textContent=(typeof GOAL_NAMES[g]==='function'?GOAL_NAMES[g]():GOAL_NAMES[g])||g;el.appendChild(t);});
   }
   function _obGo(n){
     if(!reel){reel=document.getElementById('ob-reel');track=document.getElementById('ob-track');}
@@ -3108,7 +3440,7 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
     for(var i=0;i<TOTAL;i++)document.getElementById('obd'+i).classList.toggle('on',i===n);
     document.getElementById('ob-prog').style.width=((n+1)/TOTAL*100)+'%';
     var last=n===TOTAL-1;
-    document.getElementById('ob-btntxt').textContent=last?'Get Started 🚀':'Next';
+    document.getElementById('ob-btntxt').textContent=last?t('ob_start'):t('ob_next');
     document.getElementById('ob-btnarr').style.display=last?'none':'';
     document.getElementById('ob-skip').style.display=n===0?'':'none';
     if(last)_obSummary();
@@ -3163,7 +3495,7 @@ async function tgAutoLogin(u){
       setTimeout(function(){if(window._obTryShow)window._obTryShow();},600);
       setTimeout(checkReminder,2500);
       if(window.tgApp)window.tgApp.haptic('success');
-      showToast('Hello '+(u.first_name||'there')+'! 👋',2200,'ok');
+      showToast(t('toast_hello',{name:u.first_name||''}),2200,'ok');
       updateTopStatus();
     }
   }catch(e){
@@ -3173,6 +3505,7 @@ async function tgAutoLogin(u){
 }
 
 async function init(){
+  initI18n();
   targetLang = localStorage.getItem('ws_target_lang')||'de';
   updateLangUI();
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
@@ -3186,13 +3519,13 @@ async function init(){
     if(uid){
       fetch('/api/upgrade',{method:'POST',headers:{'Content-Type':'application/json','x-user-id':uid}})
         .then(()=>{
-          showToast('🎉 Fluenta Pro activated! Unlimited searches unlocked',3000,'ok');
+          showToast(t('pro_activated'),3000,'ok');
           setTimeout(()=>loadProfile(),1500);
         }).catch(()=>{});
     }
   } else if(params.get('upgrade')==='cancel'){
     history.replaceState({},document.title,window.location.pathname);
-    showToast('Payment cancelled',2800,'warn');
+    showToast(t('pro_cancelled'),2800,'warn');
   }
 
   // Auth state listener
@@ -3271,7 +3604,8 @@ function setTargetLang(lang){
   updateLangUI();
   // Clear word cache when switching language
   Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>localStorage.removeItem(k));
-  showToast(lang==='de' ? '🇩🇪 Target: German' : '🇬🇧 Target: English');
+  var langTexts2={de:'🇩🇪 '+t('lang_de'),en:'🇬🇧 '+t('lang_en'),fr:'🇫🇷 '+t('lang_fr'),tr:'🇹🇷 '+t('lang_tr'),ar:'🇸🇦 '+t('lang_ar')};
+  showToast((langTexts2[lang]||lang));
   if(Q('#pane-packs')?.classList.contains('on')) renderPackGrid();
   if(Q('#pane-list')?.classList.contains('on')) renderList();
   updateBadges(); updateStats();
@@ -3475,7 +3809,7 @@ function updateStats(){ updateEmptyState();
   const lbl=Q('#review-lbl');
   if(lbl){
     const smartDeck=buildSmartDeck();
-    lbl.textContent=due.length>0?`Review ${smartDeck.length} cards`:`${smartDeck.length} card session`;
+    lbl.textContent=t(due.length>0?'start_review':'review_title').replace('→','').trim()+' ('+smartDeck.length+')';
   }
 }
 function logReview(){
@@ -3503,7 +3837,7 @@ async function doSearch(){
   acClose();
   Q('#search-tip').classList.remove('show');
   const btn=Q('#s-btn');btn.disabled=true;btn.classList.add('busy');
-  setMsg('Searching...','info');
+  setMsg(t('searching'),'info');
   Q('#res').style.display='none';Q('#ph-res').style.display='none';
   try{
     if(detectMode(q)==='word') await searchWord(q);
@@ -3720,8 +4054,8 @@ function qs(w){Q('#s-inp').value=w;doSearch();}
 
 async function addWord(){
   if(!curWord)return;
-  if(!currentUser){showGate();showToast('Sign in to save words 👤',2500,'warn');return;}
-  if(!canAddMore()){showToast('Free limit: '+FREE_LIMIT+' words — upgrade to Pro');showUpgrade();return;}
+  if(!currentUser){showGate();showToast(t('login_prompt'),2500,'warn');return;}
+  if(!canAddMore()){showToast(t('free_limit',{n:FREE_LIMIT}));showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
   const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
@@ -3809,7 +4143,7 @@ function rephrase(){
 async function addPhrase(){
   if(!curPhrase)return;
   if(!currentUser){showGate();showToast('برای ذخیره اصطلاح، وارد شو 👤',2500,'warn');return;}
-  if(!canAddMore()){showToast('Free limit: '+FREE_LIMIT+' words — upgrade to Pro');showUpgrade();return;}
+  if(!canAddMore()){showToast(t('free_limit',{n:FREE_LIMIT}));showUpgrade();return;}
   const de=curPhrase.original;
   if(words.some(w=>w.de===de))return;
   const w={de,fa:curPhrase.meaning_fa,ex:curPhrase.example_de&&curPhrase.example_de!=='null'?curPhrase.example_de:'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
@@ -3869,10 +4203,10 @@ function checkReminder(){
   if(!due.length) return;
   const pts=due.length*10;
   const msgs=[
-    {title:`🔥 ${due.length} words waiting`,sub:`Review now, earn ${pts} points`},
-    {title:`⏰ Review time!`,sub:`${due.length} words — just a few minutes`},
-    {title:`🧠 Remember these words?`,sub:`Review before you forget`},
-    {title:`💪 ${due.length} words ready to review`,sub:`Keep your streak!`},
+    {title:t('rem_waiting',{n:due.length}),sub:t('rem_earn',{pts:pts})},
+    {title:t('rem_due'),sub:t('rem_due_sub',{n:due.length})},
+    {title:t('rem_remember'),sub:t('rem_forget')},
+    {title:t('rem_streak',{n:due.length}),sub:t('rem_streak_sub')},
   ];
   const msg=msgs[Math.floor(Math.random()*msgs.length)];
   Q('#rem-title').textContent=msg.title;
@@ -3953,7 +4287,7 @@ function getDeckStats(deck){
    SESSION
 ══════════════════════════════ */
 function sesOpenSmart(){
-  if(!words.length){ showToast('You have not added any words yet!',2800,'warn'); return; }
+  if(!words.length){ showToast(t('toast_no_words'),2800,'warn'); return; }
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
   showIntro();
@@ -3966,7 +4300,7 @@ function sesOpenDue(){
 }
 function sesOpen(){
   const fw=filteredWords();
-  if(!fw.length){ showToast('You have not added any words yet!'); return; }
+  if(!fw.length){ showToast(t('toast_no_words')); return; }
   const now=new Date();
   const all=[...fw].sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
   sesDeck=all.map(w=>({...w,_type:new Date(w.next_review||0)<=now?'due':w.seen===0?'new':w.score<0?'weak':'rev'}));
@@ -3980,7 +4314,7 @@ function showIntro(){
   const total=sesDeck.length;
   // Set emoji and title based on time
   const h=now.getHours();
-  const greet = h<12?'Good morning ☀️':h<17?'Review time 🧠':h<21?'Good afternoon 🌤':'Good evening 🌙';
+  const greet = h<12?t('greet_morning'):h<17?t('greet_review'):h<21?t('greet_afternoon'):t('greet_evening');
   const intro=Q('#ses-intro');
   Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
   Q('#intro-title').textContent=greet;
@@ -4032,7 +4366,7 @@ function sesRestart(){
   // rebuild deck از نو
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
-  if(!sesDeck.length){ showToast('همه لغت‌ها رو مرور کردی 🎉'); sesClose(true); return; }
+  if(!sesDeck.length){ showToast(t('session_done')); sesClose(true); return; }
   startSession();
 }
 
@@ -5009,7 +5343,7 @@ function openPack(id){
   plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
 
   if(!plWords.length){
-    showToast('همه لغات این pack رو قبلاً خوندی! 🎉');
+    showToast(t('pack_done'));
     return;
   }
 
@@ -5118,7 +5452,7 @@ async function packLearnAddFlash(){
   
   // Check already exists
   if(words.find(x=>x.de===w.de)){
-    showToast('قبلاً اضافه شده ✓',2800,'ok');
+    showToast(t('already_added')),2800,'ok');
     plIdx++;
     plShowCard();
     return;
@@ -5155,7 +5489,7 @@ async function packLearnAddFlash(){
       setTimeout(()=>{ plIdx++; plShowCard(); }, 1200);
     }, 600);
   }catch(e){
-    showToast('خطا در افزودن — دوباره امتحان کن');
+    showToast(t('add_err')));
     btn.disabled=false;
   }
 }
@@ -5487,7 +5821,7 @@ function packLearnRestart(){
         <!-- Front -->
         <div class="pl-front" id="pl-front">
           <div class="pl-word" id="pl-word">Hallo</div>
-          <div class="pl-hint">Tap to reveal meaning</div>
+          <div class="pl-hint" data-i18n="tap_reveal">Tap to reveal meaning</div>
           <div class="pl-tap-icon">👆</div>
         </div>
 
