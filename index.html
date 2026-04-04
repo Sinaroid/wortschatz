@@ -2768,9 +2768,19 @@ function gateToggleEmail(){
   if(b)b.textContent=open?'ورود با ایمیل ↑':'ورود با ایمیل ↓';
 }
 
-function tgLoginBtn(){
+async function tgLoginBtn(){
+  var btn=Q('#gate-tg-section button');
+  if(btn){btn.disabled=true;btn.textContent='در حال ورود...';}
   var u=window.tgApp&&window.tgApp.user;
-  if(u&&u.id) tgAutoLogin(u);
+  if(u&&u.id){
+    await tgAutoLogin(u);
+  } else {
+    showToast('اطلاعات تلگرام یافت نشد',2000,'err');
+  }
+  if(btn){
+    btn.disabled=false;
+    btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg> ادامه با Telegram';
+  }
 }
 
 function gateShowTgBtn(){
@@ -3070,14 +3080,22 @@ async function tgAutoLogin(u){
   var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'کاربر';
   var meta={full_name:name,tg_id:String(u.id),tg_chat_id:String(u.id),tg_username:u.username||''};
   try{
+    // اول signIn
     var r=await sb.auth.signInWithPassword({email:email,password:pass});
-    if(r.error)r=await sb.auth.signUp({email:email,password:pass,options:{data:meta}});
-    if(r.error)throw r.error;
-    // update metadata with tg_chat_id if missing
-    if(r.data&&r.data.user&&!r.data.user.user_metadata.tg_chat_id){
-      await sb.auth.updateUser({data:meta});
+    if(r.error){
+      // کاربر جدید — signUp
+      var r2=await sb.auth.signUp({email:email,password:pass,options:{data:meta}});
+      if(r2.error)throw r2.error;
+      // بعد از signUp دوباره signIn (برای حالتی که confirm نیاز داره)
+      var r3=await sb.auth.signInWithPassword({email:email,password:pass});
+      if(r3.error)throw r3.error;
+      r=r3;
     }
     if(r.data&&r.data.user){
+      // update metadata اگه tg_chat_id نداشت
+      if(!r.data.user.user_metadata||!r.data.user.user_metadata.tg_chat_id){
+        await sb.auth.updateUser({data:meta});
+      }
       setUserUI(r.data.user);hideGate();
       var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
       var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
@@ -3088,7 +3106,10 @@ async function tgAutoLogin(u){
       showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
       updateTopStatus();
     }
-  }catch(e){console.error('[TG]',e.message);}
+  }catch(e){
+    console.error('[TG login error]',e.message);
+    showToast('خطا در ورود: '+e.message,3000,'err');
+  }
 }
 
 async function init(){
