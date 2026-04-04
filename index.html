@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Wortschatz</title>
+<title>Fluenta</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0d0d0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Wortschatz">
+<meta name="apple-mobile-web-app-title" content="Fluenta">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -189,55 +189,189 @@ body.offline .topbar{top:36px}
 /* ─── AUTH GATE ─── */
 
 /* ── GATE ── */
+/* ═══ GATE — Fluenta Dark Theme ═══ */
 #gate{
-  position:fixed;inset:0;background:var(--bg);display:none;
-  align-items:center;justify-content:center;
-  z-index:400;padding:16px;
+  position:fixed;inset:0;
+  background:linear-gradient(170deg,#050d1a 0%,#071425 50%,#050d1a 100%);
+  display:none;align-items:flex-start;justify-content:center;
+  z-index:400;overflow-y:auto;
 }
 #gate.open{display:flex}
 .lp-step{display:none}
 .lp-step.active{display:block;animation:fadeUp .3s var(--ease)}
-.lp-dot{width:5px;height:5px;border-radius:50%;background:var(--bg3);transition:background .3s,transform .3s;display:inline-block}
-.lp-dot.active{background:white;transform:scale(1.3)}
+.lp-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .3s,transform .3s;display:inline-block}
+.lp-dot.active{background:#00d4ff;transform:scale(1.3)}
 #login-panel.open{display:flex}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-@media(max-width:768px){
-  #gate section:first-of-type > div{flex-direction:column!important;gap:40px!important;padding:40px 20px 60px!important}
-  #gate section:first-of-type > div > div:first-child{text-align:center}
-  #gate section:first-of-type > div > div:first-child p{margin:0 auto 28px!important}
-  #gate section:first-of-type > div > div:first-child > div:nth-child(4){justify-content:center}
-  #gate section:first-of-type > div > div:first-child > div:last-child{justify-content:center}
-  #gate [style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr!important}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(0,212,255,.2)}50%{box-shadow:0 0 40px rgba(0,212,255,.4)}}
+
+/* Gate wrapper */
+.gate-wrap{
+  width:100%;max-width:420px;min-height:100dvh;
+  display:flex;flex-direction:column;
+  padding:0 0 32px;
 }
 
-.gate-box{
-  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r5);
-  padding:20px;width:100%;max-width:360px;
-  box-shadow:var(--sh3);animation:up .4s var(--spring);
+/* Top bar */
+.gate-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;
 }
-.gate-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.gate-icon{
-  width:40px;height:40px;background:var(--accent);border-radius:12px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+.gate-logo{
+  font-family:var(--serif);font-size:22px;font-weight:700;
+  color:#00d4ff;letter-spacing:-.5px;
 }
-.gate-brand-name{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink)}
-.gate-headline{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px}
-.gate-sub{font-size:13px;color:var(--ink3);line-height:1.65;margin-bottom:16px}
-.btn-google{
-  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:12px;border-radius:var(--r2);border:1.5px solid var(--bg3);
-  background:var(--card);color:var(--ink);font-size:14px;font-weight:600;
-  cursor:pointer;transition:all .18s;font-family:var(--sans);margin-bottom:var(--s3);
+.gate-globe{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.4);font-size:16px;cursor:pointer;
+  transition:border-color .2s;
 }
-.btn-google:hover{background:var(--bg2);border-color:var(--bg4);transform:translateY(-1px)}
-.btn-google:active{transform:scale(.98)}
-.gate-or{display:flex;align-items:center;gap:var(--s3);margin:var(--s3) 0;color:var(--ink4);font-size:12px}
-.gate-or::before,.gate-or::after{content:'';flex:1;height:1px;background:var(--bg3)}
+.gate-globe:hover{border-color:rgba(0,212,255,.4);color:#00d4ff;}
+
+/* Hero card */
+.gate-hero-card{
+  margin:8px 24px 0;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  padding:32px 24px;
+  position:relative;overflow:hidden;
+  animation:glowPulse 3s ease infinite;
+}
+.gate-hero-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(0,212,255,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.gate-badge{
+  position:absolute;top:-1px;right:24px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:0 0 12px 12px;padding:6px 14px;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;
+  color:rgba(255,255,255,.5);
+}
+.gate-icon-wrap{
+  width:100px;height:100px;border-radius:50%;margin:0 auto 20px;
+  background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  animation:floatY 4s ease infinite;
+  position:relative;
+}
+.gate-icon-wrap::after{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(0,212,255,.08);
+}
+.gate-icon-char{
+  font-size:44px;color:#00d4ff;line-height:1;
+  font-family:system-ui,sans-serif;font-weight:300;
+}
+.gate-dots{
+  display:flex;gap:8px;justify-content:center;
+}
+.gate-dot-i{
+  width:24px;height:3px;border-radius:2px;background:rgba(255,255,255,.15);
+}
+.gate-dot-i.on{background:rgba(0,212,255,.6);width:32px;}
+
+/* Headline */
+.gate-headline-wrap{padding:28px 24px 0;text-align:center;}
+.gate-h1{
+  font-size:28px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:4px;
+  letter-spacing:-.5px;
+}
+.gate-h1-cyan{
+  font-size:26px;font-weight:700;font-style:italic;
+  color:#00d4ff;line-height:1.3;margin-bottom:0;
+  font-family:var(--serif);
+}
+
+/* Buttons */
+.gate-btns{padding:32px 24px 0;}
+.gate-btn-tg{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+  background:#00d4ff;color:#050d1a;
+  border:none;border-radius:100px;padding:17px 24px;
+  font-size:16px;font-weight:700;cursor:pointer;
+  font-family:var(--sans);transition:all .2s;margin-bottom:12px;
+  letter-spacing:-.2px;
+}
+.gate-btn-tg:hover{background:#00e5ff;transform:translateY(-1px);}
+.gate-btn-tg:active{transform:scale(.98);}
+.gate-btn-tg-arrow{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(5,13,26,.2);
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+}
+.gate-btn-google{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+  background:rgba(255,255,255,.05);color:#fff;
+  border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:16px 24px;
+  font-size:15px;font-weight:600;cursor:pointer;
+  font-family:var(--sans);transition:all .2s;
+  letter-spacing:-.2px;
+}
+.gate-btn-google:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);}
+.gate-btn-google:active{transform:scale(.98);}
+.gate-btn-google-icon{
+  width:20px;height:20px;border-radius:4px;
+  background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* Email link */
+.gate-email-link{
+  text-align:center;margin-top:20px;
+}
+.gate-email-link button{
+  background:none;border:none;color:rgba(255,255,255,.4);
+  font-size:13px;font-family:var(--sans);cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;
+  transition:color .2s;padding:4px 8px;
+}
+.gate-email-link button:hover{color:rgba(255,255,255,.7);}
+
+/* Email section */
+.gate-email-section{
+  margin-top:16px;padding:20px 24px 0;display:none;
+}
+.gate-email-section.show{display:block;}
+.gate-inp{
+  width:100%;padding:14px 18px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  color:#fff;font-size:15px;outline:none;
+  font-family:var(--sans);direction:ltr;
+  transition:border-color .2s,box-shadow .2s;
+  margin-bottom:10px;
+}
+.gate-inp:focus{
+  border-color:rgba(0,212,255,.4);
+  box-shadow:0 0 0 3px rgba(0,212,255,.08);
+}
+.gate-inp::placeholder{color:rgba(255,255,255,.25);}
+.gate-btn-magic{
+  width:100%;padding:14px;border-radius:100px;
+  background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.25);
+  color:#00d4ff;font-size:14px;font-weight:600;
+  cursor:pointer;font-family:var(--sans);transition:all .2s;
+}
+.gate-btn-magic:hover{background:rgba(0,212,255,.2);}
+.gate-msg{font-size:12px;min-height:16px;margin-top:8px;text-align:center;}
+
+/* Privacy */
+.gate-privacy{
+  text-align:center;padding:24px 32px 0;
+  font-size:11px;color:rgba(255,255,255,.2);line-height:1.6;
+}
+.gate-privacy a{color:rgba(255,255,255,.35);text-decoration:underline;}
+
+/* Old classes - keep for compat */
 .gate-err{font-size:12px;color:var(--err);min-height:14px;margin-bottom:var(--s2)}
-.gate-features{display:flex;flex-direction:column;gap:6px;margin-top:var(--s5);padding-top:var(--s5);border-top:1px solid var(--bg2)}
-.gate-feat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3)}
-.gate-feat-ic{width:18px;height:18px;border-radius:50%;background:var(--okbg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px}
+.btn-google{display:none}
 
 
 /* ═══════════════════════════════════
@@ -1523,9 +1657,9 @@ html,body{overflow-x:hidden!important}
     tg.BackButton.hide();
   });
   var BB=tg.BottomButton||tg.MainButton;
-  if(BB){BB.setParams({text:'افزودن به فلش‌کارت',color:'#1a3af2',text_color:'#ffffff',is_active:true,is_visible:false});BB.onClick(function(){tg.HapticFeedback.impactOccurred('medium');var ph=document.getElementById('ph-res');if(ph&&ph.classList.contains('show')){try{addPhrase();}catch(e){}}else{try{addWord();}catch(e){}}BB.hide();});}
+  if(BB){BB.setParams({text:'Add to Flashcards',color:'#1a3af2',text_color:'#ffffff',is_active:true,is_visible:false});BB.onClick(function(){tg.HapticFeedback.impactOccurred('medium');var ph=document.getElementById('ph-res');if(ph&&ph.classList.contains('show')){try{addPhrase();}catch(e){}}else{try{addWord();}catch(e){}}BB.hide();});}
   document.addEventListener('click',function(e){if(e.target.closest('button,.nav-item,.s-btn'))tg.HapticFeedback.impactOccurred('light');},{passive:true});
-  window.tgApp={tg:tg,isTg:true,user:tg.initDataUnsafe&&tg.initDataUnsafe.user,showBack:function(){tg.BackButton.show();},hideBack:function(){tg.BackButton.hide();},showAdd:function(t){if(BB){BB.setText(t||'افزودن به فلش‌کارت');BB.show();}},hideAdd:function(){if(BB)BB.hide();},haptic:function(t){try{if(['success','error','warning'].includes(t))tg.HapticFeedback.notificationOccurred(t);else tg.HapticFeedback.impactOccurred(t||'medium');}catch(e){}},setTheme:syncHeader};
+  window.tgApp={tg:tg,isTg:true,user:tg.initDataUnsafe&&tg.initDataUnsafe.user,showBack:function(){tg.BackButton.show();},hideBack:function(){tg.BackButton.hide();},showAdd:function(t){if(BB){BB.setText(t||'Add to Flashcards');BB.show();}},hideAdd:function(){if(BB)BB.hide();},haptic:function(t){try{if(['success','error','warning'].includes(t))tg.HapticFeedback.notificationOccurred(t);else tg.HapticFeedback.impactOccurred(t||'medium');}catch(e){}},setTheme:syncHeader};
   console.log('[TG]',tg.version,tg.platform,tg.colorScheme);
 })();
 </script>
@@ -1546,49 +1680,52 @@ html,body{overflow-x:hidden!important}
         </div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">۱ از ۵</div><div class="ob-title">به Wortschatz خوش اومدی 👋</div><div class="ob-sub">چند سوال کوتاه تا بهترین تجربه رو برات بسازیم</div></div></div>
+    <div class="ob-txt"><div class="ob-step">1 of 5</div><div class="ob-title">Welcome to Fluenta 👋</div><div class="ob-sub">A few quick questions to personalize your experience</div></div></div>
 
     <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
       <div class="ob-lang-list">
-        <div class="ob-lc sel" id="ob-lde" onclick="obPickLang('de')"><div class="ob-lc-flag">🇩🇪</div><div class="ob-lc-info"><div class="ob-lc-name">آلمانی یاد می‌گیرم</div><div class="ob-lc-sub">Deutsch lernen</div></div><div class="ob-lc-radio"></div></div>
-        <div class="ob-lc" id="ob-len" onclick="obPickLang('en')"><div class="ob-lc-flag">🇬🇧</div><div class="ob-lc-info"><div class="ob-lc-name">انگلیسی یاد می‌گیرم</div><div class="ob-lc-sub">Learning English</div></div><div class="ob-lc-radio"></div></div>
+        <div class="ob-lc sel" id="ob-lde" onclick="obPickLang('de')"><div class="ob-lc-flag">🇩🇪</div><div class="ob-lc-info"><div class="ob-lc-name">German</div><div class="ob-lc-sub">Deutsch</div></div><div class="ob-lc-radio"></div></div>
+        <div class="ob-lc" id="ob-len" onclick="obPickLang('en')"><div class="ob-lc-flag">🇬🇧</div><div class="ob-lc-info"><div class="ob-lc-name">English</div><div class="ob-lc-sub">English</div></div><div class="ob-lc-radio"></div></div>
+        <div class="ob-lc" id="ob-lfr" onclick="obPickLang('fr')"><div class="ob-lc-flag">🇫🇷</div><div class="ob-lc-info"><div class="ob-lc-name">French</div><div class="ob-lc-sub">Français</div></div><div class="ob-lc-radio"></div></div>
+        <div class="ob-lc" id="ob-ltr" onclick="obPickLang('tr')"><div class="ob-lc-flag">🇹🇷</div><div class="ob-lc-info"><div class="ob-lc-name">Turkish</div><div class="ob-lc-sub">Türkçe</div></div><div class="ob-lc-radio"></div></div>
+        <div class="ob-lc" id="ob-lar" onclick="obPickLang('ar')"><div class="ob-lc-flag">🇸🇦</div><div class="ob-lc-info"><div class="ob-lc-name">Arabic</div><div class="ob-lc-sub">العربية</div></div><div class="ob-lc-radio"></div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">۲ از ۵</div><div class="ob-title">کدوم زبان؟</div><div class="ob-sub">بعداً از تنظیمات می‌تونی تغییر بدی</div></div></div>
+    <div class="ob-txt"><div class="ob-step">2 of 5</div><div class="ob-title">Which language?</div><div class="ob-sub">You can change this later in settings</div></div></div>
 
     <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
       <div class="ob-lv-list">
-        <div class="ob-lvcard" id="ob-la1" onclick="obPickLevel('A1')"><div class="ob-lv-tag">A1</div><div class="ob-lv-info"><div class="ob-lv-name">تازه شروع کردم</div><div class="ob-lv-desc">هیچ پیش‌زمینه‌ای ندارم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:8%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-la2" onclick="obPickLevel('A2')"><div class="ob-lv-tag">A2</div><div class="ob-lv-info"><div class="ob-lv-name">یه کم بلدم</div><div class="ob-lv-desc">جملات ساده رو می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:22%"></div></div></div></div>
-        <div class="ob-lvcard sel" id="ob-lb1" onclick="obPickLevel('B1')"><div class="ob-lv-tag">B1</div><div class="ob-lv-info"><div class="ob-lv-name">متوسطم</div><div class="ob-lv-desc">می‌تونم صحبت کنم ولی محدودم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:45%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-lb2" onclick="obPickLevel('B2')"><div class="ob-lv-tag">B2</div><div class="ob-lv-info"><div class="ob-lv-name">نسبتاً خوبم</div><div class="ob-lv-desc">روان صحبت می‌کنم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:65%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-lc1" onclick="obPickLevel('C1')"><div class="ob-lv-tag">C1</div><div class="ob-lv-info"><div class="ob-lv-name">پیشرفته‌ام</div><div class="ob-lv-desc">فیلم و کتاب می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:82%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-la1" onclick="obPickLevel('A1')"><div class="ob-lv-tag">A1</div><div class="ob-lv-info"><div class="ob-lv-name">Just starting out</div><div class="ob-lv-desc">No prior knowledge</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:8%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-la2" onclick="obPickLevel('A2')"><div class="ob-lv-tag">A2</div><div class="ob-lv-info"><div class="ob-lv-name">Know a little</div><div class="ob-lv-desc">I understand simple sentences</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:22%"></div></div></div></div>
+        <div class="ob-lvcard sel" id="ob-lb1" onclick="obPickLevel('B1')"><div class="ob-lv-tag">B1</div><div class="ob-lv-info"><div class="ob-lv-name">Intermediate</div><div class="ob-lv-desc">I can speak but with limits</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:45%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-lb2" onclick="obPickLevel('B2')"><div class="ob-lv-tag">B2</div><div class="ob-lv-info"><div class="ob-lv-name">Upper intermediate</div><div class="ob-lv-desc">I speak fluently</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:65%"></div></div></div></div>
+        <div class="ob-lvcard" id="ob-lc1" onclick="obPickLevel('C1')"><div class="ob-lv-tag">C1</div><div class="ob-lv-info"><div class="ob-lv-name">Advanced</div><div class="ob-lv-desc">I understand films and books</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:82%"></div></div></div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">۳ از ۵</div><div class="ob-title">سطحت الان کجاست؟</div><div class="ob-sub">صادقانه انتخاب کن — روی لغات پیشنهادی تأثیر داره</div></div></div>
+    <div class="ob-txt"><div class="ob-step">3 of 5</div><div class="ob-title">What is your current level?</div><div class="ob-sub">Be honest — this affects your word suggestions</div></div></div>
 
     <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-      <div class="ob-goal-hint">می‌تونی چند تا انتخاب کنی</div>
+      <div class="ob-goal-hint">You can select multiple</div>
       <div class="ob-goal-grid">
-        <div class="ob-gc sel" id="ob-g-travel" onclick="obToggleGoal('travel',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">✈️</div><div class="ob-gc-name">سفر و مهاجرت</div></div>
-        <div class="ob-gc" id="ob-g-work" onclick="obToggleGoal('work',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💼</div><div class="ob-gc-name">کار و تجارت</div></div>
-        <div class="ob-gc" id="ob-g-exam" onclick="obToggleGoal('exam',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">📝</div><div class="ob-gc-name">آزمون Goethe</div></div>
-        <div class="ob-gc" id="ob-g-daily" onclick="obToggleGoal('daily',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💬</div><div class="ob-gc-name">مکالمه روزمره</div></div>
-        <div class="ob-gc" id="ob-g-study" onclick="obToggleGoal('study',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">🎓</div><div class="ob-gc-name">تحصیل در خارج</div></div>
-        <div class="ob-gc" id="ob-g-fun" onclick="obToggleGoal('fun',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">❤️</div><div class="ob-gc-name">علاقه شخصی</div></div>
+        <div class="ob-gc sel" id="ob-g-travel" onclick="obToggleGoal('travel',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">✈️</div><div class="ob-gc-name">Travel & Immigration</div></div>
+        <div class="ob-gc" id="ob-g-work" onclick="obToggleGoal('work',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💼</div><div class="ob-gc-name">Work & Business</div></div>
+        <div class="ob-gc" id="ob-g-exam" onclick="obToggleGoal('exam',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">📝</div><div class="ob-gc-name">Goethe / IELTS Exam</div></div>
+        <div class="ob-gc" id="ob-g-daily" onclick="obToggleGoal('daily',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💬</div><div class="ob-gc-name">Daily Conversation</div></div>
+        <div class="ob-gc" id="ob-g-study" onclick="obToggleGoal('study',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">🎓</div><div class="ob-gc-name">Study Abroad</div></div>
+        <div class="ob-gc" id="ob-g-fun" onclick="obToggleGoal('fun',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">❤️</div><div class="ob-gc-name">Personal Interest</div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">۴ از ۵</div><div class="ob-title">هدفت چیه؟</div><div class="ob-sub">بر اساس انتخابت بهترین لغات رو پیشنهاد میدیم</div></div></div>
+    <div class="ob-txt"><div class="ob-step">4 of 5</div><div class="ob-title">What is your goal?</div><div class="ob-sub">We will suggest the best words based on your choice</div></div></div>
 
     <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
       <div class="ob-sum-wrap">
-        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico" id="ob-sum-flag">🇩🇪</div><div><div class="ob-sum-lbl">زبان</div><div class="ob-sum-val" id="ob-sum-lang">آلمانی</div></div></div></div>
-        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">📊</div><div><div class="ob-sum-lbl">سطح فعلی</div><div class="ob-sum-val" id="ob-sum-level">B1 — متوسط</div></div></div></div>
-        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">🎯</div><div><div class="ob-sum-lbl">اهداف</div><div class="ob-sum-tags" id="ob-sum-goals"></div></div></div></div>
-        <div class="ob-sum-ai"><div class="ob-sum-ai-ico">✨</div><div class="ob-sum-ai-txt">یه مجموعه لغت شخصی‌سازی‌شده بر اساس پروفایلت آماده کردیم</div></div>
+        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico" id="ob-sum-flag">🇩🇪</div><div><div class="ob-sum-lbl">Language</div><div class="ob-sum-val" id="ob-sum-lang">Word</div></div></div></div>
+        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">📊</div><div><div class="ob-sum-lbl">Current Level</div><div class="ob-sum-val" id="ob-sum-level">B1 — متوسط</div></div></div></div>
+        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">🎯</div><div><div class="ob-sum-lbl">Goals</div><div class="ob-sum-tags" id="ob-sum-goals"></div></div></div></div>
+        <div class="ob-sum-ai"><div class="ob-sum-ai-ico">✨</div><div class="ob-sum-ai-txt">Your personalized word collection is ready based on your profile</div></div>
       </div>
     </div></div>
-    <div class="ob-txt"><div class="ob-step">۵ از ۵</div><div class="ob-title">همه چیز آماده‌ست 🚀</div><div class="ob-sub">می‌تونی هر وقت از پروفایلت تغییر بدی</div></div></div>
+    <div class="ob-txt"><div class="ob-step">5 of 5</div><div class="ob-title">All set! 🚀</div><div class="ob-sub">You can change this anytime from your profile</div></div></div>
 
   </div></div>
   <div class="ob-foot">
@@ -1597,161 +1734,82 @@ html,body{overflow-x:hidden!important}
       <div class="ob-dot" id="obd2"></div><div class="ob-dot" id="obd3"></div><div class="ob-dot" id="obd4"></div>
     </div>
     <button class="ob-btn" onclick="obNext()">
-      <span id="ob-btntxt">بعدی</span>
+      <span id="ob-btntxt">Next</span>
       <svg id="ob-btnarr" width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <button class="ob-skip" id="ob-skip" onclick="obClose()">رد کن</button>
+    <button class="ob-skip" id="ob-skip" onclick="obClose()">Skip</button>
   </div>
 </div>
 
 
-<div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
+<div class="off-bar" id="off-bar">📡 Offline — your words are available but search needs internet</div>
 
-<!-- Auth Gate -->
+<!-- Auth Gate — Fluenta Dark -->
 <div id="gate">
+<div class="gate-wrap">
 
-<div style="position:relative;z-index:1;width:100%;max-width:340px;border-radius:24px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.35)">
+  <!-- Top bar -->
+  <div class="gate-topbar">
+    <div class="gate-logo">Fluenta</div>
+    <div class="gate-globe">🌐</div>
+  </div>
 
-  <!-- TOP: Blue section -->
-  <div style="background:linear-gradient(135deg,#1a3af2,#3d5af5);padding:16px;position:relative;overflow:hidden">
-    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
-    <div style="position:absolute;bottom:-25px;left:-10px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.05)"></div>
-
-    <!-- Phone -->
-    <div id="lp-phone" style="width:160px;margin:0 auto;background:rgba(255,255,255,.96);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 8px 28px rgba(0,0,0,.22)">
-      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40px;height:11px;background:#1a1916;border-radius:0 0 7px 7px;z-index:10"></div>
-      <div style="background:#f5f3ee;padding:15px 9px 6px;display:flex;align-items:center;border-bottom:1px solid #eceae3">
-        <div style="display:flex;align-items:center;gap:3px">
-          <div style="width:11px;height:11px;background:#1a3af2;border-radius:2px;color:white;font-size:6px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif">W</div>
-          <span style="font-family:'Fraunces',serif;font-size:8px;font-weight:700;color:#1a1916">Wortschatz</span>
-        </div>
-      </div>
-      <div style="padding:8px;height:130px;overflow:hidden;position:relative">
-
-        <div class="lp-step active" id="lps0">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:15%;background:#1a3af2;border-radius:2px"></div></div>
-          <div id="lp-searchbox" style="background:#eceae3;border-radius:7px;padding:4px 7px;display:flex;align-items:center;gap:4px;margin-bottom:5px">
-            <svg width="7" height="7" viewBox="0 0 7 7" fill="none"><circle cx="2.8" cy="2.8" r="1.8" stroke="#8a8780" stroke-width=".7"/><path d="M4 4L5.8 5.8" stroke="#8a8780" stroke-width=".7" stroke-linecap="round"/></svg>
-            <span style="font-size:8px;direction:ltr;color:#1a1916" id="lp-typetext"></span><span style="width:1px;height:8px;background:#1a3af2;animation:blink .7s infinite;display:inline-block;flex-shrink:0"></span>
-          </div>
-          <div style="font-size:7px;color:#8a8780;text-align:center;padding:8px 0">در حال تایپ...</div>
-        </div>
-
-        <div class="lp-step" id="lps1">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:40%;background:#1a3af2;border-radius:2px"></div></div>
-          <div style="background:#eceae3;border-radius:7px;padding:7px">
-            <div style="font-family:'Fraunces',serif;font-size:10px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
-            <div style="font-size:7px;color:#4a4843;margin:2px 0 3px">مهلت فسخ قرارداد</div>
-            <div style="font-size:6px;color:#8a8780;font-style:italic;direction:ltr;background:white;border-radius:3px;padding:2px 4px;margin-bottom:4px">...beträgt drei Monate</div>
-            <button id="lp-addbtn" style="width:100%;background:#1a3af2;color:white;border:none;border-radius:4px;padding:4px;font-size:7px;font-weight:600;cursor:pointer;font-family:var(--sans)">+ فلش‌کارت</button>
-          </div>
-        </div>
-
-        <div class="lp-step" id="lps2">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:65%;background:#1a3af2;border-radius:2px"></div></div>
-          <div id="lp-flashcard" style="background:#eceae3;border-radius:7px;padding:10px;text-align:center;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
-            <div style="font-family:'Fraunces',serif;font-size:13px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
-            <div style="font-size:6px;color:#8a8780;margin-top:2px">کلیک برای معنی</div>
-          </div>
-          <div style="display:flex;gap:3px;opacity:.35">
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">بلدم</button>
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
-          </div>
-        </div>
-
-        <div class="lp-step" id="lps3">
-          <div style="height:2px;background:#eceae3;border-radius:2px;margin-bottom:6px;overflow:hidden"><div style="height:100%;width:85%;background:#1a3af2;border-radius:2px"></div></div>
-          <div style="background:#e6ebff;border-radius:7px;padding:10px;text-align:center;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:5px">
-            <div style="font-size:9px;color:#1a3af2;font-weight:600">مهلت فسخ قرارداد</div>
-            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;direction:ltr;color:#1a1916">Kündigungsfrist</div>
-            <div style="font-size:6px;color:#1a3af2;opacity:.7;margin-top:2px">فردا مرور کن</div>
-          </div>
-          <div style="display:flex;gap:3px">
-            <button id="lp-knowbtn" style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#eaf3de;color:#3b6d11;font-family:var(--sans)">✓ بلدم</button>
-            <button style="flex:1;padding:3px;border-radius:4px;border:none;font-size:6px;font-weight:600;background:#1a3af2;color:white;font-family:var(--sans)">یاد می‌گیرم</button>
-          </div>
-        </div>
-
-        <div class="lp-step" id="lps4">
-          <div style="text-align:center;padding:16px 0">
-            <div style="font-size:22px">🎉</div>
-            <div style="font-family:'Fraunces',serif;font-size:11px;font-weight:700;color:#1a1916;margin-top:4px">یاد گرفتی!</div>
-            <div style="font-size:7px;color:#8a8780;margin-top:2px">SM-2 بهترین وقت مرور رو یادت میاره</div>
-          </div>
-        </div>
-
-      </div>
-      <!-- cursor -->
-      <div id="lp-mouse" style="position:absolute;pointer-events:none;z-index:50;opacity:0;transition:left .5s cubic-bezier(.4,0,.2,1),top .5s cubic-bezier(.4,0,.2,1),opacity .3s">
-        <svg width="11" height="14" viewBox="0 0 11 14" fill="none"><path d="M1 1l3.5 9.8 1.6-3.5 3.5-.9L1 1z" fill="white" stroke="#1a1916" stroke-width=".8" stroke-linejoin="round"/></svg>
-      </div>
-      <div id="lp-ripple" style="position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(26,58,242,.25);transform:scale(0);pointer-events:none;z-index:49;transition:transform .3s,opacity .3s"></div>
+  <!-- Hero card -->
+  <div class="gate-hero-card">
+    <div class="gate-badge">LEXICON AI</div>
+    <div class="gate-icon-wrap">
+      <div class="gate-icon-char">文A</div>
     </div>
-
-    <!-- Dots + dynamic description -->
-    <div style="margin-top:10px;text-align:center">
-      <div style="display:flex;gap:4px;justify-content:center;margin-bottom:8px">
-        <div class="lp-dot active" id="lpd0"></div>
-        <div class="lp-dot" id="lpd1"></div>
-        <div class="lp-dot" id="lpd2"></div>
-        <div class="lp-dot" id="lpd3"></div>
-        <div class="lp-dot" id="lpd4"></div>
-      </div>
-      <!-- Dynamic description per slide -->
-      <div id="lp-slide-desc" style="min-height:40px;transition:opacity .3s">
-        <div style="font-family:var(--sans);font-size:15px;font-weight:700;color:white;line-height:1.3">لغت جستجو کن</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">فارسی، آلمانی یا انگلیسی — AI توضیح میده</div>
-      </div>
+    <div class="gate-dots">
+      <div class="gate-dot-i on"></div>
+      <div class="gate-dot-i"></div>
     </div>
   </div>
 
-  <!-- BOTTOM: Login section — clean & professional -->
-  <div style="background:var(--card);padding:20px">
+  <!-- Headline -->
+  <div class="gate-headline-wrap">
+    <div class="gate-h1">Master vocabulary,</div>
+    <div class="gate-h1-cyan">one word at a time.</div>
+  </div>
 
-    <!-- App name -->
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.3px">Wortschatz</div>
-      <div style="font-size:11px;color:var(--ink3);margin-top:2px">یادگیری هوشمند زبان آلمانی</div>
-    </div>
+  <!-- Buttons -->
+  <div class="gate-btns">
 
-    <!-- Telegram button — ONLY inside Telegram Mini App -->
-    <div id="gate-tg-section" style="display:none;margin-bottom:10px">
-      <button onclick="tgLoginBtn()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#229ED9;color:#fff;border:none;border-radius:12px;padding:14px 16px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity .2s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg>
-        ادامه با Telegram
-      </button>
-      <div style="font-size:11px;color:var(--ink4);text-align:center;margin-top:8px">یک کلیک، بدون پسورد</div>
-    </div>
-
-    <!-- Google + Email — ONLY outside Telegram -->
-    <div id="gate-web-section">
-      <button onclick="loginGoogle()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bg2);color:var(--ink);border:1px solid var(--bg3);border-radius:12px;padding:13px 16px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .2s;margin-bottom:10px" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'">
-        <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
-        ورود با Google
-      </button>
-
-      <!-- Email toggle -->
-      <div style="text-align:center;margin-bottom:6px">
-        <button onclick="gateToggleEmail()" style="background:none;border:none;font-size:12px;color:var(--ink3);cursor:pointer;font-family:var(--sans);padding:4px 8px;border-radius:6px" id="gate-email-toggle-btn">
-          ورود با ایمیل ↓
-        </button>
-      </div>
-
-      <!-- Email section — hidden by default -->
-      <div id="gate-email-section" style="display:none;padding-top:4px;border-top:1px solid var(--bg2)">
-        <div style="margin-top:12px">
-          <input class="inp ltr" id="gate-email" type="email" placeholder="your@email.com" style="margin-bottom:8px;border-radius:10px">
-          <button class="btn btn-p btn-full" onclick="loginMagicLink()" id="gate-btn" style="border-radius:10px">ارسال لینک ورود</button>
-          <div id="gate-err" style="font-size:11px;color:var(--ok);text-align:center;margin-top:6px;min-height:14px"></div>
+    <!-- Telegram — only inside Telegram -->
+    <div id="gate-tg-section" style="display:none">
+      <button class="gate-btn-tg" onclick="tgLoginBtn()">
+        <div class="gate-btn-tg-arrow">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2l3 3-3 3" stroke="#050d1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-      </div>
+        Continue with Telegram
+      </button>
     </div>
 
-    <!-- Privacy note -->
-    <div style="font-size:10px;color:var(--ink4);text-align:center;margin-top:14px;line-height:1.5">
-      با ورود، حریم خصوصی و شرایط استفاده را می‌پذیری
+    <!-- Google — only outside Telegram -->
+    <div id="gate-web-section">
+      <button class="gate-btn-google" onclick="loginGoogle()">
+        <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
     </div>
 
+    <!-- Email toggle -->
+    <div class="gate-email-link">
+      <button onclick="gateToggleEmail()" id="gate-email-toggle-btn">Use email instead</button>
+    </div>
+
+    <!-- Email section -->
+    <div id="gate-email-section">
+      <input class="gate-inp" id="gate-email" type="email" placeholder="your@email.com">
+      <button class="gate-btn-magic" onclick="loginMagicLink()" id="gate-btn">Send magic link</button>
+      <div class="gate-msg" id="gate-err"></div>
+    </div>
+
+  </div>
+
+  <!-- Privacy -->
+  <div class="gate-privacy">
+    By continuing, you agree to Fluenta's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
   </div>
 
 </div>
@@ -1778,11 +1836,11 @@ html,body{overflow-x:hidden!important}
       <div class="drw-hero-stats">
         <div class="drw-hstat">
           <div class="drw-hstat-n" id="drw-stat-total">—</div>
-          <div class="drw-hstat-l">کل لغت</div>
+          <div class="drw-hstat-l">Total Words</div>
         </div>
         <div class="drw-hstat">
           <div class="drw-hstat-n" id="drw-stat-learned">—</div>
-          <div class="drw-hstat-l">یاد گرفتم</div>
+          <div class="drw-hstat-l">Learned</div>
         </div>
         <div class="drw-hstat">
           <div class="drw-hstat-n fire" id="drw-stat-streak">—</div>
@@ -1790,7 +1848,7 @@ html,body{overflow-x:hidden!important}
         </div>
         <div class="drw-hstat">
           <div class="drw-hstat-n" id="drw-stat-due">—</div>
-          <div class="drw-hstat-l">برای مرور</div>
+          <div class="drw-hstat-l">Due Today</div>
         </div>
       </div>
     </div>
@@ -1798,10 +1856,10 @@ html,body{overflow-x:hidden!important}
     <!-- Language Toggle -->
     <div class="drw-lang-toggle">
       <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle();updatePackPresets()">
-        🇩🇪 آلمانی
+        🇩🇪 German
       </button>
       <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle();updatePackPresets()">
-        🇬🇧 انگلیسی
+        🇬🇧 English
       </button>
     </div>
 
@@ -1809,7 +1867,7 @@ html,body{overflow-x:hidden!important}
     <!-- Free card -->
     <div id="drw-plan-free" style="padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div id="drw-free-msg" style="font-size:11px;color:var(--ink3)">امروز ۰ از ۱۰ جستجو</div>
+        <div id="drw-free-msg" style="font-size:11px;color:var(--ink3)">Today: 0 / 10 searches</div>
       </div>
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-bottom:10px">
         <div id="drw-free-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .4s"></div>
@@ -1817,8 +1875,8 @@ html,body{overflow-x:hidden!important}
       <button class="drw-upgrade-btn-new" onclick="window.open('https://t.me/cinuxx','_blank');drawerClose()">
         <span style="font-size:16px">⚡</span>
         <div style="text-align:right">
-          <div style="font-size:13px;font-weight:700">Pro بگیر — €4.99/ماه</div>
-          <div style="font-size:10px;opacity:.8;margin-top:1px">جستجو و لغت نامحدود</div>
+          <div style="font-size:13px;font-weight:700">Get Fluenta Pro</div>
+          <div style="font-size:10px;opacity:.8;margin-top:1px">Unlimited searches & words</div>
         </div>
         <span style="margin-right:auto;font-size:12px;opacity:.7">←</span>
       </button>
@@ -1827,19 +1885,19 @@ html,body{overflow-x:hidden!important}
     <!-- Beta card -->
     <div id="drw-plan-beta" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:11px;color:var(--ink3)">دسترسی آزمایشی</span>
-        <span style="font-size:11px;color:var(--ok);font-weight:600">فعال ✓</span>
+        <span style="font-size:11px;color:var(--ink3)">Beta access</span>
+        <span style="font-size:11px;color:var(--ok);font-weight:600">Active ✓</span>
       </div>
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-top:8px">
         <div style="height:100%;background:var(--ok);border-radius:4px;width:100%"></div>
       </div>
-      <div style="font-size:10px;color:var(--ink3);margin-top:4px">ممنون که اپ رو تست می‌کنی ❤️</div>
+      <div style="font-size:10px;color:var(--ink3);margin-top:4px">Thank you for testing the app ❤️</div>
     </div>
 
     <!-- Plan card — PRO -->
     <div id="drw-plan-pro" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:11px;color:var(--ink3)">اشتراک تا:</span>
+        <span style="font-size:11px;color:var(--ink3)">Pro until:</span>
         <span style="font-size:11px;font-weight:600" id="drw-pro-until">—</span>
       </div>
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden">
@@ -1853,7 +1911,7 @@ html,body{overflow-x:hidden!important}
       <div class="drw-action-row">
         <button class="drw-action-btn" onclick="logout()">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="opacity:.5"><path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          خروج
+          Sign out
         </button>
         <button class="drw-action-btn danger" onclick="clearAll()">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="opacity:.7"><path d="M2 4h10M5 4V3h4v1M6 7v3M8 7v3M3 4l1 8h6l1-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1872,14 +1930,14 @@ html,body{overflow-x:hidden!important}
 <!-- Edit modal -->
 <div class="modal-bg" id="edit-modal" onclick="if(event.target===this)editClose()">
   <div class="modal">
-    <div class="modal-title">ویرایش لغت</div>
-    <div class="drw-lbl">آلمانی</div><input class="inp ltr" id="ed-de">
-    <div class="drw-lbl">فارسی</div><input class="inp" id="ed-fa">
-    <div class="drw-lbl">جمله نمونه (اختیاری)</div><input class="inp ltr" id="ed-ex">
+    <div class="modal-title">Edit Word</div>
+    <div class="drw-lbl">Word</div><input class="inp ltr" id="ed-de">
+    <div class="drw-lbl">Translation</div><input class="inp" id="ed-fa">
+    <div class="drw-lbl">Example sentence (optional)</div><input class="inp ltr" id="ed-ex">
     <div class="modal-err" id="ed-err"></div>
     <div class="modal-acts">
-      <button class="btn btn-p" style="flex:1" onclick="editSave()">ذخیره</button>
-      <button class="btn" onclick="editClose()">انصراف</button>
+      <button class="btn btn-p" style="flex:1" onclick="editSave()">Save</button>
+      <button class="btn" onclick="editClose()">Cancel</button>
     </div>
   </div>
 </div>
@@ -1893,10 +1951,10 @@ html,body{overflow-x:hidden!important}
 <!-- Session Intro -->
 <div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
   <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
-  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
+  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">Review Time!</div>
   <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
   <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
-    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">شروع مرور →</button>
+    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">Start Review →</button>
     <button class="btn btn-full" onclick="introClose()">بعداً</button>
   </div>
 </div>
@@ -1910,7 +1968,7 @@ html,body{overflow-x:hidden!important}
       <div class="ses-cnt" id="ses-cnt">۱/۱</div>
       <div class="ses-sub" id="ses-sub"></div>
     </div>
-    <!-- دکمه دوباره حذف شد -->
+    <!-- retry button removed -->
   </div>
   <div class="ses-prog"><div class="ses-fill" id="ses-fill" style="width:0%"></div></div>
 
@@ -1920,24 +1978,24 @@ html,body{overflow-x:hidden!important}
       <div class="card-wrap" id="card-wrap">
         <div class="card-face card-front">
           <span class="c-type" id="c-type"></span>
-          <span class="c-hint">برای دیدن معنی کلیک کن</span>
+          <span class="c-hint">Tap to reveal meaning</span>
           <span class="c-word" id="ses-word"></span>
         </div>
         <div class="card-face card-back">
-          <span class="c-hint">معنی</span>
+          <span class="c-hint">Meaning</span>
           <span class="c-mean" id="ses-mean"></span>
           <span class="c-sent" id="ses-sent"></span>
         </div>
       </div>
     </div>
-    <div class="swipe-row"><span>← بلد نبودم</span><span>بلد بودم →</span></div>
+    <div class="swipe-row"><span>← Didn't know</span><span>I knew it →</span></div>
     <div class="ses-acts">
       <button class="sa bad" onclick="sesRate(false)">
-        <span class="sa-ic">✗</span><span>بلد نبودم</span><span class="sa-next">دوباره میاد</span>
+        <span class="sa-ic">✗</span><span>Didn't know</span><span class="sa-next">دوباره میاد</span>
       </button>
       <button class="flip-btn" onclick="sesFlip()">↺</button>
       <button class="sa good" onclick="sesRate(true)">
-        <span class="sa-ic">✓</span><span>بلد بودم</span><span class="sa-next" id="ses-next">فردا</span>
+        <span class="sa-ic">✓</span><span>I knew it</span><span class="sa-next" id="ses-next">فردا</span>
       </button>
     </div>
   </div>
@@ -1953,19 +2011,19 @@ html,body{overflow-x:hidden!important}
     </div>
     <div class="end-next" id="end-next"></div>
     <div class="end-btns">
-      <button class="btn btn-p" id="end-more-btn" onclick="sesOpenSmart()" style="display:none">سشن بعدی ←</button>
+      <button class="btn btn-p" id="end-more-btn" onclick="sesOpenSmart()" style="display:none">Next Session →</button>
       <button class="btn btn-p" onclick="sesRestart()">دوباره همین</button>
-      <button class="btn" onclick="sesClose(true)">بستن</button>
+      <button class="btn" onclick="sesClose(true)">Close</button>
     </div>
   </div>
 
   <div class="ses-confirm" id="ses-confirm">
     <div style="font-size:48px">🤔</div>
     <div class="con-title">می‌خوای بری؟</div>
-    <div class="con-sub">یادگیری نصفه میمونه — مطمئنی؟</div>
+    <div class="con-sub">Your session is incomplete — are you sure?</div>
     <div class="con-btns">
       <button class="btn btn-p" onclick="sesResume()">ادامه میدم 💪</button>
-      <button class="btn btn-danger" onclick="sesClose(true)">خروج</button>
+      <button class="btn btn-danger" onclick="sesClose(true)">Sign out</button>
     </div>
   </div>
 </div>
@@ -1979,17 +2037,17 @@ html,body{overflow-x:hidden!important}
           <path d="M2 5L5.5 13L8 7.5L10.5 13L14 5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span class="logo-name">Wortschatz</span>
+      <span class="logo-name" style="font-family:var(--serif);letter-spacing:-.5px">Fluenta</span>
     </a>
     <div class="top-r">
       <div class="sync-dot" id="sync-dot"></div>
       <div id="top-status" style="display:flex;align-items:center;gap:6px">
         <button class="btn-login" id="top-login-btn" onclick="showGate()" style="display:none">
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 7H2M5 4l-3 3 3 3M8 2h3a1 1 0 011 1v8a1 1 0 01-1 1H8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          ورود
+          Sign in
         </button>
         <div class="top-free-badge" id="top-free-badge" onclick="drawerOpen()" style="display:none">
-          <span id="top-free-n">10</span><span>جستجو</span>
+          <span id="top-free-n">10</span><span> left</span>
         </div>
         <div class="top-pro-badge" id="top-pro-badge" style="display:none">✦ Pro</div>
         <div class="top-avatar" id="top-avatar-el" onclick="drawerOpen()" style="display:none">
@@ -2014,16 +2072,16 @@ html,body{overflow-x:hidden!important}
   <!-- HOME -->
   <div class="pane on" id="pane-home">
     <div class="hero">
-      <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">لغت آلمانی یاد بگیر<br><em>با هوش مصنوعی</em></h1>
-      <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
+      <div class="hero-eye" id="hero-label">AI-powered language learning</div>
+      <h1 id="hero-title">Master vocabulary,<br><em>powered by AI</em></h1>
+      <p id="hero-sub">Word, phrase or expression — search in any language</p>
     </div>
 
     <div id="free-banner" style="display:none"></div>
     <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
       <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
         <span id="home-lang-flag">🇩🇪</span>
-        <span id="home-lang-label">آلمانی</span>
+        <span id="home-lang-label">Word</span>
         <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -2031,14 +2089,14 @@ html,body{overflow-x:hidden!important}
       <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
         <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
           <span style="font-size:16px">🇩🇪</span>
-          <span>آلمانی</span>
+          <span>Word</span>
           <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
         </button>
         <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
           <span style="font-size:16px">🇬🇧</span>
           <div style="display:flex;flex-direction:column;align-items:flex-start">
             <span>انگلیسی</span>
-            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
+            <span style="font-size:10px;color:var(--ink3);margin-top:1px">Learn English vocabulary with AI</span>
           </div>
           <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
         </button>
@@ -2046,21 +2104,21 @@ html,body{overflow-x:hidden!important}
     </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
-        placeholder="لغت یا اصطلاح بنویس..."
+        placeholder="Search a word or phrase..."
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
       <div class="ac-drop" id="ac-drop"></div>
       <button class="s-btn" id="s-btn" onclick="doSearch()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
+    <div class="search-tip" id="search-tip">💡 Try searching <strong>Arbeit</strong>, <strong>bonjour</strong> or <strong>merhaba</strong></div>
     <div class="s-msg" id="s-msg"></div>
 
     <!-- Word result -->
     <div class="res" id="res">
       <div class="res-fix" id="res-fix"></div>
 
-      <!-- اسم لغت -->
+      <!-- word name -->
       <div class="res-word-block">
         <div class="res-art-word">
           <span class="res-art" id="res-art"></span>
@@ -2095,7 +2153,7 @@ html,body{overflow-x:hidden!important}
       <div class="res-add-wrap">
         <button class="add-btn" id="add-btn" onclick="addWord()">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن به فلش‌کارت‌ها
+          Add to Flashcards
         </button>
       </div>
     </div>
@@ -2125,7 +2183,7 @@ html,body{overflow-x:hidden!important}
       <div class="ph-body">
         <button class="ph-add" id="ph-add" onclick="addPhrase()">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن کل اصطلاح به فلش‌کارت‌ها
+          Add full phrase to Flashcards
         </button>
       </div>
     </div>
@@ -2133,23 +2191,23 @@ html,body{overflow-x:hidden!important}
     <!-- Reminder -->
     <div class="reminder" id="reminder">
       <div class="rem-head">
-        <div><div class="rem-title" id="rem-title">وقت مرور! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
+        <div><div class="rem-title" id="rem-title">Review Time! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
         <button class="rem-x" onclick="remDismiss()">✕</button>
       </div>
       <div class="rem-chips" id="rem-chips"></div>
-      <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
+      <button class="rem-btn" onclick="remStart()">Start Review →</button>
     </div>
 
     <!-- Stats card -->
     
     <div class="ws-empty" id="ws-empty">
       <div class="ws-empty-icon">🇩🇪</div>
-      <div class="ws-empty-title">اولین لغتت رو سرچ کن</div>
-      <div class="ws-empty-sub">یه لغت آلمانی بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن</div>
-      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()">شروع کن ←</button>
+      <div class="ws-empty-title">Search your first word</div>
+      <div class="ws-empty-sub">Search any word above and add it to your flashcards</div>
+      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()">Get started →</button>
     </div>
     <div class="login-prompt" id="login-prompt">
-      <div class="login-prompt-txt">برای ذخیره لغت‌هات وارد شو 👤</div>
+      <div class="login-prompt-txt">Sign in to save your words 👤</div>
       <button class="login-prompt-btn" onclick="showGate();document.getElementById('login-prompt').classList.remove('show')">ورود</button>
       <button class="login-prompt-x" onclick="this.parentElement.classList.remove('show');localStorage.setItem('ws_prompt_dismissed','1')">✕</button>
     </div>
@@ -2158,7 +2216,7 @@ html,body{overflow-x:hidden!important}
         <div class="notif-prompt-ico">🔔</div>
         <div>
           <div class="notif-prompt-title">یادآوری روزانه فعال کن</div>
-          <div class="notif-prompt-sub">هر روز ساعت ۸:۳۰ شب یادت میاره لغاتت رو مرور کنی</div>
+          <div class="notif-prompt-sub">You will get a daily reminder at 8:30 PM to review your words</div>
         </div>
       </div>
       <div class="notif-prompt-actions">
@@ -2177,21 +2235,21 @@ html,body{overflow-x:hidden!important}
       <div class="sum-nums">
         <div class="sum-nb">
           <div class="sum-n" id="sn-total">0</div>
-          <div class="sum-l">کل لغت</div>
+          <div class="sum-l">Total Words</div>
           <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:2px;display:none"></div>
         </div>
         <div class="sum-nb ok">
           <div class="sum-n" id="sn-learned">0</div>
-          <div class="sum-l">یاد گرفتم</div>
+          <div class="sum-l">Learned</div>
         </div>
         <div class="sum-nb warn" id="sn-due-wrap">
           <div class="sum-n" id="sn-due">0</div>
-          <div class="sum-l">برای مرور</div>
+          <div class="sum-l">Due Today</div>
         </div>
       </div>
       <div class="sum-dots" id="sum-dots"></div>
       <div class="sum-acts">
-        <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">شروع مرور</span> →</button>
+        <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">Start Review</span> →</button>
         <button class="sum-all" onclick="sesOpen()">همه لغات</button>
       </div>
     </div>
@@ -2212,8 +2270,8 @@ html,body{overflow-x:hidden!important}
     </div>
     <div class="due-banner" id="due-banner">
       <div class="due-head">
-        <div class="due-label">⏰ نیاز به مرور</div>
-        <button class="due-btn" onclick="sesOpenDue()">شروع مرور ←</button>
+        <div class="due-label">⏰ Due for Review</div>
+        <button class="due-btn" onclick="sesOpenDue()">Start Review →</button>
       </div>
       <div class="due-chips" id="due-chips"></div>
     </div>
@@ -2229,7 +2287,7 @@ html,body{overflow-x:hidden!important}
         <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
         <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      <input class="list-s" id="list-q" placeholder="جستجو در لغات..." oninput="renderList()">
+      <input class="list-s" id="list-q" placeholder="Search words..." oninput="renderList()">
     </div>
     <div id="wlist"></div>
   </div>
@@ -2241,7 +2299,7 @@ html,body{overflow-x:hidden!important}
   <!-- Header -->
   <div style="padding:12px 16px 10px;border-bottom:1px solid var(--bg3);margin-bottom:12px">
     <div style="font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px">📦 جعبه لغت‌ها</div>
-    <div style="font-size:12px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
+    <div style="font-size:12px;color:var(--ink3)">Ready-made collections for faster learning</div>
   </div>
 
   <!-- Pack Grid -->
@@ -2266,13 +2324,13 @@ html,body{overflow-x:hidden!important}
       <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600" id="pack-presets-label">📚 کتاب‌های محبوب آلمانی:</div>
       <div style="display:flex;flex-wrap:wrap;gap:var(--s2)" id="pack-presets-wrap">
         <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Nicos Weg سطح A1')">Nicos Weg A1</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Menschen A1 آلمانی')">Menschen A1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('German textbook Menschen A1')">Menschen A1</button>
         <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Schritte Plus A2')">Schritte Plus A2</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Sicher B1 آلمانی')">Sicher B1</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Aspekte B2 آلمانی')">Aspekte B2</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('سریال Dark آلمانی')">Dark 🎬</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات پزشکی آلمانی')">پزشکی 🏥</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات حقوقی آلمانی')">حقوق ⚖️</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('German textbook Sicher B1')">Sicher B1</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('German textbook Aspekte B2')">Aspekte B2</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('German TV series Dark')">Dark 🎬</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('German medical vocabulary')">پزشکی 🏥</button>
+        <button class="ai-preset-btn" onclick="setAIPackPreset('German legal vocabulary')">حقوق ⚖️</button>
       </div>
     </div>
 
@@ -2344,7 +2402,7 @@ function wordDetail(idx){
   const now = new Date();
   const nr = new Date(w.next_review||0);
   const diff = Math.round((nr-now)/(1000*60*60*24));
-  const nextStr = !w.seen?'هنوز مرور نشده':diff<=0?'دیر شده':diff===1?'فردا':diff+' روز دیگه';
+  const nextStr = !w.seen?'Not reviewed':diff<=0?'Overdue':diff===1?'Tomorrow':diff+' days';
   const level = Math.min(5,Math.max(0,w.seen||0));
   const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
 
@@ -2359,16 +2417,16 @@ function wordDetail(idx){
       <div>${dots}</div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">مرور بعدی</span>
+      <span style="font-size:12px;color:var(--ink3)">Next Review</span>
       <span style="font-size:12px;font-weight:600;color:var(--ink)">${nextStr}</span>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">تعداد مرور</span>
+      <span style="font-size:12px;color:var(--ink3)">Review Count</span>
       <span style="font-size:12px;font-weight:600;color:var(--ink)">${w.seen||0} بار</span>
     </div>
     <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
       <button class="btn btn-p" style="flex:1" onclick="editOpen(${idx});Q('#word-detail-modal').classList.remove('open')">ویرایش</button>
-      <button class="btn" onclick="Q('#word-detail-modal').classList.remove('open')">بستن</button>
+      <button class="btn" onclick="Q('#word-detail-modal').classList.remove('open')">Close</button>
     </div>
   </div>`;
 
@@ -2560,9 +2618,9 @@ function updateFreeBanner(){ updateTopStatus();
     // تموم شد — upgrade modal
     showUpgrade();
   } else if(left===2){
-    showToast('⚠ فقط ۲ جستجو امروز مونده',2800,'warn');
+    showToast('⚠ Only 2 searches left today',2800,'warn');
   } else if(left===1){
-    showToast('🔴 آخرین جستجوی امروز!',2800,'warn');
+    showToast('🔴 Last search for today!',2800,'warn');
   }
   updateDrawerPlan();
 }
@@ -2592,7 +2650,7 @@ async function startCheckout(){
   }catch(e){
     showToast('خطا: '+e.message,3000,'err');
     btn.disabled=false;
-    btn.textContent='شروع اشتراک Pro';
+    btn.textContent='Get Fluenta Pro';
   }
 }
 async function redeemBeta(){
@@ -2606,7 +2664,7 @@ async function redeemBeta(){
     if(error)throw error;
     if(data?.success){
       userPlan='beta';
-      showToast('کد بتا فعال شد! جستجو نامحدوده ✅',2800,'ok');
+      showToast('Beta code activated! Unlimited searches ✅',2800,'ok');
       Q('#upgrade-modal').classList.remove('open');
       updateFreeBanner();updateDrawerPlan();
     } else {
@@ -2666,9 +2724,9 @@ function updateDrawerPlan(){
     const bar = Q('#drw-free-bar');
     const pct = Math.round(used/FREE_LIMIT*100);
     if(msg){
-      if(left<=0) msg.textContent='جستجوی امروز تموم شد 😔';
-      else if(left<=3) msg.textContent='⚠ فقط '+left+' جستجو مونده';
-      else msg.textContent='امروز '+used+' از '+FREE_LIMIT+' جستجو';
+      if(left<=0) msg.textContent='No searches left today 😔';
+      else if(left<=3) msg.textContent='⚠ Only '+left+' searches left';
+      else msg.textContent='Today: '+used+' / '+FREE_LIMIT+' searches';
     }
     if(bar){
       bar.style.width = pct+'%';
@@ -2705,8 +2763,8 @@ function classifyError(e){
   if(!navigator.onLine || m.includes('failed to fetch') || m.includes('networkerror'))
     return {fa:'اتصال اینترنت قطعه — دوباره امتحان کن', type:'offline'};
   if(m.includes('timeout') || m.includes('aborted'))
-    return {fa:'زمان جستجو تموم شد — دوباره امتحان کن', type:'timeout'};
-  if(m.includes('429') || m.includes('rate limit') || m.includes('جستجوی امروز'))
+    return {fa:'Search timed out — please try again', type:'timeout'};
+  if(m.includes('429') || m.includes('rate limit') || m.includes('No searches left'))
     return {fa: e.message, type:'limit'};
   if(m.includes('json') || m.includes('parse') || m.includes('unexpected'))
     return {fa:'پاسخ AI نامعتبر بود — دوباره امتحان کن', type:'parse'};
@@ -2739,7 +2797,7 @@ async function ai(prompt,tokens=900){
     const d=await r.json().catch(()=>({}));
     userSearchCount=FREE_LIMIT; updateFreeBanner();
     const hours=d.reset_hours||24;
-    throw new Error(d.message||`جستجوی امروز تموم شد. ${hours} ساعت دیگه reset میشه`);
+    throw new Error(d.message||`Daily search limit reached. Resets in ${hours} hours`);
   }
   if(!r.ok) throw new Error('HTTP '+r.status);
 
@@ -2750,8 +2808,8 @@ async function ai(prompt,tokens=900){
   const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
   if(used>0){userSearchCount=used;updateFreeBanner();}
   const rem=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
-  if(rem===3) showToast('⚠ فقط ۳ جستجو مونده',2800,'warn');
-  else if(rem===0) showToast('جستجوی رایگان تموم شد 😔',3000,'warn');
+  if(rem===3) showToast('⚠ Only 3 searches left today',2800,'warn');
+  else if(rem===0) showToast('Daily searches used up 😔',3000,'warn');
 
   const txt = d.content?.map(b=>b.text||'').join('').trim();
   if(!txt) throw new Error('empty response');
@@ -2763,14 +2821,14 @@ async function ai(prompt,tokens=900){
 ══════════════════════════════ */
 function gateToggleEmail(){
   var s=Q('#gate-email-section'),b=Q('#gate-email-toggle-btn');
-  var open=s.style.display==='none';
+  var open=s.style.display==='none'||s.style.display==='';
   s.style.display=open?'block':'none';
-  if(b)b.textContent=open?'ورود با ایمیل ↑':'ورود با ایمیل ↓';
+  if(b)b.textContent=open?'Use email instead ↑':'Use email instead ↓';
 }
 
 async function tgLoginBtn(){
   var btn=Q('#gate-tg-section button');
-  if(btn){btn.disabled=true;btn.textContent='در حال ورود...';}
+  if(btn){btn.disabled=true;btn.textContent='Signing in...';}
   var u=window.tgApp&&window.tgApp.user;
   if(u&&u.id){
     await tgAutoLogin(u);
@@ -2779,7 +2837,7 @@ async function tgLoginBtn(){
   }
   if(btn){
     btn.disabled=false;
-    btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg> ادامه با Telegram';
+    btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg> Continue with Telegram';
   }
 }
 
@@ -2808,7 +2866,7 @@ async function loginGoogle(){
 async function loginMagicLink(){
   const email = Q('#gate-email').value.trim();
   if(!email || !email.includes('@')){
-    Q('#gate-err').textContent = 'ایمیل معتبر وارد کن';
+    Q('#gate-err').textContent = 'Please enter a valid email';
     Q('#gate-err').style.color = 'var(--err)';
     return;
   }
@@ -2826,14 +2884,14 @@ async function loginMagicLink(){
 
   if(error){
     const msg = error.message;
-    const fa = msg.includes('rate limit') ? 'تعداد درخواست زیاده — چند دقیقه صبر کن' :
-                msg.includes('invalid email') ? 'ایمیل معتبر نیست' :
-                msg.includes('network') ? 'خطای شبکه — دوباره امتحان کن' :
+    const fa = msg.includes('rate limit') ? 'Too many requests — please wait a few minutes' :
+                msg.includes('invalid email') ? 'Invalid email address' :
+                msg.includes('network') ? 'Network error — please try again' :
                 msg;
     errEl.textContent = fa;
     errEl.style.color = 'var(--err)';
     btn.disabled = false;
-    btn.textContent = 'ارسال لینک ورود';
+    btn.textContent = 'Send magic link';
     return;
   }
 
@@ -3000,8 +3058,8 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
 (function(){
   var KEY='ws_ob_seen',cur=0,TOTAL=5,s1done=false;
   var obLang='de',obLevel='B1',obGoals=new Set(['travel']);
-  var LEVEL_NAMES={A1:'مبتدی',A2:'پایه',B1:'متوسط',B2:'بالاتر از متوسط',C1:'پیشرفته'};
-  var GOAL_NAMES={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
+  var LEVEL_NAMES={A1:'Beginner',A2:'Elementary',B1:'Intermediate',B2:'Upper-Intermediate',C1:'Advanced'};
+  var GOAL_NAMES={travel:'Travel',work:'Work',exam:'Exam',daily:'Daily',study:'Study',fun:'Interest'};
   var reel,track;
 
   window._obTryShow=function(){
@@ -3032,12 +3090,14 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
     inp.innerHTML='<span class="s1-cur blink"></span>';
     var t=setInterval(function(){if(i<w.length){inp.innerHTML=w.slice(0,++i)+'<span class="s1-cur blink"></span>';}else{clearInterval(t);setTimeout(function(){btn.classList.add('pop');setTimeout(function(){btn.classList.remove('pop');res.classList.add('show');},220);},350);}},80);
   }
-  window.obPickLang=function(l){obLang=l;document.getElementById('ob-lde').classList.toggle('sel',l==='de');document.getElementById('ob-len').classList.toggle('sel',l==='en');};
+  window.obPickLang=function(l){obLang=l;['de','en','fr','tr','ar'].forEach(function(x){var el=document.getElementById('ob-l'+x);if(el)el.classList.remove('sel');});var sel=document.getElementById('ob-l'+l);if(sel)sel.classList.add('sel');};
   window.obPickLevel=function(l){obLevel=l;['a1','a2','b1','b2','c1'].forEach(function(x){document.getElementById('ob-l'+x).classList.remove('sel');});document.getElementById('ob-l'+l.toLowerCase()).classList.add('sel');};
   window.obToggleGoal=function(g,el){if(obGoals.has(g)){if(obGoals.size===1)return;obGoals.delete(g);el.classList.remove('sel');}else{obGoals.add(g);el.classList.add('sel');}};
   function _obSummary(){
-    document.getElementById('ob-sum-flag').textContent=obLang==='de'?'🇩🇪':'🇬🇧';
-    document.getElementById('ob-sum-lang').textContent=obLang==='de'?'آلمانی':'انگلیسی';
+    var flagMap={de:'🇩🇪',en:'🇬🇧',fr:'🇫🇷',tr:'🇹🇷',ar:'🇸🇦'};
+    document.getElementById('ob-sum-flag').textContent=flagMap[obLang]||'🌐';
+    var langNameMap={de:'German',en:'English',fr:'French',tr:'Turkish',ar:'Arabic'};
+    document.getElementById('ob-sum-lang').textContent=langNameMap[obLang]||obLang;
     document.getElementById('ob-sum-level').textContent=obLevel+' — '+(LEVEL_NAMES[obLevel]||'');
     var el=document.getElementById('ob-sum-goals');el.innerHTML='';
     obGoals.forEach(function(g){var t=document.createElement('span');t.className='ob-sum-tag';t.textContent=GOAL_NAMES[g]||g;el.appendChild(t);});
@@ -3048,7 +3108,7 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
     for(var i=0;i<TOTAL;i++)document.getElementById('obd'+i).classList.toggle('on',i===n);
     document.getElementById('ob-prog').style.width=((n+1)/TOTAL*100)+'%';
     var last=n===TOTAL-1;
-    document.getElementById('ob-btntxt').textContent=last?'شروع کن 🇩🇪':'بعدی';
+    document.getElementById('ob-btntxt').textContent=last?'Get Started 🚀':'Next';
     document.getElementById('ob-btnarr').style.display=last?'none':'';
     document.getElementById('ob-skip').style.display=n===0?'':'none';
     if(last)_obSummary();
@@ -3103,12 +3163,12 @@ async function tgAutoLogin(u){
       setTimeout(function(){if(window._obTryShow)window._obTryShow();},600);
       setTimeout(checkReminder,2500);
       if(window.tgApp)window.tgApp.haptic('success');
-      showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
+      showToast('Hello '+(u.first_name||'there')+'! 👋',2200,'ok');
       updateTopStatus();
     }
   }catch(e){
     console.error('[TG login error]',e.message);
-    showToast('خطا در ورود: '+e.message,3000,'err');
+    showToast('Login error: '+e.message,3000,'err');
   }
 }
 
@@ -3126,13 +3186,13 @@ async function init(){
     if(uid){
       fetch('/api/upgrade',{method:'POST',headers:{'Content-Type':'application/json','x-user-id':uid}})
         .then(()=>{
-          showToast('🎉 Pro فعال شد! جستجوی نامحدود داری',3000,'ok');
+          showToast('🎉 Fluenta Pro activated! Unlimited searches unlocked',3000,'ok');
           setTimeout(()=>loadProfile(),1500);
         }).catch(()=>{});
     }
   } else if(params.get('upgrade')==='cancel'){
     history.replaceState({},document.title,window.location.pathname);
-    showToast('پرداخت لغو شد',2800,'warn');
+    showToast('Payment cancelled',2800,'warn');
   }
 
   // Auth state listener
@@ -3211,14 +3271,14 @@ function setTargetLang(lang){
   updateLangUI();
   // Clear word cache when switching language
   Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>localStorage.removeItem(k));
-  showToast(lang==='de' ? '🇩🇪 زبان هدف: آلمانی' : '🇬🇧 زبان هدف: انگلیسی');
+  showToast(lang==='de' ? '🇩🇪 Target: German' : '🇬🇧 Target: English');
   if(Q('#pane-packs')?.classList.contains('on')) renderPackGrid();
   if(Q('#pane-list')?.classList.contains('on')) renderList();
   updateBadges(); updateStats();
   const inp = Q('#s-inp');
   if(inp) inp.placeholder = lang==='de'
-    ? 'جستجو — آلمانی، فارسی یا انگلیسی'
-    : 'جستجو — انگلیسی، فارسی یا آلمانی';
+    ? 'Search — German, Persian or English'
+    : 'Search — English, Persian or German';
 }
 
 function updateLangUI(){
@@ -3227,17 +3287,18 @@ function updateLangUI(){
   const flag = document.getElementById('home-lang-flag');
   const label = document.getElementById('home-lang-label');
   if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
-  if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
+  var langTexts={de:'German',en:'English',fr:'French',tr:'Turkish',ar:'Arabic'};
+  if(label) label.textContent = langTexts[targetLang]||targetLang;
   // Hero texts
   const heroLabel = document.getElementById('hero-label');
   const heroTitle = document.getElementById('hero-title');
   const heroSub   = document.getElementById('hero-sub');
-  if(heroLabel) heroLabel.textContent = isDE ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
+  if(heroLabel) heroLabel.textContent = isDE ? 'AI-powered language learning' : 'دستیار یادگیری انگلیسی';
   if(heroTitle){
     if(isDE){
       heroTitle.style.fontFamily = 'var(--sans)';
       heroTitle.style.letterSpacing = '0';
-      heroTitle.innerHTML = 'لغت یاد بگیر،<br><em>نه حفظ کنی</em>';
+      heroTitle.innerHTML = 'Master vocabulary,<br><em>not just memorize</em>';
     } else {
       heroTitle.style.fontFamily = 'var(--serif)';
       heroTitle.style.letterSpacing = '-.5px';
@@ -3245,8 +3306,8 @@ function updateLangUI(){
     }
   }
   if(heroSub) heroSub.textContent = isDE
-    ? 'لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی'
-    : 'لغت، جمله یا اصطلاح — فارسی، انگلیسی یا آلمانی';
+    ? 'Word, phrase or expression — search in any language'
+    : 'Word, phrase or expression — search in any language';
   // Drawer lang toggle
   drawerUpdateLangToggle();
   // Pack presets
@@ -3274,7 +3335,7 @@ function updateHomeEmptyChips(){
 
 const PACK_PRESETS = {
   de: {
-    label: '📚 کتاب‌های محبوب آلمانی:',
+    label: '📚 Popular German books:',
     placeholder: 'مثلاً: Sicher B2، لغات فوتبال، محیط زیست...',
     items: [
       { label: 'Nicos Weg A1',   prompt: 'کتاب Nicos Weg سطح A1' },
@@ -3414,7 +3475,7 @@ function updateStats(){ updateEmptyState();
   const lbl=Q('#review-lbl');
   if(lbl){
     const smartDeck=buildSmartDeck();
-    lbl.textContent=due.length>0?`مرور ${smartDeck.length} کارت`:`سشن ${smartDeck.length} کارتی`;
+    lbl.textContent=due.length>0?`Review ${smartDeck.length} cards`:`${smartDeck.length} card session`;
   }
 }
 function logReview(){
@@ -3438,11 +3499,11 @@ function detectMode(q){
 }
 async function doSearch(){
   const q=Q('#s-inp').value.trim();if(!q)return;
-  if(!navigator.onLine){setMsg('📡 آفلاین — اتصال اینترنت نداری','err');return;}
+  if(!navigator.onLine){setMsg('📡 Offline — no internet connection','err');return;}
   acClose();
   Q('#search-tip').classList.remove('show');
   const btn=Q('#s-btn');btn.disabled=true;btn.classList.add('busy');
-  setMsg('در حال جستجو...','info');
+  setMsg('Searching...','info');
   Q('#res').style.display='none';Q('#ph-res').style.display='none';
   try{
     if(detectMode(q)==='word') await searchWord(q);
@@ -3520,7 +3581,7 @@ async function searchWord(q){
     ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","usage_pattern":"الگوی استفاده مثل sich engagieren fur+Akk یا null","preposition":"حرف اضافه مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"نکته گرامری مهم یا null","priority":{"score":3,"reason":"چرا مهمه"}}'
     : '{"word":"word without article","corrected_from":"null or original word","article":"null (English has no grammatical gender)","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs only: past tense and past participle e.g. go – went – gone","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"important grammar note or null","priority":{"score":3,"reason":"why important"}}';
 
-  const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
+  const langLabel = isDE ? 'German' : 'English';
   var _ul=localStorage.getItem('ws_level')||'B1';
   var _ug=JSON.parse(localStorage.getItem('ws_goals')||'["travel"]');
   var _gc={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
@@ -3649,7 +3710,7 @@ function renderWord(d){
   const btn=Q('#add-btn');
   btn.innerHTML=exists
     ?'<span>✓</span> قبلاً اضافه شده'
-    :'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به فلش‌کارت‌ها';
+    :'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add to Flashcards';
   btn.disabled=exists; btn.className='add-btn'+(exists?' done':'');
 
   Q('#res').style.display='block';
@@ -3659,8 +3720,8 @@ function qs(w){Q('#s-inp').value=w;doSearch();}
 
 async function addWord(){
   if(!curWord)return;
-  if(!currentUser){showGate();showToast('برای ذخیره لغت، وارد شو 👤',2500,'warn');return;}
-  if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
+  if(!currentUser){showGate();showToast('Sign in to save words 👤',2500,'warn');return;}
+  if(!canAddMore()){showToast('Free limit: '+FREE_LIMIT+' words — upgrade to Pro');showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
   const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
@@ -3748,7 +3809,7 @@ function rephrase(){
 async function addPhrase(){
   if(!curPhrase)return;
   if(!currentUser){showGate();showToast('برای ذخیره اصطلاح، وارد شو 👤',2500,'warn');return;}
-  if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
+  if(!canAddMore()){showToast('Free limit: '+FREE_LIMIT+' words — upgrade to Pro');showUpgrade();return;}
   const de=curPhrase.original;
   if(words.some(w=>w.de===de))return;
   const w={de,fa:curPhrase.meaning_fa,ex:curPhrase.example_de&&curPhrase.example_de!=='null'?curPhrase.example_de:'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
@@ -3808,10 +3869,10 @@ function checkReminder(){
   if(!due.length) return;
   const pts=due.length*10;
   const msgs=[
-    {title:`🔥 ${due.length} لغت منتظرته`,sub:`مرور کن ${pts} امتیاز بگیر`},
-    {title:`⏰ وقت مرور رسیده`,sub:`${due.length} لغت — فقط چند دقیقه`},
-    {title:`🧠 یادته این لغت‌ها رو؟`,sub:`مرور کن تا فراموش نشن`},
-    {title:`💪 ${due.length} لغت آماده مروره`,sub:`streak رو حفظ کن!`},
+    {title:`🔥 ${due.length} words waiting`,sub:`Review now, earn ${pts} points`},
+    {title:`⏰ Review time!`,sub:`${due.length} words — just a few minutes`},
+    {title:`🧠 Remember these words?`,sub:`Review before you forget`},
+    {title:`💪 ${due.length} words ready to review`,sub:`Keep your streak!`},
   ];
   const msg=msgs[Math.floor(Math.random()*msgs.length)];
   Q('#rem-title').textContent=msg.title;
@@ -3892,7 +3953,7 @@ function getDeckStats(deck){
    SESSION
 ══════════════════════════════ */
 function sesOpenSmart(){
-  if(!words.length){ showToast('هنوز لغتی اضافه نکردی!',2800,'warn'); return; }
+  if(!words.length){ showToast('You have not added any words yet!',2800,'warn'); return; }
   sesDeck = buildSmartDeck();
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
   showIntro();
@@ -3905,7 +3966,7 @@ function sesOpenDue(){
 }
 function sesOpen(){
   const fw=filteredWords();
-  if(!fw.length){ showToast('هنوز لغتی اضافه نکردی!'); return; }
+  if(!fw.length){ showToast('You have not added any words yet!'); return; }
   const now=new Date();
   const all=[...fw].sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
   sesDeck=all.map(w=>({...w,_type:new Date(w.next_review||0)<=now?'due':w.seen===0?'new':w.score<0?'weak':'rev'}));
@@ -3919,7 +3980,7 @@ function showIntro(){
   const total=sesDeck.length;
   // Set emoji and title based on time
   const h=now.getHours();
-  const greet = h<12?'صبح بخیر ☀️':h<17?'وقت مرور 🧠':h<21?'عصر بخیر 🌤':'شب بخیر 🌙';
+  const greet = h<12?'Good morning ☀️':h<17?'Review time 🧠':h<21?'Good afternoon 🌤':'Good evening 🌙';
   const intro=Q('#ses-intro');
   Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
   Q('#intro-title').textContent=greet;
@@ -4351,7 +4412,7 @@ const PACKS = {
       {de:'trinken',fa:'نوشیدن',ex:'Ich trinke Kaffee.',ex_fa:'قهوه می‌نوشم.',tip:'trinken = نوشیدن، essen = خوردن'},
       {de:'schlafen',fa:'خوابیدن',ex:'Ich schlafe acht Stunden.',ex_fa:'۸ ساعت می‌خوابم.',tip:'ich schlafe, du schläfst'},
       {de:'kaufen',fa:'خریدن',ex:'Ich kaufe ein Buch.',ex_fa:'یه کتاب می‌خرم.',tip:'verkaufen = فروختن'},
-      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
+      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'I want to learn German.',tip:'studieren = تحصیل کردن'},
       {de:'lesen',fa:'خواندن',ex:'Ich lese jeden Tag.',ex_fa:'هر روز می‌خونم.',tip:'ich lese, du liest'},
       {de:'schreiben',fa:'نوشتن',ex:'Schreib mir!',ex_fa:'برام بنویس!',tip:'tippen = تایپ کردن'},
       {de:'Straße',fa:'خیابان',ex:'Die Straße ist lang.',ex_fa:'خیابون بلنده.',tip:'die Straße — مؤنث'},
@@ -4361,7 +4422,7 @@ const PACKS = {
       {de:'Krankenhaus',fa:'بیمارستان',ex:'Er ist im Krankenhaus.',ex_fa:'اون توی بیمارستانه.',tip:'das Krankenhaus — خنثی'}
     ]
   },
-  b1:{name:'مکالمه روزمره',emoji:'💬',free:false,words:[
+  b1:{name:'Daily Conversation',emoji:'💬',free:false,words:[
     {de:'Wie geht es Ihnen?',fa:'حالتون چطوره؟',ex:'Guten Tag! Wie geht es Ihnen?',ex_fa:'روز بخیر! حالتون چطوره؟',tip:'رسمی — برای غریبه‌ها'},
     {de:'Mir geht es gut',fa:'حالم خوبه',ex:'Danke, mir geht es gut.',ex_fa:'ممنون، حالم خوبه.',tip:'پاسخ رسمی به Wie geht es Ihnen'},
     {de:'Wie heißen Sie?',fa:'اسمتون چیه؟',ex:'Entschuldigung, wie heißen Sie?',ex_fa:'ببخشید، اسمتون چیه؟',tip:'رسمی — Wie heißt du? غیررسمیه'},
@@ -4525,7 +4586,7 @@ function renderPackGrid(){
 
   const packList = [
     { id:'a1',     emoji:'🌱', name:'پایه A1',        count:50, free:true,  level:'A1', desc:'لغات پایه برای شروع' },
-    { id:'b1',     emoji:'💬', name:'مکالمه روزمره',  count:80, free:false, level:'A2', desc:'گفتگوی روزانه' },
+    { id:'b1',     emoji:'💬', name:'Daily Conversation',  count:80, free:false, level:'A2', desc:'گفتگوی روزانه' },
     { id:'work',   emoji:'💼', name:'کار و شغل',      count:60, free:false, level:'B1', desc:'محیط کاری' },
     { id:'travel', emoji:'✈️', name:'سفر',            count:50, free:false, level:'A2', desc:'سفر و گردشگری' },
   ];
@@ -4733,7 +4794,7 @@ function generateAIPackTab(){
       </div>
       <div style="display:flex;gap:var(--s2)">
         <button class="btn btn-p btn-sm" onclick="forceGenerateAIPack()" style="flex:1">لغات جدید بساز ✨</button>
-        <button class="btn btn-sm" onclick="Q('#ai-pack-tab-result').innerHTML=''" style="flex:1">بستن</button>
+        <button class="btn btn-sm" onclick="Q('#ai-pack-tab-result').innerHTML=''" style="flex:1">Close</button>
       </div>
     </div>`;
     return;
@@ -4763,7 +4824,7 @@ function _doGenerateAIPack(topic, forceNew=false){
   </div>`;
 
   const isDE = targetLang === 'de';
-  const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
+  const langLabel = isDE ? 'German' : 'English';
   const exInstruct = isDE
     ? '"ex":"یک جمله نمونه به زبان آلمانی"'
     : '"ex":"one short example sentence in English"';
@@ -5152,7 +5213,7 @@ function plShowSummary(){
     msg=`${learned} لغت اضافه کردی. با تکرار بقیه رو هم یاد می‌گیری.`;
   } else {
     emoji='💪'; title='شروع خوبی بود!';
-    msg=`اشکالی نداره — دوباره مرور کن تا همه رو یاد بگیری.`;
+    msg=`اشکالی نداره — Review again کن تا همه رو یاد بگیری.`;
   }
 
   Q('#pl-sum-emoji').textContent = emoji;
@@ -5186,7 +5247,7 @@ function packLearnRestart(){
   let cur=0, running=false;
 
   const DESCS = [
-    {title:'لغت جستجو کن', sub:'فارسی، آلمانی یا انگلیسی — AI توضیح میده'},
+    {title:'Search a word', sub:'In any language — AI explains it'},
     {title:'نتیجه AI آماده‌ست', sub:'جمله نمونه، ریشه و نکته دستوری'},
     {title:'فلش‌کارت بساز', sub:'یه کلیک — لغت به deck اضافه میشه'},
     {title:'هوشمند مرور کن', sub:'الگوریتم SM-2 بهترین زمان رو انتخاب می‌کنه'},
@@ -5361,15 +5422,15 @@ function packLearnRestart(){
       <div style="display:flex;flex-direction:column;gap:var(--s2);margin-bottom:var(--s4)">
         <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2);font-family:var(--sans)">
           <span style="width:18px;height:18px;border-radius:50%;background:var(--okbg);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">✓</span>
-          جستجوی نامحدود با AI
+          Unlimited AI searches
         </div>
         <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2);font-family:var(--sans)">
           <span style="width:18px;height:18px;border-radius:50%;background:var(--okbg);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">✓</span>
-          همه pack های لغت + ساخت با AI
+          All word packs + AI-generated packs
         </div>
         <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2);font-family:var(--sans)">
           <span style="width:18px;height:18px;border-radius:50%;background:var(--okbg);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">✓</span>
-          sync روی همه دستگاه‌ها
+          Sync across all devices
         </div>
       </div>
 
@@ -5382,10 +5443,10 @@ function packLearnRestart(){
 
       <!-- Beta code -->
       <div style="border-top:1px solid var(--bg3);padding-top:var(--s3)">
-        <div style="font-size:12px;color:var(--ink3);margin-bottom:var(--s2);text-align:right;font-family:var(--sans)">کد بتا داری؟</div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:var(--s2);text-align:right;font-family:var(--sans)">Have a beta code?</div>
         <div style="display:flex;gap:var(--s2)">
           <input class="inp ltr" id="beta-code-inp" placeholder="BETA-XXXX" style="margin:0;flex:1;font-size:13px;text-transform:uppercase">
-          <button class="btn btn-p btn-sm" onclick="redeemBeta()">فعال</button>
+          <button class="btn btn-p btn-sm" onclick="redeemBeta()">Activate</button>
         </div>
         <div style="font-size:11px;color:var(--err);margin-top:6px;min-height:14px;font-family:var(--sans)" id="beta-code-err"></div>
       </div>
@@ -5426,7 +5487,7 @@ function packLearnRestart(){
         <!-- Front -->
         <div class="pl-front" id="pl-front">
           <div class="pl-word" id="pl-word">Hallo</div>
-          <div class="pl-hint">برای دیدن معنی کلیک کن</div>
+          <div class="pl-hint">Tap to reveal meaning</div>
           <div class="pl-tap-icon">👆</div>
         </div>
 
