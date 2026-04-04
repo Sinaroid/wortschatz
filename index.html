@@ -1610,8 +1610,7 @@ html,body{overflow-x:hidden!important}
 <!-- Auth Gate -->
 <div id="gate">
 
-  
-<div style="position:relative;z-index:1;width:100%;max-width:360px;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3)">
+<div style="position:relative;z-index:1;width:100%;max-width:340px;border-radius:24px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.35)">
 
   <!-- TOP: Blue section -->
   <div style="background:linear-gradient(135deg,#1a3af2,#3d5af5);padding:16px;position:relative;overflow:hidden">
@@ -1706,16 +1705,50 @@ html,body{overflow-x:hidden!important}
     </div>
   </div>
 
-  <!-- BOTTOM: White login section -->
-  <div style="background:var(--card);padding:16px">
-    <button onclick="loginGoogle()" class="btn-google" style="margin-bottom:10px">
+  <!-- BOTTOM: Login section — clean & professional -->
+  <div style="background:var(--card);padding:20px">
+
+    <!-- App name -->
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.3px">Wortschatz</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:2px">یادگیری هوشمند زبان آلمانی</div>
+    </div>
+
+    <!-- Telegram button — primary for TG users -->
+    <div id="gate-tg-section" style="display:none;margin-bottom:10px">
+      <button onclick="tgLoginBtn()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#229ED9;color:#fff;border:none;border-radius:12px;padding:13px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity .2s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg>
+        ورود با Telegram
+      </button>
+    </div>
+
+    <!-- Google button -->
+    <button onclick="loginGoogle()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bg2);color:var(--ink);border:1px solid var(--bg3);border-radius:12px;padding:13px 16px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:background .2s;margin-bottom:10px" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'">
       <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
       ورود با Google
     </button>
-    <div class="gate-or">یا با ایمیل</div>
-    <input class="inp ltr" id="gate-email" type="email" placeholder="your@email.com" style="margin-bottom:8px">
-    <button class="btn btn-p btn-full" onclick="loginMagicLink()" id="gate-btn">ارسال لینک ورود</button>
-    <div id="gate-err" style="font-size:11px;color:var(--ok);text-align:center;margin-top:6px;min-height:14px"></div>
+
+    <!-- Email toggle -->
+    <div id="gate-email-toggle" style="text-align:center;margin-bottom:6px">
+      <button onclick="gateToggleEmail()" style="background:none;border:none;font-size:12px;color:var(--ink3);cursor:pointer;font-family:var(--sans);padding:4px 8px;border-radius:6px;transition:color .2s" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink3)'">
+        ورود با ایمیل ↓
+      </button>
+    </div>
+
+    <!-- Email section — hidden by default -->
+    <div id="gate-email-section" style="display:none;padding-top:4px;border-top:1px solid var(--bg2)">
+      <div style="margin-top:12px">
+        <input class="inp ltr" id="gate-email" type="email" placeholder="your@email.com" style="margin-bottom:8px;border-radius:10px">
+        <button class="btn btn-p btn-full" onclick="loginMagicLink()" id="gate-btn" style="border-radius:10px">ارسال لینک ورود</button>
+        <div id="gate-err" style="font-size:11px;color:var(--ok);text-align:center;margin-top:6px;min-height:14px"></div>
+      </div>
+    </div>
+
+    <!-- Privacy note -->
+    <div style="font-size:10px;color:var(--ink4);text-align:center;margin-top:14px;line-height:1.5">
+      با ورود، <span style="color:var(--ink3)">حریم خصوصی</span> و <span style="color:var(--ink3)">شرایط استفاده</span> را می‌پذیری
+    </div>
+
   </div>
 
 </div>
@@ -1778,7 +1811,7 @@ html,body{overflow-x:hidden!important}
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-bottom:10px">
         <div id="drw-free-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .4s"></div>
       </div>
-      <button class="drw-upgrade-btn-new" onclick="showUpgrade()">
+      <button class="drw-upgrade-btn-new" onclick="window.open('https://t.me/cinuxx','_blank');drawerClose()">
         <span style="font-size:16px">⚡</span>
         <div style="text-align:right">
           <div style="font-size:13px;font-weight:700">Pro بگیر — €4.99/ماه</div>
@@ -2531,49 +2564,6 @@ function updateFreeBanner(){ updateTopStatus();
   updateDrawerPlan();
 }
 
-async function payWithStars(){
-  var btn = Q('#stars-pay-btn')
-  var note = Q('#stars-pay-note')
-  if(btn){btn.disabled=true;btn.textContent='در حال ارسال...';}
-  // get tg_chat_id from user metadata
-  var tgChatId = null
-  try {
-    var {data:{user}} = await _sb.auth.getUser()
-    if(user && user.user_metadata && user.user_metadata.tg_chat_id){
-      tgChatId = user.user_metadata.tg_chat_id
-    } else if(window.tgApp && window.tgApp.user){
-      tgChatId = window.tgApp.user.id
-    }
-  } catch(e){}
-
-  if(!tgChatId){
-    // کاربر از تلگرام وارد نشده
-    if(btn){btn.disabled=false;btn.innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> پرداخت با Telegram Stars';}
-    if(note){note.textContent='⚠ برای پرداخت با Stars باید از تلگرام وارد شده باشی';}
-    return
-  }
-
-  try {
-    var res = await fetch('/api/stars', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-user-id':uid()},
-      body:JSON.stringify({tg_chat_id:tgChatId})
-    })
-    var data = await res.json()
-    if(data.ok){
-      if(note){note.textContent='✅ Invoice در تلگرام فرستاده شد — باز کن و پرداخت کن!';}
-      showToast('Invoice در تلگرام ارسال شد ✅',3000,'ok')
-      // close modal after 2s
-      setTimeout(function(){Q('#upgrade-modal').classList.remove('open')},2000)
-    } else {
-      throw new Error(data.error || 'خطا')
-    }
-  } catch(e){
-    showToast('خطا در ارسال invoice: '+e.message,3000,'err')
-    if(btn){btn.disabled=false;btn.innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> پرداخت با Telegram Stars';}
-  }
-}
-
 function showUpgrade(){
   Q('#upgrade-modal').classList.add('open');
 }
@@ -2768,6 +2758,27 @@ async function ai(prompt,tokens=900){
 /* ══════════════════════════════
    AUTH
 ══════════════════════════════ */
+function gateToggleEmail(){
+  var s=Q('#gate-email-section'),t=Q('#gate-email-toggle');
+  var open=s.style.display==='none';
+  s.style.display=open?'block':'none';
+  if(t)t.querySelector('button').textContent=open?'ورود با ایمیل ↑':'ورود با ایمیل ↓';
+}
+
+function tgLoginBtn(){
+  // اگه TG user داریم، auto-login کن
+  var u=window.tgApp&&window.tgApp.user;
+  if(u&&u.id){
+    tgAutoLogin(u);
+  }
+}
+
+function gateShowTgBtn(){
+  // فقط داخل Telegram نشون بده
+  var el=Q('#gate-tg-section');
+  if(el&&window.tgApp&&window.tgApp.isTg)el.style.display='block';
+}
+
 async function loginGoogle(){
   const{error}=await sb.auth.signInWithOAuth({
     provider:'google',
@@ -2775,6 +2786,8 @@ async function loginGoogle(){
   });
   if(error)showToast('خطا: '+error.message);
 }
+
+
 
 async function loginMagicLink(){
   const email = Q('#gate-email').value.trim();
@@ -3049,10 +3062,15 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
 async function tgAutoLogin(u){
   var email='tg'+u.id+'@wortschatz.app',pass='ws_tg_'+u.id+'_2025!';
   var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'کاربر';
+  var meta={full_name:name,tg_id:String(u.id),tg_chat_id:String(u.id),tg_username:u.username||''};
   try{
     var r=await sb.auth.signInWithPassword({email:email,password:pass});
-    if(r.error)r=await sb.auth.signUp({email:email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
+    if(r.error)r=await sb.auth.signUp({email:email,password:pass,options:{data:meta}});
     if(r.error)throw r.error;
+    // update metadata with tg_chat_id if missing
+    if(r.data&&r.data.user&&!r.data.user.user_metadata.tg_chat_id){
+      await sb.auth.updateUser({data:meta});
+    }
     if(r.data&&r.data.user){
       setUserUI(r.data.user);hideGate();
       var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
@@ -3102,6 +3120,7 @@ async function init(){
   } else {
     var _tgu=window.tgApp&&window.tgApp.user;
     if(_tgu&&_tgu.id){await tgAutoLogin(_tgu);}
+    else{gateShowTgBtn();}
     updateTopStatus();
   }
 
@@ -5327,12 +5346,12 @@ function packLearnRestart(){
         </div>
       </div>
 
-      <!-- Stars payment button -->
-      <button class="upgrade-tg-btn" id="stars-pay-btn" onclick="payWithStars()" style="border:none;width:100%;cursor:pointer">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        پرداخت با Telegram Stars
-      </button>
-      <div style="font-size:11px;color:var(--ink4);text-align:center;margin-top:var(--s2);margin-bottom:var(--s4);font-family:var(--sans)" id="stars-pay-note">⚡ ۲۵۰ Stars — فعال‌سازی فوری</div>
+      <!-- Telegram CTA with animation -->
+      <a href="https://t.me/cinuxx" target="_blank" class="upgrade-tg-btn">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg>
+        خرید از طریق تلگرام
+      </a>
+      <div style="font-size:11px;color:var(--ink4);text-align:center;margin-top:var(--s2);margin-bottom:var(--s4);font-family:var(--sans)">⚡ فعال‌سازی در کمتر از ۵ دقیقه</div>
 
       <!-- Beta code -->
       <div style="border-top:1px solid var(--bg3);padding-top:var(--s3)">
