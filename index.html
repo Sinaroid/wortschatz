@@ -2005,7 +2005,8 @@ function setLang(lang) {
   var sortDue=document.getElementById('st-due');
   if(sortDue) sortDue.textContent=t('sort_due')||'Overdue';
   // toast confirmation
-  showToast('🌐 '+t('lang_'+lang));
+  var uiLangNames={en:'English',fa:'فارسی',ar:'العربية',tr:'Türkçe',de:'Deutsch',fr:'Français'};
+  showToast('🌐 '+(uiLangNames[lang]||lang));
 }
 
 // ── APPLY TRANSLATIONS TO DOM ──
@@ -2767,65 +2768,6 @@ function initI18n() {
 
 <!-- Bottom nav -->
 
-<!-- Settings Pane -->
-<div id="pane-settings" class="pane" style="display:none">
-<div style="padding:24px 20px;max-width:600px;margin:0 auto">
-
-  <!-- Language Section -->
-  <div style="margin-bottom:28px">
-    <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_ui_lang">Interface Language</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="ui-lang-grid">
-      <button class="lang-opt-btn" onclick="setLang('en')" id="lo-en">
-        <span style="font-size:20px">🇬🇧</span>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">English</div>
-          <div style="font-size:11px;color:var(--ink3)">English</div>
-        </div>
-        <div class="lang-opt-check" id="loc-en">✓</div>
-      </button>
-      <button class="lang-opt-btn" onclick="setLang('fa')" id="lo-fa">
-        <span style="font-size:20px">🇮🇷</span>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">فارسی</div>
-          <div style="font-size:11px;color:var(--ink3)">Persian</div>
-        </div>
-        <div class="lang-opt-check" id="loc-fa">✓</div>
-      </button>
-      <button class="lang-opt-btn" onclick="setLang('ar')" id="lo-ar">
-        <span style="font-size:20px">🇸🇦</span>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">العربية</div>
-          <div style="font-size:11px;color:var(--ink3)">Arabic</div>
-        </div>
-        <div class="lang-opt-check" id="loc-ar">✓</div>
-      </button>
-      <button class="lang-opt-btn" onclick="setLang('tr')" id="lo-tr">
-        <span style="font-size:20px">🇹🇷</span>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">Türkçe</div>
-          <div style="font-size:11px;color:var(--ink3)">Turkish</div>
-        </div>
-        <div class="lang-opt-check" id="loc-tr">✓</div>
-      </button>
-      <button class="lang-opt-btn" onclick="setLang('de')" id="lo-de">
-        <span style="font-size:20px">🇩🇪</span>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">Deutsch</div>
-          <div style="font-size:11px;color:var(--ink3)">German</div>
-        </div>
-        <div class="lang-opt-check" id="loc-de">✓</div>
-      </button>
-      <button class="lang-opt-btn" onclick="setLang('fr')" id="lo-fr">
-        <span style="font-size:20px">🇫🇷</span>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">Français</div>
-          <div style="font-size:11px;color:var(--ink3)">French</div>
-        </div>
-        <div class="lang-opt-check" id="loc-fr">✓</div>
-      </button>
-    </div>
-  </div>
-
   <!-- Target Language Section -->
   <div style="margin-bottom:28px">
     <div style="font-size:11px;font-weight:600;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_target_lang">Learning Language</div>
@@ -2893,6 +2835,69 @@ function initI18n() {
 </div>
 </div>
 
+
+<!-- Settings Modal — slides from top -->
+<div id="settings-modal" style="position:fixed;inset:0;z-index:450;display:none;flex-direction:column">
+  <!-- Backdrop -->
+  <div onclick="settingsClose()" style="position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)"></div>
+  <!-- Sheet -->
+  <div style="position:relative;z-index:1;background:var(--bg);max-height:92dvh;overflow-y:auto;border-radius:0 0 24px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideD .3s var(--ease)">
+    
+    <!-- Handle + Title -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bg2);position:sticky;top:0;background:var(--bg);z-index:1">
+      <div style="font-size:16px;font-weight:700;color:var(--ink)" data-i18n="nav_settings">Settings</div>
+      <button onclick="settingsClose()" style="width:30px;height:30px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink2)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1 1 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div style="padding:20px">
+
+      <!-- UI Language -->
+      <div style="margin-bottom:24px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_ui_lang">Interface Language</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="ui-lang-grid">
+          <button class="lang-opt-btn" onclick="setLang('en')" id="lo-en"><span style="font-size:18px">🇬🇧</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">English</div></div><div class="lang-opt-check" id="loc-en">✓</div></button>
+          <button class="lang-opt-btn" onclick="setLang('fa')" id="lo-fa"><span style="font-size:18px">🇮🇷</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">فارسی</div></div><div class="lang-opt-check" id="loc-fa">✓</div></button>
+          <button class="lang-opt-btn" onclick="setLang('ar')" id="lo-ar"><span style="font-size:18px">🇸🇦</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">العربية</div></div><div class="lang-opt-check" id="loc-ar">✓</div></button>
+          <button class="lang-opt-btn" onclick="setLang('tr')" id="lo-tr"><span style="font-size:18px">🇹🇷</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">Türkçe</div></div><div class="lang-opt-check" id="loc-tr">✓</div></button>
+          <button class="lang-opt-btn" onclick="setLang('de')" id="lo-de"><span style="font-size:18px">🇩🇪</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">Deutsch</div></div><div class="lang-opt-check" id="loc-de">✓</div></button>
+          <button class="lang-opt-btn" onclick="setLang('fr')" id="lo-fr"><span style="font-size:18px">🇫🇷</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">Français</div></div><div class="lang-opt-check" id="loc-fr">✓</div></button>
+        </div>
+      </div>
+
+      <!-- Target Language -->
+      <div style="margin-bottom:24px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_target_lang">Learning Language</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="lang-opt-btn" onclick="setTargetLang('de')" id="tlo-de"><span style="font-size:18px">🇩🇪</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">German</div></div><div class="lang-opt-check" id="tloc-de">✓</div></button>
+          <button class="lang-opt-btn" onclick="setTargetLang('en')" id="tlo-en"><span style="font-size:18px">🇬🇧</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">English</div></div><div class="lang-opt-check" id="tloc-en">✓</div></button>
+          <button class="lang-opt-btn" onclick="setTargetLang('fr')" id="tlo-fr"><span style="font-size:18px">🇫🇷</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">French</div></div><div class="lang-opt-check" id="tloc-fr">✓</div></button>
+          <button class="lang-opt-btn" onclick="setTargetLang('tr')" id="tlo-tr"><span style="font-size:18px">🇹🇷</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">Turkish</div></div><div class="lang-opt-check" id="tloc-tr">✓</div></button>
+          <button class="lang-opt-btn" onclick="setTargetLang('ar')" id="tlo-ar"><span style="font-size:18px">🇸🇦</span><div><div style="font-size:13px;font-weight:600;color:var(--ink)">Arabic</div></div><div class="lang-opt-check" id="tloc-ar">✓</div></button>
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div style="margin-bottom:24px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink3);margin-bottom:12px;text-transform:uppercase" data-i18n="set_theme">Appearance</div>
+        <div style="display:flex;gap:8px">
+          <button class="lang-opt-btn" style="flex:1" onclick="setThemeMode('light')"><span style="font-size:18px">☀️</span><div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="set_light">Light</div></button>
+          <button class="lang-opt-btn" style="flex:1" onclick="setThemeMode('dark')"><span style="font-size:18px">🌙</span><div style="font-size:13px;font-weight:600;color:var(--ink)" data-i18n="set_dark">Dark</div></button>
+        </div>
+      </div>
+
+      <!-- App info -->
+      <div style="text-align:center;padding:16px 0;border-top:1px solid var(--bg2)">
+        <div style="font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink);margin-bottom:3px">Fluenta</div>
+        <div style="font-size:11px;color:var(--ink4)" data-i18n="tagline">Learn any language, in yours</div>
+        <div style="font-size:10px;color:var(--ink4);margin-top:6px">v2.0 · Powered by Claude AI</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <nav class="bottom-nav">
   <button class="nav-item on" id="t-home" onclick="go('home')">
     <div class="nav-dot" id="nd-home"></div>
@@ -2927,14 +2932,7 @@ function initI18n() {
     </svg>
     <span class="nav-label" data-i18n="nav_list">List</span>
   </button>
-  <button class="nav-item" id="t-settings" onclick="go('settings')">
-    <div class="nav-dot" id="nd-settings"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M10 2v1.5M10 16.5V18M18 10h-1.5M3.5 10H2M15.07 4.93l-1.06 1.06M6 14l-1.07 1.07M15.07 15.07l-1.06-1.06M6 6 4.93 4.93" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <span class="nav-label" data-i18n="nav_settings">Settings</span>
-  </button>
+
 </nav>
 
 
@@ -3941,7 +3939,7 @@ function setThemeIc(d){
    NAV
 ══════════════════════════════ */
 function go(t){
-  ['home','list','packs','settings'].forEach(id=>{
+  ['home','list','packs'].forEach(id=>{
     const pane=Q('#pane-'+id);
     if(pane) pane.classList.toggle('on',id===t);
     const tab=Q('#t-'+id);
@@ -3951,7 +3949,19 @@ function go(t){
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='list') renderList();
   if(t==='packs') renderPackGrid();
-  if(t==='settings') updateLangChecks();
+
+}
+
+
+function settingsOpen(){
+  var m=Q('#settings-modal');
+  if(m){m.style.display='flex';updateLangChecks();applyTranslations();}
+  if(window.tgApp&&window.tgApp.isTg)window.tgApp.tg.BackButton.show();
+}
+function settingsClose(){
+  var m=Q('#settings-modal');
+  if(m)m.style.display='none';
+  if(window.tgApp&&window.tgApp.isTg)window.tgApp.tg.BackButton.hide();
 }
 
 function updateLangChecks(){
@@ -3972,7 +3982,8 @@ function setTargetLang(lang){
   localStorage.setItem('ws_target_lang'+uid(),lang);
   updateLangUI();
   updateLangChecks();
-  showToast('🎯 '+t('lang_'+lang));
+  var langNames2={de:'German',en:'English',fr:'French',tr:'Turkish',ar:'Arabic'};
+  showToast('🎯 '+(langNames2[lang]||lang));
 }
 
 function setThemeMode(mode){
