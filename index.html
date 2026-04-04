@@ -1778,7 +1778,7 @@ html,body{overflow-x:hidden!important}
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-bottom:10px">
         <div id="drw-free-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .4s"></div>
       </div>
-      <button class="drw-upgrade-btn-new" onclick="window.open('https://t.me/cinuxx','_blank');drawerClose()">
+      <button class="drw-upgrade-btn-new" onclick="showUpgrade()">
         <span style="font-size:16px">⚡</span>
         <div style="text-align:right">
           <div style="font-size:13px;font-weight:700">Pro بگیر — €4.99/ماه</div>
@@ -2529,6 +2529,49 @@ function updateFreeBanner(){ updateTopStatus();
     showToast('🔴 آخرین جستجوی امروز!',2800,'warn');
   }
   updateDrawerPlan();
+}
+
+async function payWithStars(){
+  var btn = Q('#stars-pay-btn')
+  var note = Q('#stars-pay-note')
+  if(btn){btn.disabled=true;btn.textContent='در حال ارسال...';}
+  // get tg_chat_id from user metadata
+  var tgChatId = null
+  try {
+    var {data:{user}} = await _sb.auth.getUser()
+    if(user && user.user_metadata && user.user_metadata.tg_chat_id){
+      tgChatId = user.user_metadata.tg_chat_id
+    } else if(window.tgApp && window.tgApp.user){
+      tgChatId = window.tgApp.user.id
+    }
+  } catch(e){}
+
+  if(!tgChatId){
+    // کاربر از تلگرام وارد نشده
+    if(btn){btn.disabled=false;btn.innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> پرداخت با Telegram Stars';}
+    if(note){note.textContent='⚠ برای پرداخت با Stars باید از تلگرام وارد شده باشی';}
+    return
+  }
+
+  try {
+    var res = await fetch('/api/stars', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-user-id':uid()},
+      body:JSON.stringify({tg_chat_id:tgChatId})
+    })
+    var data = await res.json()
+    if(data.ok){
+      if(note){note.textContent='✅ Invoice در تلگرام فرستاده شد — باز کن و پرداخت کن!';}
+      showToast('Invoice در تلگرام ارسال شد ✅',3000,'ok')
+      // close modal after 2s
+      setTimeout(function(){Q('#upgrade-modal').classList.remove('open')},2000)
+    } else {
+      throw new Error(data.error || 'خطا')
+    }
+  } catch(e){
+    showToast('خطا در ارسال invoice: '+e.message,3000,'err')
+    if(btn){btn.disabled=false;btn.innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> پرداخت با Telegram Stars';}
+  }
 }
 
 function showUpgrade(){
@@ -5284,12 +5327,12 @@ function packLearnRestart(){
         </div>
       </div>
 
-      <!-- Telegram CTA with animation -->
-      <a href="https://t.me/cinuxx" target="_blank" class="upgrade-tg-btn">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.862l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.697z"/></svg>
-        خرید از طریق تلگرام
-      </a>
-      <div style="font-size:11px;color:var(--ink4);text-align:center;margin-top:var(--s2);margin-bottom:var(--s4);font-family:var(--sans)">⚡ فعال‌سازی در کمتر از ۵ دقیقه</div>
+      <!-- Stars payment button -->
+      <button class="upgrade-tg-btn" id="stars-pay-btn" onclick="payWithStars()" style="border:none;width:100%;cursor:pointer">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        پرداخت با Telegram Stars
+      </button>
+      <div style="font-size:11px;color:var(--ink4);text-align:center;margin-top:var(--s2);margin-bottom:var(--s4);font-family:var(--sans)" id="stars-pay-note">⚡ ۲۵۰ Stars — فعال‌سازی فوری</div>
 
       <!-- Beta code -->
       <div style="border-top:1px solid var(--bg3);padding-top:var(--s3)">
