@@ -450,45 +450,71 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
   font-size:11px;color:#d06060;
   display:flex;align-items:center;gap:6px;padding:6px 0;
 }
+/* ── meaning ── */
 #wp-fa{
-  font-size:17px;font-weight:600;color:var(--text);
-  margin-bottom:9px;line-height:1.4;
+  font-size:18px;font-weight:700;color:var(--text);
+  margin-bottom:10px;line-height:1.35;
+  padding-bottom:10px;border-bottom:1px solid var(--line);
 }
+/* ── badge row (type, level) ── */
+#wp-badges{
+  display:flex;flex-wrap:wrap;gap:5px;
+  margin-bottom:9px;
+}
+.wp-badge{
+  font-size:9px;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;padding:3px 8px;
+  border-radius:10px;
+}
+.wp-badge.type{background:var(--surface2);color:var(--text3);border:1px solid var(--line)}
+.wp-badge.level{background:var(--blue-a);color:var(--blue);border:1px solid rgba(26,58,242,.15)}
+.wp-badge.phrase{background:rgba(120,80,255,.1);color:#a87fff;border:1px solid rgba(120,80,255,.2)}
+/* ── grammar ── */
 #wp-gram{
-  font-size:10px;color:var(--text2);line-height:1.65;
+  font-size:10px;color:var(--text2);line-height:1.7;
   margin-bottom:9px;padding:7px 10px;
   background:var(--surface2);border-radius:8px;
   border-right:2px solid var(--line2);
 }
+/* ── example ── */
 #wp-ex{
-  font-size:12px;color:var(--text2);
-  padding:8px 10px;background:var(--bg);
-  border-radius:8px;margin-bottom:11px;
+  font-size:13px;color:var(--text2);
+  padding:9px 11px;background:var(--bg);
+  border-radius:9px;margin-bottom:11px;
   direction:ltr;font-style:italic;
   line-height:1.8;font-family:var(--serif);
-  border-right:2px solid rgba(26,58,242,.25);
+  border:1px solid var(--line);
+  border-right:2.5px solid rgba(26,58,242,.3);
+  position:relative;
+}
+#wp-ex::before{
+  content:'"';position:absolute;top:4px;left:6px;
+  font-size:22px;color:rgba(26,58,242,.15);
+  font-family:var(--serif);line-height:1;
 }
 #wp-ex-fa{
   direction:rtl;font-style:normal;
   font-size:9px;color:var(--text3);
   margin-top:5px;font-family:var(--sans);
+  padding-top:5px;border-top:1px solid var(--line);
 }
+/* ── add button ── */
 #wp-add{
-  width:100%;height:38px;
-  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;height:40px;
+  display:flex;align-items:center;justify-content:center;gap:7px;
   background:var(--blue);color:#fff;border:none;border-radius:10px;
   font-size:12px;font-weight:700;cursor:pointer;
   font-family:var(--sans);transition:all .14s;
-  position:relative;overflow:hidden;
+  position:relative;overflow:hidden;letter-spacing:.2px;
 }
 #wp-add::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);
+  background:linear-gradient(180deg,rgba(255,255,255,.12),transparent);
   pointer-events:none;
 }
-#wp-add:hover{background:var(--blue2);transform:translateY(-1px)}
-#wp-add:active{transform:none}
-#wp-add.done{background:var(--green)}
+#wp-add:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,58,242,.3)}
+#wp-add:active{transform:none;box-shadow:none}
+#wp-add.done{background:var(--green);box-shadow:none}
 #wp-add.done:hover{background:#228443}
 
 /* ── Selection Bar ── */
@@ -823,12 +849,16 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
     <div class="wp-spin" id="wp-spin" style="display:none"><div class="sp"></div>در حال جستجو…</div>
     <div class="wp-err" id="wp-err" style="display:none">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#d06060" stroke-width="1.2"/><path d="M6 3.5v3M6 8h.01" stroke="#d06060" stroke-width="1.2" stroke-linecap="round"/></svg>
-      لغت پیدا نشد
+      پیدا نشد — متن دیگه‌ای امتحان کن
     </div>
     <div id="wp-fa" style="display:none"></div>
+    <div id="wp-badges" style="display:none"></div>
     <div id="wp-gram" style="display:none"></div>
     <div id="wp-ex" style="display:none"></div>
-    <button id="wp-add" onclick="addWord()" style="display:none">+ افزودن به فلش‌کارت</button>
+    <button id="wp-add" onclick="addWord()" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      افزودن به فلش‌کارت
+    </button>
   </div>
 </div>
 
@@ -1386,16 +1416,56 @@ function getAlts(word){
 function fillTT(d,word){
   const wp=Q('wp');if(wp.style.display!=='block')return;
   curData=d;const w=d.word||word;
-  Q('wp-word').textContent=w;
-  Q('wp-meta').textContent=[d.article,d.type,d.level].filter(Boolean).join(' · ');
+
+  // word + article
+  const art=d.article&&d.article!=='null'?d.article+' ':'';
+  Q('wp-word').textContent=art+w;
+  Q('wp-meta').textContent='';
+
   hid('wp-spin');
+
+  // meaning
   if(d.meaning_fa){Q('wp-fa').textContent=d.meaning_fa;sho('wp-fa');}
-  if(d.grammar_tip){Q('wp-gram').textContent=d.grammar_tip;sho('wp-gram');}
+
+  // badges (type + level)
+  const badgesEl=Q('wp-badges');
+  if(badgesEl){
+    badgesEl.innerHTML='';
+    const isPhrase=d.type&&/phrase|redewendung|satz|idiom/i.test(d.type);
+    if(d.type&&d.type!=='null'){
+      const b=document.createElement('span');
+      b.className='wp-badge '+(isPhrase?'phrase':'type');
+      b.textContent=d.type;badgesEl.appendChild(b);
+    }
+    if(d.level&&d.level!=='null'){
+      const b=document.createElement('span');
+      b.className='wp-badge level';b.textContent=d.level;badgesEl.appendChild(b);
+    }
+    if(d.principal_parts&&d.principal_parts!=='null'){
+      const b=document.createElement('span');
+      b.className='wp-badge type';b.textContent=d.principal_parts;badgesEl.appendChild(b);
+    }
+    if(badgesEl.children.length)sho('wp-badges');else hid('wp-badges');
+  }
+
+  // grammar tip
+  if(d.grammar_tip&&d.grammar_tip!=='null'){
+    Q('wp-gram').textContent=d.grammar_tip;sho('wp-gram');
+  }
+
+  // example
   const ex=d.examples?.[0];
-  if(ex){Q('wp-ex').innerHTML=ex.de+(ex.fa?`<div id="wp-ex-fa">${ex.fa}</div>`:'');sho('wp-ex');}
+  if(ex&&ex.de){
+    Q('wp-ex').innerHTML=ex.de+(ex.fa?`<div id="wp-ex-fa">${ex.fa}</div>`:'');
+    sho('wp-ex');
+  }
+
+  // add button
   const isAdded=savedSet.has(w.toLowerCase());
   const btn=Q('wp-add');
-  btn.textContent=isAdded?'✓ اضافه شد':'+ افزودن به فلش‌کارت';
+  btn.innerHTML=isAdded
+    ?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3.5L10 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>اضافه شد'
+    :'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>افزودن به فلش‌کارت';
   btn.className=isAdded?'done':'';
   btn.onclick=addWord;sho('wp-add');
 }
@@ -1797,9 +1867,46 @@ function closeSel(){
 function searchSel(){
   const txt=window.getSelection()?.toString().trim()||'';
   if(!txt){closeSel();return;}
+  // موقعیت از selection rect
+  let cx=innerWidth/2,cy=innerHeight/3;
+  try{const r=window.getSelection().getRangeAt(0).getBoundingClientRect();
+    if(r.width>0){cx=r.left+r.width/2;cy=r.top;}}catch(e){}
   closeSel();window.getSelection()?.removeAllRanges();
-  const fakeE={clientX:innerWidth/2,clientY:innerHeight/2};
-  curWord=txt;curData=null;showLoading(txt,fakeE);doSearch(txt);
+  curWord=txt;curData=null;
+  showLoading(txt,{clientX:cx,clientY:cy});
+  doSearchPhrase(txt,cx,cy);
+}
+
+async function doSearchPhrase(phrase,cx,cy){
+  // prompt مخصوص برای عبارت/اصطلاح
+  const level=localStorage.getItem('ws_level')||'B1';
+  const isDE=targetLang!=='en';
+  const prompt=isDE
+    ?'عبارت آلمانی زیر را تحلیل کن و اگر اصطلاح یا Redewendung است معنی کامل بده:\n"'+phrase+'"\n\nخروجی فقط JSON:\n{"word":"'+phrase+'","type":"Redewendung/Phrase/Satz","level":"'+level+'","meaning_fa":"معنی کامل فارسی عبارت","grammar_tip":"توضیح گرامری یا ساختار جمله","examples":[{"de":"'+phrase+'","fa":"ترجمه فارسی"}],"article":null,"plural":null,"principal_parts":null,"usage_pattern":null,"preposition":null,"synonyms":[],"antonyms":[],"priority":{"score":3,"reason":"phrase"}}'
+    :'Analyze this English phrase: "'+phrase+'"\nOutput only JSON:\n{"word":"'+phrase+'","type":"Phrase/Idiom/Sentence","level":"'+level+'","meaning_fa":"معنی کامل فارسی","grammar_tip":"grammar note","examples":[{"de":"'+phrase+'","fa":"ترجمه فارسی"}],"article":null,"plural":null,"principal_parts":null,"usage_pattern":null,"preposition":null,"synonyms":[],"antonyms":[],"priority":{"score":3,"reason":"phrase"}}';
+
+  const headers={'Content-Type':'application/json'};
+  if(sbUser?.id)headers['x-user-id']=sbUser.id;
+  try{
+    const res=await fetch('/api',{method:'POST',headers,
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const txt2=await res.text();
+    let d;
+    try{
+      const clean=txt2.replace(/```json|```/g,'').trim();
+      const m=clean.match(/\{[\s\S]*\}/);
+      d=m?JSON.parse(m[0]):JSON.parse(clean);
+      if(d.content&&Array.isArray(d.content)){
+        const tb=d.content.find(c=>c.type==='text');
+        if(tb){const m2=(tb.text.replace(/```json|```/g,'').trim()).match(/\{[\s\S]*\}/);d=m2?JSON.parse(m2[0]):d;}
+      }
+    }catch(e){d=null;}
+    if(d?.meaning_fa&&curWord===phrase)fillTT(d,phrase);
+    else if(curWord===phrase){hid('wp-spin');sho('wp-err');}
+  }catch(e){
+    if(curWord===phrase){hid('wp-spin');sho('wp-err');}
+  }
 }
 function copySel(){
   const txt=window.getSelection()?.toString()||'';
