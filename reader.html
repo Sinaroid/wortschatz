@@ -570,30 +570,58 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 /* tooltip «معنی جمله» زیر کلمه */
 #phrase-tip{
   position:fixed;z-index:900;
-  background:var(--blue);
-  color:#fff;
-  font-size:10px;font-weight:600;
-  font-family:var(--sans);
-  padding:3px 8px;
-  border-radius:6px;
-  cursor:pointer;
-  white-space:nowrap;
-  display:none;
+  background:var(--blue);color:#fff;
+  font-size:10px;font-weight:600;font-family:var(--sans);
+  padding:4px 10px;border-radius:6px;
+  cursor:pointer;white-space:nowrap;display:none;
   box-shadow:0 2px 8px rgba(26,58,242,.4);
-  letter-spacing:.2px;
-  user-select:none;
-  pointer-events:all;
-  transition:opacity .1s;
-}
-#phrase-tip::before{
-  content:'';
-  position:absolute;top:-4px;left:50%;transform:translateX(-50%);
-  border:4px solid transparent;
-  border-bottom-color:var(--blue);
-  border-top:none;
-  /* مثلث بالای tooltip */
+  user-select:none;pointer-events:all;
+  display:none;align-items:center;gap:4px;
 }
 #phrase-tip:hover{background:var(--blue2)}
+#phrase-tip svg{flex-shrink:0}
+
+/* phrase select mode — کلمات انتخاب‌شده */
+.ptl span.gw.ph-sel{
+  background:rgba(26,58,242,.22)!important;
+  border-radius:2px;
+  outline:1px solid rgba(26,58,242,.4);
+  outline-offset:1px;
+}
+/* phrase mode cursor */
+body.phrase-mode .ptl span.gw{cursor:crosshair!important}
+body.phrase-mode .ptl span.gw:hover{background:rgba(26,58,242,.12)!important}
+
+/* phrase confirm bar — بالای صفحه */
+#phrase-bar{
+  position:fixed;top:var(--top);left:50%;transform:translateX(-50%);
+  background:var(--surface);border:1px solid var(--blue);
+  border-top:none;border-radius:0 0 12px 12px;
+  padding:8px 14px;z-index:95;
+  display:none;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(26,58,242,.25);
+  direction:rtl;white-space:nowrap;
+}
+#phrase-bar-text{
+  font-size:11px;font-weight:600;color:var(--text2);
+  direction:ltr;max-width:280px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:var(--serif);
+}
+#phrase-bar span.cnt{
+  font-size:10px;color:var(--blue);font-weight:700;
+  background:var(--blue-a);padding:1px 6px;border-radius:8px;
+}
+.pbar-btn{
+  height:28px;padding:0 12px;
+  border:none;border-radius:7px;
+  font-size:11px;font-weight:700;font-family:var(--sans);
+  cursor:pointer;transition:all .1s;white-space:nowrap;
+}
+.pbar-btn.go{background:var(--blue);color:#fff}
+.pbar-btn.go:hover{background:var(--blue2)}
+.pbar-btn.cancel{background:var(--surface2);color:var(--text3);border:1px solid var(--line)}
+.pbar-btn.cancel:hover{background:var(--surface3);color:var(--text)}
 
 /* نام کلمه در بالا */
 #mini-word{
@@ -1181,7 +1209,16 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 </div><!-- #app -->
 
 <!-- ══ HOVER EXPAND OVERLAY ══ -->
-<div id="phrase-tip">معنی جمله ↗</div>
+<div id="phrase-tip" style="display:none">
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5h8M5 1l4 4-4 4" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  معنی جمله
+</div>
+<div id="phrase-bar">
+  <button class="pbar-btn cancel" onclick="cancelPhraseMode()">انصراف</button>
+  <div id="phrase-bar-text">کلمه‌ای انتخاب نشده</div>
+  <span class="cnt" id="phrase-cnt">0</span>
+  <button class="pbar-btn go" onclick="confirmPhrase()">ترجمه ←</button>
+</div>
 
 <!-- ══ MINI ACTION POPUP ══ -->
 <div id="mini-pop">
@@ -1722,7 +1759,11 @@ area.addEventListener('drop',e=>{
 /* ══ KEYBOARD ══ */
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='f'){e.preventDefault();toggleSearch();}
-  if(e.key==='Escape'){if(searchOn)toggleSearch();else{closeTT();closeSel();}}
+  if(e.key==='Escape'){
+    if(_phraseMode){cancelPhraseMode();return;}
+    if(searchOn)toggleSearch();else{closeTT();closeSel();}
+  }
+  if(e.key==='Enter'&&_phraseMode){confirmPhrase();return;}
   if(!searchOn&&document.activeElement===document.body){
     if(e.key==='ArrowRight'||e.key==='PageDown')goPage(1);
     if(e.key==='ArrowLeft'||e.key==='PageUp')goPage(-1);
@@ -1860,7 +1901,57 @@ function _hidePT(){
   _hSpan=null;
 }
 
-/* کلیک روی «معنی جمله» → activate select mode */
+/* ════════ PHRASE SELECT MODE ════════ */
+var _phraseMode=false;
+var _phraseSpans=[];   // span های انتخاب‌شده
+var _phraseStart=null; // اولین span
+
+function startPhraseMode(startSpan){
+  _hidePT();
+  _phraseMode=true;
+  _phraseSpans=[];
+  _phraseStart=startSpan;
+  document.body.classList.add('phrase-mode');
+  /* انتخاب کلمه اول */
+  _addPhraseSpan(startSpan);
+  /* نمایش phrase-bar */
+  var pb=Q('phrase-bar');pb.style.display='flex';
+  _updatePhraseBar();
+}
+
+function _addPhraseSpan(span){
+  if(!span||span.classList.contains('ph-sel'))return;
+  _phraseSpans.push(span);
+  span.classList.add('ph-sel');
+  _updatePhraseBar();
+}
+
+function _updatePhraseBar(){
+  var words=_phraseSpans.map(function(s){return s.dataset.word||s.textContent.trim();});
+  Q('phrase-bar-text').textContent=words.join(' ')||'کلمه‌ای انتخاب نشده';
+  Q('phrase-cnt').textContent=words.length;
+}
+
+function cancelPhraseMode(){
+  _phraseMode=false;
+  _phraseSpans.forEach(function(s){s.classList.remove('ph-sel');});
+  _phraseSpans=[];_phraseStart=null;
+  document.body.classList.remove('phrase-mode');
+  Q('phrase-bar').style.display='none';
+}
+
+function confirmPhrase(){
+  if(!_phraseSpans.length)return;
+  var phrase=_phraseSpans.map(function(s){return s.dataset.word||s.textContent.trim();}).join(' ');
+  cancelPhraseMode();
+  /* جستجوی عبارت */
+  var fakeE={clientX:innerWidth/2,clientY:innerHeight/3};
+  curWord=phrase;curData=null;
+  showLoading(phrase,fakeE);
+  doSearchPhrase(phrase,fakeE.clientX,fakeE.clientY);
+}
+
+/* کلیک روی «معنی جمله» tooltip */
 (function(){
   setTimeout(function(){
     var pt=Q('phrase-tip');
@@ -1870,13 +1961,7 @@ function _hidePT(){
     pt.addEventListener('click',function(e){
       e.stopPropagation();
       if(!_hSpan)return;
-      /* نمایش راهنما و enable drag select */
-      var word=_hSpan.dataset.word||'';
-      _hidePT();
-      /* toast راهنما */
-      toast('متن مورد نظر رو drag کن تا معنیشو بگیری');
-      /* scroll به کلمه در صورت نیاز */
-      _hSpan.scrollIntoView({behavior:'smooth',block:'nearest'});
+      startPhraseMode(_hSpan);
     });
   },200);
 })();
@@ -1898,6 +1983,18 @@ function attachTL(tl,pn){
     var span=e.target.closest('.gw');
     if(!span)return;
     e.stopPropagation();
+    /* phrase mode فعاله؟ */
+    if(_phraseMode){
+      if(span.classList.contains('ph-sel')){
+        /* کلیک دوباره → حذف از selection */
+        span.classList.remove('ph-sel');
+        _phraseSpans=_phraseSpans.filter(function(s){return s!==span;});
+        _updatePhraseBar();
+      }else{
+        _addPhraseSpan(span);
+      }
+      return;
+    }
     _hidePT();
     var word=getClickWord(span,e);
     if(!word||word.length<2)return;
