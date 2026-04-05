@@ -3513,44 +3513,88 @@ function rdrRenderPage(num){
     rdrTask=page.render({canvasContext:ctx,viewport:vp});
     rdrTask.promise.then(function(){
       rdrTask=null;
-      page.getTextContent().then(function(tc){rdrBuildLayer(tc,vp);});
+      page.getTextContent({includeMarkedContent:false}).then(function(tc){
+        rdrBuildLayer(tc,vp,ctx);
+      });
     }).catch(function(){});
   });
 }
 
-// ── Text Layer ──
-function rdrBuildLayer(tc,vp){
+// ── Text Layer — دقیق با measureText ──
+function rdrBuildLayer(tc,vp,ctx){
   var layer=Q('#rdr-text-layer');
   layer.innerHTML='';
-  layer.style.width=vp.width+'px';layer.style.height=vp.height+'px';
+  layer.style.width=vp.width+'px';
+  layer.style.height=vp.height+'px';
+
   tc.items.forEach(function(item){
     if(!item.str||!item.str.trim())return;
+
+    // transform matrix
     var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
     var angle=Math.atan2(tx[1],tx[0]);
-    var fontSize=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
-    var totalW=Math.abs(item.width)*(vp.scale||1);
-    var charW=totalW/(item.str.length||1);
+    var scaleX=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+    var scaleY=Math.sqrt(tx[2]*tx[2]+tx[3]*tx[3]);
+    var fontSize=scaleY;
+    var left=tx[4];
+    var top=vp.height-tx[5];
+
+    // اندازه کل text item با canvas
+    ctx.save();
+    ctx.font=fontSize+'px sans-serif';
+    var fullW=ctx.measureText(item.str).width;
+    ctx.restore();
+
+    // اگه width از PDF داریم از اون استفاده کن (دقیق‌تره)
+    var pdfW=(item.width||0)*vp.scale;
+    var totalW=pdfW>0?pdfW:fullW;
+
+    // نسبت scale بین canvas measureText و PDF width
+    var wScale=fullW>0?totalW/fullW:1;
+
+    // تقسیم کردن به کلمات با موقعیت دقیق
     var tokens=rdrTokenize(item.str);
     var offsetX=0;
+
     tokens.forEach(function(tok){
-      var tw=tok.text.length*charW;
-      var span=document.createElement('span');
-      span.textContent=tok.text;
-      span.style.cssText='position:absolute;color:transparent;white-space:pre;cursor:pointer;border-radius:1px;transform-origin:0% 0%;transition:background .08s;'
-        +'left:'+(tx[4]+offsetX)+'px;'
-        +'top:'+(vp.height-tx[5]-fontSize)+'px;'
-        +'font-size:'+fontSize+'px;'
-        +'width:'+tw+'px;';
-      if(angle)span.style.transform='rotate('+(-angle)+'rad)';
+      ctx.save();
+      ctx.font=fontSize+'px sans-serif';
+      var tokW=ctx.measureText(tok.text).width*wScale;
+      ctx.restore();
+
       if(tok.isWord){
+        var span=document.createElement('span');
         span.dataset.word=tok.clean;
-        if(rdrAdded.has(tok.clean.toLowerCase()))span.style.background='rgba(42,110,53,.15)';
-        span.addEventListener('mouseenter',function(){if(!rdrAdded.has(tok.clean.toLowerCase()))this.style.background='rgba(26,58,242,.15)';});
-        span.addEventListener('mouseleave',function(){if(!rdrAdded.has(tok.clean.toLowerCase())&&!this.classList.contains('rdr-sel'))this.style.background='';});
-        span.addEventListener('click',function(e){e.stopPropagation();rdrWordClick(tok.clean,span,e);});
+        span.style.cssText=[
+          'position:absolute',
+          'left:'+(left+offsetX)+'px',
+          'top:'+(top-fontSize)+'px',
+          'width:'+tokW+'px',
+          'height:'+fontSize+'px',
+          'font-size:'+fontSize+'px',
+          'cursor:pointer',
+          'border-radius:2px',
+          'transition:background .08s',
+          'transform-origin:0% 0%',
+        ].join(';');
+        if(angle)span.style.transform='rotate('+(-angle)+'rad)';
+        if(rdrAdded.has(tok.clean.toLowerCase()))span.style.background='rgba(42,110,53,.18)';
+        
+        ;(function(word,s){
+          s.addEventListener('mouseenter',function(){
+            if(!rdrAdded.has(word.toLowerCase()))s.style.background='rgba(26,58,242,.18)';
+          });
+          s.addEventListener('mouseleave',function(){
+            if(!rdrAdded.has(word.toLowerCase())&&s.style.background.indexOf('58,242')>-1)s.style.background='';
+          });
+          s.addEventListener('click',function(e){
+            e.stopPropagation();rdrWordClick(word,s,e);
+          });
+        })(tok.clean,span);
+        
+        layer.appendChild(span);
       }
-      layer.appendChild(span);
-      offsetX+=tw;
+      offsetX+=tokW;
     });
   });
 }
