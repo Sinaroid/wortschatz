@@ -2640,575 +2640,42 @@ async function callSearch(word){
   const gt=goals.map(g=>gc[g]||g).join('، ');
   const isDE=targetLang!=='en';
   const schema=isDE
-    ?'{"word":"لغت","corrected_from":"null","article":"der/die/das یا null","plural":"null","type":"Nomen/Verb/Adjektiv/Adverb","level":"A1-C2","meaning_fa":"معنی فارسی","principal_parts":"فقط Verb: Präteritum–Perfekt یا null","usage_pattern":"null","preposition":"null","synonyms":[{"de":"","fa":""}],"antonyms":[],"examples":[{"de":"جمله","fa":"ترجمه"}],"grammar_tip":"نکته یا null","priority":{"score":3,"reason":""}}'
+    ?'{"word":"لغت","corrected_from":"null","article":"der/die/das یا null","plural":"null","type":"Nomen/Verb/Adjektiv/Adverb","level":"A1-C2","meaning_fa":"معنی فارسی","principal_parts":"فقط Verb یا null","usage_pattern":"null","preposition":"null","synonyms":[{"de":"","fa":""}],"antonyms":[],"examples":[{"de":"جمله","fa":"ترجمه"}],"grammar_tip":"نکته یا null","priority":{"score":3,"reason":""}}'
     :'{"word":"word","corrected_from":"null","article":"null","plural":"null","type":"Noun/Verb/Adj","level":"A1-C2","meaning_fa":"معنی فارسی","principal_parts":"null","usage_pattern":"null","preposition":"null","synonyms":[],"antonyms":[],"examples":[{"de":"example","fa":"ترجمه"}],"grammar_tip":"null","priority":{"score":3,"reason":""}}';
   const prompt='ورودی: "'+word+'"\nزبان: '+(isDE?'آلمانی':'انگلیسی')+' — پروفایل: سطح '+level+' — هدف: '+gt+'\nفقط JSON:\n'+schema+'\nقوانین: examples دقیقاً ۱ — synonyms حداکثر ۲ — فقط JSON خالص.';
+  return _callAPI(prompt,800);
+}
 
+/* ══ تابع مرکزی API — همه searchها از اینجا میرن ══ */
+async function _callAPI(prompt,maxTokens){
   const headers={'Content-Type':'application/json'};
-  if(sbUser?.id)headers['x-user-id']=sbUser.id;
+  if(sbUser&&sbUser.id)headers['x-user-id']=sbUser.id;
   let res;
   try{
     res=await fetch('/api',{method:'POST',headers,
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
-  }catch(fetchErr){
-    throw new Error('خطای اتصال — اینترنت رو چک کن');
-  }
-  // Rate limit
-  if(res.status===429){
-    const retry=res.headers.get('Retry-After');
-    throw new Error('تعداد جستجو تموم شد'+(retry?' — '+retry+' ثانیه صبر کن':''));
-  }
-  if(!res.ok)throw new Error('خطای سرور ('+res.status+')');
-
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',
+        max_tokens:maxTokens||800,
+        messages:[{role:'user',content:prompt}]})});
+  }catch(e){throw new Error('خطای اتصال');}
+  if(res.status===429){throw new Error('limit');}
+  if(!res.ok)throw new Error('HTTP '+res.status);
   const txt=await res.text();
-  let d;
+  /* parse */
   try{
     const clean=txt.replace(/```json|```/g,'').trim();
-    const m=clean.match(/\{[\s\S]*\}/);
-    d=m?JSON.parse(m[0]):JSON.parse(clean);
-    // Claude API response format
+    let d=JSON.parse(clean);
     if(d.content&&Array.isArray(d.content)){
       const tb=d.content.find(c=>c.type==='text');
-      if(tb){
-        const inner=(tb.text||'').replace(/```json|```/g,'').trim();
-        const m2=inner.match(/\{[\s\S]*\}/);
-        if(m2)d=JSON.parse(m2[0]);
-      }
+      if(tb){const m=(tb.text||'').replace(/```json|```/g,'').trim().match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);}
     }
-  }catch(e){return null;}
-  return d?.meaning_fa?d:null;
-}
-function getAlts(word){
-  const alts=[];
-  const noArt=word.replace(/^(der|die|das|den|dem|des|ein|eine|einen|einem|einer|eines)/i,'').trim();
-  if(noArt&&noArt!==word&&noArt.length>=2)alts.push(noArt);
-  const m=word.match(/[A-Z\u00c4\u00d6\u00dc][a-z\u00e4\u00f6\u00fc\u00df]+$/);
-  if(m&&m[0]!==word&&m[0].length>=3)alts.push(m[0]);
-  ['en','ung','heit','keit','er'].forEach(s=>{
-    if(word.toLowerCase().endsWith(s)&&word.length-s.length>=3)alts.push(word.slice(0,word.length-s.length));
-  });
-  return alts.filter((a,i,ar)=>a&&a.length>=2&&ar.indexOf(a)===i).slice(0,3);
-}
-
-function fillTT(d,word){
-  const wp=Q('wp');if(wp.style.display!=='block')return;
-  curData=d;
-  /* برای phrase: از word پاس‌شده استفاده کن */
-  const isPhrase=word&&word.includes(' ');
-  const w=isPhrase?word:(d.word||word);
-  const art=(!isPhrase&&d.article&&d.article!=='null')?d.article+' ':'';
-  /* نمایش کوتاه برای phrase های طولانی */
-  const display=isPhrase&&w.length>30?w.slice(0,28)+'…':art+w;
-  Q('wp-word').textContent=display;
-  Q('wp-meta').textContent=isPhrase?(d.type||'عبارت'):([d.article,d.type,d.level].filter(Boolean).join(' · '));
-
-  hid('wp-spin');
-
-  // meaning
-  if(d.meaning_fa){Q('wp-fa').textContent=d.meaning_fa;sho('wp-fa');}
-
-  // badges (type + level)
-  const badgesEl=Q('wp-badges');
-  if(badgesEl){
-    badgesEl.innerHTML='';
-    const isPhrase=d.type&&/phrase|redewendung|satz|idiom/i.test(d.type);
-    if(d.type&&d.type!=='null'){
-      const b=document.createElement('span');
-      b.className='wp-badge '+(isPhrase?'phrase':'type');
-      b.textContent=d.type;badgesEl.appendChild(b);
-    }
-    if(d.level&&d.level!=='null'){
-      const b=document.createElement('span');
-      b.className='wp-badge level';b.textContent=d.level;badgesEl.appendChild(b);
-    }
-    if(d.principal_parts&&d.principal_parts!=='null'){
-      const b=document.createElement('span');
-      b.className='wp-badge type';b.textContent=d.principal_parts;badgesEl.appendChild(b);
-    }
-    if(badgesEl.children.length)sho('wp-badges');else hid('wp-badges');
-  }
-
-  // grammar tip
-  if(d.grammar_tip&&d.grammar_tip!=='null'){
-    Q('wp-gram').textContent=d.grammar_tip;sho('wp-gram');
-  }
-
-  // example
-  const ex=d.examples?.[0];
-  if(ex&&ex.de){
-    Q('wp-ex').innerHTML=ex.de+(ex.fa?`<div id="wp-ex-fa">${ex.fa}</div>`:'');
-    sho('wp-ex');
-  }
-
-  // add button
-  const isAdded=savedSet.has(w.toLowerCase());
-  const btn=Q('wp-add');
-  btn.innerHTML=isAdded
-    ?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3.5L10 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>اضافه شد'
-    :'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>افزودن به فلش‌کارت';
-  btn.className=isAdded?'done':'';
-  btn.onclick=addWord;sho('wp-add');
-}
-
-function speak(){
-  if(!curWord)return;
-  const btn=Q('wp-audio');btn.classList.add('playing');
-  if(window.speechSynthesis){
-    speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(curWord);
-    u.lang=targetLang==='en'?'en-US':'de-DE';u.rate=.85;
-    u.onend=u.onerror=()=>btn.classList.remove('playing');
-    speechSynthesis.speak(u);
-  }else btn.classList.remove('playing');
-}
-
-/* ══ ADD WORD ══ */
-function addWord(){
-  if(!curData)return;
-  const word=curData.word||curWord;
-  if(savedSet.has(word.toLowerCase())){toast('قبلاً ذخیره شده');return;}
-  savedSet.add(word.toLowerCase());
-  saved.push({de:word,fa:curData.meaning_fa||'',level:curData.level||'',article:curData.article||''});
-  document.querySelectorAll('.gw').forEach(s=>{
-    if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.add('done');
-  });
-  Object.keys(pageItems).forEach(pg=>{
-    const wrap=document.querySelector(`[data-page="${pg}"]`);
-    if(wrap)reHL(parseInt(pg),wrap);
-  });
-  addToSidebar(word,curData);
-  syncLS(word,curData);
-  dbSave(word,curData);
-  markDirty();showSaveIndicator();
-  const btn=Q('wp-add');
-  btn.textContent='✓ اضافه شد';btn.className='done';
-  btn.style.transform='scale(1.04)';
-  setTimeout(()=>btn.style.transform='',150);
-  updateSaveBtn();updateStats();
-  toast('✓ «'+word+'» اضافه شد');
-  setTimeout(closeTT,650);
-}
-
-function syncLS(word,d){
-  try{
-    const ws=JSON.parse(localStorage.getItem('ws_words')||'[]');
-    if(!ws.some(w=>w.de?.toLowerCase()===word.toLowerCase())){
-      ws.unshift({de:word,fa:d.meaning_fa||'',ex:d.examples?.[0]?.de||'',
-        article:d.article||'',level:d.level||'',score:0,seen:0,
-        interval:1,easiness:2.5,next_review:new Date().toISOString()});
-      localStorage.setItem('ws_words',JSON.stringify(ws));
-    }
-  }catch(e){}
-}
-
-/* ══ SIDEBAR ══ */
-function addToSidebar(word,d){
-  const list=Q('rsb-list');
-  Q('rsb-empty')?.remove();
-  const item=document.createElement('div');item.className='wi';
-  item.innerHTML=`<div class="wi-info">
-    <div class="wi-de">${word}</div>
-    ${d.meaning_fa?`<div class="wi-fa">${d.meaning_fa}</div>`:''}
-    ${d.level?`<span class="wi-lv">${d.level}</span>`:''}
-  </div><button class="wi-del" onclick="removeWord(this,'${word.replace(/'/g,"\\'")}')">×</button>`;
-  list.insertBefore(item,list.firstChild);
-  Q('rsb-cnt').textContent=saved.length;
-}
-function toggleRsb(){
-  Q('rsb').classList.toggle('collapsed');
-}
-
-/* ══ Scroll to word در PDF ══ */
-function scrollToWord(word){
-  // پیدا کردن اولین صفحه‌ای که این کلمه هست
-  for(const pg of Object.keys(pageItems)){
-    const pd=pageItems[pg];if(!pd)continue;
-    const found=pd.items.some(item=>{
-      if(!item.str)return false;
-      const toks=tokenize(item.str);
-      return toks.some(t=>t.w&&t.c.toLowerCase()===word.toLowerCase());
-    });
-    if(found){
-      const n=parseInt(pg);
-      if(n!==curPage)goPage(n-curPage);
-      // بعد از scroll، highlight کن
-      setTimeout(()=>{
-        const wrap=document.querySelector(`[data-page="${pg}"]`);
-        if(!wrap)return;
-        // flash highlight
-        const hlc=wrap.querySelector('.hl-c');if(!hlc)return;
-        const dpr=Math.min(devicePixelRatio||1,2);
-        const ctx=hlc.getContext('2d');
-        const vp=pd.vp;
-        // پیدا کردن موقعیت کلمه
-        for(const item of pd.items){
-          if(!item.str)continue;
-          const toks=tokenize(item.str);
-          if(!toks.some(t=>t.c.toLowerCase()===word.toLowerCase()))continue;
-          const tx=pdfjsLib.Util.transform(vp.transform,item.transform);
-          const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
-          ctx.save();ctx.scale(dpr,dpr);
-          ctx.fillStyle='rgba(26,58,242,.3)';
-          ctx.fillRect(tx[4]-2,vp.height-tx[5]-fs*1.4,(item.width||60)*vp.scale+4,fs*1.8);
-          ctx.restore();
-          wrap.scrollIntoView({behavior:'smooth',block:'center'});
-          // fade out بعد از ۱.۵ ثانیه
-          setTimeout(()=>reHL(parseInt(pg),wrap),1500);
-          break;
-        }
-      },400);
-      return;
-    }
-  }
-  toast('کلمه در PDF پیدا نشد');
-}
-
-function removeWord(btn,word){
-  savedSet.delete(word.toLowerCase());
-  saved=saved.filter(w=>w.de.toLowerCase()!==word.toLowerCase());
-  btn.closest('.wi').remove();
-  document.querySelectorAll('.gw').forEach(s=>{
-    if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.remove('done');
-  });
-  Object.keys(pageItems).forEach(pg=>{
-    const wrap=document.querySelector(`[data-page="${pg}"]`);
-    if(wrap){const c=wrap.querySelector('.hl-c');c?.getContext('2d').clearRect(0,0,c.width,c.height);reHL(parseInt(pg),wrap);}
-  });
-  if(!saved.length){
-    Q('rsb-list').innerHTML='<div id="rsb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.45">روی هر کلمه کلیک کن</span></div>';
-    Q('btn-save')&&(Q('btn-save').style.display='none');
-  }
-  Q('rsb-cnt').textContent=saved.length;updateSaveBtn();updateStats();
-}
-function updateSaveBtn(){
-  const b=Q('btn-save');if(!b)return;
-  if(saved.length){b.style.display='';b.textContent='✓ ذخیره همه ('+saved.length+')';}
-  else b.style.display='none';
-}
-function saveAll(){toast('✓ '+saved.length+' لغت در Wortschatz موجوده');}
-
-/* ══ NAV ══ */
-function updateNav(){
-  Q('page-display').textContent=curPage+' / '+totalPages;
-  Q('btn-prev').disabled=curPage<=1;Q('btn-next').disabled=curPage>=totalPages;
-  document.querySelectorAll('.ti').forEach(t=>t.classList.toggle('act',parseInt(t.dataset.pg||0)===curPage));
-  updateReadProgress();
-}
-function goPage(dir){
-  const n=curPage+dir;if(n<1||n>totalPages)return;
-  curPage=n;updateNav();closeTT();
-  document.querySelector(`[data-page="${n}"]`)?.scrollIntoView({behavior:'smooth',block:'start'});
-}
-area.addEventListener('scroll',()=>{
-  const pages=document.querySelectorAll('.pw[data-page]');
-  const aTop=area.getBoundingClientRect().top;
-  let best=null,bestD=9999;
-  pages.forEach(p=>{const d=Math.abs(p.getBoundingClientRect().top-aTop);if(d<bestD){bestD=d;best=p;}});
-  if(best){const n=parseInt(best.dataset.page||1);if(n!==curPage){curPage=n;updateNav();markDirty();}}
-},{passive:true});
-
-/* ══ ZOOM ══ */
-function zoom(d){
-  scale=Math.max(.7,Math.min(3.5,scale+d));updateZoom();
-  const saved2=curPage;
-  if(pdfDoc)renderAll(()=>setTimeout(()=>document.querySelector(`[data-page="${saved2}"]`)?.scrollIntoView({behavior:'auto',block:'start'}),80));
-  else if(isSample&&curSample)renderSample(curSample);
-}
-function updateZoom(){Q('zoom-display').textContent=Math.round(scale/1.8*100)+'%';}
-
-/* ══ THUMBNAILS ══ */
-function toggleThumbs(){
-  thumbsOn=!thumbsOn;
-  const t=Q('thumbs');
-  t.style.display=thumbsOn?'flex':'none';
-  Q('btn-thumbs').classList.toggle('on',thumbsOn);
-  if(thumbsOn&&pdfDoc&&!t.children.length)renderThumbs();
-}
-function renderThumbs(){
-  const t=Q('thumbs');t.innerHTML='';
-  for(let n=1;n<=totalPages;n++){
-    ;((pg)=>{
-      const wrap=document.createElement('div');wrap.className='ti';wrap.dataset.pg=pg;
-      if(pg===curPage)wrap.classList.add('act');
-      const ph=document.createElement('div');
-      ph.style.cssText='width:100%;padding-bottom:141%;background:var(--surface2);border-radius:3px;position:relative';
-      const num=document.createElement('div');num.className='ti-n';num.textContent=pg;
-      ph.appendChild(num);wrap.appendChild(ph);
-      wrap.addEventListener('click',()=>{
-        const diff=pg-curPage;
-        if(diff!==0)goPage(diff);
-        else document.querySelector(`[data-page="${pg}"]`)?.scrollIntoView({behavior:'smooth',block:'start'});
-      });
-      t.appendChild(wrap);
-      const obs=new IntersectionObserver(entries=>{
-        if(!entries[0].isIntersecting||wrap.dataset.rendered)return;
-        wrap.dataset.rendered='1';obs.disconnect();
-        setTimeout(()=>{
-          if(!pdfDoc)return;
-          pdfDoc.getPage(pg).then(page=>{
-            const vp=page.getViewport({scale:.28});
-            const cv=document.createElement('canvas');
-            cv.width=Math.floor(vp.width);cv.height=Math.floor(vp.height);
-            cv.style.width='100%';
-            const ctx=cv.getContext('2d');
-            ph.parentNode.insertBefore(cv,ph);ph.remove();
-            page.render({canvasContext:ctx,viewport:vp,intent:'print'}).promise.catch(()=>{});
-          }).catch(()=>{});
-        },60);
-      },{root:t,rootMargin:'300px 0px',threshold:0});
-      obs.observe(wrap);
-    })(n);
+    return d.meaning_fa?d:null;
+  }catch(e){
+    const m=txt.match(/\{[\s\S]*?\}/);
+    if(m)try{const d=JSON.parse(m[0]);return d.meaning_fa?d:null;}catch(e2){}
+    return null;
   }
 }
 
-/* ══ FIND ══ */
-function toggleSearch(){
-  searchOn=!searchOn;
-  const bar=Q('find-bar');
-  bar.style.display=searchOn?'flex':'none';
-  Q('btn-find').classList.toggle('on',searchOn);
-  if(searchOn){Q('find-input').focus();Q('find-input').select();}
-  else{clearFind();findMatches=[];Q('find-count').textContent='0 / 0';}
-}
-function findKey(e){if(e.key==='Enter')findNav(e.shiftKey?-1:1);}
-function doFind(){
-  const q=(Q('find-input').value||'').trim().toLowerCase();
-  clearFind();findMatches=[];findIdx=0;
-  if(q.length<2){Q('find-count').textContent='0 / 0';return;}
-  document.querySelectorAll('.ptl span').forEach(s=>{
-    if(s.tagName==='BR')return;
-    if((s.textContent||'').toLowerCase().includes(q)){findMatches.push(s);s.classList.add('sh');}
-  });
-  Q('find-count').textContent=findMatches.length+' نتیجه';
-  if(findMatches.length)activateFind(0);
-}
-function findNav(dir){
-  if(!findMatches.length)return;
-  findIdx=(findIdx+dir+findMatches.length)%findMatches.length;
-  activateFind(findIdx);
-}
-function activateFind(i){
-  findMatches.forEach(s=>s.classList.remove('sa'));
-  const el=findMatches[i];if(!el)return;
-  el.classList.add('sa');el.scrollIntoView({behavior:'smooth',block:'center'});
-  Q('find-count').textContent=`${i+1} / ${findMatches.length}`;
-}
-function clearFind(){document.querySelectorAll('.sh,.sa').forEach(s=>s.classList.remove('sh','sa'));}
-
-/* ══ DARK MODE ══ */
-function toggleDark(){
-  darkMode=!darkMode;
-  document.body.classList.toggle('dp',darkMode);
-  Q('btn-dark').classList.toggle('on',darkMode);
-}
-
-/* ══ BOOKMARK ══ */
-function toggleBookmark(){
-  const bm=Q('btn-bm');
-  if(bookmarks.has(curPage)){
-    bookmarks.delete(curPage);toast('بوک‌مارک حذف شد');bm.classList.remove('on');
-  }else{
-    bookmarks.add(curPage);toast('📌 صفحه '+curPage+' بوک‌مارک شد');bm.classList.add('on');
-  }
-  localStorage.setItem('ws_reader_bm',JSON.stringify([...bookmarks]));
-  markDirty();showSaveIndicator();
-  const wrap=document.querySelector(`[data-page="${curPage}"]`);
-  if(wrap){
-    wrap.querySelector('.bm')?.remove();
-    if(bookmarks.has(curPage)){const d=document.createElement('div');d.className='bm';wrap.appendChild(d);}
-  }
-}
-
-/* ══ STATS ══ */
-let readStart2=Date.now();
-function updateReadProgress(){
-  if(!totalPages)return;
-  pagesRead.add(curPage);
-  const pct=Math.round((curPage/totalPages)*100);
-  const bar=Q('read-bar');if(bar)bar.style.width=pct+'%';
-}
-function updateStats(){
-  const pg=Q('st-page');if(pg)pg.textContent=curPage+' / '+totalPages;
-  const rd=Q('st-read');if(rd)rd.textContent=pagesRead.size;
-  const wd=Q('st-words');if(wd)wd.textContent=saved.length;
-  const elapsed=Math.floor((Date.now()-readStart2)/1000);
-  const m=Math.floor(elapsed/60),s=elapsed%60;
-  const tm=Q('st-time');if(tm)tm.textContent=m+':'+(s<10?'0':'')+s;
-  const pct=totalPages?Math.round((curPage/totalPages)*100):0;
-  const pctEl=Q('st-pct');if(pctEl)pctEl.textContent=pct+'%';
-  const ring=Q('ring-fill');
-  if(ring){const c=125.66;ring.style.strokeDashoffset=c-(c*pct/100);}
-  const pi=Q('st-pages-info');if(pi)pi.textContent=pagesRead.size+' از '+totalPages+' صفحه';
-}
-function toggleStats(){
-  const s=Q('stats'),btn=Q('btn-stats');
-  const isOpen=s.style.display==='block';
-  s.style.display=isOpen?'none':'block';
-  btn.classList.toggle('on',!isOpen);
-  if(!isOpen)updateStats();
-}
-setInterval(()=>{if(Q('stats').style.display==='block')updateStats();},30000);
-
-/* ══ EXPORT ══ */
-function showExport(){
-  if(!saved.length){toast('هنوز لغتی ذخیره نشده');return;}
-  Q('exp-modal').style.display='flex';
-}
-function exportCSV(){
-  const rows=['کلمه,معنی,سطح,مقاله',...saved.map(w=>`"${w.de}","${w.fa||''}",${w.level||''},${w.article||''}`)];
-  download(rows.join('\n'),'wortschatz.csv','text/csv;charset=utf-8');
-  hidePanel('exp-modal');toast('✓ CSV دانلود شد');
-}
-function exportAnki(){
-  const rows=saved.map(w=>(w.article?w.article+' ':'')+w.de+'\t'+(w.fa||''));
-  download(rows.join('\n'),'wortschatz-anki.txt','text/plain;charset=utf-8');
-  hidePanel('exp-modal');toast('✓ Anki دانلود شد');
-}
-function exportJSON(){
-  download(JSON.stringify(saved,null,2),'wortschatz.json','application/json');
-  hidePanel('exp-modal');toast('✓ JSON دانلود شد');
-}
-function download(content,name,type){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\ufeff'+content],{type}));
-  a.download=name;document.body.appendChild(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);
-}
-function showPanel(id){Q(id).style.display='flex';}
-function hidePanel(id){Q(id).style.display='none';}
-
-/* ══ DRAGGABLE PANELS ══ */
-function makeDraggable(panel,handle){
-  let drag=false,sx=0,sy=0,iL=0,iT=0;
-  function down(e){
-    if(e.target.tagName==='BUTTON'||e.target.closest('button'))return;
-    drag=true;const t=e.touches?e.touches[0]:e;
-    sx=t.clientX;sy=t.clientY;
-    const r=panel.getBoundingClientRect();iL=r.left;iT=r.top;
-    panel.classList.add('dragging');e.preventDefault();
-  }
-  function move(e){
-    if(!drag)return;const t=e.touches?e.touches[0]:e;
-    const dx=t.clientX-sx,dy=t.clientY-sy;
-    panel.style.left=Math.max(0,Math.min(innerWidth-panel.offsetWidth,iL+dx))+'px';
-    panel.style.top=Math.max(0,Math.min(innerHeight-panel.offsetHeight,iT+dy))+'px';
-    panel.style.right='auto';panel.style.bottom='auto';
-    e.preventDefault();
-  }
-  function up(){drag=false;panel.classList.remove('dragging');}
-  handle.addEventListener('mousedown',down);
-  handle.addEventListener('touchstart',down,{passive:false});
-  document.addEventListener('mousemove',move);
-  document.addEventListener('touchmove',move,{passive:false});
-  document.addEventListener('mouseup',up);
-  document.addEventListener('touchend',up);
-}
-setTimeout(()=>{
-  makeDraggable(Q('wp'),Q('wp-dh'));
-  makeDraggable(Q('sp'),Q('sp-dh'));
-},100);
-
-/* ══ CLICK OUTSIDE ══ */
-document.addEventListener('click',e=>{
-  const mp=Q('mini-pop');
-  if(mp.style.display==='block'&&!mp.contains(e.target))closeMini();
-  if(Q('wp').style.display==='block'&&!Q('wp').contains(e.target)&&!mp.contains(e.target))closeTT();
-  if(Q('sp').style.display==='block'&&!Q('sp').contains(e.target)){
-    if(!window.getSelection()||window.getSelection().isCollapsed)closeSel();
-  }
-});
-
-/* ══ SELECTION BAR ══ */
-let selTimer=null;
-document.addEventListener('mousemove',e=>{lastMouse={x:e.clientX,y:e.clientY};},{passive:true});
-document.addEventListener('mousedown',e=>{
-  if(e.target?.closest?.('#wp')||e.target?.closest?.('#sp'))return;
-  if(e.target?.closest?.('.ptl'))selDragging=true;
-  clearTimeout(selTimer);closeSel();
-},{passive:true});
-document.addEventListener('mouseup',e=>{
-  if(e.target?.closest?.('#wp')||e.target?.closest?.('#sp'))return;
-  const wasDrag=selDragging;selDragging=false;
-  clearTimeout(selTimer);
-  const ex=e.clientX,ey=e.clientY;
-  if(wasDrag||e.target?.closest?.('.ptl')){
-    selTimer=setTimeout(()=>checkSel({x:ex,y:ey}),60);
-  }
-},{passive:true});
-document.addEventListener('touchend',e=>{
-  if(e.target?.closest?.('#wp')||e.target?.closest?.('#sp'))return;
-  selDragging=false;clearTimeout(selTimer);
-  const t=e.changedTouches?.[0];
-  selTimer=setTimeout(()=>checkSel({x:t?.clientX||lastMouse.x,y:t?.clientY||lastMouse.y}),220);
-},{passive:true});
-
-function checkSel(pos){
-  const sel=window.getSelection();
-  if(!sel||sel.isCollapsed||!sel.rangeCount){closeSel();return;}
-  const txt=sel.toString().trim();
-  if(txt.length<2){closeSel();return;}
-  try{
-    const range=sel.getRangeAt(0);
-    const container=range.commonAncestorContainer;
-    const el=container.nodeType===3?container.parentElement:container;
-    if(!el?.closest?.('.pw')&&!el?.closest?.('.ptl')&&!el?.closest?.('#area')){closeSel();return;}
-  }catch(e){}
-  showSel(txt,pos);
-}
-function showSel(txt,pos){
-  const bar=Q('sp');
-  Q('sp-text').textContent=txt.length>80?txt.slice(0,78)+'…':txt;
-  const words=(txt.match(/[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]{3,}(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*/g)||[]).filter((w,i,a)=>a.indexOf(w)===i).slice(0,8);
-  const row=Q('sp-words');
-  if(words.length){
-    row.innerHTML='';
-    words.forEach(w=>{
-      const chip=document.createElement('button');
-      chip.className='sw';chip.textContent=w;
-      chip.addEventListener('click',e=>{
-        e.stopPropagation();closeSel();
-        curWord=w;curData=null;showLoading(w,e);doSearch(w);
-      });
-      row.appendChild(chip);
-    });
-    row.style.display='flex';
-  }else row.style.display='none';
-
-  bar.classList.remove('out','in');bar.style.display='block';
-  const isMob=innerWidth<=768;
-  if(!isMob){
-    let selRect=null;
-    try{const sr=window.getSelection().getRangeAt(0).getBoundingClientRect();if(sr.width>0)selRect=sr;}catch(e){}
-    const bw=Math.min(350,innerWidth-20);
-    bar.style.width=bw+'px';bar.style.borderRadius='';
-    const cx=selRect?selRect.left+selRect.width/2:pos.x;
-    const cy=selRect?selRect.top:pos.y;
-    let left=cx-bw/2,top=cy-(bar.offsetHeight||130)-14;
-    if(left<8)left=8;if(left+bw>innerWidth-8)left=innerWidth-bw-8;
-    if(top<56)top=selRect?selRect.bottom+8:cy+16;
-    if(top+(bar.offsetHeight||130)>innerHeight-10)top=innerHeight-(bar.offsetHeight||130)-10;
-    bar.style.left=left+'px';bar.style.top=top+'px';bar.style.bottom='auto';bar.style.right='auto';
-  }
-  requestAnimationFrame(()=>bar.classList.add('in'));
-}
-function closeSel(){
-  const bar=Q('sp');
-  if(bar.style.display==='none')return;
-  bar.classList.add('out');
-  setTimeout(()=>{bar.style.display='none';bar.classList.remove('out','in');},120);
-}
-function searchSel(){
-  const txt=window.getSelection()?.toString().trim()||'';
-  if(!txt){closeSel();return;}
-  // موقعیت از selection rect
-  let cx=innerWidth/2,cy=innerHeight/3;
-  try{const r=window.getSelection().getRangeAt(0).getBoundingClientRect();
-    if(r.width>0){cx=r.left+r.width/2;cy=r.top;}}catch(e){}
-  closeSel();window.getSelection()?.removeAllRanges();
-  curWord=txt;curData=null;
-  showLoading(txt,{clientX:cx,clientY:cy});
-  doSearchPhrase(txt,cx,cy);
-}
 
 async function doSearchPhrase(phrase,cx,cy){
   searching=false; /* reset برای phrase search */
@@ -3227,7 +2694,10 @@ async function doSearchPhrase(phrase,cx,cy){
       body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,
         messages:[{role:'user',content:prompt}]})
     });
-    if(res.status===429)throw new Error('تعداد جستجو تموم شد');
+    if(res.status===429){
+      if(!sbUser)throw new Error('برای جستجوی جمله وارد Wortschatz بشو');
+      throw new Error('محدودیت جستجو — کمی صبر کن');
+    }
     if(!res.ok)throw new Error('HTTP '+res.status);
     const raw=await res.text();
     /* parse — robust */
@@ -3266,6 +2736,7 @@ async function doSearchPhrase(phrase,cx,cy){
       if(el){el.textContent='ترجمه ناموفق — دوباره امتحان کن';sho('wp-err');}
     }
   }catch(e){
+    searching=false;
     if(curWord===phrase){
       hid('wp-spin');
       var el2=Q('wp-err');
