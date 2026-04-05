@@ -289,9 +289,61 @@ canvas.pdf-c{display:block;pointer-events:none}
 .ptl span.gw{cursor:pointer}
 .ptl span.gw:hover{background:rgba(26,58,242,.14);border-radius:2px}
 .ptl span.gw.done{background:rgba(31,122,63,.13);border-radius:2px}
+/* selected word */
+.ptl span.gw.sel{
+  background:rgba(26,58,242,.26);border-radius:2px;
+  outline:1.5px solid rgba(26,58,242,.45);
+}
+/* context neighbors — کلمه‌های مجاور */
+.ptl span.gw.ctx-left,.ptl span.gw.ctx-right{
+  background:rgba(26,58,242,.08);border-radius:2px;
+  outline:1px dashed rgba(26,58,242,.25);
+  cursor:pointer;
+}
+.ptl span.gw.ctx-left:hover{background:rgba(26,58,242,.18)!important}
+.ptl span.gw.ctx-right:hover{background:rgba(26,58,242,.18)!important}
 /* search highlight */
 .ptl span.sh{background:rgba(255,196,0,.3);border-radius:1px}
 .ptl span.sh.sa{background:rgba(255,140,0,.5);border-radius:1px}
+
+/* ── Context expand bar (بالای tooltip) ── */
+#ctx-bar{
+  display:none;
+  padding:6px 10px 5px;
+  border-bottom:1px solid var(--line);
+  background:var(--bg);
+  direction:ltr;
+}
+#ctx-text{
+  font-family:var(--serif);font-size:13px;
+  color:var(--text2);line-height:1.6;
+  display:flex;flex-wrap:wrap;align-items:center;gap:0;
+}
+.ctx-w{
+  cursor:pointer;padding:0 2px;border-radius:3px;
+  transition:background .1s;color:var(--text2);
+}
+.ctx-w:hover{background:rgba(26,58,242,.14);color:var(--text)}
+.ctx-w.ctx-sel{
+  color:var(--text);font-weight:600;
+  background:rgba(26,58,242,.18);
+  border-radius:3px;padding:0 3px;
+}
+.ctx-w.ctx-done{color:var(--green)}
+.ctx-expand-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;
+  background:rgba(26,58,242,.15);border:1px dashed rgba(26,58,242,.35);
+  color:var(--blue);font-size:10px;cursor:pointer;
+  margin:0 2px;transition:all .13s;flex-shrink:0;line-height:1;font-weight:700;
+}
+.ctx-expand-btn:hover{background:var(--blue);color:white;border-color:var(--blue)}
+#ctx-hint{
+  font-size:9px;color:var(--text4);
+  padding:2px 10px 5px;text-align:center;
+  border-bottom:1px solid var(--line);
+  direction:rtl;
+}
 /* sample spans */
 .gw{cursor:pointer;border-radius:2px;transition:background .08s;padding:0 1px}
 .gw:hover{background:rgba(26,58,242,.13)}
@@ -318,7 +370,39 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
   background:var(--surface);
   border-right:1px solid var(--line);
   display:flex;flex-direction:column;overflow:hidden;
+  transition:width .22s cubic-bezier(.4,0,.2,1);
 }
+#rsb.collapsed{width:36px}
+#rsb.collapsed #rsb-list,
+#rsb.collapsed #rsb-empty{display:none}
+#rsb-toggle{
+  width:20px;height:20px;
+  background:none;border:none;
+  color:var(--text3);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:5px;transition:all .1s;padding:0;flex-shrink:0;
+}
+#rsb-toggle:hover{background:var(--surface2);color:var(--text)}
+#rsb-toggle svg{transition:transform .22s}
+#rsb.collapsed #rsb-toggle svg{transform:rotate(180deg)}
+/* collapsed state label */
+#rsb-collapsed-label{
+  display:none;
+  writing-mode:vertical-lr;
+  transform:rotate(180deg);
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  color:var(--text4);text-transform:uppercase;
+  padding:12px 0;flex:1;
+  align-items:center;justify-content:center;
+}
+#rsb.collapsed #rsb-collapsed-label{display:flex}
+#rsb.collapsed #rsb-top{
+  padding:8px 6px;
+  justify-content:center;
+  border-bottom:none;
+}
+#rsb.collapsed #rsb-cnt{display:none}
+#rsb.collapsed #rsb-top h3{display:none}
 #rsb-top{
   padding:10px 12px 8px;
   border-bottom:1px solid var(--line);
@@ -498,6 +582,37 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
   margin-top:5px;font-family:var(--sans);
   padding-top:5px;border-top:1px solid var(--line);
 }
+/* ── context expand buttons ══ */
+.ctx-strip{
+  display:flex;align-items:center;gap:3px;
+  margin-bottom:10px;padding:6px 8px;
+  background:var(--surface2);border-radius:9px;
+  border:1px solid var(--line);
+  flex-wrap:wrap;direction:ltr;
+  font-family:var(--serif);
+}
+.ctx-word{
+  font-size:12px;color:var(--text2);
+  padding:2px 4px;border-radius:4px;
+  cursor:pointer;transition:all .1s;
+}
+.ctx-word:hover{background:var(--line);color:var(--text)}
+.ctx-center{
+  font-size:13px;font-weight:700;color:var(--blue);
+  padding:2px 6px;border-radius:4px;
+  background:var(--blue-a);cursor:default;
+}
+.ctx-add{
+  width:20px;height:20px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface3);border:1px solid var(--line2);
+  border-radius:5px;cursor:pointer;color:var(--text3);
+  font-size:14px;line-height:1;transition:all .1s;
+  user-select:none;
+}
+.ctx-add:hover{background:var(--blue-a);border-color:rgba(26,58,242,.3);color:var(--blue)}
+.ctx-sep{color:var(--line2);font-size:10px;user-select:none}
+
 /* ── add button ── */
 #wp-add{
   width:100%;height:40px;
@@ -821,6 +936,9 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
       <div id="rsb-top">
         <h3>لغات ذخیره‌شده</h3>
         <span id="rsb-cnt">0</span>
+        <button id="rsb-toggle" onclick="toggleRsb()" title="بستن/باز کردن">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5L4.5 6l3 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
       <div id="rsb-list">
         <div id="rsb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.45">روی هر کلمه کلیک کن</span></div>
@@ -1140,7 +1258,7 @@ function attachTL(tl,pn){
       tl.querySelectorAll('.gw.sel').forEach(el=>el.classList.remove('sel'));
       span.classList.add('sel');
       if(curWord===word&&Q('wp').style.display==='block'){closeTT();return;}
-      curWord=word;curData=null;showLoading(word,e);doSearch(word);
+      curWord=word;curData=null;showLoading(word,e,span);doSearch(word);
     });
   });
 }
@@ -1306,20 +1424,153 @@ function refreshDone(){
 }
 
 /* ══ WORD CLICK ══ */
+/* ── state برای context expansion ── */
+let ctxItems=[],ctxSelIdx=-1,ctxPageNum=0,ctxWrap=null;
+
 function onHit(word,best,e){
   if(curWord===word&&Q('wp').style.display==='block'){closeTT();return;}
-  curWord=word;curData=null;showLoading(word,e);doSearch(word);
+  curWord=word;curData=null;
+  // ساختن context از text items اطراف
+  buildCtx(best,word);
+  showLoading(word,e);doSearch(word);
+}
+
+/* ── build context از text items ── */
+function buildCtx(best,selWord){
+  const pd=pageItems[best.pn];
+  if(!pd){hid('ctx-bar');hid('ctx-hint');return;}
+  const {items,vp}=pd;
+
+  // پیدا کردن item فعلی و همسایگانش
+  const allWords=[];
+  for(const item of items){
+    if(!item.str?.trim())continue;
+    const toks=tokenize(item.str);
+    const tx=pdfjsLib.Util.transform(vp.transform,item.transform);
+    const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+    if(fs<3)continue;
+    // موقعیت عمودی item
+    const itemTop=vp.height-tx[5]-fs*1.3;
+    toks.forEach(tok=>{
+      if(tok.w&&tok.c.length>=2)
+        allWords.push({text:tok.c,item,top:itemTop,fs});
+    });
+  }
+
+  // پیدا کردن کلمه انتخابی
+  let selIdx=allWords.findIndex(w=>w.text.toLowerCase()===selWord.toLowerCase());
+  if(selIdx===-1){hid('ctx-bar');hid('ctx-hint');return;}
+
+  // گرفتن پنجره ۵ کلمه (۲ چپ + کلمه + ۲ راست)
+  const start=Math.max(0,selIdx-2);
+  const end=Math.min(allWords.length-1,selIdx+2);
+  ctxItems=allWords.slice(start,end+1);
+  ctxSelIdx=selIdx-start;
+  ctxPageNum=best.pn;
+  ctxWrap=best.wrap;
+
+  renderCtx();
+}
+
+function renderCtx(){
+  const bar=Q('ctx-bar');
+  const hint=Q('ctx-hint');
+  if(!ctxItems.length){hid('ctx-bar');hid('ctx-hint');return;}
+
+  const ct=Q('ctx-text');
+  ct.innerHTML='';
+
+  // دکمه expand چپ
+  if(ctxSelIdx>0||ctxItems[0]){
+    const btnL=document.createElement('span');
+    btnL.className='ctx-expand-btn';btnL.textContent='←';
+    btnL.title='گسترش به چپ';
+    btnL.addEventListener('click',e=>{e.stopPropagation();expandCtx(-1);});
+    ct.appendChild(btnL);
+  }
+
+  // کلمات
+  ctxItems.forEach((item,i)=>{
+    const span=document.createElement('span');
+    span.className='ctx-w'+(i===ctxSelIdx?' ctx-sel':'')+(savedSet.has(item.text.toLowerCase())?' ctx-done':'');
+    span.textContent=(i>0?' ':'')+item.text;
+    ;(function(w,idx){
+      span.addEventListener('click',e=>{
+        e.stopPropagation();
+        if(idx===ctxSelIdx)return;
+        // تغییر کلمه انتخابی
+        ctxSelIdx=idx;
+        curWord=w;curData=null;
+        showLoadingCtx(w);doSearch(w);
+        renderCtx();
+      });
+    })(item.text,i);
+    ct.appendChild(span);
+  });
+
+  // دکمه expand راست
+  const btnR=document.createElement('span');
+  btnR.className='ctx-expand-btn';btnR.textContent='→';
+  btnR.title='گسترش به راست';
+  btnR.addEventListener('click',e=>{e.stopPropagation();expandCtx(1);});
+  ct.appendChild(btnR);
+
+  bar.style.display='block';
+  hint.style.display='block';
+}
+
+function expandCtx(dir){
+  const pd=pageItems[ctxPageNum];if(!pd)return;
+  const {items,vp}=pd;
+  const allWords=[];
+  for(const item of items){
+    if(!item.str?.trim())continue;
+    const toks=tokenize(item.str);
+    const tx=pdfjsLib.Util.transform(vp.transform,item.transform);
+    const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+    if(fs<3)continue;
+    toks.forEach(tok=>{
+      if(tok.w&&tok.c.length>=2)allWords.push({text:tok.c,item,fs});
+    });
+  }
+  // پیدا کردن index کلمه انتخابی در allWords
+  const selWord=ctxItems[ctxSelIdx]?.text||'';
+  const gi=allWords.findIndex(w=>w.text.toLowerCase()===selWord.toLowerCase());
+  if(gi===-1)return;
+
+  const firstWord=ctxItems[0];
+  const lastWord=ctxItems[ctxItems.length-1];
+  const fi=allWords.findIndex(w=>w.text.toLowerCase()===firstWord.text.toLowerCase());
+  const li=allWords.findIndex(w=>w.text.toLowerCase()===lastWord.text.toLowerCase());
+
+  if(dir===-1&&fi>0){
+    ctxItems.unshift(allWords[fi-1]);
+    ctxSelIdx++;
+  }else if(dir===1&&li<allWords.length-1){
+    ctxItems.push(allWords[li+1]);
+  }
+  renderCtx();
+}
+
+function showLoadingCtx(word){
+  Q('wp-word').textContent=word;Q('wp-meta').textContent='';
+  sho('wp-spin');hid('wp-err');hid('wp-fa');hid('wp-badges');hid('wp-gram');hid('wp-ex');hid('wp-add');
+  Q('wp-audio').classList.remove('playing');
 }
 
 /* ══ WORD PANEL ══ */
-function showLoading(word,e){
+function showLoading(word,e,span){
   const wp=Q('wp');
   Q('wp-word').textContent=word;Q('wp-meta').textContent='';
-  sho('wp-spin');hid('wp-err');hid('wp-fa');hid('wp-gram');hid('wp-ex');hid('wp-add');
+  sho('wp-spin');hid('wp-err');hid('wp-fa');hid('wp-badges');hid('wp-gram');hid('wp-ex');hid('wp-add');
   Q('wp-audio').classList.remove('playing');
+  // حذف ctx-strip قبلی
+  const old=Q('ctx-strip');if(old)old.remove();
   wp.classList.remove('out','in');wp.style.display='block';
   posTT(e.clientX,e.clientY);
   requestAnimationFrame(()=>wp.classList.add('in'));
+  // ctx strip بعد از نمایش
+  if(span)setTimeout(()=>buildCtxStrip(word,span),50);
 }
 function posTT(cx,cy){
   const wp=Q('wp'),w=wp.offsetWidth||308,h=wp.offsetHeight||260;
@@ -1336,7 +1587,11 @@ function closeTT(){
   wp.classList.add('out');
   setTimeout(()=>{wp.style.display='none';wp.classList.remove('out','in');},120);
   clearHL();
-  document.querySelectorAll('.gw.sel,.ptl span.gw.sel').forEach(s=>s.classList.remove('sel'));
+  document.querySelectorAll('.gw.sel,.ptl span.gw.sel,.ptl span.gw.ctx-left,.ptl span.gw.ctx-right').forEach(s=>{
+    s.classList.remove('sel','ctx-left','ctx-right');
+  });
+  hid('ctx-bar');hid('ctx-hint');
+  ctxItems=[];ctxSelIdx=-1;
   curWord=null;curData=null;
 }
 
@@ -1533,6 +1788,55 @@ function addToSidebar(word,d){
   list.insertBefore(item,list.firstChild);
   Q('rsb-cnt').textContent=saved.length;
 }
+function toggleRsb(){
+  Q('rsb').classList.toggle('collapsed');
+}
+
+/* ══ Scroll to word در PDF ══ */
+function scrollToWord(word){
+  // پیدا کردن اولین صفحه‌ای که این کلمه هست
+  for(const pg of Object.keys(pageItems)){
+    const pd=pageItems[pg];if(!pd)continue;
+    const found=pd.items.some(item=>{
+      if(!item.str)return false;
+      const toks=tokenize(item.str);
+      return toks.some(t=>t.w&&t.c.toLowerCase()===word.toLowerCase());
+    });
+    if(found){
+      const n=parseInt(pg);
+      if(n!==curPage)goPage(n-curPage);
+      // بعد از scroll، highlight کن
+      setTimeout(()=>{
+        const wrap=document.querySelector(`[data-page="${pg}"]`);
+        if(!wrap)return;
+        // flash highlight
+        const hlc=wrap.querySelector('.hl-c');if(!hlc)return;
+        const dpr=Math.min(devicePixelRatio||1,2);
+        const ctx=hlc.getContext('2d');
+        const vp=pd.vp;
+        // پیدا کردن موقعیت کلمه
+        for(const item of pd.items){
+          if(!item.str)continue;
+          const toks=tokenize(item.str);
+          if(!toks.some(t=>t.c.toLowerCase()===word.toLowerCase()))continue;
+          const tx=pdfjsLib.Util.transform(vp.transform,item.transform);
+          const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+          ctx.save();ctx.scale(dpr,dpr);
+          ctx.fillStyle='rgba(26,58,242,.3)';
+          ctx.fillRect(tx[4]-2,vp.height-tx[5]-fs*1.4,(item.width||60)*vp.scale+4,fs*1.8);
+          ctx.restore();
+          wrap.scrollIntoView({behavior:'smooth',block:'center'});
+          // fade out بعد از ۱.۵ ثانیه
+          setTimeout(()=>reHL(parseInt(pg),wrap),1500);
+          break;
+        }
+      },400);
+      return;
+    }
+  }
+  toast('کلمه در PDF پیدا نشد');
+}
+
 function removeWord(btn,word){
   savedSet.delete(word.toLowerCase());
   saved=saved.filter(w=>w.de.toLowerCase()!==word.toLowerCase());
@@ -1913,6 +2217,131 @@ function copySel(){
   navigator.clipboard.writeText(txt).then(()=>toast('✓ کپی شد')).catch(()=>toast('کپی انجام نشد'));
   closeSel();
 }
+
+/* ══ SIDEBAR TOGGLE ══ */
+let rsbCollapsed=false;
+function toggleRsb(){
+  rsbCollapsed=!rsbCollapsed;
+  Q('rsb').classList.toggle('collapsed',rsbCollapsed);
+}
+
+/* ══ CONTEXT EXPAND ══ */
+let ctxLeft=[],ctxRight=[],ctxCenter='';
+
+function buildCtxStrip(word,span){
+  // پیدا کردن کلمات مجاور در text layer
+  const tl=span.closest('.ptl');
+  if(!tl){ctxCenter=word;ctxLeft=[];ctxRight=[];return;}
+
+  const allSpans=Array.from(tl.querySelectorAll('span.gw'));
+  const idx=allSpans.indexOf(span);
+
+  ctxCenter=word;
+  ctxLeft=[];ctxRight=[];
+
+  // ۳ کلمه چپ
+  for(let i=Math.max(0,idx-3);i<idx;i++){
+    const w=allSpans[i].dataset.word||'';
+    if(w.length>=2)ctxLeft.push(w);
+  }
+  // ۳ کلمه راست
+  for(let i=idx+1;i<=Math.min(allSpans.length-1,idx+3);i++){
+    const w=allSpans[i].dataset.word||'';
+    if(w.length>=2)ctxRight.push(w);
+  }
+  renderCtxStrip();
+}
+
+function renderCtxStrip(){
+  let el=Q('ctx-strip');
+  if(!el){
+    el=document.createElement('div');
+    el.id='ctx-strip';el.className='ctx-strip';
+    const body=Q('wp-body');
+    if(body)body.insertBefore(el,body.firstChild);
+  }
+  el.innerHTML='';
+
+  // دکمه expand چپ
+  if(ctxLeft.length>0){
+    const btn=document.createElement('span');
+    btn.className='ctx-add';btn.title='اضافه کردن کلمه چپ';
+    btn.textContent='←';
+    btn.addEventListener('click',()=>{
+      const w=ctxLeft[ctxLeft.length-1];
+      if(w){ctxCenter=w+' '+ctxCenter;ctxLeft.pop();renderCtxStrip();}
+    });
+    el.appendChild(btn);
+    const sep=document.createElement('span');sep.className='ctx-sep';sep.textContent='…';el.appendChild(sep);
+  }
+
+  // کلمات چپ (کمرنگ)
+  ctxLeft.forEach(w=>{
+    const span=document.createElement('span');
+    span.className='ctx-word';span.textContent=w;
+    span.addEventListener('click',()=>{
+      // کلیک روی context word → search همون کلمه
+      const fakeE={clientX:parseInt(Q('wp').style.left||300),clientY:parseInt(Q('wp').style.top||200)+50};
+      curWord=w;curData=null;
+      Q('wp-word').textContent=w;
+      sho('wp-spin');hid('wp-err');hid('wp-fa');hid('wp-badges');hid('wp-gram');hid('wp-ex');hid('wp-add');
+      doSearch(w);
+    });
+    el.appendChild(span);
+  });
+
+  // کلمه مرکزی (آبی)
+  const center=document.createElement('span');
+  center.className='ctx-center';center.textContent=ctxCenter;
+  el.appendChild(center);
+
+  // کلمات راست
+  ctxRight.forEach(w=>{
+    const span=document.createElement('span');
+    span.className='ctx-word';span.textContent=w;
+    span.addEventListener('click',()=>{
+      const fakeE={clientX:parseInt(Q('wp').style.left||300),clientY:parseInt(Q('wp').style.top||200)+50};
+      curWord=w;curData=null;
+      Q('wp-word').textContent=w;
+      sho('wp-spin');hid('wp-err');hid('wp-fa');hid('wp-badges');hid('wp-gram');hid('wp-ex');hid('wp-add');
+      doSearch(w);
+    });
+    el.appendChild(span);
+  });
+
+  // دکمه expand راست
+  if(ctxRight.length>0){
+    const sep=document.createElement('span');sep.className='ctx-sep';sep.textContent='…';el.appendChild(sep);
+    const btn=document.createElement('span');
+    btn.className='ctx-add';btn.title='اضافه کردن کلمه راست';
+    btn.textContent='→';
+    btn.addEventListener('click',()=>{
+      const w=ctxRight[0];
+      if(w){ctxCenter=ctxCenter+' '+w;ctxRight.shift();renderCtxStrip();}
+    });
+    el.appendChild(btn);
+  }
+
+  // دکمه search جمله (اگه بیش از یه کلمه)
+  if(ctxCenter.includes(' ')){
+    const btn=document.createElement('button');
+    btn.style.cssText='margin-right:auto;display:flex;align-items:center;gap:4px;padding:2px 8px;height:22px;background:var(--blue-a);border:1px solid rgba(26,58,242,.25);border-radius:5px;font-size:9px;font-weight:700;color:var(--blue);cursor:pointer;font-family:var(--sans);white-space:nowrap;flex-shrink:0';
+    btn.textContent='🔍 جستجوی عبارت';
+    btn.addEventListener('click',()=>{
+      const phrase=ctxCenter;
+      curWord=phrase;curData=null;
+      Q('wp-word').textContent=phrase;
+      sho('wp-spin');hid('wp-err');hid('wp-fa');hid('wp-badges');hid('wp-gram');hid('wp-ex');hid('wp-add');
+      doSearchPhrase(phrase,parseInt(Q('wp').style.left||300),parseInt(Q('wp').style.top||200));
+    });
+    el.appendChild(btn);
+  }
+  el.style.display='flex';
+}
+
+/* ══ JUMP TO WORD LOCATION ══ */
+// ذخیره صفحه هر لغت موقع اضافه شدن
+const wordPages={};
 
 /* ══ HELPERS ══ */
 function tokenize(str){
