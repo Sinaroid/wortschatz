@@ -563,26 +563,37 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 /* دایره ⊕ */
 /* کلمه اصلی هنگام hover */
 .ptl span.gw.hov-main{
-  background:rgba(26,58,242,.18)!important;
+  background:rgba(26,58,242,.14)!important;
   border-radius:2px;
-  outline:1.5px solid rgba(26,58,242,.5);
-  outline-offset:1px;
 }
-/* کلمات مجاور هنگام hover — ظریف‌تر */
-.ptl span.gw.nbr{
-  background:rgba(26,58,242,.08)!important;
-  border-radius:2px;
+
+/* tooltip «معنی جمله» زیر کلمه */
+#phrase-tip{
+  position:fixed;z-index:900;
+  background:var(--blue);
+  color:#fff;
+  font-size:10px;font-weight:600;
+  font-family:var(--sans);
+  padding:3px 8px;
+  border-radius:6px;
   cursor:pointer;
-  text-decoration:underline;
-  text-decoration-style:dashed;
-  text-decoration-color:rgba(26,58,242,.4);
-  text-underline-offset:2px;
-  transition:background .1s;
+  white-space:nowrap;
+  display:none;
+  box-shadow:0 2px 8px rgba(26,58,242,.4);
+  letter-spacing:.2px;
+  user-select:none;
+  pointer-events:all;
+  transition:opacity .1s;
 }
-.ptl span.gw.nbr:hover{
-  background:rgba(26,58,242,.16)!important;
-  text-decoration-color:var(--blue);
+#phrase-tip::before{
+  content:'';
+  position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+  border:4px solid transparent;
+  border-bottom-color:var(--blue);
+  border-top:none;
+  /* مثلث بالای tooltip */
 }
+#phrase-tip:hover{background:var(--blue2)}
 
 /* نام کلمه در بالا */
 #mini-word{
@@ -1170,6 +1181,8 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 </div><!-- #app -->
 
 <!-- ══ HOVER EXPAND OVERLAY ══ -->
+<div id="phrase-tip">معنی جمله ↗</div>
+
 <!-- ══ MINI ACTION POPUP ══ -->
 <div id="mini-pop">
   <div id="mini-word">
@@ -1820,56 +1833,53 @@ function buildTL(tc,vp,wrap,pn,tl){
   setTimeout(()=>reHL(pn,wrap),60);
 }
 
-/* ════════ HOVER NEIGHBORS ════════ */
+/* ════════ HOVER — PHRASE TIP ════════ */
 var _hT=null,_hSpan=null,_hPn=0;
-var _hNbrL=null,_hNbrR=null; // span های مجاور فعلی
 
-function _showNbr(span,pn){
-  _clearNbr();
+function _showPT(span,pn){
   _hSpan=span;_hPn=pn;
-  /* highlight کلمه اصلی */
   span.classList.add('hov-main');
-  var allGW=Array.from((span.closest('.ptl')||document).querySelectorAll('.gw'));
-  var idx=allGW.indexOf(span);
-  if(idx>0){_hNbrL=allGW[idx-1];_hNbrL.classList.add('nbr');}
-  if(idx<allGW.length-1){_hNbrR=allGW[idx+1];_hNbrR.classList.add('nbr');}
+  var pt=Q('phrase-tip');
+  if(!pt)return;
+  var r=span.getBoundingClientRect();
+  /* زیر کلمه، وسط چین */
+  pt.style.display='block';
+  var ptW=pt.offsetWidth||80;
+  var left=r.left+r.width/2-ptW/2;
+  if(left<6)left=6;
+  if(left+ptW>innerWidth-6)left=innerWidth-ptW-6;
+  pt.style.left=left+'px';
+  pt.style.top=(r.bottom+5)+'px';
+  pt.style.opacity='1';
 }
 
-function _clearNbr(){
-  if(_hSpan){_hSpan.classList.remove('hov-main');}
-  if(_hNbrL){_hNbrL.classList.remove('nbr');_hNbrL=null;}
-  if(_hNbrR){_hNbrR.classList.remove('nbr');_hNbrR=null;}
+function _hidePT(){
+  var pt=Q('phrase-tip');
+  if(pt)pt.style.display='none';
+  if(_hSpan)_hSpan.classList.remove('hov-main');
   _hSpan=null;
 }
 
-/* کلیک روی span همسایه */
-function _onNbrClick(side,e){
-  e.stopPropagation();
-  var neighbor=side==='L'?_hNbrL:_hNbrR;
-  if(!neighbor||!neighbor.dataset.word)return;
-  var nw=neighbor.dataset.word;
-  if(Q('mini-pop').style.display==='block'){
-    var exists=ctxItems.find(function(c){return c.text.toLowerCase()===nw.toLowerCase();});
-    if(!exists){
-      if(side==='L')ctxItems.unshift({text:nw,done:savedSet.has(nw.toLowerCase())});
-      else ctxItems.push({text:nw,done:savedSet.has(nw.toLowerCase())});
-      renderMiniCtx();
-      neighbor.classList.add('sel');
-      setTimeout(function(){neighbor.classList.remove('sel');},400);
-    }
-  }else{
-    var selW=_hSpan?_hSpan.dataset.word:'';
-    var r=neighbor.getBoundingClientRect();
-    var fakeE={clientX:r.left+r.width/2,clientY:r.top};
-    var fakeBest={pn:_hPn,wrap:neighbor.closest('.pw')};
-    miniWord=nw;miniBest=fakeBest;miniE=fakeE;
-    buildMiniCtx(fakeBest,nw);
-    _clearNbr();
-    showMini(nw,fakeBest,fakeE);
-    return;
-  }
-  _clearNbr();
-}
+/* کلیک روی «معنی جمله» → activate select mode */
+(function(){
+  setTimeout(function(){
+    var pt=Q('phrase-tip');
+    if(!pt)return;
+    pt.addEventListener('mouseenter',function(){clearTimeout(_hT);});
+    pt.addEventListener('mouseleave',function(){_hT=setTimeout(_hidePT,300);});
+    pt.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(!_hSpan)return;
+      /* نمایش راهنما و enable drag select */
+      var word=_hSpan.dataset.word||'';
+      _hidePT();
+      /* toast راهنما */
+      toast('متن مورد نظر رو drag کن تا معنیشو بگیری');
+      /* scroll به کلمه در صورت نیاز */
+      _hSpan.scrollIntoView({behavior:'smooth',block:'nearest'});
+    });
+  },200);
+})();
 
 
 function attachTL(tl,pn){
@@ -1887,14 +1897,8 @@ function attachTL(tl,pn){
   tl.addEventListener('click',function(e){
     var span=e.target.closest('.gw');
     if(!span)return;
-    /* کلیک روی همسایه */
-    if(span.classList.contains('nbr')){
-      var side=span===_hNbrL?'L':'R';
-      _onNbrClick(side,e);
-      return;
-    }
     e.stopPropagation();
-    _clearNbr();
+    _hidePT();
     var word=getClickWord(span,e);
     if(!word||word.length<2)return;
     tl.querySelectorAll('.gw.sel').forEach(function(el){el.classList.remove('sel');});
@@ -1903,25 +1907,21 @@ function attachTL(tl,pn){
     curWord=word;curData=null;showLoading(word,e);doSearch(word);
   });
 
-  /* hover → highlight همسایه‌ها */
+  /* hover → phrase-tip زیر کلمه */
   var _t=null;
   tl.addEventListener('mouseover',function(e){
     var span=e.target.closest('.gw');
     clearTimeout(_t);
-    if(!span||span.classList.contains('nbr')){return;}
-    _t=setTimeout(function(){_showNbr(span,pn);},80);
+    if(!span){_hT=setTimeout(_hidePT,400);return;}
+    /* اگه موس روی span جدیدی رفت */
+    if(_hSpan&&_hSpan!==span){
+      if(_hSpan)_hSpan.classList.remove('hov-main');
+    }
+    _t=setTimeout(function(){_showPT(span,pn);},120);
   });
   tl.addEventListener('mouseleave',function(){
     clearTimeout(_t);
-    _hT=setTimeout(_clearNbr,200);
-  });
-  tl.addEventListener('mouseout',function(e){
-    /* اگه موس از span اصلی رفت — ولی روی nbr هست نگه‌دار */
-    var related=e.relatedTarget;
-    if(related&&related.classList&&related.classList.contains('nbr'))return;
-    if(related&&_hSpan&&_hSpan.contains(related))return;
-    clearTimeout(_t);
-    _hT=setTimeout(_clearNbr,200);
+    _hT=setTimeout(_hidePT,350);
   });
 }
 function manualTL(tc,vp,tl,pn){
