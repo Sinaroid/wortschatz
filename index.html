@@ -3503,65 +3503,57 @@ function rdrRenderPage(num){
   if(rdrIsSample){rdrRenderSample(num);return;}
   if(!rdrDoc)return;
   rdrPage=num;rdrUpdateNav();rdrCloseTT();rdrClearHighlight();
-  if(rdrTask){rdrTask.cancel();rdrTask=null;}
+  rdrTextItems=null;rdrCurrentVP=null;
+
+  // cancel render قبلی
+  if(rdrTask){
+    try{rdrTask.cancel();}catch(e){}
+    rdrTask=null;
+  }
 
   rdrDoc.getPage(num).then(function(page){
+    if(rdrPage!==num)return;
     var area=Q('#rdr-canvas-area');
-    var maxW=area?area.clientWidth-40:400;
+    var maxW=area?area.clientWidth-48:400;
     var vp0=page.getViewport({scale:1});
-    // scale بالا برای کیفیت
-    var s=Math.min(rdrScale, maxW/vp0.width);
+    var s=Math.max(1.0,Math.min(rdrScale,maxW/vp0.width));
     var vp=page.getViewport({scale:s});
-
-    // canvas با DPR برای شارپ بودن روی Retina
     var canvas=Q('#rdr-canvas');
     var hCanvas=Q('#rdr-highlight-canvas');
-    var ctx=canvas.getContext('2d');
-    var dpr=window.devicePixelRatio||1;
-
-    // اندازه CSS
-    canvas.style.width=vp.width+'px';
-    canvas.style.height=vp.height+'px';
-    // اندازه pixel واقعی
+    if(!canvas)return;
+    var dpr=Math.min(window.devicePixelRatio||1,2);
     canvas.width=Math.floor(vp.width*dpr);
     canvas.height=Math.floor(vp.height*dpr);
-    ctx.scale(dpr,dpr);
-
-    // highlight canvas
+    canvas.style.width=vp.width+'px';
+    canvas.style.height=vp.height+'px';
     if(hCanvas){
-      hCanvas.style.width=vp.width+'px';
-      hCanvas.style.height=vp.height+'px';
       hCanvas.width=Math.floor(vp.width*dpr);
       hCanvas.height=Math.floor(vp.height*dpr);
+      hCanvas.style.width=vp.width+'px';
+      hCanvas.style.height=vp.height+'px';
     }
-
     var wrap=Q('#rdr-canvas-wrap');
-    wrap.style.width=vp.width+'px';
-    wrap.style.height=vp.height+'px';
-
-    // ذخیره viewport و textContent برای click detection
+    if(wrap){wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';}
+    var ctx=canvas.getContext('2d');
+    ctx.scale(dpr,dpr);
     rdrCurrentVP=vp;
     rdrCurrentPage=page;
-    rdrTextItems=null;
-
-    // render canvas
-    rdrTask=page.render({canvasContext:ctx,viewport:vp,intent:'display'});
-    rdrTask.promise.then(function(){
-      rdrTask=null;
-      // text content رو cache کن برای click detection
-      page.getTextContent({includeMarkedContent:false}).then(function(tc){
-        rdrTextItems=tc.items;
+    try{
+      rdrTask=page.render({canvasContext:ctx,viewport:vp,intent:'display'});
+      rdrTask.promise.then(function(){
+        rdrTask=null;
+        page.getTextContent({includeMarkedContent:false}).then(function(tc){
+          rdrTextItems=tc.items;
+        });
+      }).catch(function(e){
+        rdrTask=null;
+        if(e.name!=='RenderingCancelledException')console.warn('[PDF]',e.message);
       });
-    }).catch(function(e){
-      if(e.name!=='RenderingCancelledException')console.warn(e);
-    });
-
-    // click listener روی canvas
+    }catch(e){rdrTask=null;console.warn('[PDF render]',e);}
+    canvas.style.cursor='crosshair';
     canvas.onclick=function(e){
       var rect=canvas.getBoundingClientRect();
-      var x=(e.clientX-rect.left);
-      var y=(e.clientY-rect.top);
-      rdrHandleClick(x,y,e);
+      rdrHandleClick(e.clientX-rect.left,e.clientY-rect.top,e);
     };
   });
 }
@@ -3572,42 +3564,61 @@ var rdrTextItems=null;
 
 // ── Click → پیدا کردن کلمه زیر موس ──
 function rdrHandleClick(x,y,e){
-  if(rdrSearching||!rdrTextItems||!rdrCurrentVP)return;
+  if(rdrSearching)return;
+
+  // deselect اگه tooltip باز بود
+  if(Q('#rdr-tooltip').style.display!=='none'){
+    rdrCloseTT();
+    return;
+  }
+
+  if(!rdrTextItems||!rdrCurrentVP)return;
 
   var vp=rdrCurrentVP;
   var found=null;
   var foundItem=null;
+  var bestDist=999;
 
-  // برای هر text item چک کن آیا کلیک داخلشه
   for(var i=0;i<rdrTextItems.length;i++){
     var item=rdrTextItems[i];
     if(!item.str||!item.str.trim())continue;
 
     var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
     var fontSize=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
-    var itemLeft=tx[4];
-    var itemTop=vp.height-tx[5]-fontSize*1.2;
-    var itemW=(item.width||0)*vp.scale;
-    var itemH=fontSize*1.5;
+    if(fontSize<4)continue;
 
-    // اگه click داخل این item بود
-    if(x>=itemLeft && x<=itemLeft+itemW && y>=itemTop && y<=itemTop+itemH){
-      // پیدا کردن کلمه داخل item
+    var itemLeft=tx[4];
+    var itemTop=vp.height-tx[5]-fontSize*1.3;
+    var itemW=Math.max((item.width||0)*vp.scale, fontSize*0.5);
+    var itemH=fontSize*1.6;
+
+    // tolerance اضافه برای click آسان‌تر
+    var tol=4;
+    if(x>=itemLeft-tol && x<=itemLeft+itemW+tol &&
+       y>=itemTop-tol  && y<=itemTop+itemH+tol){
       var word=rdrFindWordAtX(item,tx,fontSize,x-itemLeft,vp.scale);
-      if(word&&word.length>=2){
-        found=word;
-        foundItem={left:itemLeft,top:itemTop,width:itemW,height:itemH,
-          wordLeft:itemLeft+(word.offset||0),wordWidth:word.width||60};
-        break;
+      if(word&&word.text&&word.text.length>=2){
+        // نزدیک‌ترین item رو انتخاب کن
+        var dist=Math.abs((itemTop+itemH/2)-y);
+        if(dist<bestDist){
+          bestDist=dist;
+          found=word;
+          foundItem={
+            left:itemLeft+(word.offset||0),
+            top:itemTop,
+            width:word.width||itemW,
+            height:itemH
+          };
+        }
       }
     }
   }
 
   if(found){
     rdrHighlightWord(foundItem);
-    rdrTTWord=found.text||found;
-    rdrShowTTLoading(found.text||found,e);
-    rdrSearchWord(found.text||found);
+    rdrTTWord=found.text;
+    rdrShowTTLoading(found.text,e);
+    rdrSearchWord(found.text);
   }
 }
 
