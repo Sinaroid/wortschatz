@@ -167,6 +167,129 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   overflow-y:auto;display:none;flex-direction:column;
   gap:6px;padding:10px 8px;
 }
+
+/* ════════ HISTORY PANEL ════════ */
+#hist-panel{
+  position:fixed;top:var(--top);left:0;bottom:0;
+  width:300px;
+  background:var(--surface);
+  border-right:1px solid var(--line2);
+  z-index:80;
+  display:flex;flex-direction:column;
+  transform:translateX(-100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  box-shadow:4px 0 24px rgba(0,0,0,.4);
+}
+#hist-panel.open{transform:translateX(0)}
+#hist-panel.open ~ #body{margin-right:-300px}
+
+/* overlay */
+#hist-overlay{
+  position:fixed;inset:0;top:var(--top);
+  background:rgba(0,0,0,.45);z-index:79;
+  display:none;backdrop-filter:blur(2px);
+  animation:fadeIn .2s ease;
+}
+
+/* hist header */
+#hist-head{
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+#hist-head h2{
+  font-size:13px;font-weight:700;color:var(--text);
+  display:flex;align-items:center;gap:7px;
+}
+#hist-close{
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;color:var(--text3);cursor:pointer;
+  border-radius:6px;transition:all .1s;font-size:15px;
+}
+#hist-close:hover{background:var(--surface2);color:var(--text)}
+
+/* hist list */
+#hist-list{flex:1;overflow-y:auto;padding:8px}
+#hist-list::-webkit-scrollbar{width:3px}
+#hist-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+#hist-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:200px;gap:10px;color:var(--text4);
+}
+#hist-empty svg{opacity:.3}
+#hist-empty p{font-size:11px;text-align:center;line-height:1.8}
+
+/* hist item */
+.hi{
+  display:flex;gap:12px;padding:10px 8px;
+  border-radius:10px;cursor:pointer;
+  transition:background .12s;
+  border:1px solid transparent;
+  margin-bottom:4px;
+  position:relative;
+}
+.hi:hover{background:var(--surface2);border-color:var(--line)}
+.hi.active{background:var(--blue-a);border-color:rgba(26,58,242,.2)}
+
+/* thumbnail placeholder */
+.hi-thumb{
+  width:42px;height:56px;border-radius:5px;
+  background:var(--surface3);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  border:1px solid var(--line);
+}
+.hi-thumb svg{opacity:.4}
+/* progress bar روی thumbnail */
+.hi-prog{
+  position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:var(--line);
+}
+.hi-prog-fill{
+  height:100%;background:var(--blue);
+  transition:width .3s;
+}
+
+.hi-info{flex:1;min-width:0}
+.hi-name{
+  font-size:12px;font-weight:600;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  direction:ltr;margin-bottom:4px;
+}
+.hi-meta{
+  font-size:10px;color:var(--text3);
+  display:flex;flex-wrap:wrap;gap:4px;align-items:center;
+  margin-bottom:5px;
+}
+.hi-badge{
+  background:var(--surface3);border:1px solid var(--line);
+  border-radius:8px;padding:1px 6px;
+  font-size:9px;font-weight:600;color:var(--text3);
+}
+.hi-badge.words{background:var(--blue-a);color:var(--blue);border-color:rgba(26,58,242,.15)}
+.hi-badge.done{background:var(--green-a);color:var(--green);border-color:rgba(31,122,63,.2)}
+.hi-date{font-size:9px;color:var(--text4)}
+/* دکمه حذف */
+.hi-del{
+  position:absolute;top:6px;right:6px;
+  width:20px;height:20px;
+  background:none;border:none;color:var(--text4);
+  cursor:pointer;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:all .1s;font-size:12px;
+}
+.hi:hover .hi-del{opacity:.6}
+.hi-del:hover{opacity:1!important;color:#e05252;background:rgba(224,82,82,.1)}
+
+/* دکمه open history در topbar */
+#btn-hist{position:relative}
+#hist-dot{
+  position:absolute;top:4px;right:4px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--blue);display:none;
+  border:1.5px solid var(--bg);
+}
 #thumbs::-webkit-scrollbar{width:3px}
 #thumbs::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
 .ti{
@@ -927,6 +1050,10 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
     <div class="vd"></div>
 
     <!-- Tools -->
+    <button class="ib" id="btn-hist" onclick="toggleHist()" title="کتاب‌های اخیر">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1a5 5 0 110 10A5 5 0 016 1z" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5V6.5l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <div id="hist-dot"></div>
+    </button>
     <button class="ib" id="btn-thumbs" onclick="toggleThumbs()" title="صفحات">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4.2" height="4.8" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="6.8" y="1" width="4.2" height="4.8" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="7.2" width="4.2" height="3.8" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="6.8" y="7.2" width="4.2" height="3.8" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
     </button>
@@ -967,6 +1094,24 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
     <button class="fn" onclick="findNav(1)">↓</button>
     <button class="fn" onclick="toggleSearch()">×</button>
   </div>
+
+  <!-- ══ HISTORY PANEL ══ -->
+  <div id="hist-panel">
+    <div id="hist-head">
+      <h2>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1a6 6 0 110 12A6 6 0 017 1z" stroke="currentColor" stroke-width="1.2"/><path d="M7 4v3.5l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        کتاب‌های اخیر
+      </h2>
+      <button id="hist-close" onclick="closeHist()">×</button>
+    </div>
+    <div id="hist-list">
+      <div id="hist-empty">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M10 6h14l8 8v22a2 2 0 01-2 2H10a2 2 0 01-2-2V8a2 2 0 012-2z" stroke="currentColor" stroke-width="1.5"/><path d="M24 6v8h8M14 20h12M14 26h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <p>هنوز هیچ PDF‌ای باز نکردی<br>اولین کتابت رو بارگذاری کن!</p>
+      </div>
+    </div>
+  </div>
+  <div id="hist-overlay" onclick="closeHist()"></div>
 
   <!-- ══ BODY ══ -->
   <div id="body">
@@ -1258,6 +1403,143 @@ function makeDocKey(filename){
   return 'doc_'+Math.abs(h).toString(36);
 }
 
+/* ══════════════════════════════════════════
+   HISTORY MANAGEMENT
+   لیست PDF های باز شده
+══════════════════════════════════════════ */
+const HIST_KEY='ws_reader_history';
+const MAX_HIST=20;
+
+function getHistory(){
+  try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]');}catch(e){return [];}
+}
+
+function saveToHistory(docKey,docName,meta={}){
+  const hist=getHistory();
+  const idx=hist.findIndex(h=>h.docKey===docKey);
+  const entry={
+    docKey,docName,
+    lastPage:meta.lastPage||1,
+    totalPages:meta.totalPages||0,
+    savedWords:meta.savedWords||0,
+    bookmarks:meta.bookmarks||0,
+    readingSeconds:meta.readingSeconds||0,
+    lastOpened:Date.now()
+  };
+  if(idx>=0)hist[idx]={...hist[idx],...entry};
+  else hist.unshift(entry);
+  // max 20
+  if(hist.length>MAX_HIST)hist.splice(MAX_HIST);
+  try{localStorage.setItem(HIST_KEY,JSON.stringify(hist));}catch(e){}
+  refreshHistDot();
+}
+
+function removeFromHistory(docKey){
+  const hist=getHistory().filter(h=>h.docKey!==docKey);
+  try{localStorage.setItem(HIST_KEY,JSON.stringify(hist));}catch(e){}
+  // حذف session هم
+  localStorage.removeItem('ws_reader_session_'+docKey);
+  renderHistList();
+  refreshHistDot();
+}
+
+function refreshHistDot(){
+  const dot=Q('hist-dot');
+  if(!dot)return;
+  const hist=getHistory();
+  dot.style.display=hist.length>0?'block':'none';
+}
+
+/* ── باز/بستن history panel ── */
+function toggleHist(){
+  const panel=Q('hist-panel');
+  const ov=Q('hist-overlay');
+  const isOpen=panel.classList.contains('open');
+  if(isOpen){closeHist();}
+  else{
+    renderHistList();
+    panel.classList.add('open');
+    ov.style.display='block';
+    Q('btn-hist').classList.add('on');
+  }
+}
+function closeHist(){
+  Q('hist-panel').classList.remove('open');
+  Q('hist-overlay').style.display='none';
+  Q('btn-hist').classList.remove('on');
+}
+
+/* ── render لیست history ── */
+function renderHistList(){
+  const list=Q('hist-list');
+  const hist=getHistory();
+  if(!hist.length){
+    list.innerHTML=`<div id="hist-empty">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M10 6h14l8 8v22a2 2 0 01-2 2H10a2 2 0 01-2-2V8a2 2 0 012-2z" stroke="currentColor" stroke-width="1.5"/><path d="M24 6v8h8M14 20h12M14 26h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <p>هنوز هیچ PDF‌ای باز نکردی<br>اولین کتابت رو بارگذاری کن!</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML='';
+  hist.forEach(h=>{
+    const isActive=h.docKey===curDocKey;
+    const pct=h.totalPages?Math.round((h.lastPage/h.totalPages)*100):0;
+    const isDone=pct>=95;
+    const dateStr=relDate(h.lastOpened);
+    const item=document.createElement('div');
+    item.className='hi'+(isActive?' active':'');
+    item.dataset.key=h.docKey;
+    item.innerHTML=`
+      <div class="hi-thumb">
+        <svg width="16" height="20" viewBox="0 0 16 20" fill="none"><path d="M3 1h7l5 5v13a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 1v5h5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        <div class="hi-prog"><div class="hi-prog-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="hi-info">
+        <div class="hi-name" title="${h.docName}">${h.docName||'بدون نام'}</div>
+        <div class="hi-meta">
+          <span class="hi-badge">ص ${h.lastPage||1}/${h.totalPages||'؟'}</span>
+          ${h.savedWords?`<span class="hi-badge words">📚 ${h.savedWords} لغت</span>`:''}
+          ${isDone?`<span class="hi-badge done">✓ کامل</span>`:''}
+        </div>
+        <div class="hi-date">${dateStr}</div>
+      </div>
+      <button class="hi-del" onclick="event.stopPropagation();removeFromHistory('${h.docKey}')" title="حذف از تاریخچه">×</button>
+    `;
+    item.addEventListener('click',()=>{
+      if(!isActive){
+        // راهنما: کاربر باید همون فایل رو دوباره بارگذاری کنه
+        showReloadHint(h);
+      }else{
+        closeHist();
+      }
+    });
+    list.appendChild(item);
+  });
+}
+
+/* راهنمای reload */
+function showReloadHint(h){
+  // toast با راهنما
+  toast('📂 «'+h.docName+'» رو دوباره بارگذاری کن تا از صفحه '+h.lastPage+' ادامه بدی');
+  closeHist();
+  // trigger click روی دکمه PDF
+  setTimeout(()=>Q('file-inp')?.click(),400);
+}
+
+/* تاریخ نسبی */
+function relDate(ts){
+  if(!ts)return '';
+  const diff=Date.now()-ts;
+  const m=Math.floor(diff/60000);
+  const h=Math.floor(diff/3600000);
+  const d=Math.floor(diff/86400000);
+  if(m<2)return 'همین الان';
+  if(m<60)return m+' دقیقه پیش';
+  if(h<24)return h+' ساعت پیش';
+  if(d<7)return d+' روز پیش';
+  return new Date(ts).toLocaleDateString('fa-IR');
+}
+
 /* ── ذخیره session در localStorage (همیشه) ── */
 function saveSessionLocal(){
   if(!curDocKey)return;
@@ -1274,6 +1556,13 @@ function saveSessionLocal(){
     ts:Date.now()
   };
   try{localStorage.setItem('ws_reader_session_'+curDocKey,JSON.stringify(data));}catch(e){}
+  // آپدیت history
+  saveToHistory(curDocKey,data.docName,{
+    lastPage:curPage,totalPages,
+    savedWords:saved.length,
+    bookmarks:bookmarks.size,
+    readingSeconds
+  });
 }
 
 /* ── ذخیره در Supabase (اگه login باشه) ── */
@@ -1409,6 +1698,9 @@ function showSaveIndicator(){
 
 /* ══ DRAG & DROP ══ */
 const area=Q('area');
+// init history dot
+setTimeout(refreshHistDot,100);
+
 area.addEventListener('dragover',e=>{e.preventDefault();Q('drop-ov').style.display='flex';});
 area.addEventListener('dragleave',e=>{if(!area.contains(e.relatedTarget))Q('drop-ov').style.display='none';});
 area.addEventListener('drop',e=>{
@@ -2811,7 +3103,11 @@ function sho(id){const el=Q(id);if(el)el.style.display='';}
 function hid(id){const el=Q(id);if(el)el.style.display='none';}
 function setProgress(p){const el=Q('prog');if(el)el.style.width=p+'%';}
 function setTitle(t){const el=Q('doc-title');if(el)el.textContent=t.length>38?t.slice(0,36)+'…':t;}
-function showReader(){Q('welcome').style.display='none';Q('back').style.display='flex';}
+function showReader(){
+  Q('welcome').style.display='none';
+  Q('back').style.display='flex';
+  refreshHistDot();
+}
 function toast(msg){
   const el=Q('toast');el.textContent=msg;el.style.display='block';
   clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2200);
