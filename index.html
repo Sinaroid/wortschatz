@@ -3520,7 +3520,7 @@ function rdrRenderPage(num){
   });
 }
 
-// ── Text Layer — دقیق با measureText ──
+// ── Text Layer — دقیق با font PDF ──
 function rdrBuildLayer(tc,vp,ctx){
   var layer=Q('#rdr-text-layer');
   layer.innerHTML='';
@@ -3530,56 +3530,54 @@ function rdrBuildLayer(tc,vp,ctx){
   tc.items.forEach(function(item){
     if(!item.str||!item.str.trim())return;
 
-    // transform matrix
     var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
     var angle=Math.atan2(tx[1],tx[0]);
-    var scaleX=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
-    var scaleY=Math.sqrt(tx[2]*tx[2]+tx[3]*tx[3]);
-    var fontSize=scaleY;
+    var fontSize=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
     var left=tx[4];
     var top=vp.height-tx[5];
 
-    // اندازه کل text item با canvas
+    // font name از PDF اگه داشت
+    var fontName=(item.fontName||'sans-serif');
+
+    // اندازه کل string با font درست
     ctx.save();
-    ctx.font=fontSize+'px sans-serif';
-    var fullW=ctx.measureText(item.str).width;
+    ctx.font=fontSize+'px '+fontName;
+    var measuredFullW=ctx.measureText(item.str).width;
     ctx.restore();
 
-    // اگه width از PDF داریم از اون استفاده کن (دقیق‌تره)
-    var pdfW=(item.width||0)*vp.scale;
-    var totalW=pdfW>0?pdfW:fullW;
+    // width واقعی از PDF (دقیق‌تره اگه وجود داشت)
+    var pdfW=(item.width>0)?item.width*vp.scale:0;
+    var totalW=pdfW>0?pdfW:measuredFullW;
 
-    // نسبت scale بین canvas measureText و PDF width
-    var wScale=fullW>0?totalW/fullW:1;
+    // scale برای تطبیق measureText با PDF width
+    var ratio=measuredFullW>0?totalW/measuredFullW:1;
 
-    // تقسیم کردن به کلمات با موقعیت دقیق
     var tokens=rdrTokenize(item.str);
     var offsetX=0;
 
     tokens.forEach(function(tok){
       ctx.save();
-      ctx.font=fontSize+'px sans-serif';
-      var tokW=ctx.measureText(tok.text).width*wScale;
+      ctx.font=fontSize+'px '+fontName;
+      var rawW=ctx.measureText(tok.text).width;
       ctx.restore();
+      var tokW=rawW*ratio;
 
       if(tok.isWord){
         var span=document.createElement('span');
         span.dataset.word=tok.clean;
-        span.style.cssText=[
-          'position:absolute',
-          'left:'+(left+offsetX)+'px',
-          'top:'+(top-fontSize)+'px',
-          'width:'+tokW+'px',
-          'height:'+fontSize+'px',
-          'font-size:'+fontSize+'px',
-          'cursor:pointer',
-          'border-radius:2px',
-          'transition:background .08s',
-          'transform-origin:0% 0%',
-        ].join(';');
-        if(angle)span.style.transform='rotate('+(-angle)+'rad)';
+        // span دقیقاً روی کلمه
+        span.style.cssText='position:absolute'
+          +';left:'+(left+offsetX)+'px'
+          +';top:'+(top-fontSize*1.1)+'px'
+          +';width:'+Math.ceil(tokW)+'px'
+          +';height:'+(fontSize*1.3)+'px'
+          +';cursor:pointer'
+          +';border-radius:2px'
+          +';transition:background .08s'
+          +';transform-origin:left bottom';
+        if(Math.abs(angle)>0.01)span.style.transform='rotate('+(-angle*180/Math.PI)+'deg)';
         if(rdrAdded.has(tok.clean.toLowerCase()))span.style.background='rgba(42,110,53,.18)';
-        
+
         ;(function(word,s){
           s.addEventListener('mouseenter',function(){
             if(!rdrAdded.has(word.toLowerCase()))s.style.background='rgba(26,58,242,.18)';
@@ -3591,7 +3589,7 @@ function rdrBuildLayer(tc,vp,ctx){
             e.stopPropagation();rdrWordClick(word,s,e);
           });
         })(tok.clean,span);
-        
+
         layer.appendChild(span);
       }
       offsetX+=tokW;
@@ -3620,12 +3618,38 @@ function rdrWordClick(word,span,e){
 async function rdrSearchWord(word){
   rdrSearching=true;
   try{
-    var res=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({q:word,lang:targetLang||'de',profile:{lang:'fa',level:'B1',goals:[]}})});
-    var d=await res.json();
+    // از همون searchWord اصلی اپ استفاده کن
+    // ولی نتیجه رو به tooltip بفرست نه به curWord
+    var oldRender=window._rdrHijacked;
+    // صدا زدن مستقیم API با همون منطق searchWord
+    var res=await fetch('/api/search',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        q:word,
+        lang:targetLang||'de',
+        profile:{
+          lang:localStorage.getItem('fluenta_ui_lang')||'fa',
+          level:localStorage.getItem('ws_level')||'B1',
+          goals:JSON.parse(localStorage.getItem('ws_goals')||'["travel"]')
+        }
+      })
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var text=await res.text();
+    // JSON parse با retry
+    var d;
+    try{d=JSON.parse(text);}catch(e){
+      var m=text.match(/\{[\s\S]*\}/);
+      if(m)d=JSON.parse(m[0]);else throw new Error('JSON parse failed');
+    }
     if(d.error)throw new Error(d.error);
     rdrSearching=false;
     if(rdrTTWord)rdrFillTT(d,word);
-  }catch(err){rdrSearching=false;Q('#rdr-tt-body').innerHTML='<div style="font-size:12px;color:var(--err);text-align:center;padding:8px">لغت پیدا نشد</div>';}
+  }catch(err){
+    rdrSearching=false;
+    Q('#rdr-tt-body').innerHTML='<div style="font-size:12px;color:var(--err);text-align:center;padding:8px">لغت پیدا نشد — دوباره امتحان کن</div>';
+  }
 }
 
 // ── Tooltip ──
