@@ -561,26 +561,19 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
   overflow:visible;
 }
 /* دایره ⊕ */
-/* ⊕ دکمه‌های کنار کلمه */
-#hp-L,#hp-R{
-  position:fixed;
-  width:20px;height:20px;
-  border-radius:50%;
-  background:var(--blue);
-  color:#fff;border:2px solid rgba(255,255,255,.25);
-  font-size:14px;font-weight:300;line-height:1;
-  display:none;align-items:center;justify-content:center;
+/* کلمات مجاور هنگام hover */
+.ptl span.gw.nbr{
+  background:rgba(26,58,242,.07)!important;
+  border-radius:2px;
   cursor:pointer;
-  box-shadow:0 2px 8px rgba(26,58,242,.55);
-  transition:transform .14s cubic-bezier(.34,1.56,.64,1),opacity .12s;
-  opacity:0;transform:scale(.3);
-  user-select:none;
-  z-index:999;
-  pointer-events:all;
+  outline:1px dashed rgba(26,58,242,.35);
+  outline-offset:1px;
+  transition:background .1s;
 }
-#hp-L.show,#hp-R.show{opacity:1;transform:scale(1)}
-#hp-L:hover,#hp-R:hover{transform:scale(1.18)!important;background:var(--blue2)}
-#hp-L:active,#hp-R:active{transform:scale(.92)!important}
+.ptl span.gw.nbr:hover{
+  background:rgba(26,58,242,.18)!important;
+  outline-color:var(--blue);
+}
 
 /* نام کلمه در بالا */
 #mini-word{
@@ -1168,10 +1161,6 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 </div><!-- #app -->
 
 <!-- ══ HOVER EXPAND OVERLAY ══ -->
-<!-- ⊕ hover buttons — fixed, shared across all spans -->
-<button id="hp-L" title="کلمه قبلی">⊕</button>
-<button id="hp-R" title="کلمه بعدی">⊕</button>
-
 <!-- ══ MINI ACTION POPUP ══ -->
 <div id="mini-pop">
   <div id="mini-word">
@@ -1822,40 +1811,29 @@ function buildTL(tc,vp,wrap,pn,tl){
   setTimeout(()=>reHL(pn,wrap),60);
 }
 
-/* ════════ HOVER ⊕ ════════ */
+/* ════════ HOVER NEIGHBORS ════════ */
 var _hT=null,_hSpan=null,_hPn=0;
+var _hNbrL=null,_hNbrR=null; // span های مجاور فعلی
 
-function _showHP(span,pn){
-  var L=Q('hp-L'),R=Q('hp-R');
-  if(!L||!R)return;
+function _showNbr(span,pn){
+  _clearNbr();
   _hSpan=span;_hPn=pn;
-  var r=span.getBoundingClientRect();
-  var midY=r.top+r.height/2-10;
-  L.style.left=(r.left-26)+'px';L.style.top=midY+'px';L.style.display='flex';
-  R.style.left=(r.right+6)+'px';R.style.top=midY+'px';R.style.display='flex';
-  requestAnimationFrame(function(){
-    L.classList.add('show');
-    setTimeout(function(){R.classList.add('show');},55);
-  });
+  var allGW=Array.from((span.closest('.ptl')||document).querySelectorAll('.gw'));
+  var idx=allGW.indexOf(span);
+  if(idx>0){_hNbrL=allGW[idx-1];_hNbrL.classList.add('nbr');}
+  if(idx<allGW.length-1){_hNbrR=allGW[idx+1];_hNbrR.classList.add('nbr');}
 }
 
-function _hideHP(){
-  var L=Q('hp-L'),R=Q('hp-R');
-  if(L)L.classList.remove('show');
-  if(R)R.classList.remove('show');
-  setTimeout(function(){
-    if(L&&!L.classList.contains('show'))L.style.display='none';
-    if(R&&!R.classList.contains('show'))R.style.display='none';
-  },130);
+function _clearNbr(){
+  if(_hNbrL){_hNbrL.classList.remove('nbr');_hNbrL=null;}
+  if(_hNbrR){_hNbrR.classList.remove('nbr');_hNbrR=null;}
   _hSpan=null;
 }
 
-function _onHP(side){
-  if(!_hSpan)return;
-  var allGW=Array.from((_hSpan.closest('.ptl')||document).querySelectorAll('.gw'));
-  var idx=allGW.indexOf(_hSpan);
-  if(idx===-1)return;
-  var neighbor=side==='L'?allGW[idx-1]:allGW[idx+1];
+/* کلیک روی span همسایه */
+function _onNbrClick(side,e){
+  e.stopPropagation();
+  var neighbor=side==='L'?_hNbrL:_hNbrR;
   if(!neighbor||!neighbor.dataset.word)return;
   var nw=neighbor.dataset.word;
   if(Q('mini-pop').style.display==='block'){
@@ -1865,37 +1843,22 @@ function _onHP(side){
       else ctxItems.push({text:nw,done:savedSet.has(nw.toLowerCase())});
       renderMiniCtx();
       neighbor.classList.add('sel');
-      setTimeout(function(){neighbor.classList.remove('sel');},350);
+      setTimeout(function(){neighbor.classList.remove('sel');},400);
     }
   }else{
-    var selW=_hSpan.dataset.word||'';
-    var rr=_hSpan.getBoundingClientRect();
-    var fakeE={clientX:rr.left+rr.width/2,clientY:rr.top};
-    var fakeBest={pn:_hPn,wrap:_hSpan.closest('.pw')};
-    miniWord=selW;miniBest=fakeBest;miniE=fakeE;
-    buildMiniCtx(fakeBest,selW);
-    if(side==='L')ctxItems.unshift({text:nw,done:savedSet.has(nw.toLowerCase())});
-    else ctxItems.push({text:nw,done:savedSet.has(nw.toLowerCase())});
-    _hideHP();
-    showMini(selW,fakeBest,fakeE);
-    setTimeout(renderMiniCtx,60);
+    var selW=_hSpan?_hSpan.dataset.word:'';
+    var r=neighbor.getBoundingClientRect();
+    var fakeE={clientX:r.left+r.width/2,clientY:r.top};
+    var fakeBest={pn:_hPn,wrap:neighbor.closest('.pw')};
+    miniWord=nw;miniBest=fakeBest;miniE=fakeE;
+    buildMiniCtx(fakeBest,nw);
+    _clearNbr();
+    showMini(nw,fakeBest,fakeE);
     return;
   }
-  _hideHP();
+  _clearNbr();
 }
 
-(function initHPBtns(){
-  setTimeout(function(){
-    var L=Q('hp-L'),R=Q('hp-R');
-    if(!L||!R)return;
-    L.addEventListener('mouseenter',function(){clearTimeout(_hT);});
-    L.addEventListener('mouseleave',function(){_hT=setTimeout(_hideHP,300);});
-    L.addEventListener('click',function(e){e.stopPropagation();_onHP('L');});
-    R.addEventListener('mouseenter',function(){clearTimeout(_hT);});
-    R.addEventListener('mouseleave',function(){_hT=setTimeout(_hideHP,300);});
-    R.addEventListener('click',function(e){e.stopPropagation();_onHP('R');});
-  },400);
-})();
 
 function attachTL(tl,pn){
   tl.querySelectorAll('span').forEach(function(span){
@@ -1907,8 +1870,17 @@ function attachTL(tl,pn){
     span.dataset.pg=pn;
     if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
   });
+
+  /* click delegation */
   tl.addEventListener('click',function(e){
-    var span=e.target.closest('.gw');if(!span)return;
+    /* اگه روی span همسایه کلیک شد */
+    var span=e.target.closest('.gw');
+    if(!span)return;
+    if(span.classList.contains('nbr')){
+      var side=span===_hNbrL?'L':'R';
+      _onNbrClick(side,e);
+      return;
+    }
     e.stopPropagation();
     var word=getClickWord(span,e);
     if(!word||word.length<2)return;
@@ -1917,16 +1889,26 @@ function attachTL(tl,pn){
     if(curWord===word&&Q('wp').style.display==='block'){closeTT();return;}
     curWord=word;curData=null;showLoading(word,e);doSearch(word);
   });
+
+  /* hover → highlight همسایه‌ها */
   var _t=null;
   tl.addEventListener('mouseover',function(e){
     var span=e.target.closest('.gw');
-    clearTimeout(_t);clearTimeout(_hT);
-    if(!span){_hT=setTimeout(_hideHP,400);return;}
-    _t=setTimeout(function(){_showHP(span,pn);},100);
+    clearTimeout(_t);
+    if(!span||span.classList.contains('nbr')){return;}
+    _t=setTimeout(function(){_showNbr(span,pn);},80);
   });
   tl.addEventListener('mouseleave',function(){
     clearTimeout(_t);
-    _hT=setTimeout(_hideHP,350);
+    _hT=setTimeout(_clearNbr,200);
+  });
+  tl.addEventListener('mouseout',function(e){
+    /* اگه موس از span اصلی رفت — ولی روی nbr هست نگه‌دار */
+    var related=e.relatedTarget;
+    if(related&&related.classList&&related.classList.contains('nbr'))return;
+    if(related&&_hSpan&&_hSpan.contains(related))return;
+    clearTimeout(_t);
+    _hT=setTimeout(_clearNbr,200);
   });
 }
 function manualTL(tc,vp,tl,pn){
