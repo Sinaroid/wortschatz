@@ -618,10 +618,11 @@ function buildManualTL(tc,vp,tl,pageNum){
 function attachTL(tl,pageNum){
   tl.querySelectorAll('span').forEach(function(span){
     var raw=(span.textContent||'').trim();if(!raw||raw.length<2)return;
-    var clean=raw.replace(/[^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]/g,'');
-    if(clean.length<2)return;
-    span.classList.add('gw');span.dataset.word=clean;span.dataset.pg=pageNum;
-    if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
+    // پیدا کردن بهترین کلمه آلمانی در این span
+    var best=extractBestWord(raw);
+    if(!best||best.length<2)return;
+    span.classList.add('gw');span.dataset.word=best;span.dataset.pg=pageNum;
+    if(savedSet.has(best.toLowerCase()))span.classList.add('done');
     ;(function(w,s){
       s.addEventListener('click',function(e){
         e.stopPropagation();
@@ -630,8 +631,35 @@ function attachTL(tl,pageNum){
         if(curWord===w&&Q('tt').style.display==='block'){closeTT();return;}
         curWord=w;curData=null;showLoading(w,e);doSearch(w);
       });
-    })(clean,span);
+    })(best,span);
   });
+}
+
+/* ── extract بهترین کلمه از یه string ── */
+function extractBestWord(raw){
+  // پاک کردن کاراکترهای غیر آلمانی از دو طرف
+  var clean=raw.replace(/^[^a-zA-ZäöüÄÖÜß]+|[^a-zA-ZäöüÄÖÜß]+$/g,'');
+  if(clean.length<2)return null;
+
+  // اگه کلمه با حروف کوچک شروع میشه (مثل "das") → پیدا کردن کلمه اصلی
+  // Compound words آلمانی: dasLehrwerk، derHund، etc.
+  // split با camelCase یا حروف بزرگ داخلی
+  var camel=clean.replace(/([a-zäöü])([A-ZÄÖÜ])/g,'$1 $2');
+  if(camel!==clean){
+    // compound word — آخرین بخش مهم‌ترین کلمه‌ست
+    var parts=camel.split(/\s+/).filter(function(p){return p.length>=2;});
+    if(parts.length>1)return parts[parts.length-1];
+  }
+
+  // اگه با حروف کوچک شروع میشه و بعدش حرف بزرگ داره
+  // مثل "dasLehrwerk" → "Lehrwerk"
+  var upperIdx=clean.search(/[A-ZÄÖÜ]/);
+  if(upperIdx>0&&upperIdx<clean.length-1){
+    var suffix=clean.slice(upperIdx);
+    if(suffix.length>=2)return suffix;
+  }
+
+  return clean;
 }
 
 /* ── Hit Test (canvas click fallback) ── */
@@ -754,21 +782,55 @@ function closeTT(){
 async function doSearch(word){
   if(searching)return;searching=true;
   try{
-    var profile={
-      lang:localStorage.getItem('fluenta_ui_lang')||'fa',
-      level:localStorage.getItem('ws_level')||'B1',
-      goals:JSON.parse(localStorage.getItem('ws_goals')||'["travel"]')
-    };
-    var res=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({q:word,lang:targetLang||'de',profile:profile})});
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    var txt=await res.text(),d;
-    try{d=JSON.parse(txt);}catch(e){var m=txt.match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);else throw new Error('parse');}
-    if(d.error)throw new Error(d.error);
-    searching=false;if(curWord===word)fillTT(d,word);
+    var result=await fetchWord(word);
+    if(result){
+      searching=false;if(curWord===word)fillTT(result,word);return;
+    }
+    // پیدا نشد — امتحان با کلمه‌های مشتق
+    var alts=getAlternatives(word);
+    for(var i=0;i<alts.length;i++){
+      var r2=await fetchWord(alts[i]);
+      if(r2){searching=false;if(curWord===word)fillTT(r2,word);return;}
+    }
+    throw new Error('not found');
   }catch(err){
     searching=false;if(curWord===word){hid('tt-spin');sho('tt-err');}
   }
+}
+
+async function fetchWord(word){
+  var profile={
+    lang:localStorage.getItem('fluenta_ui_lang')||'fa',
+    level:localStorage.getItem('ws_level')||'B1',
+    goals:JSON.parse(localStorage.getItem('ws_goals')||'["travel"]')
+  };
+  var res=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({q:word,lang:targetLang||'de',profile:profile})});
+  if(!res.ok)return null;
+  var txt=await res.text(),d;
+  try{d=JSON.parse(txt);}catch(e){var m=txt.match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);else return null;}
+  if(d.error||!d.meaning_fa)return null;
+  return d;
+}
+
+/* ── جایگزین‌های هوشمند کلمه ── */
+function getAlternatives(word){
+  var alts=[];
+  // ۱. حذف آرتیکل‌های آلمانی از ابتدا
+  var noArticle=word.replace(/^(der|die|das|den|dem|des|ein|eine|einen|einem|einer|eines)/i,'').trim();
+  if(noArticle&&noArticle!==word&&noArticle.length>=2)alts.push(noArticle);
+  // ۲. حرف اول کوچک
+  if(word[0]===word[0].toUpperCase())alts.push(word[0].toLowerCase()+word.slice(1));
+  // ۳. حذف suffix های فعلی (en, te, ten, st, t, e)
+  var stems=['en','ung','heit','keit','lich','isch','ig','er','est','est'];
+  stems.forEach(function(s){
+    if(word.toLowerCase().endsWith(s)&&word.length-s.length>=3)
+      alts.push(word.slice(0,word.length-s.length));
+  });
+  // ۴. Compound: آخرین بخش با حرف بزرگ
+  var m=word.match(/[A-ZÄÖÜ][a-zäöüß]+$/);
+  if(m&&m[0]!==word&&m[0].length>=3)alts.push(m[0]);
+  return alts.filter(function(a,i){return a&&a.length>=2&&alts.indexOf(a)===i;}).slice(0,3);
 }
 function fillTT(d,word){
   if(Q('tt').style.display!=='block')return;
