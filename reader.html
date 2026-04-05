@@ -2040,11 +2040,15 @@ function confirmPhrase(){
   if(!spans.length)return;
   var phrase=spans.map(function(s){return s.dataset.word||s.textContent.trim();}).join(' ');
   cancelPhraseMode();
-  var fakeE={clientX:innerWidth/2,clientY:innerHeight/3};
+  /* موقعیت: وسط صفحه، یه سوم پایین */
+  var cx=innerWidth/2, cy=Math.min(innerHeight*0.35, 300);
   curWord=phrase;curData=null;
-  showLoading(phrase,fakeE);
-  if(spans.length===1)doSearch(phrase);
-  else doSearchPhrase(phrase,fakeE.clientX,fakeE.clientY);
+  showLoading(phrase,{clientX:cx,clientY:cy});
+  if(spans.length===1){
+    doSearch(phrase);
+  }else{
+    doSearchPhrase(phrase,cx,cy);
+  }
 }
 
 /* کلیک روی «معنی جمله» tooltip */
@@ -2580,14 +2584,19 @@ function showLoading(word,e,span){
   if(span)setTimeout(()=>buildCtxStrip(word,span),50);
 }
 function posTT(cx,cy){
-  const wp=Q('wp'),w=wp.offsetWidth||308,h=wp.offsetHeight||260;
+  const wp=Q('wp');
   const isMob=innerWidth<=768;
   if(isMob)return;
-  let left=cx+16,top=cy-h-16;
-  if(left+w>innerWidth-10)left=cx-w-16;
-  if(top<54)top=cy+16;
-  if(top+h>innerHeight-16)top=innerHeight-h-16;
-  wp.style.left=Math.max(6,left)+'px';wp.style.top=Math.max(54,top)+'px';
+  /* بعد از render اندازه واقعی بگیر */
+  requestAnimationFrame(function(){
+    var w=wp.offsetWidth||308, h=wp.offsetHeight||260;
+    var left=cx+16, top=cy-h-16;
+    if(left+w>innerWidth-10) left=cx-w-16;
+    if(top<54) top=cy+16;
+    if(top+h>innerHeight-16) top=innerHeight-h-16;
+    wp.style.left=Math.max(6,left)+'px';
+    wp.style.top=Math.max(54,top)+'px';
+  });
 }
 function closeTT(){
   const wp=Q('wp');
@@ -2683,12 +2692,15 @@ function getAlts(word){
 
 function fillTT(d,word){
   const wp=Q('wp');if(wp.style.display!=='block')return;
-  curData=d;const w=d.word||word;
-
-  // word + article
-  const art=d.article&&d.article!=='null'?d.article+' ':'';
-  Q('wp-word').textContent=art+w;
-  Q('wp-meta').textContent='';
+  curData=d;
+  /* برای phrase: از word پاس‌شده استفاده کن */
+  const isPhrase=word&&word.includes(' ');
+  const w=isPhrase?word:(d.word||word);
+  const art=(!isPhrase&&d.article&&d.article!=='null')?d.article+' ':'';
+  /* نمایش کوتاه برای phrase های طولانی */
+  const display=isPhrase&&w.length>30?w.slice(0,28)+'…':art+w;
+  Q('wp-word').textContent=display;
+  Q('wp-meta').textContent=isPhrase?(d.type||'عبارت'):([d.article,d.type,d.level].filter(Boolean).join(' · '));
 
   hid('wp-spin');
 
@@ -3199,34 +3211,66 @@ function searchSel(){
 }
 
 async function doSearchPhrase(phrase,cx,cy){
-  // prompt مخصوص برای عبارت/اصطلاح
+  searching=false; /* reset برای phrase search */
+  if(!phrase||phrase.trim().length<2)return;
   const level=localStorage.getItem('ws_level')||'B1';
   const isDE=targetLang!=='en';
   const prompt=isDE
-    ?'عبارت آلمانی زیر را تحلیل کن و اگر اصطلاح یا Redewendung است معنی کامل بده:\n"'+phrase+'"\n\nخروجی فقط JSON:\n{"word":"'+phrase+'","type":"Redewendung/Phrase/Satz","level":"'+level+'","meaning_fa":"معنی کامل فارسی عبارت","grammar_tip":"توضیح گرامری یا ساختار جمله","examples":[{"de":"'+phrase+'","fa":"ترجمه فارسی"}],"article":null,"plural":null,"principal_parts":null,"usage_pattern":null,"preposition":null,"synonyms":[],"antonyms":[],"priority":{"score":3,"reason":"phrase"}}'
-    :'Analyze this English phrase: "'+phrase+'"\nOutput only JSON:\n{"word":"'+phrase+'","type":"Phrase/Idiom/Sentence","level":"'+level+'","meaning_fa":"معنی کامل فارسی","grammar_tip":"grammar note","examples":[{"de":"'+phrase+'","fa":"ترجمه فارسی"}],"article":null,"plural":null,"principal_parts":null,"usage_pattern":null,"preposition":null,"synonyms":[],"antonyms":[],"priority":{"score":3,"reason":"phrase"}}';
+    ?'این جمله یا عبارت آلمانی رو برای یه فارسی‌زبان '+level+' ترجمه کن:\n"'+phrase+'"\n\nفقط JSON خالص:\n{"word":"'+phrase+'","type":"Phrase","level":"'+level+'","meaning_fa":"ترجمه کامل فارسی","grammar_tip":"توضیح ساختار یا نکته مهم","examples":[{"de":"'+phrase+'","fa":"ترجمه"}],"article":null,"plural":null,"principal_parts":null,"usage_pattern":null,"preposition":null,"synonyms":[],"antonyms":[],"priority":{"score":3,"reason":"phrase"}}'
+    :'Translate this phrase for a Persian speaker at '+level+' level:\n"'+phrase+'"\nOnly JSON:\n{"word":"'+phrase+'","type":"Phrase","level":"'+level+'","meaning_fa":"ترجمه فارسی","grammar_tip":"grammar note","examples":[{"de":"'+phrase+'","fa":"ترجمه"}],"article":null,"plural":null,"principal_parts":null,"usage_pattern":null,"preposition":null,"synonyms":[],"antonyms":[],"priority":{"score":3,"reason":"phrase"}}';
 
   const headers={'Content-Type':'application/json'};
-  if(sbUser?.id)headers['x-user-id']=sbUser.id;
+  if(sbUser&&sbUser.id)headers['x-user-id']=sbUser.id;
   try{
-    const res=await fetch('/api',{method:'POST',headers,
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('/api',{
+      method:'POST',headers,
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,
+        messages:[{role:'user',content:prompt}]})
+    });
+    if(res.status===429)throw new Error('تعداد جستجو تموم شد');
     if(!res.ok)throw new Error('HTTP '+res.status);
-    const txt2=await res.text();
-    let d;
+    const raw=await res.text();
+    /* parse — robust */
+    let d=null;
     try{
-      const clean=txt2.replace(/```json|```/g,'').trim();
-      const m=clean.match(/\{[\s\S]*\}/);
-      d=m?JSON.parse(m[0]):JSON.parse(clean);
-      if(d.content&&Array.isArray(d.content)){
-        const tb=d.content.find(c=>c.type==='text');
-        if(tb){const m2=(tb.text.replace(/```json|```/g,'').trim()).match(/\{[\s\S]*\}/);d=m2?JSON.parse(m2[0]):d;}
+      const clean=raw.replace(/```json|```/g,'').trim();
+      let parsed=JSON.parse(clean);
+      /* Claude API wrapper */
+      if(parsed.content&&Array.isArray(parsed.content)){
+        const tb=parsed.content.find(function(c){return c.type==='text';});
+        if(tb){
+          const inner=(tb.text||'').replace(/```json|```/g,'').trim();
+          const m=inner.match(/\{[\s\S]*\}/);
+          if(m)parsed=JSON.parse(m[0]);
+        }
       }
-    }catch(e){d=null;}
-    if(d?.meaning_fa&&curWord===phrase)fillTT(d,phrase);
-    else if(curWord===phrase){hid('wp-spin');sho('wp-err');}
+      if(parsed.meaning_fa)d=parsed;
+      else{
+        const m=clean.match(/\{[\s\S]*\}/);
+        if(m)d=JSON.parse(m[0]);
+      }
+    }catch(pe){
+      /* آخرین تلاش */
+      const m=raw.match(/\{[\s\S]*?\}/);
+      if(m)try{d=JSON.parse(m[0]);}catch(e2){}
+    }
+
+    if(d&&d.meaning_fa){
+      if(curWord===phrase||curWord===phrase.split(' ')[0]){
+        curWord=phrase; /* اطمینان از تطابق */
+        fillTT(d,phrase);
+      }
+    }else if(curWord===phrase||Q('wp').style.display==='block'){
+      hid('wp-spin');
+      var el=Q('wp-err');
+      if(el){el.textContent='ترجمه ناموفق — دوباره امتحان کن';sho('wp-err');}
+    }
   }catch(e){
-    if(curWord===phrase){hid('wp-spin');sho('wp-err');}
+    if(curWord===phrase){
+      hid('wp-spin');
+      var el2=Q('wp-err');
+      if(el2){el2.textContent=e.message||'خطا';sho('wp-err');}
+    }
   }
 }
 function copySel(){
