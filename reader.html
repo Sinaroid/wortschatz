@@ -589,46 +589,33 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
   from{opacity:0;transform:scale(.85) translateY(4px)}
   to{opacity:1;transform:none}
 }
-/* ════════ HOVER EXPAND OVERLAY ════════ */
-/* این overlay مستقیم روی صفحه PDF render میشه */
+/* ════════ HOVER ⊕ OVERLAY ════════ */
+/* دو تا دایره ⊕ کنار کلمه مستقیم در متن */
 #hover-overlay{
-  position:fixed;z-index:85;
+  position:fixed;z-index:88;
   pointer-events:none;
-  display:none;
+  top:0;left:0;width:0;height:0;
+  overflow:visible;
 }
-/* + button های کنار کلمه */
-.hov-plus{
-  position:absolute;
-  width:20px;height:20px;
+/* دایره ⊕ */
+.hp{
+  position:fixed;
+  width:22px;height:22px;
+  border-radius:50%;
   background:var(--blue);
   color:#fff;border:none;
-  border-radius:50%;
-  font-size:11px;font-weight:700;line-height:1;
+  font-size:13px;font-weight:300;line-height:1;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;pointer-events:all;
-  box-shadow:0 2px 8px rgba(26,58,242,.5);
-  transition:transform .15s,opacity .15s;
-  opacity:0;transform:scale(.6);
+  box-shadow:0 2px 10px rgba(26,58,242,.55),0 0 0 2px rgba(255,255,255,.15);
+  transition:transform .14s cubic-bezier(.34,1.56,.64,1),opacity .12s;
+  opacity:0;transform:scale(.4);
+  user-select:none;
+  z-index:88;
 }
-.hov-plus.show{opacity:1;transform:scale(1)}
-.hov-plus:hover{transform:scale(1.15)!important;background:var(--blue2)}
-/* کلمه‌های neighbor که expand شدن */
-.hov-word{
-  position:absolute;
-  background:rgba(26,58,242,.1);
-  border:1px solid rgba(26,58,242,.25);
-  border-radius:3px;
-  color:var(--text);font-family:var(--serif);
-  font-size:13px;font-weight:500;
-  padding:2px 5px;
-  cursor:pointer;pointer-events:all;
-  white-space:nowrap;
-  opacity:0;transform:scale(.8) translateY(4px);
-  transition:opacity .15s,transform .15s;
-}
-.hov-word.show{opacity:1;transform:none}
-.hov-word:hover{background:rgba(26,58,242,.2);border-color:rgba(26,58,242,.4)}
-.hov-word.done-w{background:rgba(31,122,63,.12);border-color:rgba(31,122,63,.25)}
+.hp.show{opacity:1;transform:scale(1)}
+.hp:hover{transform:scale(1.2)!important;background:var(--blue2)}
+.hp:active{transform:scale(.95)!important}
 
 /* نام کلمه در بالا */
 #mini-word{
@@ -1216,8 +1203,6 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 </div><!-- #app -->
 
 <!-- ══ HOVER EXPAND OVERLAY ══ -->
-<div id="hover-overlay"></div>
-
 <!-- ══ MINI ACTION POPUP ══ -->
 <div id="mini-pop">
   <div id="mini-word">
