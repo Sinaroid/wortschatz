@@ -170,8 +170,10 @@ canvas.pdf-c{display:block}
 .ptl span,.ptl br{
   color:transparent;position:absolute;white-space:pre;
   transform-origin:0% 0%;cursor:text;
+  user-select:text;-webkit-user-select:text;
 }
 .ptl span::selection{background:rgba(26,58,242,.3);color:transparent}
+.ptl::selection{background:rgba(26,58,242,.3)}
 .ptl span.gw{cursor:pointer}
 .ptl span.gw:hover{background:rgba(26,58,242,.16);border-radius:2px}
 .ptl span.gw.done{background:rgba(40,104,58,.16);border-radius:2px}
@@ -185,10 +187,13 @@ body.dark-pages .pw canvas{filter:invert(1) hue-rotate(180deg)}
 .ptl span.sh-active{background:rgba(255,150,0,.55);border-radius:1px;color:transparent}
 
 /* sample text spans */
-.gw{cursor:pointer;border-radius:2px;transition:background .08s;padding:0 1px}
+.gw{cursor:pointer;border-radius:2px;transition:background .08s;padding:0 1px;
+  user-select:text;-webkit-user-select:text;}
 .gw:hover{background:rgba(26,58,242,.14)}
 .gw.sel{background:rgba(26,58,242,.22)}
 .gw.done{background:var(--okl)}
+/* وقتی user داره select می‌کنه */
+#area{user-select:text;-webkit-user-select:text}
 
 /* ── Saved Words Sidebar ── */
 #sb{width:200px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);
@@ -595,7 +600,7 @@ body.dark-pages .pw canvas{filter:invert(1) hue-rotate(180deg)}
 </div>
 
 <!-- Selection Bar -->
-<div id="sel-bar drag-panel">
+<div id="sel-bar" class="drag-panel">
   <div id="sel-drag-row"><div class="drag-handle" id="sel-handle"></div></div>
   <div id="sel-bar-phrase"></div>
   <div id="sel-bar-actions">
@@ -613,7 +618,7 @@ body.dark-pages .pw canvas{filter:invert(1) hue-rotate(180deg)}
 </div>
 
 <!-- Tooltip -->
-<div id="tt drag-panel">
+<div id="tt" class="drag-panel">
   <div id="tt-drag-row"><div class="drag-handle" id="tt-handle"></div></div>
   <div id="tt-head">
     <div><div id="tt-w"></div><div id="tt-m"></div></div>
@@ -764,11 +769,16 @@ function renderAll(){
 function storeItems(tc,vp,wrap,pageNum,tl){
   pageTextItems[pageNum]={items:tc.items,vp:vp,tl:tl};
 
-  /* click روی canvas برای hit-test */
-  var canvas=wrap.querySelector('.pdf-c');
-  if(canvas){
+  /* click روی text layer — اگه span نداشت hitTest از canvas می‌کنیم */
+  var tl2=wrap.querySelector('.ptl');
+  if(tl2){
     ;(function(pn,w){
-      canvas.addEventListener('click',function(e){
+      tl2.addEventListener('click',function(e){
+        // اگه روی span.gw کلیک نشد، hit test کن
+        if(e.target&&e.target.classList.contains('gw'))return;
+        if(e.target&&e.target.closest&&e.target.closest('.gw'))return;
+        var canvas=w.querySelector('.pdf-c');
+        if(!canvas)return;
         var r=canvas.getBoundingClientRect();
         hitTest(e.clientX-r.left,e.clientY-r.top,pn,w,e);
       });
@@ -1041,10 +1051,10 @@ function posTT(cx,cy){
 }
 function closeTT(){
   var tt=Q('tt');
+  if(!tt||tt.style.display==='none')return;
   tt.classList.add('leaving');
   setTimeout(function(){
-    tt.style.display='none';
-    tt.classList.remove('leaving','entering');
+    if(tt){tt.style.display='none';tt.classList.remove('leaving','entering');}
   },130);
   clearHL();
   document.querySelectorAll('.gw.sel').forEach(function(s){s.classList.remove('sel');});
@@ -1385,15 +1395,22 @@ function makeDraggable(panel,handle){
     panel.classList.add('dragging');
     e.preventDefault();
   }
+  var _rafPending=false;
   function onMove(e){
     if(!isDragging)return;
     var touch=e.touches?e.touches[0]:e;
-    var dx=touch.clientX-startX;
-    var dy=touch.clientY-startY;
-    var newL=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,initL+dx));
-    var newT=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,initT+dy));
-    panel.style.left=newL+'px';panel.style.top=newT+'px';
-    panel.style.right='auto';panel.style.bottom='auto';
+    var mx=touch.clientX,my=touch.clientY;
+    if(!_rafPending){
+      _rafPending=true;
+      requestAnimationFrame(function(){
+        _rafPending=false;
+        var dx=mx-startX,dy=my-startY;
+        var newL=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,initL+dx));
+        var newT=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,initT+dy));
+        panel.style.left=newL+'px';panel.style.top=newT+'px';
+        panel.style.right='auto';panel.style.bottom='auto';
+      });
+    }
     e.preventDefault();
   }
   function onUp(){
@@ -1411,45 +1428,117 @@ function makeDraggable(panel,handle){
 /* init بعد از DOM آماده شد */
 setTimeout(function(){
   var ttEl=Q('tt');var sbEl=Q('sel-bar');
-  // fix: id ها با فاصله دارن — reset کن
-  if(ttEl)ttEl.id='tt';if(sbEl)sbEl.id='sel-bar';
   var ttH=Q('tt-handle');var sbH=Q('sel-handle');
   if(ttEl&&ttH)makeDraggable(ttEl,ttH);
   if(sbEl&&sbH)makeDraggable(sbEl,sbH);
 },100);
 
 /* ── Text Selection Detection ── */
-var selTimer=null;
+var selTimer=null,lastMouse={clientX:0,clientY:0};
+var isDraggingSelection=false;
+
+// track موس برای موقعیت sel-bar
+document.addEventListener('mousemove',function(e){
+  lastMouse={clientX:e.clientX,clientY:e.clientY};
+  if(isDraggingSelection){
+    // اگه drag می‌کنه، bar رو مخفی کن تا drag تموم بشه
+    var bar=Q('sel-bar');
+    if(bar&&bar.style.display==='block')bar.style.opacity='0';
+  }
+},{passive:true});
+
+// mousedown — شروع potential drag
+document.addEventListener('mousedown',function(e){
+  if(e.target&&e.target.closest&&(e.target.closest('#tt')||e.target.closest('#sel-bar')))return;
+  isDraggingSelection=false;
+  clearTimeout(selTimer);
+  // اگه روی text layer هست، ممکنه drag selection باشه
+  if(e.target&&e.target.closest&&e.target.closest('.ptl')){
+    isDraggingSelection=true;
+    closeSelBar();
+  }
+},{passive:true});
+
+// mouseup — بعد از drag، چک کن selection داریم
 document.addEventListener('mouseup',function(e){
+  if(e.target&&e.target.closest&&(e.target.closest('#tt')||e.target.closest('#sel-bar')))return;
+  var wasDragging=isDraggingSelection;
+  isDraggingSelection=false;
   clearTimeout(selTimer);
-  selTimer=setTimeout(function(){checkSelection(e);},120);
-});
+  var ex=e.clientX,ey=e.clientY;
+  // اگه drag selection بود یا موس روی text layer هست
+  if(wasDragging||( e.target&&e.target.closest&&e.target.closest('.ptl') )){
+    selTimer=setTimeout(function(){
+      var bar=Q('sel-bar');if(bar)bar.style.opacity='';
+      checkSelection({clientX:ex,clientY:ey});
+    },50);
+  }else{
+    // جای دیگه کلیک شد — اگه selection داریم چک کن
+    selTimer=setTimeout(function(){
+      var sel=window.getSelection();
+      if(sel&&!sel.isCollapsed&&sel.toString().trim().length>2){
+        var bar=Q('sel-bar');if(bar)bar.style.opacity='';
+        checkSelection({clientX:ex,clientY:ey});
+      }
+    },80);
+  }
+},{passive:true});
+
+// touchstart
+document.addEventListener('touchstart',function(e){
+  if(e.target&&e.target.closest&&(e.target.closest('#tt')||e.target.closest('#sel-bar')))return;
+  if(e.target&&e.target.closest&&e.target.closest('.ptl'))isDraggingSelection=true;
+},{passive:true});
+
+// touchend
 document.addEventListener('touchend',function(e){
+  if(e.target&&e.target.closest&&(e.target.closest('#tt')||e.target.closest('#sel-bar')))return;
+  isDraggingSelection=false;
   clearTimeout(selTimer);
-  selTimer=setTimeout(function(){checkSelection(e);},200);
-});
+  var touch=e.changedTouches&&e.changedTouches[0];
+  var ex=touch?touch.clientX:lastMouse.clientX,ey=touch?touch.clientY:lastMouse.clientY;
+  selTimer=setTimeout(function(){
+    var bar=Q('sel-bar');if(bar)bar.style.opacity='';
+    checkSelection({clientX:ex,clientY:ey});
+  },200);
+},{passive:true});
 
 function checkSelection(e){
   var sel=window.getSelection();
-  if(!sel||sel.isCollapsed||!sel.rangeCount){closeSelBar();return;}
+  if(!sel||sel.isCollapsed||!sel.rangeCount){
+    // اگه selection نداریم و bar باز بود ببند
+    var bar=Q('sel-bar');
+    if(bar&&bar.style.display==='block')closeSelBar();
+    return;
+  }
   var txt=sel.toString().trim();
-  if(txt.length<3){closeSelBar();return;}
+  // حداقل ۲ حرف
+  if(txt.length<2){
+    var bar2=Q('sel-bar');
+    if(bar2&&bar2.style.display==='block')closeSelBar();
+    return;
+  }
 
-  // فقط اگه selection داخل PDF یا sample page هست
-  var range=sel.getRangeAt(0);
-  var container=range.commonAncestorContainer;
-  var inReader=container.nodeType===3?container.parentElement:container;
-  var inPW=inReader.closest&&(inReader.closest('.pw')||inReader.closest('.ptl'));
-  if(!inPW){closeSelBar();return;}
+  // چک کن داخل reader/page هست
+  try{
+    var range=sel.getRangeAt(0);
+    var container=range.commonAncestorContainer;
+    var el=container.nodeType===3?container.parentElement:container;
+    if(!el||!el.closest){closeSelBar();return;}
+    var inPage=el.closest('.pw')||el.closest('.ptl')||el.closest('#area');
+    if(!inPage){closeSelBar();return;}
+  }catch(ex){}
 
   showSelBar(txt,e);
 }
 
 function showSelBar(txt,e){
   var bar=Q('sel-bar');
+  if(!bar)return;
 
   // نمایش متن انتخابی
-  Q('sel-bar-phrase').textContent=txt.length>80?txt.slice(0,78)+'…':txt;
+  var phrase=Q('sel-bar-phrase');
+  if(phrase)phrase.textContent=txt.length>80?txt.slice(0,78)+'…':txt;
 
   // پیدا کردن کلمات آلمانی داخل متن
   var words=txt.match(/[a-zA-ZäöüÄÖÜß]{3,}(?:-[a-zA-ZäöüÄÖÜß]+)*/g)||[];
@@ -1478,35 +1567,59 @@ function showSelBar(txt,e){
     row.style.display='none';
   }
 
-  // موقعیت bar: بالای selection
-  var cx,cy;
-  if(e.clientX){cx=e.clientX;cy=e.clientY;}
-  else{
-    try{
-      var r=window.getSelection().getRangeAt(0).getBoundingClientRect();
-      cx=r.left+r.width/2;cy=r.top;
-    }catch(ex){cx=window.innerWidth/2;cy=200;}
-  }
+  // موقعیت‌یابی — اول از selection rect، بعد از mouse
+  var selRect=null;
+  try{
+    var sr=window.getSelection().getRangeAt(0).getBoundingClientRect();
+    if(sr&&sr.width>0)selRect=sr;
+  }catch(ex){}
 
+  var isMobile=window.innerWidth<=768;
+  bar.classList.remove('leaving','entering');
   bar.style.display='block';
-  // موقعیت‌یابی
-  var bw=Math.min(340,window.innerWidth-20);
-  bar.style.maxWidth=bw+'px';
-  var bh=bar.offsetHeight||120;
-  var left=cx-bw/2;
-  var top=cy-bh-14;
-  if(left<8)left=8;
-  if(left+bw>window.innerWidth-8)left=window.innerWidth-bw-8;
-  if(top<56)top=cy+16;
-  bar.style.left=left+'px';bar.style.top=top+'px';
+
+  if(isMobile){
+    bar.style.left='0';bar.style.right='0';
+    bar.style.bottom='0';bar.style.top='auto';
+    bar.style.width='100%';bar.style.maxWidth='100%';
+    bar.style.borderRadius='20px 20px 0 0';
+  }else{
+    var bw=Math.min(360,window.innerWidth-24);
+    bar.style.width=bw+'px';bar.style.maxWidth=bw+'px';
+    bar.style.borderRadius='';
+
+    var cx,cy;
+    if(selRect){
+      cx=selRect.left+selRect.width/2;
+      cy=selRect.top; // بالای selection
+    }else if(e&&e.clientX){
+      cx=e.clientX;cy=e.clientY;
+    }else{
+      cx=window.innerWidth/2;cy=200;
+    }
+
+    // محاسبه ارتفاع bar بعد از نمایش
+    var bh=bar.offsetHeight||130;
+    var top=cy-bh-12; // بالای selection
+    var left=cx-bw/2;
+    // محدوده صفحه
+    if(left<10)left=10;
+    if(left+bw>window.innerWidth-10)left=window.innerWidth-bw-10;
+    if(top<56)top=selRect?selRect.bottom+8:cy+16; // اگه بالا جا نداشت، پایین selection
+    if(top+bh>window.innerHeight-10)top=window.innerHeight-bh-10;
+
+    bar.style.left=left+'px';bar.style.top=top+'px';
+    bar.style.bottom='auto';bar.style.right='auto';
+  }
+  requestAnimationFrame(function(){bar.classList.add('entering');});
 }
 
 function closeSelBar(){
   var bar=Q('sel-bar');
+  if(!bar||bar.style.display==='none')return;
   bar.classList.add('leaving');
   setTimeout(function(){
-    bar.style.display='none';
-    bar.classList.remove('leaving','entering');
+    if(bar){bar.style.display='none';bar.classList.remove('leaving','entering');}
   },130);
 }
 
