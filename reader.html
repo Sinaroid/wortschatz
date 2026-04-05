@@ -279,6 +279,59 @@ body.dark-pages .pw canvas{filter:invert(1) hue-rotate(180deg)}
   border-radius:2px 0 0 2px;
 }
 
+/* ── Selection Bar ── */
+#sel-bar{
+  position:fixed;z-index:995;
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  box-shadow:0 4px 16px rgba(0,0,0,.5),0 12px 40px rgba(0,0,0,.4);
+  display:none;
+  overflow:hidden;
+  animation:ttPop .13s cubic-bezier(.34,1.56,.64,1);
+  min-width:200px;max-width:340px;
+}
+#sel-bar-phrase{
+  padding:8px 12px 6px;
+  font-family:var(--serif);font-size:13px;
+  color:var(--ink);direction:ltr;
+  line-height:1.5;
+  border-bottom:1px solid var(--border);
+  max-height:60px;overflow:hidden;
+  text-overflow:ellipsis;
+}
+#sel-bar-actions{
+  display:flex;align-items:center;
+  padding:5px 6px;gap:4px;
+  flex-wrap:wrap;
+}
+.sel-act{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 9px;height:26px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;font-size:10px;font-weight:600;
+  color:var(--ink2);cursor:pointer;font-family:var(--sans);
+  transition:all .1s;white-space:nowrap;
+}
+.sel-act:hover{background:var(--bg4);border-color:var(--border2);color:var(--ink)}
+.sel-act.blue{background:var(--accent);border-color:transparent;color:#fff}
+.sel-act.blue:hover{background:var(--accent2)}
+#sel-words-row{
+  display:flex;flex-wrap:wrap;gap:3px;
+  padding:5px 8px 6px;
+  border-top:1px solid var(--border);
+  max-height:72px;overflow-y:auto;
+}
+.sel-word-chip{
+  padding:3px 8px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:12px;font-size:10px;font-weight:600;
+  color:var(--ink2);cursor:pointer;
+  font-family:var(--serif);direction:ltr;
+  transition:all .1s;
+}
+.sel-word-chip:hover{background:var(--abl);border-color:rgba(26,58,242,.3);color:var(--accent)}
+
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
@@ -412,6 +465,23 @@ body.dark-pages .pw canvas{filter:invert(1) hue-rotate(180deg)}
     </div>
   </div>
 </div>
+</div>
+
+<!-- Selection Bar -->
+<div id="sel-bar">
+  <div id="sel-bar-phrase"></div>
+  <div id="sel-bar-actions">
+    <button class="sel-act blue" onclick="searchSelection()">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="4.5" cy="4.5" r="3" stroke="white" stroke-width="1.2"/><path d="M7 7l2 2" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
+      معنی جمله
+    </button>
+    <button class="sel-act" onclick="copySelection()">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="3" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 3V2a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H8" stroke="currentColor" stroke-width="1.2"/></svg>
+      کپی
+    </button>
+    <button class="sel-act" id="sel-close-btn" onclick="closeSelBar()">×</button>
+  </div>
+  <div id="sel-words-row" style="display:none"></div>
 </div>
 
 <!-- Tooltip -->
@@ -1154,8 +1224,126 @@ function toast(msg){
   clearTimeout(el._t);el._t=setTimeout(function(){el.style.display='none';},2200);
 }
 document.addEventListener('click',function(e){
-  if(Q('tt').style.display==='block'&&!Q('tt').contains(e.target))closeTT();
+  if(Q('tt').style.display==='block'&&!Q('tt').contains(e.target)&&!Q('sel-bar').contains(e.target))closeTT();
+  if(Q('sel-bar').style.display==='block'&&!Q('sel-bar').contains(e.target)){
+    // چک کن selection هنوز هست
+    var sel=window.getSelection();
+    if(!sel||sel.isCollapsed)closeSelBar();
+  }
 });
+
+/* ── Text Selection Detection ── */
+var selTimer=null;
+document.addEventListener('mouseup',function(e){
+  clearTimeout(selTimer);
+  selTimer=setTimeout(function(){checkSelection(e);},120);
+});
+document.addEventListener('touchend',function(e){
+  clearTimeout(selTimer);
+  selTimer=setTimeout(function(){checkSelection(e);},200);
+});
+
+function checkSelection(e){
+  var sel=window.getSelection();
+  if(!sel||sel.isCollapsed||!sel.rangeCount){closeSelBar();return;}
+  var txt=sel.toString().trim();
+  if(txt.length<3){closeSelBar();return;}
+
+  // فقط اگه selection داخل PDF یا sample page هست
+  var range=sel.getRangeAt(0);
+  var container=range.commonAncestorContainer;
+  var inReader=container.nodeType===3?container.parentElement:container;
+  var inPW=inReader.closest&&(inReader.closest('.pw')||inReader.closest('.ptl'));
+  if(!inPW){closeSelBar();return;}
+
+  showSelBar(txt,e);
+}
+
+function showSelBar(txt,e){
+  var bar=Q('sel-bar');
+
+  // نمایش متن انتخابی
+  Q('sel-bar-phrase').textContent=txt.length>80?txt.slice(0,78)+'…':txt;
+
+  // پیدا کردن کلمات آلمانی داخل متن
+  var words=txt.match(/[a-zA-ZäöüÄÖÜß]{3,}(?:-[a-zA-ZäöüÄÖÜß]+)*/g)||[];
+  // حذف تکراری
+  words=words.filter(function(w,i,a){return a.indexOf(w)===i;}).slice(0,8);
+
+  var row=Q('sel-words-row');
+  if(words.length>0){
+    row.innerHTML='';
+    words.forEach(function(w){
+      var chip=document.createElement('button');
+      chip.className='sel-word-chip';
+      chip.textContent=w;
+      ;(function(word){
+        chip.addEventListener('click',function(e){
+          e.stopPropagation();
+          closeSelBar();
+          // شبیه‌سازی کلیک روی کلمه
+          curWord=word;curData=null;showLoading(word,e);doSearch(word);
+        });
+      })(w);
+      row.appendChild(chip);
+    });
+    row.style.display='flex';
+  }else{
+    row.style.display='none';
+  }
+
+  // موقعیت bar: بالای selection
+  var cx,cy;
+  if(e.clientX){cx=e.clientX;cy=e.clientY;}
+  else{
+    try{
+      var r=window.getSelection().getRangeAt(0).getBoundingClientRect();
+      cx=r.left+r.width/2;cy=r.top;
+    }catch(ex){cx=window.innerWidth/2;cy=200;}
+  }
+
+  bar.style.display='block';
+  // موقعیت‌یابی
+  var bw=Math.min(340,window.innerWidth-20);
+  bar.style.maxWidth=bw+'px';
+  var bh=bar.offsetHeight||120;
+  var left=cx-bw/2;
+  var top=cy-bh-14;
+  if(left<8)left=8;
+  if(left+bw>window.innerWidth-8)left=window.innerWidth-bw-8;
+  if(top<56)top=cy+16;
+  bar.style.left=left+'px';bar.style.top=top+'px';
+}
+
+function closeSelBar(){
+  Q('sel-bar').style.display='none';
+}
+
+function searchSelection(){
+  var sel=window.getSelection();
+  var txt=sel?sel.toString().trim():'';
+  if(!txt){closeSelBar();return;}
+  closeSelBar();
+  window.getSelection().removeAllRanges();
+  // جستجوی عبارت کامل
+  curWord=txt;curData=null;
+  // fake event برای position
+  var fakeE={clientX:parseInt(Q('sel-bar').style.left||window.innerWidth/2)+150,
+             clientY:parseInt(Q('sel-bar').style.top||200)+60};
+  showLoading(txt,fakeE);doSearch(txt);
+}
+
+function copySelection(){
+  var sel=window.getSelection();
+  var txt=sel?sel.toString():'';
+  if(!txt)return;
+  navigator.clipboard.writeText(txt).then(function(){
+    toast('✓ کپی شد');
+  }).catch(function(){
+    toast('کپی انجام نشد');
+  });
+  closeSelBar();
+}
 
 /* ── Samples ── */
 var SAMPLES={
