@@ -617,22 +617,84 @@ function buildManualTL(tc,vp,tl,pageNum){
 
 function attachTL(tl,pageNum){
   tl.querySelectorAll('span').forEach(function(span){
-    var raw=(span.textContent||'').trim();if(!raw||raw.length<2)return;
-    // پیدا کردن بهترین کلمه آلمانی در این span
-    var best=extractBestWord(raw);
-    if(!best||best.length<2)return;
-    span.classList.add('gw');span.dataset.word=best;span.dataset.pg=pageNum;
-    if(savedSet.has(best.toLowerCase()))span.classList.add('done');
-    ;(function(w,s){
+    var raw=(span.textContent||'').trim();
+    if(!raw||raw.length<2)return;
+
+    // چک کن آیا span شامل هر کلمه آلمانی هست
+    var hasGerman=/[a-zA-ZäöüÄÖÜß]{2,}/.test(raw);
+    if(!hasGerman)return;
+
+    span.classList.add('gw');
+    span.dataset.pg=pageNum;
+    // dataset.word = کل text برای fallback
+    span.dataset.word=extractBestWord(raw)||raw;
+    if(savedSet.has((span.dataset.word||'').toLowerCase()))span.classList.add('done');
+
+    ;(function(s){
       s.addEventListener('click',function(e){
         e.stopPropagation();
+        // پیدا کردن کلمه دقیق زیر موس
+        var word=getWordAtClick(s,e);
+        if(!word||word.length<2)return;
+
         tl.querySelectorAll('.gw.sel').forEach(function(el){el.classList.remove('sel');});
         s.classList.add('sel');
-        if(curWord===w&&Q('tt').style.display==='block'){closeTT();return;}
-        curWord=w;curData=null;showLoading(w,e);doSearch(w);
+        if(curWord===word&&Q('tt').style.display==='block'){closeTT();return;}
+        curWord=word;curData=null;showLoading(word,e);doSearch(word);
       });
-    })(best,span);
+    })(span);
   });
+}
+
+/* ── پیدا کردن کلمه دقیق زیر موس در یه span ── */
+function getWordAtClick(span,e){
+  var text=span.textContent||'';
+  if(!text.trim())return null;
+
+  // اگه کل span یه کلمه‌ست
+  var allWords=text.match(/[a-zA-ZäöüÄÖÜß\-]{2,}/g);
+  if(!allWords)return null;
+  if(allWords.length===1)return extractBestWord(allWords[0]);
+
+  // چند کلمه داره — باید بفهمیم موس روی کدومه
+  // از Range API استفاده می‌کنیم
+  try{
+    var range=null;
+    if(document.caretRangeFromPoint){
+      range=document.caretRangeFromPoint(e.clientX,e.clientY);
+    }else if(document.caretPositionFromPoint){
+      var pos=document.caretPositionFromPoint(e.clientX,e.clientY);
+      if(pos){range=document.createRange();range.setStart(pos.offsetNode,pos.offset);range.collapse(true);}
+    }
+    if(range&&range.startContainer&&range.startContainer.nodeType===3){
+      var node=range.startContainer;
+      var offset=range.startOffset;
+      var fullText=node.textContent||'';
+      // پیدا کردن کلمه در offset
+      var word=getWordAtOffset(fullText,offset);
+      if(word&&word.length>=2)return extractBestWord(word);
+    }
+  }catch(ex){}
+
+  // fallback: اولین کلمه آلمانی با حرف بزرگ
+  var capitalized=allWords.find(function(w){return /^[A-ZÄÖÜ]/.test(w)&&w.length>=3;});
+  return extractBestWord(capitalized||allWords[0]);
+}
+
+/* ── پیدا کردن کلمه در یه offset از string ── */
+function getWordAtOffset(text,offset){
+  // رفتن به عقب تا شروع کلمه
+  var start=offset;
+  while(start>0&&/[a-zA-ZäöüÄÖÜß\-]/.test(text[start-1]))start--;
+  // رفتن به جلو تا آخر کلمه
+  var end=offset;
+  while(end<text.length&&/[a-zA-ZäöüÄÖÜß\-]/.test(text[end]))end++;
+  if(end>start)return text.slice(start,end);
+  // اگه موس روی فاصله هست، کلمه بعدی رو برگردون
+  while(end<text.length&&!/[a-zA-ZäöüÄÖÜß]/.test(text[end]))end++;
+  var end2=end;
+  while(end2<text.length&&/[a-zA-ZäöüÄÖÜß\-]/.test(text[end2]))end2++;
+  return end2>end?text.slice(end,end2):null;
 }
 
 /* ── extract بهترین کلمه از یه string ── */
