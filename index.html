@@ -2491,13 +2491,14 @@ html,body{overflow-x:hidden!important}
     </div>
 
     <!-- Main Button -->
-    <button onclick="openPDFReader()" style="
+    <a href="/reader" style="
       display:flex;align-items:center;justify-content:center;gap:10px;
       width:100%;max-width:320px;
       background:var(--accent);color:white;border:none;
       border-radius:var(--r3);padding:16px 24px;
       font-size:15px;font-weight:700;cursor:pointer;
       font-family:var(--sans);transition:opacity .2s;
+      text-decoration:none;
     " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
         <path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="white" stroke-width="1.5"/>
@@ -2505,7 +2506,7 @@ html,body{overflow-x:hidden!important}
         <path d="M7 10h6M7 13h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
       باز کردن کتاب‌خوان
-    </button>
+    </a>
 
     <!-- Features -->
     <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px">
@@ -2593,7 +2594,7 @@ html,body{overflow-x:hidden!important}
     </div>
   </div>
 
-  <!-- Reader body -->
+  <!-- Reader body — Mozilla PDF.js Viewer -->
   <div id="rdr-body" style="display:none;flex:1;overflow:hidden;min-height:0;flex-direction:row">
     <!-- Sidebar -->
     <div id="rdr-sidebar" style="width:200px;flex-shrink:0;border-right:1px solid var(--bg2);display:flex;flex-direction:column;background:var(--card);overflow:hidden">
@@ -2602,17 +2603,25 @@ html,body{overflow-x:hidden!important}
         <div id="rdr-words-empty" style="padding:16px 12px;font-size:11px;color:var(--ink3);text-align:center;line-height:1.7">روی هر کلمه کلیک کن</div>
       </div>
     </div>
-    <!-- Canvas area -->
-    <div id="rdr-canvas-area" style="flex:1;overflow:auto;display:flex;justify-content:center;padding:20px;background:var(--bg2)">
-      <div id="rdr-canvas-wrap" style="position:relative;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.15);border-radius:2px">
-        <canvas id="rdr-canvas"></canvas>
-        <div id="rdr-text-layer"></div>
+    <!-- Mozilla PDF.js Viewer iframe -->
+    <div style="flex:1;overflow:hidden;position:relative">
+      <iframe
+        id="rdr-pdfjs-frame"
+        style="width:100%;height:100%;border:none;display:block"
+        allow="fullscreen"
+      ></iframe>
+      <!-- Overlay tooltip — روی iframe -->
+      <div id="rdr-sel-bar" style="display:none;position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);padding:8px 14px;box-shadow:0 8px 32px rgba(0,0,0,.2);display:none;align-items:center;gap:10px;z-index:10;direction:rtl;white-space:nowrap">
+        <div id="rdr-sel-word" style="font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink);direction:ltr"></div>
+        <div style="width:1px;height:20px;background:var(--bg3)"></div>
+        <button onclick="rdrSearchSelected()" style="background:var(--accent);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans)">🔍 جستجو</button>
+        <button onclick="rdrHideSelBar()" style="background:none;border:none;color:var(--ink3);cursor:pointer;font-size:16px;padding:0 2px">×</button>
       </div>
     </div>
   </div>
 
   <!-- Word Tooltip -->
-  <div id="rdr-tooltip" style="display:none;position:fixed;z-index:600;background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);width:260px;box-shadow:0 8px 32px rgba(0,0,0,.15);direction:rtl;overflow:hidden">
+  <div id="rdr-tooltip" style="display:none;position:fixed;z-index:600;background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);width:280px;box-shadow:0 8px 32px rgba(0,0,0,.2);direction:rtl;overflow:hidden">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:12px 12px 8px;border-bottom:1px solid var(--bg2)">
       <div>
         <div id="rdr-tt-word" style="font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);direction:ltr"></div>
@@ -3466,27 +3475,50 @@ function syncOnline(){
    DRAWER
 ══════════════════════════════ */
 // ══════════════════════════════════════
-//  BUILT-IN PDF READER
+//  PDF READER — Mozilla PDF.js Viewer
 // ══════════════════════════════════════
+
+// State
+var rdrDoc=null,rdrPage=1,rdrTotal=0,rdrScale=1.4;
+var rdrTask=null,rdrAdded=new Set(),rdrCollected=[];
+var rdrTTWord=null,rdrSearching=false,rdrIsSample=false,rdrSamplePages={};
+var rdrCurrentVP=null,rdrCurrentPage=null,rdrTextItems=null;
+
+// PDF.js viewer URL — Mozilla hosted
+var PDFJS_VIEWER = 'https://mozilla.github.io/pdf.js/web/viewer.html';
+
+// ── Open/Close ──
 function openPDFReader(){
-  var m=Q('#pdf-reader-modal');
-  if(m){m.style.display='flex';}
-  if(window.tgApp&&window.tgApp.isTg){try{window.tgApp.tg.BackButton.show();}catch(e){}}
+  if(window.tgApp&&window.tgApp.isTg){
+    var m=Q('#pdf-reader-modal');
+    if(m){m.style.display='flex';}
+    try{window.tgApp.tg.BackButton.show();}catch(e){}
+    return;
+  }
+  window.open('/reader.html','_blank');
 }
 function closePDFReader(){
   var m=Q('#pdf-reader-modal');
   if(m)m.style.display='none';
-  rdrCloseTT();
+  rdrCloseTT();rdrHideSelBar();
   if(window.tgApp&&window.tgApp.isTg){try{window.tgApp.tg.BackButton.hide();}catch(e){}}
 }
 
-// ── State ──
-var rdrDoc=null,rdrPage=1,rdrTotal=0,rdrScale=1.8;
-var rdrTask=null,rdrAdded=new Set(),rdrCollected=[];
-var rdrTTWord=null,rdrSearching=false,rdrIsSample=false,rdrSamplePages={};
+// ── Load PDF into Mozilla viewer ──
+// ════════════════════════════════════════════════
+//  PDF READER — Mozilla PDF.js Viewer + Bridge
+// ════════════════════════════════════════════════
+
+var rdrAdded=new Set(), rdrCollected=[];
+var rdrTTWord=null, rdrSearching=false;
+var rdrFileData=null;
+var rdrCurrentScale=1.5;
+
+// PDF.js viewer URL (Mozilla CDN)
+var PDFJS_VIEWER='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/web/viewer.html';
 
 // ── Drag & Drop ──
-(function(){
+(function initRdrDrop(){
   var dz=Q('#rdr-dropzone');
   if(!dz)return;
   dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='var(--accent)';});
@@ -3499,108 +3531,460 @@ var rdrTTWord=null,rdrSearching=false,rdrIsSample=false,rdrSamplePages={};
   });
 })();
 
-// ── Load File ──
+// ── Load File → iframe ──
 function rdrLoadFile(file){
   if(!file)return;
-  rdrIsSample=false;
   var reader=new FileReader();
   reader.onload=function(e){
-    var arr=new Uint8Array(e.target.result);
-    pdfjsLib.getDocument({data:arr}).promise.then(function(doc){
-      rdrDoc=doc;rdrTotal=doc.numPages;rdrPage=1;
-      rdrAdded=new Set();rdrCollected=[];
-      var name=file.name.replace(/\.pdf$/i,'');
-      if(name.length>35)name=name.slice(0,32)+'...';
-      Q('#rdr-title').textContent=name;
-      rdrShowReader();rdrRenderPage(1);
-      showToast('📄 '+file.name+' بارگذاری شد','ok');
-    }).catch(function(){showToast('خطا در بارگذاری PDF','warn');});
+    rdrFileData=e.target.result;
+    rdrCollected=[];rdrAdded=new Set();
+    var name=file.name.replace(/\.pdf$/i,'');
+    if(name.length>35)name=name.slice(0,32)+'...';
+    Q('#rdr-title').textContent=name;
+    rdrShowReader();
+    rdrOpenInViewer(rdrFileData,name);
+    showToast('📄 '+file.name+' بارگذاری شد','ok');
   };
   reader.readAsArrayBuffer(file);
 }
 
-// ── Show reader ──
+// ── باز کردن PDF در iframe با postMessage ──
+function rdrOpenInViewer(arrayBuffer,name){
+  var frame=Q('#rdr-pdfjs-frame');
+  if(!frame)return;
+
+  // viewer load کن
+  // از یه صفحه ساده استفاده می‌کنیم که PDF.js رو embed کنه
+  var blob=new Blob([rdrGetViewerHTML(name)],{type:'text/html'});
+  var url=URL.createObjectURL(blob);
+  frame.src=url;
+
+  // بعد از load، PDF رو بفرست
+  frame.onload=function(){
+    try{
+      setTimeout(function(){
+        frame.contentWindow.postMessage({
+          type:'LOAD_PDF',
+          data:arrayBuffer,
+          name:name
+        },'*');
+      },300);
+    }catch(e){console.warn('iframe postMessage failed',e);}
+  };
+}
+
+// ── HTML برای viewer iframe ──
+function rdrGetViewerHTML(title){
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+title+'</title>'
+  +'<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"><\/script>'
+  +'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">'
+  +'<style>'
+  +'*{box-sizing:border-box;margin:0;padding:0}'
+  +'html,body{height:100%;background:#404040;font-family:sans-serif}'
+  +'#viewer-wrap{height:100%;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}'
+  +'.page-container{position:relative;background:white;box-shadow:0 2px 12px rgba(0,0,0,.4)}'
+  +'.page-canvas{display:block}'
+  +'.text-layer{position:absolute;top:0;left:0;overflow:hidden;opacity:1;line-height:1}'
+  +'.text-layer span{color:transparent;position:absolute;white-space:pre;transform-origin:0% 0%;cursor:pointer;border-radius:1px;transition:background .1s}'
+  +'.text-layer span:hover{background:rgba(26,58,242,.2);outline:1px solid rgba(26,58,242,.3)}'
+  +'.text-layer span.sel{background:rgba(26,58,242,.28);outline:2px solid rgba(26,58,242,.5)}'
+  +'.text-layer span.added{background:rgba(42,110,53,.2)}'
+  +'</style></head><body>'
+  +'<div id="viewer-wrap"></div>'
+  +'<script>'
+  +'pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";'
+  +'var pdfDoc=null,scale=1.5,addedWords=new Set();'
+  +'var mc=document.createElement("canvas").getContext("2d");'
+  +'window.addEventListener("message",function(e){'
+  +'  if(e.data&&e.data.type==="LOAD_PDF")loadPDF(e.data.data,e.data.name);'
+  +'  if(e.data&&e.data.type==="SET_SCALE"){scale=e.data.scale;if(pdfDoc)renderAll();}'
+  +'  if(e.data&&e.data.type==="MARK_ADDED")addedWords.add((e.data.word||"").toLowerCase());'
+  +'  if(e.data&&e.data.type==="SET_PAGE")scrollToPage(e.data.page);'
+  +'});'
+  +'function loadPDF(buf,name){'
+  +'  pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise.then(function(doc){'
+  +'    pdfDoc=doc;'
+  +'    window.parent.postMessage({type:"PDF_LOADED",total:doc.numPages},"*");'
+  +'    renderAll();'
+  +'  }).catch(function(e){window.parent.postMessage({type:"PDF_ERROR",msg:e.message},"*");});'
+  +'}'
+  +'function renderAll(){'
+  +'  var wrap=document.getElementById("viewer-wrap");'
+  +'  wrap.innerHTML="";'
+  +'  var pages=[];'
+  +'  for(var i=1;i<=pdfDoc.numPages;i++)pages.push(i);'
+  +'  var idx=0;'
+  +'  function next(){if(idx>=pages.length)return;var p=pages[idx++];renderPage(p,next);}'
+  +'  next();'
+  +'}'
+  +'function renderPage(num,cb){'
+  +'  pdfDoc.getPage(num).then(function(page){'
+  +'    var wrap=document.getElementById("viewer-wrap");'
+  +'    var vp=page.getViewport({scale:scale});'
+  +'    var dpr=Math.min(window.devicePixelRatio||1,2);'
+  +'    var container=document.createElement("div");'
+  +'    container.className="page-container";'
+  +'    container.dataset.page=num;'
+  +'    container.style.width=vp.width+"px";'
+  +'    container.style.height=vp.height+"px";'
+  +'    var canvas=document.createElement("canvas");'
+  +'    canvas.className="page-canvas";'
+  +'    canvas.style.width=vp.width+"px";'
+  +'    canvas.style.height=vp.height+"px";'
+  +'    canvas.width=Math.floor(vp.width*dpr);'
+  +'    canvas.height=Math.floor(vp.height*dpr);'
+  +'    var ctx=canvas.getContext("2d");'
+  +'    ctx.scale(dpr,dpr);'
+  +'    container.appendChild(canvas);'
+  +'    var layer=document.createElement("div");'
+  +'    layer.className="text-layer";'
+  +'    layer.style.width=vp.width+"px";'
+  +'    layer.style.height=vp.height+"px";'
+  +'    container.appendChild(layer);'
+  +'    wrap.appendChild(container);'
+  +'    page.render({canvasContext:ctx,viewport:vp}).promise.then(function(){'
+  +'      page.getTextContent({includeMarkedContent:false}).then(function(tc){'
+  +'        buildLayer(tc,vp,layer,num);'
+  +'        if(cb)cb();'
+  +'      });'
+  +'    });'
+  +'  });'
+  +'}'
+  +'function buildLayer(tc,vp,layer,pageNum){'
+  +'  var divs=[];'
+  +'  try{'
+  +'    pdfjsLib.renderTextLayer({textContentSource:tc,container:layer,viewport:vp,textDivs:divs,textDivProperties:new WeakMap(),isOffscreenCanvasSupported:false}).promise.then(function(){'
+  +'      attachEvents(layer,pageNum);'
+  +'    });'
+  +'  }catch(e){buildManual(tc,vp,layer,pageNum);}'
+  +'}'
+  +'function attachEvents(layer,pageNum){'
+  +'  layer.querySelectorAll("span").forEach(function(span){'
+  +'    var raw=(span.textContent||"").trim();'
+  +'    if(!raw)return;'
+  +'    var clean=raw.replace(/[^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]/g,"");'
+  +'    if(clean.length<2)return;'
+  +'    span.style.cursor="pointer";'
+  +'    if(addedWords.has(clean.toLowerCase()))span.classList.add("added");'
+  +'    ;(function(w,s){'
+  +'      s.addEventListener("click",function(e){'
+  +'        e.stopPropagation();'
+  +'        document.querySelectorAll(".sel").forEach(function(el){el.classList.remove("sel");});'
+  +'        s.classList.add("sel");s.classList.remove("hover");'
+  +'        window.parent.postMessage({type:"WORD_CLICKED",word:w,page:pageNum,x:e.clientX,y:e.clientY},"*");'
+  +'      });'
+  +'    })(clean,span);'
+  +'  });'
+  +'}'
+  +'function buildManual(tc,vp,layer,pageNum){'
+  +'  tc.items.forEach(function(item){'
+  +'    if(!item.str||!item.str.trim())return;'
+  +'    var tx=pdfjsLib.Util.transform(vp.transform,item.transform);'
+  +'    var fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);'
+  +'    if(fs<3)return;'
+  +'    mc.font=fs+"px sans-serif";'
+  +'    var pW=(item.width||0)*vp.scale;'
+  +'    var mW=mc.measureText(item.str).width||1;'
+  +'    var ratio=pW>0?pW/mW:1;'
+  +'    var tokens=tokenize(item.str);'
+  +'    var ox=0;'
+  +'    tokens.forEach(function(tok){'
+  +'      var tw=mc.measureText(tok.t).width*ratio;'
+  +'      if(tok.w){'
+  +'        var span=document.createElement("span");'
+  +'        span.style.cssText="position:absolute;color:transparent;cursor:pointer;border-radius:1px;"'
+  +'          +"left:"+(tx[4]+ox)+"px;top:"+(vp.height-tx[5]-fs*1.15)+"px;"'
+  +'          +"font-size:"+fs+"px;width:"+tw+"px;height:"+(fs*1.4)+"px;";'
+  +'        if(addedWords.has(tok.c.toLowerCase()))span.classList.add("added");'
+  +'        ;(function(w,s){'
+  +'          s.addEventListener("click",function(e){'
+  +'            e.stopPropagation();'
+  +'            document.querySelectorAll(".sel").forEach(function(el){el.classList.remove("sel");});'
+  +'            s.classList.add("sel");'
+  +'            window.parent.postMessage({type:"WORD_CLICKED",word:w,page:pageNum,x:e.clientX,y:e.clientY},"*");'
+  +'          });'
+  +'        })(tok.c,span);'
+  +'        layer.appendChild(span);'
+  +'      }'
+  +'      ox+=tw;'
+  +'    });'
+  +'  });'
+  +'}'
+  +'function tokenize(str){'
+  +'  var re=/([a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*)|([^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)/g,m,r=[];'
+  +'  while((m=re.exec(str))!==null){'
+  +'    if(m[1]&&m[1].length>=2)r.push({t:m[1],c:m[1],w:true});'
+  +'    else r.push({t:m[0]||"",c:"",w:false});'
+  +'  }'
+  +'  return r;'
+  +'}'
+  +'function scrollToPage(n){'
+  +'  var el=document.querySelector("[data-page=\""+n+"\"]");'
+  +'  if(el)el.scrollIntoView({behavior:"smooth"});'
+  +'}'
+  +'<\/script></body></html>';
+}
+
+// ── دریافت پیام از iframe ──
+window.addEventListener('message',function(e){
+  if(!e.data)return;
+  switch(e.data.type){
+    case 'PDF_LOADED':
+      rdrTotal=e.data.total||1;
+      rdrPage=1;
+      rdrUpdateNav();
+      break;
+    case 'WORD_CLICKED':
+      rdrOnWordFromFrame(e.data.word,e.data.x,e.data.y);
+      break;
+    case 'PDF_ERROR':
+      showToast('خطا در بارگذاری PDF','warn');
+      break;
+  }
+});
+
+function rdrOnWordFromFrame(word,x,y){
+  if(rdrSearching||!word)return;
+  rdrTTWord=word;
+  // tooltip position — relative to main window
+  var fakeE={clientX:x,clientY:y};
+  rdrShowTTLoading(word,fakeE);
+  rdrSearchWord(word);
+}
+
 function rdrShowReader(){
   Q('#rdr-upload-prompt').style.display='none';
   var b=Q('#rdr-body');b.style.display='flex';b.style.flex='1';b.style.minHeight='0';
+  document.getElementById('new-btn')?Q('#new-btn').style.display='flex':null;
 }
 
-// ── Render Page — فقط canvas، بدون text layer ──
-function rdrRenderPage(num){
-  if(rdrIsSample){rdrRenderSample(num);return;}
-  if(!rdrDoc)return;
-  rdrPage=num;rdrUpdateNav();rdrCloseTT();
-  rdrTextItems=null;rdrCurrentVP=null;
+var rdrTotal=0,rdrPage=1;
 
-  if(rdrTask){try{rdrTask.cancel();}catch(e){}rdrTask=null;}
-
-  rdrDoc.getPage(num).then(function(page){
-    if(rdrPage!==num)return;
-    var area=Q('#rdr-canvas-area');
-    var maxW=area?area.clientWidth-48:400;
-    var vp0=page.getViewport({scale:1});
-    var s=Math.max(1.2,Math.min(rdrScale,maxW/vp0.width));
-    var vp=page.getViewport({scale:s});
-    var canvas=Q('#rdr-canvas');
-    var layer=Q('#rdr-text-layer');
-    if(!canvas)return;
-
-    var dpr=Math.min(window.devicePixelRatio||1,2);
-    // canvas pixel size
-    canvas.width=Math.floor(vp.width*dpr);
-    canvas.height=Math.floor(vp.height*dpr);
-    // CSS size
-    canvas.style.width=vp.width+'px';
-    canvas.style.height=vp.height+'px';
-
-    // text layer همان اندازه CSS
-    if(layer){
-      layer.style.width=vp.width+'px';
-      layer.style.height=vp.height+'px';
+function rdrGoPage(dir){
+  var n=rdrPage+dir;
+  if(n>=1&&n<=rdrTotal){
+    rdrPage=n;
+    rdrUpdateNav();
+    var frame=Q('#rdr-pdfjs-frame');
+    if(frame&&frame.contentWindow){
+      frame.contentWindow.postMessage({type:'SET_PAGE',page:n},'*');
     }
-
-    var wrap=Q('#rdr-canvas-wrap');
-    if(wrap){wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';}
-
-    var ctx=canvas.getContext('2d');
-    ctx.scale(dpr,dpr);
-    rdrCurrentVP=vp;
-    rdrCurrentPage=page;
-
-    try{
-      rdrTask=page.render({canvasContext:ctx,viewport:vp,intent:'display'});
-      rdrTask.promise.then(function(){
-        rdrTask=null;
-        // build text layer
-        page.getTextContent({includeMarkedContent:false}).then(function(tc){
-          rdrTextItems=tc.items;
-          rdrBuildTextLayer(tc,vp);
-        });
-      }).catch(function(e){
-        rdrTask=null;
-        if(e.name!=='RenderingCancelledException')console.warn('[PDF]',e.message);
-      });
-    }catch(e){rdrTask=null;}
-  });
+  }
 }
 
-var rdrCurrentVP=null;
-var rdrCurrentPage=null;
-var rdrTextItems=null;
+function rdrUpdateNav(){
+  var inf=Q('#rdr-page-info');
+  if(inf)inf.textContent=rdrPage+' / '+rdrTotal;
+  var p=Q('#rdr-prev');if(p)p.disabled=rdrPage<=1;
+  var n=Q('#rdr-next');if(n)n.disabled=rdrPage>=rdrTotal;
+}
 
-// ── Click → پیدا کردن کلمه زیر موس ──
+function rdrZoom(delta){
+  rdrCurrentScale=Math.max(0.8,Math.min(3,rdrCurrentScale+delta));
+  var frame=Q('#rdr-pdfjs-frame');
+  if(frame&&frame.contentWindow){
+    frame.contentWindow.postMessage({type:'SET_SCALE',scale:rdrCurrentScale},'*');
+  }
+}
 
+async function rdrSearchWord(word){
+  rdrSearching=true;
+  try{
+    var res=await fetch('/api/index',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        q:word,lang:targetLang||'de',
+        profile:{
+          lang:localStorage.getItem('fluenta_ui_lang')||'fa',
+          level:localStorage.getItem('ws_level')||'B1',
+          goals:JSON.parse(localStorage.getItem('ws_goals')||'["travel"]')
+        }
+      })
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var text=await res.text();
+    var d;
+    try{d=JSON.parse(text);}catch(e){var m=text.match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);else throw new Error('parse fail');}
+    if(d.error)throw new Error(d.error);
+    rdrSearching=false;
+    if(rdrTTWord)rdrFillTT(d,word);
+  }catch(err){
+    rdrSearching=false;
+    var b=Q('#rdr-tt-body');
+    if(b)b.innerHTML='<div style="font-size:12px;color:var(--err);text-align:center;padding:8px">لغت پیدا نشد — دوباره امتحان کن</div>';
+  }
+}
 
-// ── پیدا کردن کلمه دقیق در offsetX داخل یه text item ──
+function rdrShowTTLoading(word,e){
+  var tt=Q('#rdr-tooltip');
+  Q('#rdr-tt-word').textContent=word;
+  Q('#rdr-tt-meta').textContent='';
+  Q('#rdr-tt-body').innerHTML='<div style="font-size:12px;color:var(--ink3);text-align:center;padding:10px">در حال جستجو...</div>';
+  var x=e.clientX,y=e.clientY,w=280,h=200;
+  var left=Math.min(x+14,window.innerWidth-w-12);
+  var top=y-h-14;if(top<60)top=y+18;
+  tt.style.left=left+'px';tt.style.top=top+'px';
+  tt.style.display='block';
+}
 
+function rdrFillTT(d,orig){
+  var tt=Q('#rdr-tooltip');if(!tt||tt.style.display==='none')return;
+  var word=d.word||orig;
+  Q('#rdr-tt-word').textContent=word;
+  Q('#rdr-tt-meta').textContent=[d.article,d.type,d.level].filter(Boolean).join(' · ');
+  var isAdded=rdrAdded.has(word.toLowerCase());
+  var ex=d.examples&&d.examples[0];
+  var html='<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px">'+(d.meaning_fa||'—')+'</div>';
+  if(d.grammar_tip)html+='<div style="font-size:11px;color:var(--ink3);margin-bottom:8px;line-height:1.5">'+d.grammar_tip+'</div>';
+  if(ex)html+='<div style="background:var(--bg2);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--ink2);direction:ltr;font-style:italic;margin-bottom:10px;line-height:1.6">'+ex.de+(ex.fa?'<div style="direction:rtl;font-style:normal;font-size:10px;color:var(--ink3);margin-top:3px">'+ex.fa+'</div>':'')+'</div>';
+  html+='<button id="rdr-add-btn" style="width:100%;padding:9px;background:'+(isAdded?'var(--ok)':'var(--accent)')+';color:white;border:none;border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans)">'+(isAdded?'✓ اضافه شد':'+ افزودن به فلش‌کارت')+'</button>';
+  Q('#rdr-tt-body').innerHTML=html;
+  window._rdrPendingWord=d;
+  var btn=document.getElementById('rdr-add-btn');
+  if(btn)btn.onclick=function(){rdrAddWord(JSON.stringify(window._rdrPendingWord));};
+}
 
-// ── Highlight کلمه روی canvas ──
+function rdrCloseTT(){
+  var tt=Q('#rdr-tooltip');if(tt)tt.style.display='none';
+  rdrTTWord=null;rdrSearching=false;
+}
 
+function rdrAddWord(dStr){
+  var d;
+  try{d=JSON.parse(dStr);}catch(e){return;}
+  var word=d.word;
+  if(rdrAdded.has(word.toLowerCase()))return;
+  rdrAdded.add(word.toLowerCase());
+  rdrCollected.push({word:word,meaning:d.meaning_fa||'',level:d.level||''});
+  // اعلام به iframe
+  var frame=Q('#rdr-pdfjs-frame');
+  if(frame&&frame.contentWindow)frame.contentWindow.postMessage({type:'MARK_ADDED',word:word},'*');
+  // sidebar
+  var list=Q('#rdr-words');
+  var empty=Q('#rdr-words-empty');if(empty)empty.remove();
+  var item=document.createElement('div');
+  item.style.cssText='padding:9px 12px;border-bottom:1px solid var(--bg2)';
+  item.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--ink);direction:ltr;font-family:var(--serif)">'+word+'</div>'
+    +'<div style="font-size:10px;color:var(--ink3);margin-top:1px">'+(d.meaning_fa||'')+'</div>'
+    +(d.level?'<span style="font-size:9px;font-weight:700;padding:2px 5px;border-radius:20px;background:var(--abl);color:var(--accent)">'+d.level+'</span>':'');
+  list.insertBefore(item,list.firstChild);
+  // counter
+  var n=rdrCollected.length;
+  var cnt=Q('#rdr-count');if(cnt){cnt.style.display='block';cnt.textContent=n+' لغت';}
+  // اضافه به word list اصلی
+  var nw={de:word,fa:d.meaning_fa||'',ex:(d.examples&&d.examples[0])?d.examples[0].de:'',article:d.article||'',level:d.level||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  words.unshift(nw);
+  if(currentUser)dbAdd(nw).catch(function(){});
+  saveCache();updateBadges();updateStats();
+  showToast('✓ «'+word+'» اضافه شد','ok');
+  setTimeout(rdrCloseTT,600);
+}
 
+// ── Sample Texts ──
+var RDR_SAMPLES={
+  a1:{title:'Alltag auf Deutsch — A1',pages:[
+    ['Mein Name ist Anna. Ich bin 25 Jahre alt und komme aus Iran. Ich wohne jetzt in Berlin.',
+     'Berlin ist eine große und schöne Stadt. Ich lerne Deutsch, weil ich hier arbeiten möchte.',
+     'Jeden Morgen stehe ich um sieben Uhr auf. Dann trinke ich Kaffee und esse Brot mit Butter.',
+     'Meine Lehrerin heißt Frau Müller. Sie ist sehr nett und erklärt alles gut.',
+     'Nach der Schule kaufe ich im Supermarkt ein. Ich brauche Milch, Eier und Gemüse.'],
+    ['Das Wetter in Berlin ist oft kalt und regnerisch. Im Winter schneit es manchmal.',
+     'Meine Wohnung hat zwei Zimmer, eine Küche und ein Bad. Sie ist klein aber gemütlich.',
+     'Am Wochenende gehe ich in den Park. Ich mag die frische Luft und die Natur sehr.']
+  ]},
+  a2:{title:'Familie und Freunde — A2',pages:[
+    ['Meine Familie ist nicht sehr groß. Ich habe eine Schwester und einen Bruder.',
+     'Meine Schwester Sara studiert Medizin in München. Mein Bruder möchte Informatiker werden.',
+     'Meine Eltern leben in Teheran. Wir telefonieren jeden Sonntag miteinander.',
+     'Mein Vater arbeitet als Lehrer. Meine Mutter ist Ärztin mit eigener Praxis.'],
+    ['In Deutschland habe ich neue Freunde gefunden. Meine beste Freundin heißt Leila.',
+     'Wir gehen oft zusammen einkaufen oder ins Café. Das macht uns viel Spaß.',
+     'Nächsten Monat machen wir einen Ausflug nach Potsdam.']
+  ]},
+  b1:{title:'Beruf und Arbeit — B1',pages:[
+    ['Die Arbeit spielt im Leben eine zentrale Rolle. Sie gibt uns Struktur und Bedeutung.',
+     'In Deutschland suchen viele Unternehmen qualifizierte Fachkräfte aus dem Ausland.',
+     'Das Vorstellungsgespräch ist ein wichtiger Schritt. Man muss sich gut vorbereiten.',
+     'Pünktlichkeit und Zuverlässigkeit sind in der deutschen Arbeitskultur wichtig.'],
+    ['Die meisten Arbeitnehmer haben Anspruch auf mindestens 24 Tage Urlaub im Jahr.',
+     'Die Work-Life-Balance hat in Deutschland einen hohen Stellenwert.',
+     'Gewerkschaften verhandeln Tarifverträge und vertreten die Arbeitnehmerinteressen.']
+  ]},
+  b2:{title:'Gesellschaft und Wandel — B2',pages:[
+    ['Die deutsche Gesellschaft befindet sich im Wandel. Digitalisierung prägt das Bild.',
+     'Menschen aus über 190 Nationen bereichern das kulturelle Leben in Deutschland.',
+     'Sprache ist der Schlüssel. Wer Deutsch spricht, nimmt am gesellschaftlichen Leben teil.',
+     'Der Klimawandel ist eines der drängendsten Themen. Deutschland hat ehrgeizige Ziele.'],
+    ['Erneuerbare Energien spielen eine entscheidende Rolle für die Klimaneutralität.',
+     'Nachhaltigkeit ist kein Luxus, sondern eine Notwendigkeit für kommende Generationen.']
+  ]},
+  grimm:{title:'Hänsel und Gretel — Gebrüder Grimm',pages:[
+    ['Es war einmal ein armer Holzfäller, der lebte mit seiner Frau und zwei Kindern im Wald.',
+     'Das Mädchen hieß Gretel und der Junge hieß Hänsel.',
+     'Hänsel war klug. Er sammelte im Mondlicht kleine weiße Steine.',
+     'Am nächsten Morgen gingen sie alle zusammen in den tiefen dunklen Wald.',
+     'Hänsel ließ heimlich die Steine fallen, einen nach dem anderen.'],
+    ['Die Kinder fanden den Weg nach Hause und klopften an die Tür.',
+     'Diesmal nahm Hänsel Brotkrumen — aber die Vögel fraßen sie alle auf.',
+     'Da sahen sie ein wunderbares Haus aus Brot und Kuchen und Zucker.']
+  ]}
+};
 
+function rdrLoadSample(key){
+  var s=RDR_SAMPLES[key];if(!s)return;
+  rdrCollected=[];rdrAdded=new Set();
+  Q('#rdr-title').textContent=s.title;
+  rdrTotal=s.pages.length;rdrPage=1;
+  rdrShowReader();
+  // render sample به صورت HTML داخل iframe
+  var frame=Q('#rdr-pdfjs-frame');
+  if(!frame)return;
+  var sampleHTML=rdrGetSampleHTML(s);
+  var blob=new Blob([sampleHTML],{type:'text/html'});
+  frame.src=URL.createObjectURL(blob);
+  rdrUpdateNav();
+  showToast('📖 '+s.title,'ok');
+}
 
-// ── highlight added words ──
+function rdrGetSampleHTML(s){
+  var pages=s.pages.map(function(paras,i){
+    var ps=paras.map(function(p){
+      // هر کلمه رو کلیک‌پذیر کن
+      var words=p.split(/(\s+)/);
+      var spans=words.map(function(w){
+        var clean=w.replace(/[^a-zA-ZäöüÄÖÜß]/g,'');
+        if(clean.length>=2){
+          return '<span class="word" onclick="wc(this.dataset.w,event)" data-w="'+clean+'">'+w+'</span>';
+        }
+        return w;
+      }).join('');
+      return '<p>'+ps+'</p>';
+    }).join('');
+    return '<div class="page"><div class="page-num">'+(i+1)+'</div>'+ps+'</div>';
+  }).join('');
 
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Georgia,serif;background:#404040;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}'
+    +'.page{background:white;padding:48px;max-width:700px;width:100%;box-shadow:0 2px 12px rgba(0,0,0,.4);position:relative}'
+    +'.page-num{position:absolute;bottom:16px;right:50%;transform:translateX(50%);font-size:12px;color:#888}'
+    +'p{font-size:16px;line-height:1.9;color:#1a1916;margin-bottom:14px;direction:ltr}'
+    +'.word{cursor:pointer;border-radius:1px;transition:background .08s}'
+    +'.word:hover{background:rgba(26,58,242,.15);outline:1px solid rgba(26,58,242,.25)}'
+    +'.word.sel{background:rgba(26,58,242,.22);outline:2px solid rgba(26,58,242,.4)}'
+    +'.word.added{background:rgba(42,110,53,.18)}'
+    +'</style></head><body>'
+    +pages
+    +'<script>'
+    +'var addedWords=new Set();'
+    +'window.addEventListener("message",function(e){if(e.data&&e.data.type==="MARK_ADDED")addedWords.add((e.data.word||"").toLowerCase());});'
+    +'function wc(word,e){'
+    +'  document.querySelectorAll(".sel").forEach(function(el){el.classList.remove("sel");});'
+    +'  e.target.classList.add("sel");'
+    +'  window.parent.postMessage({type:"WORD_CLICKED",word:word,x:e.clientX,y:e.clientY,page:1},"*");'
+    +'}'
+    +'<\/script></body></html>';
+}
 
 // ── اضافه کردن pane-pdf CSS برنگشته ──
 
@@ -3721,7 +4105,7 @@ async function rdrSearchWord(word){
     // ولی نتیجه رو به tooltip بفرست نه به curWord
     var oldRender=window._rdrHijacked;
     // صدا زدن مستقیم API با همون منطق searchWord
-    var res=await fetch('/api/search',{
+    var res=await fetch('/api/index',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -3775,7 +4159,7 @@ function rdrFillTT(d,orig){
   var html='<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px">'+(d.meaning_fa||'—')+'</div>';
   if(d.grammar_tip)html+='<div style="font-size:11px;color:var(--ink3);margin-bottom:8px;line-height:1.5">'+d.grammar_tip+'</div>';
   if(ex)html+='<div style="background:var(--bg2);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--ink2);direction:ltr;font-style:italic;margin-bottom:10px;line-height:1.6">'+ex.de+(ex.fa?'<div style="direction:rtl;font-style:normal;font-size:10px;color:var(--ink3);margin-top:3px">'+ex.fa+'</div>':'')+'</div>';
-  html+='<button id="rdr-add-btn" style="width:100%;padding:9px;background:'+(isAdded?'var(--ok)':'var(--accent)')+';color:white;border:none;border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans)" onclick="rdrAddWord(\''+safeD+'\')">'+(isAdded?'✓ اضافه شد':'+ افزودن به فلش‌کارت')+'</button>';
+  html+='<button id="rdr-add-btn" data-d=\''+safeD+'\' onclick="rdrAddWord(this.dataset.d)" style="width:100%;padding:9px;background:'+(isAdded?'var(--ok)':'var(--accent)')+';color:white;border:none;border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans)">'+(isAdded?'✓ اضافه شد':'+ افزودن به فلش‌کارت')+'</button>';
   Q('#rdr-tt-body').innerHTML=html;
 }
 
@@ -6783,7 +7167,7 @@ function pdfWordClick(word, e) {
 // ── همون تابع search که توی اپ داری ──
 async function callSearchAPI(q) {
   try {
-    var res = await fetch('/api/search', {
+    var res = await fetch('/api/index', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({q: q, lang: targetLang||'de', profile: {lang:'fa',level:'B1',goals:[]}})
