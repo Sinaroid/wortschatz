@@ -1499,13 +1499,38 @@ html,body{overflow-x:hidden!important}
 .ob-sum-ai-txt{font-size:11px;color:rgba(100,140,255,.85);line-height:1.5}
 
 
-/* ── PDF READER ── */
-#pane-pdf{
-  display:none;flex-direction:column;
-  min-height:calc(100dvh - var(--nav-h));
-  padding:0!important;
+/* ── PDF.js Official Text Layer ── */
+.pdfjs-text-layer{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  overflow:hidden;opacity:1;line-height:1;
+  /* text شفاف — فقط برای selection و click */
+  -webkit-text-size-adjust:none;
+  text-size-adjust:none;
+  forced-color-adjust:none;
 }
-#pane-pdf.on{display:flex!important;animation:fade .2s var(--ease)}
+.pdfjs-text-layer span,.pdfjs-text-layer br{
+  color:transparent;
+  position:absolute;
+  white-space:pre;
+  cursor:pointer;
+  transform-origin:0% 0%;
+  border-radius:2px;
+  transition:background .08s;
+}
+.pdfjs-text-layer span[data-word]:hover{
+  background:rgba(26,58,242,.2)!important;
+  outline:1px solid rgba(26,58,242,.3);
+}
+.pdfjs-text-layer span.rdr-added{
+  background:rgba(42,110,53,.2)!important;
+  outline:1px solid rgba(42,110,53,.3);
+}
+.pdfjs-text-layer span.rdr-sel{
+  background:rgba(26,58,242,.3)!important;
+  outline:2px solid rgba(26,58,242,.5);
+}
+/* ── PDF Reader Modal ── */
+#rdr-canvas-wrap{position:relative;flex-shrink:0;box-shadow:0 4px 24px rgba(0,0,0,.18);border-radius:2px}
 .pdf-topbar{
   display:flex;align-items:center;gap:10px;
   padding:10px var(--s4);border-bottom:1px solid var(--bg2);
@@ -3449,7 +3474,7 @@ function closePDFReader(){
 }
 
 // ── State ──
-var rdrDoc=null,rdrPage=1,rdrTotal=0,rdrScale=1.3;
+var rdrDoc=null,rdrPage=1,rdrTotal=0,rdrScale=1.8;
 var rdrTask=null,rdrAdded=new Set(),rdrCollected=[];
 var rdrTTWord=null,rdrSearching=false,rdrIsSample=false,rdrSamplePages={};
 
@@ -3493,109 +3518,158 @@ function rdrShowReader(){
   var b=Q('#rdr-body');b.style.display='flex';b.style.flex='1';b.style.minHeight='0';
 }
 
-// ── Render Page ──
+// ── Render Page با PDF.js TextLayer رسمی ──
 function rdrRenderPage(num){
   if(rdrIsSample){rdrRenderSample(num);return;}
   if(!rdrDoc)return;
   rdrPage=num;rdrUpdateNav();rdrCloseTT();
   if(rdrTask){rdrTask.cancel();rdrTask=null;}
+
   rdrDoc.getPage(num).then(function(page){
     var area=Q('#rdr-canvas-area');
     var maxW=area?area.clientWidth-40:320;
     var vp0=page.getViewport({scale:1});
     var s=Math.min(rdrScale,maxW/vp0.width);
     var vp=page.getViewport({scale:s});
+
+    // canvas setup
     var canvas=Q('#rdr-canvas');
     var ctx=canvas.getContext('2d');
-    canvas.width=vp.width;canvas.height=vp.height;
+    var dpr=window.devicePixelRatio||1;
+    canvas.style.width=vp.width+'px';
+    canvas.style.height=vp.height+'px';
+    canvas.width=Math.floor(vp.width*dpr);
+    canvas.height=Math.floor(vp.height*dpr);
+    ctx.scale(dpr,dpr);
+
     var wrap=Q('#rdr-canvas-wrap');
-    wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
-    rdrTask=page.render({canvasContext:ctx,viewport:vp});
+    wrap.style.width=vp.width+'px';
+    wrap.style.height=vp.height+'px';
+
+    // render canvas
+    rdrTask=page.render({canvasContext:ctx,viewport:vp,intent:'display'});
     rdrTask.promise.then(function(){
       rdrTask=null;
-      page.getTextContent({includeMarkedContent:false}).then(function(tc){
-        rdrBuildLayer(tc,vp,ctx);
+      // text layer رسمی
+      page.getTextContent({includeMarkedContent:false,disableCombineTextItems:false}).then(function(tc){
+        rdrBuildOfficialLayer(tc,vp,page);
       });
-    }).catch(function(){});
+    }).catch(function(e){if(e.name!=='RenderingCancelledException')console.warn(e);});
   });
 }
 
-// ── Text Layer — دقیق با font PDF ──
-function rdrBuildLayer(tc,vp,ctx){
+// ── PDF.js TextLayer رسمی — دقیق‌ترین روش ──
+function rdrBuildOfficialLayer(textContent,viewport,page){
+  var layer=Q('#rdr-text-layer');
+  layer.innerHTML='';
+  layer.className='pdfjs-text-layer';
+  layer.style.width=viewport.width+'px';
+  layer.style.height=viewport.height+'px';
+
+  // استفاده از renderTextLayer رسمی PDF.js
+  var textLayerFrag=document.createDocumentFragment();
+  var textLayerDiv=document.createElement('div');
+  textLayerDiv.className='pdfjs-text-layer';
+
+  pdfjsLib.renderTextLayer({
+    textContentSource:textContent,
+    container:layer,
+    viewport:viewport,
+    textDivs:[],
+    textDivProperties:new WeakMap(),
+  }).promise.then(function(){
+    // بعد از render، به هر span کلمه آلمانی event listener اضافه کن
+    rdrAttachWordEvents(layer);
+  }).catch(function(){
+    // fallback به روش دستی
+    rdrBuildLayerManual(textContent,viewport);
+  });
+}
+
+// ── attach events به span های PDF.js ──
+function rdrAttachWordEvents(layer){
+  var spans=layer.querySelectorAll('span');
+  spans.forEach(function(span){
+    var text=span.textContent||'';
+    // تقسیم text به کلمات — replace span با چند span
+    if(!text.trim())return;
+
+    // چک کن آیا این span کلمه آلمانی داره
+    var hasGerman=/[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]{2,}/.test(text);
+    if(!hasGerman)return;
+
+    // اگه span فقط یه کلمه داره
+    var clean=text.replace(/[^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df-]/g,'');
+    if(clean.length>=2){
+      span.dataset.word=clean;
+      if(rdrAdded.has(clean.toLowerCase()))span.classList.add('rdr-added');
+      span.style.cursor='pointer';
+      ;(function(word,s){
+        s.addEventListener('click',function(e){
+          e.stopPropagation();rdrWordClick(word,s,e);
+        });
+      })(clean,span);
+    }
+  });
+}
+
+// ── Fallback: manual layer اگه renderTextLayer نبود ──
+function rdrBuildLayerManual(tc,vp){
   var layer=Q('#rdr-text-layer');
   layer.innerHTML='';
   layer.style.width=vp.width+'px';
   layer.style.height=vp.height+'px';
 
+  // یه hidden canvas برای measureText دقیق
+  var mc=document.createElement('canvas');
+  var mctx=mc.getContext('2d');
+
   tc.items.forEach(function(item){
     if(!item.str||!item.str.trim())return;
-
     var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
     var angle=Math.atan2(tx[1],tx[0]);
     var fontSize=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
     var left=tx[4];
     var top=vp.height-tx[5];
 
-    // font name از PDF اگه داشت
-    var fontName=(item.fontName||'sans-serif');
+    // font از PDF
+    var fontName=(item.fontName||'').replace(/^g_/,'').replace(/\d+$/,'')||'sans-serif';
+    mctx.font=fontSize+'px '+fontName;
 
-    // اندازه کل string با font درست
-    ctx.save();
-    ctx.font=fontSize+'px '+fontName;
-    var measuredFullW=ctx.measureText(item.str).width;
-    ctx.restore();
-
-    // width واقعی از PDF (دقیق‌تره اگه وجود داشت)
+    var fullMeasured=mctx.measureText(item.str).width;
     var pdfW=(item.width>0)?item.width*vp.scale:0;
-    var totalW=pdfW>0?pdfW:measuredFullW;
-
-    // scale برای تطبیق measureText با PDF width
-    var ratio=measuredFullW>0?totalW/measuredFullW:1;
+    var ratio=fullMeasured>0?(pdfW>0?pdfW:fullMeasured)/fullMeasured:1;
 
     var tokens=rdrTokenize(item.str);
     var offsetX=0;
-
     tokens.forEach(function(tok){
-      ctx.save();
-      ctx.font=fontSize+'px '+fontName;
-      var rawW=ctx.measureText(tok.text).width;
-      ctx.restore();
+      var rawW=mctx.measureText(tok.text).width;
       var tokW=rawW*ratio;
-
       if(tok.isWord){
         var span=document.createElement('span');
         span.dataset.word=tok.clean;
-        // span دقیقاً روی کلمه
         span.style.cssText='position:absolute'
           +';left:'+(left+offsetX)+'px'
-          +';top:'+(top-fontSize*1.1)+'px'
-          +';width:'+Math.ceil(tokW)+'px'
-          +';height:'+(fontSize*1.3)+'px'
-          +';cursor:pointer'
-          +';border-radius:2px'
-          +';transition:background .08s'
-          +';transform-origin:left bottom';
+          +';top:'+(top-fontSize*1.15)+'px'
+          +';width:'+Math.ceil(tokW+2)+'px'
+          +';height:'+(fontSize*1.4)+'px'
+          +';cursor:pointer;border-radius:2px;transition:background .08s;transform-origin:left bottom';
         if(Math.abs(angle)>0.01)span.style.transform='rotate('+(-angle*180/Math.PI)+'deg)';
-        if(rdrAdded.has(tok.clean.toLowerCase()))span.style.background='rgba(42,110,53,.18)';
-
+        if(rdrAdded.has(tok.clean.toLowerCase()))span.classList.add('rdr-added');
         ;(function(word,s){
-          s.addEventListener('mouseenter',function(){
-            if(!rdrAdded.has(word.toLowerCase()))s.style.background='rgba(26,58,242,.18)';
-          });
-          s.addEventListener('mouseleave',function(){
-            if(!rdrAdded.has(word.toLowerCase())&&s.style.background.indexOf('58,242')>-1)s.style.background='';
-          });
-          s.addEventListener('click',function(e){
-            e.stopPropagation();rdrWordClick(word,s,e);
-          });
+          s.addEventListener('mouseenter',function(){if(!rdrAdded.has(word.toLowerCase()))s.style.background='rgba(26,58,242,.18)';});
+          s.addEventListener('mouseleave',function(){if(!rdrAdded.has(word.toLowerCase())&&!s.classList.contains('rdr-sel'))s.style.background='';});
+          s.addEventListener('click',function(e){e.stopPropagation();rdrWordClick(word,s,e);});
         })(tok.clean,span);
-
         layer.appendChild(span);
       }
       offsetX+=tokW;
     });
   });
 }
+
+// alias برای backward compat
+function rdrBuildLayer(tc,vp,ctx){rdrBuildLayerManual(tc,vp);}
 
 function rdrTokenize(str){
   var tokens=[],re=/([a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*)|([^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)/g,m;
@@ -3683,7 +3757,7 @@ function rdrFillTT(d,orig){
 function rdrCloseTT(){
   var tt=Q('#rdr-tooltip');if(tt)tt.style.display='none';
   rdrTTWord=null;rdrSearching=false;
-  if(Q('#rdr-text-layer'))Q('#rdr-text-layer').querySelectorAll('.rdr-sel').forEach(function(el){el.classList.remove('rdr-sel');el.style.background='';});
+  if(Q('#rdr-text-layer'))Q('#rdr-text-layer').querySelectorAll('.rdr-sel').forEach(function(el){el.classList.remove('rdr-sel');});
 }
 
 // ── Add Word ──
@@ -3695,7 +3769,7 @@ function rdrAddWord(dStr){
   var btn=Q('#rdr-add-btn');if(btn){btn.textContent='✓ اضافه شد';btn.style.background='var(--ok)';}
   // highlight in layer
   if(Q('#rdr-text-layer'))Q('#rdr-text-layer').querySelectorAll('[data-word]').forEach(function(el){
-    if(el.dataset.word&&el.dataset.word.toLowerCase()===word.toLowerCase())el.style.background='rgba(42,110,53,.15)';
+    if(el.dataset.word&&el.dataset.word.toLowerCase()===word.toLowerCase())el.classList.add('rdr-added');
   });
   // add to sidebar
   var list=Q('#rdr-words');
@@ -3725,7 +3799,7 @@ function rdrUpdateNav(){
   var p=Q('#rdr-prev');if(p)p.disabled=rdrPage<=1;
   var n=Q('#rdr-next');if(n)n.disabled=rdrPage>=rdrTotal;
 }
-function rdrZoom(delta){rdrScale=Math.max(0.5,Math.min(3,rdrScale+delta));rdrRenderPage(rdrPage);}
+function rdrZoom(delta){rdrScale=Math.max(0.8,Math.min(4,rdrScale+delta));rdrRenderPage(rdrPage);}
 
 // close on outside click
 document.addEventListener('click',function(e){
