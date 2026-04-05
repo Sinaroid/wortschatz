@@ -817,6 +817,19 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 }
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%)}}
 
+/* ── Save Indicator ── */
+#save-indicator{
+  position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--surface);border:1px solid var(--green);
+  border-radius:20px;padding:6px 14px;
+  font-size:10px;font-weight:600;color:var(--green);
+  display:flex;align-items:center;gap:5px;
+  transition:transform .25s cubic-bezier(.34,1.5,.64,1);
+  z-index:500;pointer-events:none;white-space:nowrap;
+}
+#save-indicator.show{transform:translateX(-50%) translateY(0)}
+
 /* ════════ BACK ════════ */
 #back{
   position:fixed;bottom:20px;right:18px;
@@ -1143,6 +1156,10 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 
 <!-- ══ TOAST + BACK ══ -->
 <div id="toast"></div>
+<div id="save-indicator">
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 3L8.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  ذخیره شد
+</div>
 <a id="back" href="/">
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M6 2L3.5 5 6 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
   Wortschatz
@@ -1222,6 +1239,174 @@ try{
 }catch(e){}
 const targetLang=localStorage.getItem('ws_target_lang')||localStorage.getItem('fluenta_target_lang')||'de';
 
+/* ══════════════════════════════════════════
+   SESSION PERSISTENCE
+   ذخیره و بازیابی session خواندن
+══════════════════════════════════════════ */
+let curDocKey=null;        // hash اسم فایل
+let sessionDirty=false;    // آیا تغییری داریم؟
+let autoSaveTimer=null;
+let readingSeconds=0;
+let readingTimer=null;
+let sessionHighlights=[]; // [{page,word,color,ts}]
+
+/* ── ساخت کلید یونیک برای هر PDF ── */
+function makeDocKey(filename){
+  // ساده: hash از اسم فایل
+  let h=0;
+  for(let i=0;i<filename.length;i++){h=((h<<5)-h)+filename.charCodeAt(i);h|=0;}
+  return 'doc_'+Math.abs(h).toString(36);
+}
+
+/* ── ذخیره session در localStorage (همیشه) ── */
+function saveSessionLocal(){
+  if(!curDocKey)return;
+  const data={
+    docKey:curDocKey,
+    docName:Q('doc-title')?.textContent||'',
+    lastPage:curPage,
+    lastScale:scale,
+    highlights:sessionHighlights,
+    bookmarks:[...bookmarks],
+    savedWords:saved,
+    totalPages,
+    readingSeconds,
+    ts:Date.now()
+  };
+  try{localStorage.setItem('ws_reader_session_'+curDocKey,JSON.stringify(data));}catch(e){}
+}
+
+/* ── ذخیره در Supabase (اگه login باشه) ── */
+async function saveSessionRemote(){
+  if(!sb||!sbUser||!curDocKey)return;
+  const data={
+    user_id:sbUser.id,
+    doc_key:curDocKey,
+    doc_name:Q('doc-title')?.textContent||'',
+    last_page:curPage,
+    last_scale:scale,
+    highlights:sessionHighlights,
+    bookmarks:[...bookmarks],
+    notes:[],
+    saved_words:saved,
+    total_pages:totalPages,
+    reading_time_seconds:readingSeconds,
+    updated_at:new Date().toISOString()
+  };
+  try{
+    await sb.from('reader_sessions').upsert(data,{onConflict:'user_id,doc_key'});
+    console.log('[Reader] session saved remotely');
+  }catch(e){console.warn('[Reader] remote save failed:',e.message);}
+}
+
+/* ── بارگذاری session ── */
+async function loadSession(docKey){
+  // اول local
+  let local=null;
+  try{
+    const raw=localStorage.getItem('ws_reader_session_'+docKey);
+    if(raw)local=JSON.parse(raw);
+  }catch(e){}
+
+  // بعد remote اگه login باشه
+  let remote=null;
+  if(sb&&sbUser){
+    try{
+      const{data}=await sb.from('reader_sessions')
+        .select('*').eq('user_id',sbUser.id).eq('doc_key',docKey).single();
+      if(data)remote=data;
+    }catch(e){}
+  }
+
+  // merge: remote اولویت داره (جدیدتر)
+  const session=remote||(local?{
+    last_page:local.lastPage,last_scale:local.lastScale,
+    highlights:local.highlights||[],bookmarks:local.bookmarks||[],
+    saved_words:local.savedWords||[],total_pages:local.totalPages,
+    reading_time_seconds:local.readingSeconds||0
+  }:null);
+
+  return session;
+}
+
+/* ── اعمال session بعد از load PDF ── */
+async function applySession(docKey){
+  const session=await loadSession(docKey);
+  if(!session)return;
+
+  // restore state
+  if(session.last_scale&&session.last_scale!==scale){
+    scale=session.last_scale;updateZoom();
+  }
+  if(session.reading_time_seconds)readingSeconds=session.reading_time_seconds;
+  if(session.bookmarks?.length)bookmarks=new Set(session.bookmarks);
+  if(session.highlights?.length)sessionHighlights=session.highlights||[];
+
+  // restore لغات
+  if(session.saved_words?.length){
+    session.saved_words.forEach(w=>{
+      if(!savedSet.has(w.de?.toLowerCase())){
+        savedSet.add(w.de?.toLowerCase());
+        saved.push(w);
+        addToSidebar(w.de,w);
+      }
+    });
+    updateSaveBtn();
+  }
+
+  // برو به آخرین صفحه بعد از render
+  if(session.last_page&&session.last_page>1){
+    const lp=session.last_page;
+    setTimeout(()=>{
+      const t=document.querySelector('[data-page="'+lp+'"]');
+      if(t){t.scrollIntoView({behavior:'auto',block:'start'});curPage=lp;updateNav();}
+    },500);
+  }
+
+  // toast اطلاع‌رسانی
+  if(session.last_page>1||session.saved_words?.length){
+    const msg='📖 از صفحه '+session.last_page+' ادامه دادی'+(session.saved_words?.length?' · '+session.saved_words.length+' لغت ذخیره شده':'');
+    setTimeout(()=>toast(msg),800);
+  }
+}
+
+/* ── auto save هر ۳۰ ثانیه ── */
+function startAutoSave(){
+  stopAutoSave();
+  autoSaveTimer=setInterval(()=>{
+    if(sessionDirty){
+      saveSessionLocal();
+      saveSessionRemote();
+      sessionDirty=false;
+    }
+  },30000);
+  // timer خواندن
+  readingTimer=setInterval(()=>{readingSeconds++;sessionDirty=true;},1000);
+}
+function stopAutoSave(){
+  clearInterval(autoSaveTimer);clearInterval(readingTimer);
+  autoSaveTimer=null;readingTimer=null;
+}
+
+/* ── mark dirty ── */
+function markDirty(){sessionDirty=true;}
+
+/* ── Save on page unload ── */
+window.addEventListener('beforeunload',()=>{
+  if(curDocKey&&sessionDirty){saveSessionLocal();}
+  // async save بدون await (best effort)
+  if(curDocKey)saveSessionRemote();
+});
+
+/* ── Save indicator ── */
+function showSaveIndicator(){
+  const el=Q('save-indicator');
+  if(!el)return;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('show'),2000);
+}
+
 /* ══ DRAG & DROP ══ */
 const area=Q('area');
 area.addEventListener('dragover',e=>{e.preventDefault();Q('drop-ov').style.display='flex';});
@@ -1247,13 +1432,23 @@ document.addEventListener('keydown',e=>{
 function loadFile(file){
   if(!file)return;
   isSample=false;curSample=null;pageItems={};
+  saved=[];savedSet=new Set();sessionHighlights=[];
+  bookmarks=new Set();readingSeconds=0;
+  Q('rsb-list').innerHTML='<div id="rsb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.45">روی هر کلمه کلیک کن</span></div>';
+  Q('rsb-cnt').textContent='0';
   setProgress(10);
+  curDocKey=makeDocKey(file.name);
   const fr=new FileReader();
   fr.onload=e=>{
     pdfjsLib.getDocument({data:e.target.result}).promise.then(doc=>{
       pdfDoc=doc;totalPages=doc.numPages;curPage=1;
       setTitle(file.name.replace(/\.pdf$/i,''));
-      showReader();renderAll();
+      showReader();
+      renderAll(()=>{
+        // بعد از render: بارگذاری session قبلی
+        applySession(curDocKey);
+        startAutoSave();
+      });
     }).catch(e=>{toast('خطا: '+e.message);setProgress(0);});
   };
   fr.readAsArrayBuffer(file);
@@ -2012,6 +2207,7 @@ function addWord(){
   addToSidebar(word,curData);
   syncLS(word,curData);
   dbSave(word,curData);
+  markDirty();showSaveIndicator();
   const btn=Q('wp-add');
   btn.textContent='✓ اضافه شد';btn.className='done';
   btn.style.transform='scale(1.04)';
@@ -2136,7 +2332,7 @@ area.addEventListener('scroll',()=>{
   const aTop=area.getBoundingClientRect().top;
   let best=null,bestD=9999;
   pages.forEach(p=>{const d=Math.abs(p.getBoundingClientRect().top-aTop);if(d<bestD){bestD=d;best=p;}});
-  if(best){const n=parseInt(best.dataset.page||1);if(n!==curPage){curPage=n;updateNav();}}
+  if(best){const n=parseInt(best.dataset.page||1);if(n!==curPage){curPage=n;updateNav();markDirty();}}
 },{passive:true});
 
 /* ══ ZOOM ══ */
@@ -2243,6 +2439,7 @@ function toggleBookmark(){
     bookmarks.add(curPage);toast('📌 صفحه '+curPage+' بوک‌مارک شد');bm.classList.add('on');
   }
   localStorage.setItem('ws_reader_bm',JSON.stringify([...bookmarks]));
+  markDirty();showSaveIndicator();
   const wrap=document.querySelector(`[data-page="${curPage}"]`);
   if(wrap){
     wrap.querySelector('.bm')?.remove();
