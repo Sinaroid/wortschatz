@@ -1343,8 +1343,7 @@ async function callSearch(word){
     'خروجی: فقط JSON خالص:',
     schema,
     'قوانین: examples دقیقاً ۱ جمله — synonyms حداکثر ۲ — فقط JSON.'
-  ].join('
-');
+  ].join('\n');
 
   const headers={'Content-Type':'application/json'};
   if(sbUser?.id)headers['x-user-id']=sbUser.id;
