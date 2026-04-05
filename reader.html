@@ -1328,17 +1328,49 @@ async function doSearch(word){
   }
 }
 async function callSearch(word){
-  const profile={
-    lang:localStorage.getItem('fluenta_ui_lang')||'fa',
-    level:localStorage.getItem('ws_level')||'B1',
-    goals:JSON.parse(localStorage.getItem('ws_goals')||'["travel"]')
-  };
-  const res=await fetch('/api/index',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({q:word,lang:targetLang||'de',profile})});
+  const level=localStorage.getItem('ws_level')||'B1';
+  const goals=JSON.parse(localStorage.getItem('ws_goals')||'["travel"]');
+  const gc={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
+  const gt=goals.map(g=>gc[g]||g).join('، ');
+  const isDE=targetLang!=='en';
+  const schema=isDE
+    ?'{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی","principal_parts":"فقط Verb: Präteritum و Perfekt یا null","usage_pattern":"الگوی استفاده یا null","preposition":"حرف اضافه یا null","synonyms":[{"de":"مترادف","fa":"معنی"}],"antonyms":["متضاد"],"examples":[{"de":"جمله","fa":"ترجمه"}],"grammar_tip":"نکته گرامری یا null","priority":{"score":3,"reason":"دلیل"}}'
+    :'{"word":"word","corrected_from":"null","article":"null","plural":"plural or null","type":"Noun/Verb/Adjective","level":"A1-C2","meaning_fa":"معنی فارسی","principal_parts":"for irregular verbs only","usage_pattern":"null","preposition":"null","synonyms":[{"de":"synonym","fa":"معنی"}],"antonyms":["antonym"],"examples":[{"de":"example","fa":"ترجمه"}],"grammar_tip":"null","priority":{"score":3,"reason":"reason"}}';
+  const prompt=[
+    'ورودی: "'+word+'"',
+    'زبان: '+(isDE?'آلمانی':'انگلیسی')+' — برای فارسی‌زبانان',
+    'پروفایل: سطح '+level+' — هدف: '+gt,
+    'خروجی: فقط JSON خالص:',
+    schema,
+    'قوانین: examples دقیقاً ۱ جمله — synonyms حداکثر ۲ — فقط JSON.'
+  ].join('
+');
+
+  const headers={'Content-Type':'application/json'};
+  if(sbUser?.id)headers['x-user-id']=sbUser.id;
+  const res=await fetch('/api',{method:'POST',headers,
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:900,messages:[{role:'user',content:prompt}]})});
   if(!res.ok)return null;
   const txt=await res.text();
-  let d;try{d=JSON.parse(txt);}catch(e){const m=txt.match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);else return null;}
-  return d?.error||!d?.meaning_fa?null:d;
+  let d;
+  try{
+    // پاک کردن markdown code blocks
+    const clean=txt.replace(/```json|```/g,'').trim();
+    const m=clean.match(/\{[\s\S]*\}/);
+    d=m?JSON.parse(m[0]):JSON.parse(clean);
+  }catch(e){return null;}
+  // بررسی content از Claude API
+  if(d.content&&Array.isArray(d.content)){
+    const textBlock=d.content.find(c=>c.type==='text');
+    if(textBlock){
+      try{
+        const inner=textBlock.text.replace(/```json|```/g,'').trim();
+        const m2=inner.match(/\{[\s\S]*\}/);
+        d=m2?JSON.parse(m2[0]):JSON.parse(inner);
+      }catch(e){return null;}
+    }
+  }
+  return d?.meaning_fa?d:null;
 }
 function getAlts(word){
   const alts=[];
