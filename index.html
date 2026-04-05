@@ -1500,8 +1500,12 @@ html,body{overflow-x:hidden!important}
 
 
 /* ── PDF READER ── */
-#pane-pdf{display:none;flex-direction:column;flex:1;min-height:0}
-#pane-pdf.on{display:flex}
+#pane-pdf{
+  display:none;flex-direction:column;
+  min-height:calc(100dvh - var(--nav-h));
+  padding:0!important;
+}
+#pane-pdf.on{display:flex!important;animation:fade .2s var(--ease)}
 .pdf-topbar{
   display:flex;align-items:center;gap:10px;
   padding:10px var(--s4);border-bottom:1px solid var(--bg2);
@@ -2443,7 +2447,7 @@ html,body{overflow-x:hidden!important}
 <div id="pane-pdf" class="pane">
 
   <!-- Upload screen -->
-  <div id="pdf-upload-screen" style="flex:1;display:flex;flex-direction:column">
+  <div id="pdf-upload-screen" style="flex:1;display:flex;flex-direction:column;min-height:calc(100dvh - var(--nav-h))">
     <div class="pdf-topbar">
       <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
       <span style="font-size:14px;font-weight:600;color:var(--ink)">PDF Reader</span>
@@ -2464,7 +2468,7 @@ html,body{overflow-x:hidden!important}
   </div>
 
   <!-- Viewer screen -->
-  <div id="pdf-viewer-screen" style="display:none;flex:1;flex-direction:column;min-height:0">
+  <div id="pdf-viewer-screen" style="display:none;flex:1;flex-direction:column;min-height:calc(100dvh - var(--nav-h));overflow:hidden">
     <div class="pdf-topbar">
       <button onclick="pdfClose()" class="pdf-nav-btn" style="padding:4px 8px">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
