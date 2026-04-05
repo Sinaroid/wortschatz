@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Wortschatz Reader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --bg:#0f0f11;--bg2:#18181c;--bg3:#222228;--card:#1c1c22;--border:#2a2a34;
+  --ink:#f0eff4;--ink2:#a8a7b8;--ink3:#6b6a7e;
+  --accent:#1a3af2;--abl:rgba(26,58,242,.12);
+  --ok:#2a6e35;--okl:rgba(42,110,53,.15);
+  --page-bg:#faf9f6;--page-ink:#1a1916;
+  --r:10px;--r2:8px;
+  --sans:'Vazirmatn',sans-serif;--serif:'Playfair Display',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--sans);color:var(--ink)}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* topbar */
+#topbar{
+  display:flex;align-items:center;gap:8px;padding:9px 14px;
+  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;
+}
+#logo{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.3px;flex-shrink:0}
+#logo span{color:var(--accent)}
+#doc-title{
+  font-size:11px;color:var(--ink3);flex:1;text-align:center;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;
+}
+.tb-btn{
+  display:flex;align-items:center;gap:4px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:var(--r2);
+  padding:5px 10px;font-size:11px;font-weight:600;color:var(--ink2);
+  cursor:pointer;font-family:var(--sans);transition:all .15s;white-space:nowrap;flex-shrink:0;
+}
+.tb-btn:hover{background:var(--border);color:var(--ink)}
+.tb-btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.tb-btn.accent:hover{background:#1530cc}
+#nav{display:none;align-items:center;gap:3px;flex-shrink:0}
+.nav-btn{
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  color:var(--ink2);cursor:pointer;transition:all .12s;
+}
+.nav-btn:hover:not(:disabled){background:var(--border);color:var(--ink)}
+.nav-btn:disabled{opacity:.3;cursor:default}
+#page-info{font-size:10px;font-weight:700;color:var(--ink3);min-width:48px;text-align:center;direction:ltr}
+#zoom-wrap{display:none;align-items:center;gap:3px;flex-shrink:0}
+#zoom-val{font-size:10px;font-weight:700;color:var(--ink3);min-width:34px;text-align:center}
+
+/* body */
+#body{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* canvas area */
+#area{
+  flex:1;overflow:auto;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 20px 80px;gap:16px;position:relative;
+}
+
+/* drop */
+#drop-ov{
+  position:fixed;inset:0;background:rgba(15,15,17,.94);
+  border:3px dashed var(--accent);border-radius:0;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;z-index:999;pointer-events:none;
+}
+#drop-ov h2{font-size:22px;color:var(--ink)}
+#drop-ov p{font-size:13px;color:var(--ink2)}
+
+/* welcome */
+#welcome{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100%;gap:20px;padding:24px;text-align:center;
+}
+#welcome-logo{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--ink)}
+#welcome-logo span{color:var(--accent)}
+#welcome h2{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:3px}
+#welcome p{font-size:12px;color:var(--ink2);line-height:1.9;max-width:300px}
+#drop-zone{
+  width:100%;max-width:360px;
+  border:2px dashed var(--border);border-radius:14px;
+  padding:28px 20px;cursor:pointer;transition:all .2s;background:var(--bg2);
+}
+#drop-zone:hover{border-color:var(--accent);background:var(--card)}
+#drop-zone-icon{font-size:36px;margin-bottom:8px}
+#drop-zone h3{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+#drop-zone p{font-size:11px;color:var(--ink3)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:360px}
+.chip{
+  background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+  padding:5px 13px;font-size:11px;font-weight:600;color:var(--ink2);
+  cursor:pointer;transition:all .13s;font-family:var(--sans);
+}
+.chip:hover{border-color:var(--accent);color:var(--ink);background:var(--abl)}
+.chips-label{font-size:9px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+
+/* page */
+.pw{
+  position:relative;flex-shrink:0;
+  background:var(--page-bg);border-radius:2px;
+  box-shadow:0 4px 28px rgba(0,0,0,.55),0 1px 4px rgba(0,0,0,.25);
+}
+.pw canvas{display:block}
+.pg-badge{
+  position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);
+  font-size:10px;color:var(--ink3);font-family:var(--sans);
+}
+
+/* text layer */
+.tl{
+  position:absolute;top:0;left:0;overflow:hidden;
+  line-height:1;user-select:text;-webkit-user-select:text;
+}
+.tl>span{
+  color:transparent;position:absolute;white-space:pre;
+  transform-origin:0% 0%;cursor:text;
+}
+.tl>span.gw{
+  cursor:pointer;border-radius:2px;
+  transition:background .08s,outline .08s;
+}
+.tl>span.gw:hover{background:rgba(26,58,242,.17);outline:1px solid rgba(26,58,242,.3)}
+.tl>span.gw.sel{background:rgba(26,58,242,.27);outline:2px solid rgba(26,58,242,.52)}
+.tl>span.gw.done{background:var(--okl);outline:1px solid rgba(42,110,53,.3)}
+.tl>span::selection{background:rgba(26,58,242,.3);color:transparent}
+
+/* sidebar */
+#sb{
+  width:210px;flex-shrink:0;background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:width .22s ease;
+}
+#sb.off{width:0;border:none}
+#sb-head{
+  padding:11px 13px 7px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+#sb-head h3{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--ink3);text-transform:uppercase}
+#sb-cnt{font-size:9px;font-weight:700;background:var(--abl);color:var(--accent);padding:2px 6px;border-radius:10px}
+#sb-list{flex:1;overflow-y:auto;padding:4px 0}
+#sb-empty{padding:20px 12px;font-size:11px;color:var(--ink3);text-align:center;line-height:1.8}
+.wi{padding:7px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.wi:hover{background:var(--bg3)}
+.wi-de{font-size:11px;font-weight:700;color:var(--ink);direction:ltr;font-family:var(--serif)}
+.wi-fa{font-size:9px;color:var(--ink3);margin-top:1px}
+.wi-lv{font-size:8px;font-weight:700;padding:1px 4px;border-radius:8px;background:var(--abl);color:var(--accent);direction:ltr;display:inline-block;margin-top:2px}
+.wi-x{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:13px;padding:0 0 0 6px;opacity:.5;transition:opacity .1s;flex-shrink:0}
+.wi-x:hover{opacity:1;color:#e05252}
+
+/* tooltip */
+#tt{
+  position:fixed;z-index:998;width:290px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  box-shadow:0 16px 48px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.3);
+  display:none;overflow:hidden;direction:rtl;
+  animation:ttFade .13s ease;
+}
+@keyframes ttFade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+#tt-top{
+  padding:12px 12px 9px;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+}
+#tt-w{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--ink);direction:ltr;line-height:1.1}
+#tt-m{font-size:9px;color:var(--ink3);direction:ltr;margin-top:3px}
+#tt-x{
+  background:var(--bg3);border:none;color:var(--ink3);
+  width:22px;height:22px;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  flex-shrink:0;transition:all .1s;
+}
+#tt-x:hover{background:var(--border);color:var(--ink)}
+#tt-bd{padding:11px 12px 12px}
+#tt-spin{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3);padding:6px 0}
+.sp{width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#tt-err{font-size:11px;color:#e05252;padding:4px 0}
+#tt-fa{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:7px;line-height:1.4}
+#tt-gram{font-size:10px;color:var(--ink2);line-height:1.6;margin-bottom:8px;padding:7px 9px;background:var(--bg3);border-radius:7px}
+#tt-ex{font-size:10px;color:var(--ink2);padding:7px 9px;background:var(--bg2);border-radius:7px;margin-bottom:9px;direction:ltr;font-style:italic;line-height:1.7;border-right:2px solid var(--border)}
+#tt-ex-fa{direction:rtl;font-style:normal;font-size:9px;color:var(--ink3);margin-top:3px}
+#tt-btn{
+  width:100%;padding:9px;background:var(--accent);color:#fff;
+  border:none;border-radius:var(--r2);font-size:12px;font-weight:700;
+  cursor:pointer;font-family:var(--sans);transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+#tt-btn:hover{background:#1530cc}
+#tt-btn.done{background:var(--ok)}
+
+/* toast */
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(0);
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:7px 16px;font-size:11px;font-weight:600;color:var(--ink);
+  box-shadow:0 6px 20px rgba(0,0,0,.4);display:none;z-index:1001;
+  white-space:nowrap;animation:toastA .18s ease;
+}
+@keyframes toastA{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* progress */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--accent);transition:width .25s;z-index:999;width:0;pointer-events:none}
+
+/* back button */
+#back{
+  position:fixed;bottom:18px;right:18px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:20px;padding:7px 13px;
+  font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;
+  font-family:var(--sans);display:none;align-items:center;gap:5px;
+  transition:all .13s;z-index:50;text-decoration:none;
+}
+#back:hover{background:var(--border);color:var(--ink)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<div id="app">
+  <div id="topbar">
+    <div id="logo">W<span>.</span></div>
+
+    <div id="nav">
+      <button class="nav-btn" id="btn-p" onclick="goPage(-1)" disabled>
+        <svg width="9" height="9" viewBox="0 0 9 9"><path d="M5.5 1.5L3 4.5l2.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <span id="page-info">۱ / ۱</span>
+      <button class="nav-btn" id="btn-n" onclick="goPage(1)" disabled>
+        <svg width="9" height="9" viewBox="0 0 9 9"><path d="M3.5 1.5L6 4.5l-2.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </button>
+    </div>
+
+    <div id="doc-title">Wortschatz Reader</div>
+
+    <div id="zoom-wrap">
+      <button class="tb-btn" onclick="zoom(-0.15)">−</button>
+      <span id="zoom-val">100%</span>
+      <button class="tb-btn" onclick="zoom(0.15)">+</button>
+    </div>
+
+    <button class="tb-btn" onclick="Q('file-inp').click()">📂 PDF</button>
+    <button class="tb-btn accent" id="btn-save" onclick="saveAll()" style="display:none">✓ ذخیره همه (0)</button>
+    <input type="file" id="file-inp" accept=".pdf" style="display:none" onchange="loadFile(this.files[0])">
+  </div>
+
+  <div id="body">
+    <div id="area">
+      <div id="drop-ov">
+        <div style="font-size:44px">📄</div>
+        <h2>PDF رو اینجا رها کن</h2>
+        <p>فایل PDF کتاب آلمانی</p>
+      </div>
+
+      <div id="welcome">
+        <div id="welcome-logo">Wort<span>schatz</span></div>
+        <div>
+          <h2>کتاب‌خوان هوشمند</h2>
+          <p>روی هر کلمه آلمانی کلیک کن — معنی فارسی فوری بگیر و به فلش‌کارت‌هات اضافه‌اش کن</p>
+        </div>
+        <div id="drop-zone" onclick="Q('file-inp').click()">
+          <div id="drop-zone-icon">📚</div>
+          <h3>بارگذاری PDF کتاب آلمانی</h3>
+          <p>کلیک کن یا فایل رو اینجا بکش و رها کن</p>
+        </div>
+        <div>
+          <div class="chips-label">یا یه متن نمونه امتحان کن</div>
+          <div class="chips" style="margin-top:6px">
+            <button class="chip" onclick="loadSample('a1')">📗 A1</button>
+            <button class="chip" onclick="loadSample('a2')">📘 A2</button>
+            <button class="chip" onclick="loadSample('b1')">📙 B1</button>
+            <button class="chip" onclick="loadSample('b2')">📕 B2</button>
+            <button class="chip" onclick="loadSample('grimm')">🧙 Grimm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sb">
+      <div id="sb-head">
+        <h3>لغات ذخیره‌شده</h3>
+        <span id="sb-cnt">۰</span>
+      </div>
+      <div id="sb-list">
+        <div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.5">روی هر کلمه آلمانی کلیک کن</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tooltip -->
+<div id="tt">
+  <div id="tt-top">
+    <div>
+      <div id="tt-w"></div>
+      <div id="tt-m"></div>
+    </div>
+    <button id="tt-x" onclick="closeTT()">×</button>
+  </div>
+  <div id="tt-bd">
+    <div id="tt-spin" style="display:none"><div class="sp"></div>در حال جستجو…</div>
+    <div id="tt-err" style="display:none">لغت پیدا نشد — دوباره امتحان کن</div>
+    <div id="tt-fa" style="display:none"></div>
+    <div id="tt-gram" style="display:none"></div>
+    <div id="tt-ex" style="display:none"></div>
+    <button id="tt-btn" onclick="addWord()" style="display:none">+ افزودن به فلش‌کارت</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<a id="back" href="/">← بازگشت به Wortschatz</a>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function Q(id){return document.getElementById(id)}
+
+/* ── State ── */
+var pdfDoc=null,scale=1.5,totalPages=0,curPage=1;
+var saved=[],savedSet=new Set();
+var curWord=null,curData=null,activeSpan=null;
+var searching=false,isSample=false,curSample=null;
+var mc=document.createElement('canvas').getContext('2d');
+
+/* sync existing ws words */
+try{
+  var ws=JSON.parse(localStorage.getItem('ws_words')||'[]');
+  ws.forEach(function(w){if(w.de)savedSet.add(w.de.toLowerCase());});
+}catch(e){}
+var targetLang=localStorage.getItem('ws_target_lang')||localStorage.getItem('fluenta_target_lang')||'de';
+
+/* ── Drag & Drop ── */
+var area=Q('area');
+area.addEventListener('dragover',function(e){e.preventDefault();Q('drop-ov').style.display='flex';});
+area.addEventListener('dragleave',function(e){if(!area.contains(e.relatedTarget))Q('drop-ov').style.display='none';});
+area.addEventListener('drop',function(e){
+  e.preventDefault();Q('drop-ov').style.display='none';
+  var f=e.dataTransfer.files[0];
+  if(f&&f.type==='application/pdf')loadFile(f);
+  else toast('فقط PDF قبول میشه');
+});
+
+/* ── Load PDF ── */
+function loadFile(file){
+  if(!file)return;
+  isSample=false;curSample=null;
+  prog(10);
+  var fr=new FileReader();
+  fr.onload=function(e){
+    pdfjsLib.getDocument({data:e.target.result}).promise.then(function(doc){
+      pdfDoc=doc;totalPages=doc.numPages;curPage=1;
+      setTitle(file.name.replace(/\.pdf$/i,''));
+      showReader();renderAll();
+    }).catch(function(e){toast('خطا: '+e.message);prog(0);});
+  };
+  fr.readAsArrayBuffer(file);
+}
+
+/* ── Render All Pages ── */
+function renderAll(){
+  area.innerHTML='';
+  var done=0;
+  function next(n){
+    if(n>totalPages){prog(100);setTimeout(function(){prog(0);},700);return;}
+    pdfDoc.getPage(n).then(function(page){
+      var areaW=area.clientWidth-40;
+      var vp0=page.getViewport({scale:1});
+      var s=Math.min(scale,areaW/vp0.width);
+      var vp=page.getViewport({scale:s});
+      var dpr=Math.min(window.devicePixelRatio||1,2);
+
+      var wrap=document.createElement('div');
+      wrap.className='pw';wrap.dataset.page=n;
+      wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
+
+      var canvas=document.createElement('canvas');
+      canvas.style.width=vp.width+'px';canvas.style.height=vp.height+'px';
+      canvas.width=Math.floor(vp.width*dpr);canvas.height=Math.floor(vp.height*dpr);
+      var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+      wrap.appendChild(canvas);
+
+      var layer=document.createElement('div');
+      layer.className='tl';layer.style.width=vp.width+'px';layer.style.height=vp.height+'px';
+      wrap.appendChild(layer);
+
+      var badge=document.createElement('div');
+      badge.className='pg-badge';badge.textContent=n;
+      wrap.appendChild(badge);
+
+      area.appendChild(wrap);
+
+      page.render({canvasContext:ctx,viewport:vp,intent:'display'}).promise.then(function(){
+        done++;prog(Math.round(done/totalPages*85)+10);
+        page.getTextContent({includeMarkedContent:false}).then(function(tc){
+          buildLayer(tc,vp,layer,n);next(n+1);
+        });
+      }).catch(function(){next(n+1);});
+    });
+  }
+  next(1);
+  Q('nav').style.display='flex';
+  Q('zoom-wrap').style.display='flex';
+  updateNav();updateZoom();
+}
+
+/* ── Build Text Layer ── */
+function buildLayer(tc,vp,layer,pageNum){
+  try{
+    pdfjsLib.renderTextLayer({
+      textContentSource:tc,container:layer,viewport:vp,
+      textDivs:[],textDivProperties:new WeakMap(),
+      isOffscreenCanvasSupported:false,
+    }).promise.then(function(){attach(layer,pageNum);})
+    .catch(function(){manualLayer(tc,vp,layer,pageNum);});
+  }catch(e){manualLayer(tc,vp,layer,pageNum);}
+}
+
+function attach(layer,pageNum){
+  layer.querySelectorAll('span').forEach(function(span){
+    var raw=(span.textContent||'').trim();
+    if(raw.length<2)return;
+    var clean=getGerman(raw);
+    if(!clean||clean.length<2)return;
+    span.classList.add('gw');span.dataset.word=clean;span.dataset.pg=pageNum;
+    if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
+    ;(function(w,s){s.addEventListener('click',function(e){e.stopPropagation();onClick(w,s,e);});})(clean,span);
+  });
+}
+
+function manualLayer(tc,vp,layer,pageNum){
+  tc.items.forEach(function(item){
+    if(!item.str||!item.str.trim())return;
+    var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
+    var angle=Math.atan2(tx[1],tx[0]);
+    var fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+    if(fs<3)return;
+    mc.font=fs+'px sans-serif';
+    var pw=(item.width||0)*vp.scale;
+    var mw=mc.measureText(item.str).width||1;
+    var ratio=pw>0?pw/mw:1;
+    var toks=tokenize(item.str);
+    var ox=0;
+    toks.forEach(function(tok){
+      var tw=mc.measureText(tok.t).width*ratio;
+      if(tok.w&&tok.c.length>=2){
+        var span=document.createElement('span');
+        span.className='gw';span.dataset.word=tok.c;span.dataset.pg=pageNum;
+        span.style.cssText='position:absolute;color:transparent;transform-origin:left bottom;'
+          +'left:'+(tx[4]+ox)+'px;top:'+(vp.height-tx[5]-fs*1.15)+'px;'
+          +'font-size:'+fs+'px;width:'+(tw+1)+'px;height:'+(fs*1.4)+'px;';
+        if(Math.abs(angle)>0.01)span.style.transform='rotate('+(-angle*180/Math.PI)+'deg)';
+        if(savedSet.has(tok.c.toLowerCase()))span.classList.add('done');
+        ;(function(w,s){s.addEventListener('click',function(e){e.stopPropagation();onClick(w,s,e);});})(tok.c,span);
+        layer.appendChild(span);
+      }
+      ox+=tw;
+    });
+  });
+}
+
+/* ── Click Handler ── */
+function onClick(word,span,e){
+  if(activeSpan&&activeSpan!==span)activeSpan.classList.remove('sel');
+  if(activeSpan===span&&Q('tt').style.display==='block'){closeTT();return;}
+  activeSpan=span;span.classList.add('sel');
+  curWord=word;curData=null;
+  showLoading(word,e);
+  doSearch(word);
+}
+
+/* ── Tooltip ── */
+function showLoading(word,e){
+  Q('tt-w').textContent=word;Q('tt-m').textContent='';
+  show('tt-spin');hide('tt-err');hide('tt-fa');hide('tt-gram');hide('tt-ex');hide('tt-btn');
+  Q('tt').style.display='block';posTT(e.clientX,e.clientY);
+}
+
+function posTT(cx,cy){
+  var w=290,h=200;
+  var left=cx+14;var top=cy-h-14;
+  if(left+w>window.innerWidth-10)left=cx-w-14;
+  if(top<56)top=cy+16;
+  if(top+h>window.innerHeight-16)top=window.innerHeight-h-16;
+  Q('tt').style.left=Math.max(6,left)+'px';Q('tt').style.top=Math.max(56,top)+'px';
+}
+
+function closeTT(){
+  Q('tt').style.display='none';
+  if(activeSpan){activeSpan.classList.remove('sel');activeSpan=null;}
+  curWord=null;curData=null;
+}
+
+/* ── Search ── */
+async function doSearch(word){
+  if(searching)return;
+  searching=true;
+  try{
+    var profile={
+      lang:localStorage.getItem('fluenta_ui_lang')||localStorage.getItem('ws_ui_lang')||'fa',
+      level:localStorage.getItem('ws_level')||'B1',
+      goals:JSON.parse(localStorage.getItem('ws_goals')||'["travel"]')
+    };
+    var res=await fetch('/api/search',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({q:word,lang:targetLang||'de',profile:profile})
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var txt=await res.text();
+    var d;try{d=JSON.parse(txt);}catch(e){var m=txt.match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);else throw new Error('parse');}
+    if(d.error)throw new Error(d.error);
+    searching=false;
+    if(curWord===word)fillTT(d,word);
+  }catch(err){
+    searching=false;
+    if(curWord===word){hide('tt-spin');show('tt-err');}
+  }
+}
+
+function fillTT(d,word){
+  var tt=Q('tt');if(tt.style.display!=='block')return;
+  curData=d;
+  var w=d.word||word;
+  Q('tt-w').textContent=w;
+  Q('tt-m').textContent=[d.article,d.type,d.level].filter(Boolean).join(' · ');
+  hide('tt-spin');
+  if(d.meaning_fa){Q('tt-fa').textContent=d.meaning_fa;show('tt-fa');}
+  if(d.grammar_tip){Q('tt-gram').textContent=d.grammar_tip;show('tt-gram');}
+  var ex=d.examples&&d.examples[0];
+  if(ex){
+    Q('tt-ex').innerHTML=ex.de+(ex.fa?'<div id="tt-ex-fa">'+ex.fa+'</div>':'');
+    show('tt-ex');
+  }
+  var isAdded=savedSet.has(w.toLowerCase());
+  var btn=Q('tt-btn');
+  btn.textContent=isAdded?'✓ اضافه شد':'+ افزودن به فلش‌کارت';
+  btn.style.background=isAdded?'var(--ok)':'var(--accent)';
+  btn.className=isAdded?'done':'';
+  btn.style.cssText='width:100%;padding:9px;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:5px;background:'+(isAdded?'var(--ok)':'var(--accent)');
+  btn.onclick=addWord;
+  show('tt-btn');
+}
+
+/* ── Add Word ── */
+function addWord(){
+  if(!curData)return;
+  var word=curData.word||curWord;
+  if(savedSet.has(word.toLowerCase()))return;
+  savedSet.add(word.toLowerCase());
+  saved.push({de:word,fa:curData.meaning_fa||'',level:curData.level||'',article:curData.article||''});
+
+  /* highlight all spans */
+  document.querySelectorAll('.gw,.w').forEach(function(s){
+    if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.add('done');
+  });
+
+  addToSidebar(word,curData);
+  syncLS(word,curData);
+
+  var btn=Q('tt-btn');
+  btn.textContent='✓ اضافه شد';btn.style.background='var(--ok)';
+
+  updateSaveBtn();
+  toast('✓ «'+word+'» ذخیره شد');
+  setTimeout(closeTT,600);
+}
+
+function syncLS(word,d){
+  try{
+    var ws=JSON.parse(localStorage.getItem('ws_words')||'[]');
+    if(!ws.some(function(w){return w.de&&w.de.toLowerCase()===word.toLowerCase();})){
+      ws.unshift({de:word,fa:d.meaning_fa||'',ex:(d.examples&&d.examples[0])?d.examples[0].de:'',
+        article:d.article||'',level:d.level||'',score:0,seen:0,interval:1,easiness:2.5,
+        next_review:new Date().toISOString()});
+      localStorage.setItem('ws_words',JSON.stringify(ws));
+    }
+  }catch(e){}
+}
+
+/* ── Sidebar ── */
+function addToSidebar(word,d){
+  var list=Q('sb-list');
+  var empty=Q('sb-empty');if(empty)empty.remove();
+  var item=document.createElement('div');item.className='wi';
+  item.innerHTML='<div style="flex:1">'
+    +'<div class="wi-de">'+word+'</div>'
+    +(d.meaning_fa?'<div class="wi-fa">'+d.meaning_fa+'</div>':'')
+    +(d.level?'<span class="wi-lv">'+d.level+'</span>':'')
+    +'</div><button class="wi-x" onclick="removeWord(this,\''+word+'\')">×</button>';
+  list.insertBefore(item,list.firstChild);
+  Q('sb-cnt').textContent=saved.length;
+}
+
+function removeWord(btn,word){
+  savedSet.delete(word.toLowerCase());
+  saved=saved.filter(function(w){return w.de.toLowerCase()!==word.toLowerCase();});
+  btn.closest('.wi').remove();
+  document.querySelectorAll('.gw,.w').forEach(function(s){
+    if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.remove('done');
+  });
+  if(saved.length===0){
+    Q('sb-list').innerHTML='<div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.5">روی هر کلمه آلمانی کلیک کن</span></div>';
+    Q('btn-save').style.display='none';
+  }
+  Q('sb-cnt').textContent=saved.length;
+  updateSaveBtn();
+}
+
+function updateSaveBtn(){
+  var btn=Q('btn-save');
+  if(saved.length>0){btn.style.display='';btn.textContent='✓ ذخیره همه ('+saved.length+')';}
+  else btn.style.display='none';
+}
+
+function saveAll(){
+  if(saved.length===0)return;
+  toast('✓ '+saved.length+' لغت در Wortschatz موجوده');
+  Q('btn-save').style.display='none';
+}
+
+/* ── Navigation ── */
+function updateNav(){
+  Q('page-info').textContent=curPage+' / '+totalPages;
+  Q('btn-p').disabled=curPage<=1;Q('btn-n').disabled=curPage>=totalPages;
+}
+
+function goPage(dir){
+  var n=curPage+dir;if(n<1||n>totalPages)return;
+  curPage=n;updateNav();closeTT();
+  var t=document.querySelector('[data-page="'+n+'"]');
+  if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+area.addEventListener('scroll',function(){
+  var pages=document.querySelectorAll('.pw[data-page]');
+  var aTop=area.getBoundingClientRect().top;
+  var best=null,bestD=9999;
+  pages.forEach(function(p){var d=Math.abs(p.getBoundingClientRect().top-aTop);if(d<bestD){bestD=d;best=p;}});
+  if(best){var n=parseInt(best.dataset.page||1);if(n!==curPage){curPage=n;updateNav();}}
+},{passive:true});
+
+/* ── Zoom ── */
+function zoom(d){
+  scale=Math.max(0.7,Math.min(3.5,scale+d));updateZoom();
+  if(pdfDoc)renderAll();else if(isSample&&curSample)renderSample(curSample);
+}
+function updateZoom(){Q('zoom-val').textContent=Math.round(scale/1.5*100)+'%';}
+
+/* ── Helpers ── */
+function getGerman(str){
+  var m=str.match(/[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]{2,}(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*/);
+  return m?m[0]:null;
+}
+function tokenize(str){
+  var re=/([a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*)|([^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)/g,m,r=[];
+  while((m=re.exec(str))!==null){
+    var t=m[0]||'',c=m[1]||'';
+    r.push({t:t,c:c,w:!!(c&&c.length>=2)});
+  }
+  return r;
+}
+function show(id){var el=Q(id);if(el)el.style.display='';}
+function hide(id){var el=Q(id);if(el)el.style.display='none';}
+function prog(p){Q('prog').style.width=p+'%';}
+function setTitle(t){Q('doc-title').textContent=t.length>42?t.slice(0,40)+'…':t;}
+function showReader(){
+  Q('welcome').style.display='none';
+  Q('back').style.display='flex';
+}
+function toast(msg){
+  var el=Q('toast');el.textContent=msg;el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(function(){el.style.display='none';},2200);
+}
+
+document.addEventListener('click',function(e){
+  if(Q('tt').style.display==='block'&&!Q('tt').contains(e.target)&&!(activeSpan&&activeSpan.contains(e.target))){
+    closeTT();
+  }
+});
+
+/* ── Sample Texts ── */
+var SAMPLES={
+  a1:{title:'Alltag auf Deutsch — A1',pages:[
+    'Mein Name ist Anna. Ich bin 25 Jahre alt und komme aus Iran. Ich wohne jetzt in Berlin. Berlin ist eine große und schöne Stadt. Ich lerne Deutsch, weil ich hier arbeiten möchte.\n\nJeden Morgen stehe ich um sieben Uhr auf. Dann trinke ich Kaffee und esse Brot mit Butter. Meine Lehrerin heißt Frau Müller. Sie ist sehr nett und erklärt alles gut.\n\nNach der Schule kaufe ich im Supermarkt ein. Ich brauche Milch, Eier und Gemüse.',
+    'Das Wetter in Berlin ist oft kalt und regnerisch. Im Winter schneit es manchmal. Meine Wohnung hat zwei Zimmer, eine Küche und ein Bad. Sie ist klein aber gemütlich.\n\nAm Wochenende gehe ich in den Park. Ich mag die frische Luft und die Natur sehr.'
+  ]},
+  a2:{title:'Familie und Freunde — A2',pages:[
+    'Meine Familie ist nicht sehr groß. Ich habe eine Schwester und einen Bruder. Meine Schwester Sara studiert Medizin in München. Mein Bruder möchte Informatiker werden.\n\nMeine Eltern leben in Teheran. Wir telefonieren jeden Sonntag miteinander.',
+    'In Deutschland habe ich neue Freunde gefunden. Meine beste Freundin heißt Leila. Wir gehen oft zusammen einkaufen oder ins Café. Nächsten Monat machen wir einen Ausflug nach Potsdam.'
+  ]},
+  b1:{title:'Beruf und Arbeit — B1',pages:[
+    'Die Arbeit spielt im Leben eine zentrale Rolle. Sie gibt uns Struktur, Einkommen und soziale Kontakte. In Deutschland suchen viele Unternehmen qualifizierte Fachkräfte aus dem Ausland.\n\nDas Vorstellungsgespräch ist ein wichtiger Schritt. Man muss sich gut vorbereiten und pünktlich erscheinen. Pünktlichkeit und Zuverlässigkeit sind in der deutschen Arbeitskultur besonders wichtig.',
+    'Die meisten Arbeitnehmer haben Anspruch auf mindestens 24 Tage Urlaub im Jahr. Die Work-Life-Balance hat einen hohen Stellenwert. Gewerkschaften verhandeln Tarifverträge und vertreten die Arbeitnehmerinteressen.'
+  ]},
+  b2:{title:'Gesellschaft und Wandel — B2',pages:[
+    'Die deutsche Gesellschaft befindet sich im tiefgreifenden Wandel. Digitalisierung, demografischer Wandel und globale Migration prägen das gesellschaftliche Bild. Menschen aus über 190 Nationen bereichern das kulturelle Leben.\n\nSprache ist der Schlüssel zur Integration. Wer Deutsch beherrscht, kann am gesellschaftlichen Leben vollständig teilnehmen.',
+    'Der Klimawandel ist eines der drängendsten Themen unserer Zeit. Deutschland hat sich ehrgeizige Ziele gesetzt. Erneuerbare Energien spielen eine entscheidende Rolle. Nachhaltigkeit ist kein Luxus, sondern eine Notwendigkeit für kommende Generationen.'
+  ]},
+  grimm:{title:'Hänsel und Gretel — Gebrüder Grimm',pages:[
+    'Es war einmal ein armer Holzfäller, der lebte mit seiner Frau und seinen zwei Kindern am Rande eines großen Waldes. Das Mädchen hieß Gretel und der Junge hieß Hänsel.\n\nHänsel war klug und tapfer. Er stand nachts auf und sammelte im Mondlicht kleine weiße Kieselsteine.',
+    'Am nächsten Morgen gingen sie alle zusammen tief in den Wald. Hänsel ließ heimlich die weißen Steine fallen, einen nach dem anderen.\n\nDie Kinder fanden den Weg nach Hause zurück. Da sahen sie ein wunderbares kleines Haus aus Brot und Kuchen und Zucker.'
+  ]}
+};
+
+function loadSample(key){
+  var s=SAMPLES[key];if(!s)return;
+  isSample=true;curSample=s;pdfDoc=null;
+  saved=[];savedSet=new Set();
+  Q('sb-list').innerHTML='<div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.5">روی هر کلمه آلمانی کلیک کن</span></div>';
+  Q('sb-cnt').textContent='۰';
+  Q('btn-save').style.display='none';
+  setTitle(s.title);totalPages=s.pages.length;curPage=1;
+  showReader();renderSample(s);
+  Q('nav').style.display='flex';Q('zoom-wrap').style.display='flex';
+  updateNav();updateZoom();
+  prog(100);setTimeout(function(){prog(0);},500);
+}
+
+function renderSample(s){
+  area.innerHTML='';
+  var areaW=area.clientWidth-40;
+  var pageW=Math.min(720,areaW);
+  var fs=Math.round(16*scale/1.5);
+
+  s.pages.forEach(function(text,idx){
+    var wrap=document.createElement('div');
+    wrap.className='pw';wrap.dataset.page=idx+1;
+    wrap.style.cssText='width:'+pageW+'px;padding:'+(48*scale/1.5)+'px '+(56*scale/1.5)+'px '+(64*scale/1.5)+'px;'
+      +'font-family:\'Playfair Display\',Georgia,serif;font-size:'+fs+'px;line-height:1.9;'
+      +'color:var(--page-ink);direction:ltr;position:relative;';
+
+    var titleEl=document.createElement('div');
+    titleEl.style.cssText='font-size:'+(10*scale/1.5)+'px;font-weight:700;letter-spacing:2px;color:#aaa;'
+      +'text-transform:uppercase;margin-bottom:'+(24*scale/1.5)+'px;font-family:var(--sans)';
+    titleEl.textContent=s.title;
+    wrap.appendChild(titleEl);
+
+    text.split('\n\n').forEach(function(para){
+      if(!para.trim())return;
+      var p=document.createElement('p');
+      p.style.marginBottom=(16*scale/1.5)+'px';
+      para.split(/(\s+)/).forEach(function(w){
+        var clean=w.replace(/[^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]/g,'');
+        if(clean.length>=2){
+          var span=document.createElement('span');
+          span.className='gw';span.dataset.word=clean;span.dataset.pg=idx+1;
+          span.textContent=w;
+          span.style.cssText='color:var(--page-ink);cursor:pointer;border-radius:2px;transition:background .08s,outline .08s;padding:0 1px;';
+          if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
+          ;(function(wd,s){s.addEventListener('click',function(e){e.stopPropagation();onClick(wd,s,e);});})(clean,span);
+          p.appendChild(span);
+        } else {
+          p.appendChild(document.createTextNode(w));
+        }
+      });
+      wrap.appendChild(p);
+    });
+
+    var badge=document.createElement('div');
+    badge.className='pg-badge';badge.textContent=idx+1;
+    wrap.appendChild(badge);
+    area.appendChild(wrap);
+  });
+}
+</script>
+</body>
+</html>
