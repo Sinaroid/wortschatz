@@ -1165,7 +1165,7 @@ body.phrase-mode #phrase-tip{display:none!important}
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="3.5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 9c0-1.93 1.57-3.5 3.5-3.5S8.5 7.07 8.5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="auth-label">ورود</span>
     </div>
-    <input type="file" id="file-inp" accept=".pdf" style="display:none" onchange="loadFile(this.files[0])">
+    <input type="file" id="file-inp" accept=".pdf" style="display:none" onchange="loadFile(this.files[0]);this.value=''">
   </div>
 
   <!-- ══ FIND BAR ══ -->
@@ -1454,6 +1454,55 @@ async function loadUserWords(){
     refreshDone();
   }catch(e){}
 }
+/* ══════════════════════════════════════
+   PDF STORAGE — Supabase Storage
+   ذخیره PDF در cloud برای بازیابی بعدی
+══════════════════════════════════════ */
+async function uploadPDFToStorage(file,docKey){
+  if(!sb||!sbUser)return null;
+  try{
+    const path=sbUser.id+'/'+docKey+'.pdf';
+    const{data,error}=await sb.storage.from('reader-pdfs').upload(path,file,{
+      upsert:true,
+      contentType:'application/pdf'
+    });
+    if(error)throw error;
+    console.log('[Reader] PDF uploaded:',path);
+    return path;
+  }catch(e){
+    console.warn('[Reader] PDF upload failed:',e.message);
+    return null;
+  }
+}
+
+async function loadPDFFromStorage(docKey){
+  if(!sb||!sbUser)return null;
+  try{
+    const path=sbUser.id+'/'+docKey+'.pdf';
+    const{data,error}=await sb.storage.from('reader-pdfs').download(path);
+    if(error)throw error;
+    return data; /* Blob */
+  }catch(e){
+    return null;
+  }
+}
+
+async function listStoredPDFs(){
+  if(!sb||!sbUser)return[];
+  try{
+    const{data,error}=await sb.storage.from('reader-pdfs').list(sbUser.id+'/');
+    if(error||!data)return[];
+    return data;
+  }catch(e){return[];}
+}
+
+async function deletePDFFromStorage(docKey){
+  if(!sb||!sbUser)return;
+  try{
+    await sb.storage.from('reader-pdfs').remove([sbUser.id+'/'+docKey+'.pdf']);
+  }catch(e){}
+}
+
 async function dbSave(word,d){
   if(!sb||!sbUser)return;
   try{
@@ -1527,6 +1576,7 @@ function saveToHistory(docKey,docName,meta={}){
     savedWords:meta.savedWords||0,
     bookmarks:meta.bookmarks||0,
     readingSeconds:meta.readingSeconds||0,
+    cloudStored:meta.cloudStored||false,
     lastOpened:Date.now()
   };
   if(idx>=0)hist[idx]={...hist[idx],...entry};
@@ -1596,6 +1646,7 @@ function renderHistList(){
       <div class="hi-thumb">
         <svg width="16" height="20" viewBox="0 0 16 20" fill="none"><path d="M3 1h7l5 5v13a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 1v5h5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
         <div class="hi-prog"><div class="hi-prog-fill" style="width:${pct}%"></div></div>
+        ${h.cloudStored?'<div style="position:absolute;top:2px;right:2px;font-size:8px">☁️</div>':''}
       </div>
       <div class="hi-info">
         <div class="hi-name" title="${h.docName}">${h.docName||'بدون نام'}</div>
@@ -1620,13 +1671,22 @@ function renderHistList(){
   });
 }
 
-/* راهنمای reload */
-function showReloadHint(h){
-  // toast با راهنما
-  toast('📂 «'+h.docName+'» رو دوباره بارگذاری کن تا از صفحه '+h.lastPage+' ادامه بدی');
+/* بارگذاری PDF از cloud یا راهنمای reload */
+async function showReloadHint(h){
   closeHist();
-  // trigger click روی دکمه PDF
-  setTimeout(()=>Q('file-inp')?.click(),400);
+  /* اگه login هست، سعی کن از cloud بارگذاری کن */
+  if(sbUser){
+    toast('📥 در حال بارگذاری از cloud…');
+    const blob=await loadPDFFromStorage(h.docKey);
+    if(blob){
+      const file=new File([blob],h.docName+'.pdf',{type:'application/pdf'});
+      loadFile(file);
+      return;
+    }
+  }
+  /* اگه cloud نداشت، راهنما بده */
+  toast('📂 «'+h.docName+'» رو دوباره آپلود کن تا از صفحه '+h.lastPage+' ادامه بدی');
+  setTimeout(()=>Q('file-inp')?.click(),600);
 }
 
 /* تاریخ نسبی */
@@ -1844,10 +1904,23 @@ function loadFile(file){
       setTitle(file.name.replace(/\.pdf$/i,''));
       showReader();
       renderAll(()=>{
-        // بعد از render: بارگذاری session قبلی
         applySession(curDocKey);
         startAutoSave();
       });
+      /* upload PDF به Supabase Storage در background */
+      if(sbUser){
+        uploadPDFToStorage(file,curDocKey).then(function(path){
+          if(path){
+            console.log('[Reader] PDF stored in cloud');
+            /* آپدیت history با cloud flag */
+            saveToHistory(curDocKey,file.name.replace(/\.pdf$/i,''),{
+              lastPage:curPage,totalPages,
+              savedWords:saved.length,
+              cloudStored:true
+            });
+          }
+        });
+      }
     }).catch(e=>{toast('خطا: '+e.message);setProgress(0);});
   };
   fr.readAsArrayBuffer(file);
