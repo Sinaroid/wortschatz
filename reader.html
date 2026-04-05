@@ -1175,24 +1175,24 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 <!-- ══ MINI ACTION POPUP ══ -->
 <div id="mini-pop">
   <div id="mini-word">
-    <span id="mini-w"></span>
-    <span id="mini-art"></span>
+    <div id="mini-w"></div>
+    <div id="mini-word-sub"></div>
   </div>
   <div id="mini-acts">
-    <button class="mini-btn" id="mini-search" onclick="miniSearch()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8.5 8.5l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      <span>جستجو</span>
+    <button class="mini-btn primary" id="mini-search" onclick="miniSearch()" title="جستجوی معنی">
+      <svg viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8.5 8.5l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>معنی</span>
     </button>
-    <button class="mini-btn" onclick="miniSpeak()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4.5h2l2.5-2.5v9L4 8.5H2v-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 4a2.5 2.5 0 010 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <button class="mini-btn" onclick="miniSpeak()" title="تلفظ">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M2 4.5h2l2.5-2.5v9L4 8.5H2v-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 4a2.5 2.5 0 010 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span>تلفظ</span>
     </button>
-    <button class="mini-btn" onclick="miniHighlight()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 9.5l1.5-4L9 2l2 2-5.5 5.5L2 9.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M2 9.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      <span>highlight</span>
+    <button class="mini-btn" onclick="miniHighlight()" title="highlight">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 10l1.5-3.5 5-5 2 2-5 5L2.5 10z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M2 10.5h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>mark</span>
     </button>
-    <button class="mini-btn" onclick="miniCopy()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="3.5" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M4 3.5V2.5a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2"/></svg>
+    <button class="mini-btn" onclick="miniCopy()" title="کپی">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="3.5" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M4 3.5V2.5a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2"/></svg>
       <span>کپی</span>
     </button>
   </div>
@@ -2106,10 +2106,13 @@ function onHit(word,best,e){
 function showMini(word,best,e){
   const mp=Q('mini-pop');
   Q('mini-w').textContent=word;
-  Q('mini-art').textContent='';
+  const sub=Q('mini-word-sub');
+  if(sub)sub.textContent=savedSet.has(word.toLowerCase())?'✓ ذخیره شده':'کلیک «معنی» برای جستجو';
   buildMiniCtx(best,word);
+  mp.classList.remove('in');
   mp.style.display='block';
   posMini(e.clientX,e.clientY);
+  requestAnimationFrame(()=>mp.classList.add('in'));
 }
 
 function posMini(cx,cy){
@@ -2126,10 +2129,10 @@ function posMini(cx,cy){
 
 function closeMini(){
   const mp=Q('mini-pop');
+  mp.classList.remove('in');
   mp.style.display='none';
   miniWord=null;miniBest=null;miniE=null;
   ctxItems=[];ctxSelIdx=-1;
-  // clear ctx highlight از PDF
   document.querySelectorAll('.ptl span.gw.sel').forEach(s=>s.classList.remove('sel'));
 }
 
