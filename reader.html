@@ -96,16 +96,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font
 #thumbs::-webkit-scrollbar-thumb{background:var(--border)}
 .thumb-item{
   cursor:pointer;border-radius:4px;overflow:hidden;
-  border:2px solid transparent;transition:all .15s;
-  position:relative;
+  border:2px solid transparent;transition:border-color .15s,box-shadow .15s;
+  position:relative;flex-shrink:0;
 }
-.thumb-item:hover{border-color:var(--border2)}
-.thumb-item.active{border-color:var(--accent)}
-.thumb-item canvas{width:100%;height:auto;display:block}
+.thumb-item:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.thumb-item.active{border-color:var(--accent);box-shadow:0 0 0 1px rgba(26,58,242,.2)}
+.thumb-item canvas{width:100%;height:auto;display:block;border-radius:2px}
 .thumb-num{
   position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
-  font-size:9px;color:var(--ink3);background:rgba(12,12,14,.7);
-  padding:1px 5px;border-radius:4px;font-variant-numeric:tabular-nums;
+  font-size:9px;color:var(--ink2);background:rgba(12,12,14,.8);
+  padding:2px 6px;border-radius:4px;font-variant-numeric:tabular-nums;
+  backdrop-filter:blur(4px);white-space:nowrap;
 }
 
 /* ── Canvas Area ── */
@@ -1012,28 +1013,65 @@ function toggleThumbs(){
   var t=Q('thumbs'),btn=Q('btn-thumbs');
   t.style.display=thumbsOn?'flex':'none';
   btn.classList.toggle('on',thumbsOn);
-  if(thumbsOn&&pdfDoc&&t.children.length===0)renderThumbs();
+  if(thumbsOn&&pdfDoc&&t.children.length===0)renderThumbsLazy();
 }
-function renderThumbs(){
+
+/* ── Render thumbnails با IntersectionObserver ──
+   فقط وقتی visible میشن render میشن — بدون UI block ── */
+function renderThumbsLazy(){
   var t=Q('thumbs');t.innerHTML='';
+
+  // اول همه placeholders رو بساز (سریع، بدون render)
   for(var n=1;n<=totalPages;n++){
     ;(function(pg){
-      pdfDoc.getPage(pg).then(function(page){
-        var vp=page.getViewport({scale:.25});
-        var wrap=document.createElement('div');wrap.className='thumb-item';wrap.dataset.pg=pg;
-        if(pg===curPage)wrap.classList.add('active');
-        var canvas=document.createElement('canvas');
-        canvas.width=Math.floor(vp.width);canvas.height=Math.floor(vp.height);
-        canvas.style.width='100%';
-        var ctx=canvas.getContext('2d');
-        wrap.appendChild(canvas);
-        var num=document.createElement('div');num.className='thumb-num';num.textContent=pg;wrap.appendChild(num);
-        wrap.addEventListener('click',function(){goPage(pg-curPage);});
-        t.appendChild(wrap);
-        page.render({canvasContext:ctx,viewport:vp}).promise.catch(function(){});
+      var wrap=document.createElement('div');
+      wrap.className='thumb-item';wrap.dataset.pg=pg;
+      if(pg===curPage)wrap.classList.add('active');
+
+      // placeholder با ابعاد تخمینی
+      var ph=document.createElement('div');
+      ph.style.cssText='width:100%;padding-bottom:141%;background:var(--bg3);border-radius:2px;position:relative';
+      var num=document.createElement('div');
+      num.className='thumb-num';num.textContent=pg;
+      ph.appendChild(num);
+      wrap.appendChild(ph);
+      wrap.addEventListener('click',function(){
+        var diff=pg-curPage;if(diff!==0)goPage(diff);else{var el=document.querySelector('[data-page="'+pg+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
       });
+      t.appendChild(wrap);
     })(n);
   }
+
+  // حالا با IntersectionObserver فقط visible ها رو render کن
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting)return;
+      var wrap=entry.target;
+      var pg=parseInt(wrap.dataset.pg||0);
+      if(!pg||wrap.dataset.rendered)return;
+      wrap.dataset.rendered='1';
+      observer.unobserve(wrap);
+      // render با کمی تاخیر برای smooth بودن
+      setTimeout(function(){
+        if(!pdfDoc)return;
+        pdfDoc.getPage(pg).then(function(page){
+          var vp=page.getViewport({scale:.3});
+          var canvas=document.createElement('canvas');
+          canvas.width=Math.floor(vp.width);
+          canvas.height=Math.floor(vp.height);
+          canvas.style.width='100%';
+          var ctx=canvas.getContext('2d');
+          // جایگزین placeholder
+          var ph=wrap.querySelector('div');
+          if(ph)wrap.removeChild(ph);
+          wrap.insertBefore(canvas,wrap.firstChild);
+          page.render({canvasContext:ctx,viewport:vp,intent:'print'}).promise.catch(function(){});
+        }).catch(function(){});
+      },50);
+    });
+  },{root:t,rootMargin:'200px 0px',threshold:0});
+
+  Array.from(t.children).forEach(function(wrap){observer.observe(wrap);});
 }
 
 /* ── Search in PDF ── */
