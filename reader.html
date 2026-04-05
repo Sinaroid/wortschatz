@@ -1333,7 +1333,7 @@ async function callSearch(word){
     level:localStorage.getItem('ws_level')||'B1',
     goals:JSON.parse(localStorage.getItem('ws_goals')||'["travel"]')
   };
-  const res=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},
+  const res=await fetch('/api/index',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({q:word,lang:targetLang||'de',profile})});
   if(!res.ok)return null;
   const txt=await res.text();
