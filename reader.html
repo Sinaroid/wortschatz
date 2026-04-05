@@ -573,11 +573,12 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
   background:var(--blue);color:#fff;
   font-size:10px;font-weight:600;font-family:var(--sans);
   padding:4px 10px;border-radius:6px;
-  cursor:pointer;white-space:nowrap;display:none;
+  cursor:pointer;white-space:nowrap;
   box-shadow:0 2px 8px rgba(26,58,242,.4);
   user-select:none;pointer-events:all;
-  display:none;align-items:center;gap:4px;
+  display:none;align-items:center;gap:5px;
 }
+#phrase-tip.visible{display:flex}
 #phrase-tip:hover{background:var(--blue2)}
 #phrase-tip svg{flex-shrink:0}
 
@@ -1209,7 +1210,7 @@ body.phrase-mode .ptl span.gw:hover{background:rgba(26,58,242,.12)!important}
 </div><!-- #app -->
 
 <!-- ══ HOVER EXPAND OVERLAY ══ -->
-<div id="phrase-tip" style="display:none">
+<div id="phrase-tip">
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5h8M5 1l4 4-4 4" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
   معنی جمله
 </div>
@@ -1878,25 +1879,27 @@ function buildTL(tc,vp,wrap,pn,tl){
 var _hT=null,_hSpan=null,_hPn=0;
 
 function _showPT(span,pn){
+  if(_phraseMode)return; /* phrase mode فعاله، tip نشون نده */
   _hSpan=span;_hPn=pn;
   span.classList.add('hov-main');
   var pt=Q('phrase-tip');
   if(!pt)return;
+  /* اول مخفی کن تا offsetWidth درست باشه */
+  pt.classList.remove('visible');
+  pt.style.left='-9999px';pt.style.top='-9999px';
+  pt.classList.add('visible');
   var r=span.getBoundingClientRect();
-  /* زیر کلمه، وسط چین */
-  pt.style.display='block';
-  var ptW=pt.offsetWidth||80;
+  var ptW=pt.offsetWidth||85;
   var left=r.left+r.width/2-ptW/2;
   if(left<6)left=6;
   if(left+ptW>innerWidth-6)left=innerWidth-ptW-6;
   pt.style.left=left+'px';
   pt.style.top=(r.bottom+5)+'px';
-  pt.style.opacity='1';
 }
 
 function _hidePT(){
   var pt=Q('phrase-tip');
-  if(pt)pt.style.display='none';
+  if(pt)pt.classList.remove('visible');
   if(_hSpan)_hSpan.classList.remove('hov-main');
   _hSpan=null;
 }
@@ -1941,14 +1944,15 @@ function cancelPhraseMode(){
 }
 
 function confirmPhrase(){
-  if(!_phraseSpans.length)return;
-  var phrase=_phraseSpans.map(function(s){return s.dataset.word||s.textContent.trim();}).join(' ');
+  var spans=_phraseSpans.length?_phraseSpans:(_phraseStart?[_phraseStart]:[]);
+  if(!spans.length)return;
+  var phrase=spans.map(function(s){return s.dataset.word||s.textContent.trim();}).join(' ');
   cancelPhraseMode();
-  /* جستجوی عبارت */
   var fakeE={clientX:innerWidth/2,clientY:innerHeight/3};
   curWord=phrase;curData=null;
   showLoading(phrase,fakeE);
-  doSearchPhrase(phrase,fakeE.clientX,fakeE.clientY);
+  if(spans.length===1)doSearch(phrase); /* یه کلمه → جستجوی معمولی */
+  else doSearchPhrase(phrase,fakeE.clientX,fakeE.clientY);
 }
 
 /* کلیک روی «معنی جمله» tooltip */
