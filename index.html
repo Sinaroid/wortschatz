@@ -2579,7 +2579,7 @@ html,body{overflow-x:hidden!important}
     <div id="rdr-canvas-area" style="flex:1;overflow:auto;display:flex;justify-content:center;padding:20px;background:var(--bg2)">
       <div id="rdr-canvas-wrap" style="position:relative;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.15);border-radius:2px">
         <canvas id="rdr-canvas"></canvas>
-        <div id="rdr-text-layer" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden"></div>
+        <canvas id="rdr-highlight-canvas" style="position:absolute;top:0;left:0;pointer-events:none"></canvas>
       </div>
     </div>
   </div>
@@ -3527,11 +3527,13 @@ function rdrRenderPage(num){
     canvas.height=Math.floor(vp.height*dpr);
     ctx.scale(dpr,dpr);
 
-    // highlight canvas همون اندازه
-    hCanvas.style.width=vp.width+'px';
-    hCanvas.style.height=vp.height+'px';
-    hCanvas.width=Math.floor(vp.width*dpr);
-    hCanvas.height=Math.floor(vp.height*dpr);
+    // highlight canvas
+    if(hCanvas){
+      hCanvas.style.width=vp.width+'px';
+      hCanvas.style.height=vp.height+'px';
+      hCanvas.width=Math.floor(vp.width*dpr);
+      hCanvas.height=Math.floor(vp.height*dpr);
+    }
 
     var wrap=Q('#rdr-canvas-wrap');
     wrap.style.width=vp.width+'px';
@@ -3658,9 +3660,8 @@ function rdrHighlightWord(item){
 
 function rdrClearHighlight(){
   var hCanvas=Q('#rdr-highlight-canvas');
-  if(!hCanvas)return;
-  var ctx=hCanvas.getContext('2d');
-  ctx.clearRect(0,0,hCanvas.width,hCanvas.height);
+  if(!hCanvas||!hCanvas.width)return;
+  hCanvas.getContext('2d').clearRect(0,0,hCanvas.width,hCanvas.height);
 }
 
 // ── highlight added words ──
@@ -3821,7 +3822,7 @@ function rdrZoom(delta){rdrScale=Math.max(0.8,Math.min(4,rdrScale+delta));rdrRen
 // close on outside click
 document.addEventListener('click',function(e){
   if(Q('#rdr-tooltip')&&Q('#rdr-tooltip').style.display!=='none'){
-    if(!e.target.closest('#rdr-tooltip')&&!e.target.closest('#rdr-text-layer'))rdrCloseTT();
+    if(!e.target.closest('#rdr-tooltip')&&!e.target.closest('#rdr-canvas-wrap'))rdrCloseTT();
   }
 });
 
