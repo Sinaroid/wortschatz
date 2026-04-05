@@ -450,6 +450,74 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 }
 .wi-del:hover{opacity:1;color:#e05252}
 
+/* ════════ MINI ACTION POPUP ════════ */
+/* وقتی روی کلمه کلیک میشه، اول این ظاهر میشه */
+#mini-pop{
+  position:fixed;z-index:995;
+  background:var(--surface);
+  border:1px solid var(--line2);
+  border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3);
+  display:none;overflow:hidden;
+  animation:miniIn .12s cubic-bezier(.34,1.5,.64,1);
+  direction:rtl;
+}
+@keyframes miniIn{
+  from{opacity:0;transform:scale(.85) translateY(4px)}
+  to{opacity:1;transform:none}
+}
+/* نام کلمه در بالا */
+#mini-word{
+  padding:7px 11px 5px;
+  font-family:var(--serif);font-size:15px;font-weight:600;
+  color:var(--text);direction:ltr;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+#mini-word-art{font-size:10px;color:var(--text4);font-family:var(--sans);font-weight:400}
+/* دکمه‌های action */
+#mini-acts{
+  display:flex;align-items:stretch;
+}
+.mini-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:8px 4px;
+  background:none;border:none;border-right:1px solid var(--line);
+  color:var(--text2);cursor:pointer;font-family:var(--sans);
+  transition:all .1s;
+}
+.mini-btn:last-child{border-right:none}
+.mini-btn:hover{background:var(--surface2);color:var(--text)}
+.mini-btn svg{flex-shrink:0}
+.mini-btn span{font-size:8px;font-weight:600;letter-spacing:.3px}
+/* context words در پایین */
+#mini-ctx{
+  display:flex;align-items:center;flex-wrap:nowrap;
+  padding:4px 8px 6px;gap:0;
+  border-top:1px solid var(--line);
+  direction:ltr;overflow:hidden;
+}
+.mctx{
+  font-size:11px;color:var(--text3);padding:2px 3px;
+  cursor:pointer;border-radius:3px;transition:all .1s;
+  white-space:nowrap;font-family:var(--serif);
+}
+.mctx:hover{background:rgba(26,58,242,.12);color:var(--text)}
+.mctx.msel{
+  color:var(--blue);font-weight:600;font-size:12px;
+  background:rgba(26,58,242,.1);border-radius:3px;
+  padding:2px 4px;
+}
+.mctx.mdone{color:var(--green)}
+.mctx-btn{
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(26,58,242,.12);border:1px dashed rgba(26,58,242,.3);
+  color:var(--blue);font-size:9px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .12s;flex-shrink:0;margin:0 1px;font-weight:700;line-height:1;
+}
+.mctx-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
 /* ════════ WORD PANEL (draggable) ════════ */
 .panel{
   position:fixed;z-index:990;
@@ -948,6 +1016,33 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
   </div>
 </div><!-- #app -->
 
+<!-- ══ MINI ACTION POPUP ══ -->
+<div id="mini-pop">
+  <div id="mini-word">
+    <span id="mini-w"></span>
+    <span id="mini-art"></span>
+  </div>
+  <div id="mini-acts">
+    <button class="mini-btn" id="mini-search" onclick="miniSearch()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8.5 8.5l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>جستجو</span>
+    </button>
+    <button class="mini-btn" onclick="miniSpeak()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4.5h2l2.5-2.5v9L4 8.5H2v-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 4a2.5 2.5 0 010 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span>تلفظ</span>
+    </button>
+    <button class="mini-btn" onclick="miniHighlight()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 9.5l1.5-4L9 2l2 2-5.5 5.5L2 9.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M2 9.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span>highlight</span>
+    </button>
+    <button class="mini-btn" onclick="miniCopy()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="3.5" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M4 3.5V2.5a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2"/></svg>
+      <span>کپی</span>
+    </button>
+  </div>
+  <div id="mini-ctx"></div>
+</div>
+
 <!-- ══ WORD PANEL ══ -->
 <div id="wp" class="panel" style="direction:rtl">
   <div class="dh-row" id="wp-dh"><div class="dh"></div></div>
@@ -1424,15 +1519,172 @@ function refreshDone(){
 }
 
 /* ══ WORD CLICK ══ */
-/* ── state برای context expansion ── */
+/* ── state ── */
 let ctxItems=[],ctxSelIdx=-1,ctxPageNum=0,ctxWrap=null;
+let miniWord=null,miniBest=null,miniE=null;
 
 function onHit(word,best,e){
-  if(curWord===word&&Q('wp').style.display==='block'){closeTT();return;}
+  // اگه همون کلمه → بستن
+  if(miniWord===word&&Q('mini-pop').style.display==='block'){closeMini();return;}
+  if(Q('wp').style.display==='block'&&curWord===word){closeTT();return;}
+  miniWord=word;miniBest=best;miniE=e;
+  showMini(word,best,e);
+}
+
+/* ── Mini Popup ── */
+function showMini(word,best,e){
+  const mp=Q('mini-pop');
+  Q('mini-w').textContent=word;
+  Q('mini-art').textContent='';
+  buildMiniCtx(best,word);
+  mp.style.display='block';
+  posMini(e.clientX,e.clientY);
+}
+
+function posMini(cx,cy){
+  const mp=Q('mini-pop');
+  const w=mp.offsetWidth||190;
+  const h=mp.offsetHeight||100;
+  let left=cx-w/2,top=cy-h-12;
+  if(left<6)left=6;
+  if(left+w>innerWidth-6)left=innerWidth-w-6;
+  if(top<54)top=cy+16;
+  if(top+h>innerHeight-10)top=innerHeight-h-10;
+  mp.style.left=left+'px';mp.style.top=top+'px';
+}
+
+function closeMini(){
+  const mp=Q('mini-pop');
+  mp.style.display='none';
+  miniWord=null;miniBest=null;miniE=null;
+  ctxItems=[];ctxSelIdx=-1;
+  // clear ctx highlight از PDF
+  document.querySelectorAll('.ptl span.gw.sel').forEach(s=>s.classList.remove('sel'));
+}
+
+/* actions از mini */
+function miniSearch(){
+  if(!miniWord)return;
+  const word=miniWord,best=miniBest,e=miniE||{clientX:innerWidth/2,clientY:200};
+  closeMini();
   curWord=word;curData=null;
-  // ساختن context از text items اطراف
-  buildCtx(best,word);
-  showLoading(word,e);doSearch(word);
+  showLoading(word,e);
+  doSearch(word);
+}
+function miniSpeak(){
+  if(!miniWord)return;
+  const u=new SpeechSynthesisUtterance(miniWord);
+  u.lang=targetLang==='en'?'en-US':'de-DE';u.rate=.85;
+  window.speechSynthesis?.cancel();
+  window.speechSynthesis?.speak(u);
+  toast('🔊 '+miniWord);
+}
+function miniHighlight(){
+  if(!miniWord||!miniBest)return;
+  const word=miniWord,wrap=miniBest.wrap,pn=miniBest.pn;
+  if(!savedSet.has(word.toLowerCase())){
+    // highlight موقت با رنگ زرد
+    const hlc=wrap?.querySelector('.hl-c');
+    if(hlc){
+      const pd=pageItems[pn];if(!pd)return;
+      const vp=pd.vp,items=pd.items;
+      const dpr=Math.min(devicePixelRatio||1,2);
+      const ctx=hlc.getContext('2d');
+      ctx.save();ctx.scale(dpr,dpr);
+      ctx.fillStyle='rgba(255,196,0,.35)';
+      for(const item of items){
+        if(!item.str)continue;
+        const toks=tokenize(item.str);
+        if(!toks.some(t=>t.c.toLowerCase()===word.toLowerCase()))continue;
+        const tx=pdfjsLib.Util.transform(vp.transform,item.transform);
+        const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+        ctx.fillRect(tx[4]-1,vp.height-tx[5]-fs*1.3,(item.width||60)*vp.scale+2,fs*1.7);
+      }
+      ctx.restore();
+    }
+    toast('کلمه highlight شد');
+  }else{
+    toast('این کلمه قبلاً ذخیره شده');
+  }
+  closeMini();
+}
+function miniCopy(){
+  if(!miniWord)return;
+  navigator.clipboard.writeText(miniWord).then(()=>toast('✓ کپی شد')).catch(()=>toast('کپی انجام نشد'));
+  closeMini();
+}
+
+/* context در mini popup */
+function buildMiniCtx(best,selWord){
+  if(!best)return;
+  const pd=pageItems[best.pn];if(!pd)return;
+  const {items,vp}=pd;
+  const allWords=[];
+  for(const item of items){
+    if(!item.str?.trim())continue;
+    const toks=tokenize(item.str);
+    const tx=pdfjsLib.Util.transform(vp.transform,item.transform);
+    const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+    if(fs<3)continue;
+    const top=vp.height-tx[5];
+    toks.forEach(tok=>{if(tok.w&&tok.c.length>=2)allWords.push({text:tok.c,top,fs});});
+  }
+  let si=allWords.findIndex(w=>w.text.toLowerCase()===selWord.toLowerCase());
+  if(si===-1){Q('mini-ctx').innerHTML='';return;}
+  const start=Math.max(0,si-2),end=Math.min(allWords.length-1,si+2);
+  ctxItems=allWords.slice(start,end+1);
+  ctxSelIdx=si-start;
+  ctxPageNum=best.pn;ctxWrap=best.wrap;
+  renderMiniCtx();
+}
+
+function renderMiniCtx(){
+  const ct=Q('mini-ctx');if(!ct)return;
+  ct.innerHTML='';
+  // دکمه expand چپ
+  const btnL=document.createElement('button');
+  btnL.className='mctx-btn';btnL.textContent='‹';
+  btnL.addEventListener('click',e=>{e.stopPropagation();expandMiniCtx(-1);});
+  ct.appendChild(btnL);
+  // کلمات
+  ctxItems.forEach((item,i)=>{
+    const sp=document.createElement('span');
+    sp.className='mctx'+(i===ctxSelIdx?' msel':'')+(savedSet.has(item.text.toLowerCase())?' mdone':'');
+    sp.textContent=(i>0?' ':'')+item.text;
+    ;(function(w,idx){
+      sp.addEventListener('click',e=>{
+        e.stopPropagation();
+        if(idx===ctxSelIdx)return;
+        ctxSelIdx=idx;miniWord=w;
+        Q('mini-w').textContent=w;
+        renderMiniCtx();
+      });
+    })(item.text,i);
+    ct.appendChild(sp);
+  });
+  // دکمه expand راست
+  const btnR=document.createElement('button');
+  btnR.className='mctx-btn';btnR.textContent='›';
+  btnR.addEventListener('click',e=>{e.stopPropagation();expandMiniCtx(1);});
+  ct.appendChild(btnR);
+}
+
+function expandMiniCtx(dir){
+  const pd=pageItems[ctxPageNum];if(!pd)return;
+  const allWords=[];
+  for(const item of pd.items){
+    if(!item.str?.trim())continue;
+    const toks=tokenize(item.str);
+    const tx=pdfjsLib.Util.transform(pd.vp.transform,item.transform);
+    const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+    if(fs<3)continue;
+    toks.forEach(tok=>{if(tok.w&&tok.c.length>=2)allWords.push({text:tok.c});});
+  }
+  const fi=allWords.findIndex(w=>w.text.toLowerCase()===ctxItems[0]?.text.toLowerCase());
+  const li=allWords.findIndex(w=>w.text.toLowerCase()===ctxItems[ctxItems.length-1]?.text.toLowerCase());
+  if(dir===-1&&fi>0){ctxItems.unshift(allWords[fi-1]);ctxSelIdx++;}
+  else if(dir===1&&li<allWords.length-1)ctxItems.push(allWords[li+1]);
+  renderMiniCtx();
 }
 
 /* ── build context از text items ── */
@@ -1587,11 +1839,7 @@ function closeTT(){
   wp.classList.add('out');
   setTimeout(()=>{wp.style.display='none';wp.classList.remove('out','in');},120);
   clearHL();
-  document.querySelectorAll('.gw.sel,.ptl span.gw.sel,.ptl span.gw.ctx-left,.ptl span.gw.ctx-right').forEach(s=>{
-    s.classList.remove('sel','ctx-left','ctx-right');
-  });
-  hid('ctx-bar');hid('ctx-hint');
-  ctxItems=[];ctxSelIdx=-1;
+  document.querySelectorAll('.gw.sel,.ptl span.gw.sel').forEach(s=>s.classList.remove('sel'));
   curWord=null;curData=null;
 }
 
@@ -1601,15 +1849,24 @@ async function doSearch(word){
   try{
     const res=await callSearch(word);
     if(res){searching=false;if(curWord===word)fillTT(res,word);return;}
-    /* smart fallback */
+    // fallback
     for(const alt of getAlts(word)){
       const r2=await callSearch(alt);
       if(r2){searching=false;if(curWord===word)fillTT(r2,word);return;}
     }
-    throw new Error('not found');
+    throw new Error('پیدا نشد');
   }catch(e){
     searching=false;
-    if(curWord===word){hid('wp-spin');sho('wp-err');}
+    if(curWord===word){
+      hid('wp-spin');
+      const errEl=Q('wp-err');
+      if(errEl){
+        // نمایش پیام خطا
+        const msg=e.message||'خطا';
+        errEl.innerHTML=`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#d06060" stroke-width="1.2"/><path d="M6 3.5v3M6 8h.01" stroke="#d06060" stroke-width="1.2" stroke-linecap="round"/></svg>${msg}`;
+        sho('wp-err');
+      }
+    }
   }
 }
 async function callSearch(word){
@@ -1619,41 +1876,42 @@ async function callSearch(word){
   const gt=goals.map(g=>gc[g]||g).join('، ');
   const isDE=targetLang!=='en';
   const schema=isDE
-    ?'{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی","principal_parts":"فقط Verb: Präteritum و Perfekt یا null","usage_pattern":"الگوی استفاده یا null","preposition":"حرف اضافه یا null","synonyms":[{"de":"مترادف","fa":"معنی"}],"antonyms":["متضاد"],"examples":[{"de":"جمله","fa":"ترجمه"}],"grammar_tip":"نکته گرامری یا null","priority":{"score":3,"reason":"دلیل"}}'
-    :'{"word":"word","corrected_from":"null","article":"null","plural":"plural or null","type":"Noun/Verb/Adjective","level":"A1-C2","meaning_fa":"معنی فارسی","principal_parts":"for irregular verbs only","usage_pattern":"null","preposition":"null","synonyms":[{"de":"synonym","fa":"معنی"}],"antonyms":["antonym"],"examples":[{"de":"example","fa":"ترجمه"}],"grammar_tip":"null","priority":{"score":3,"reason":"reason"}}';
-  const prompt=[
-    'ورودی: "'+word+'"',
-    'زبان: '+(isDE?'آلمانی':'انگلیسی')+' — برای فارسی‌زبانان',
-    'پروفایل: سطح '+level+' — هدف: '+gt,
-    'خروجی: فقط JSON خالص:',
-    schema,
-    'قوانین: examples دقیقاً ۱ جمله — synonyms حداکثر ۲ — فقط JSON.'
-  ].join('\n');
+    ?'{"word":"لغت","corrected_from":"null","article":"der/die/das یا null","plural":"null","type":"Nomen/Verb/Adjektiv/Adverb","level":"A1-C2","meaning_fa":"معنی فارسی","principal_parts":"فقط Verb: Präteritum–Perfekt یا null","usage_pattern":"null","preposition":"null","synonyms":[{"de":"","fa":""}],"antonyms":[],"examples":[{"de":"جمله","fa":"ترجمه"}],"grammar_tip":"نکته یا null","priority":{"score":3,"reason":""}}'
+    :'{"word":"word","corrected_from":"null","article":"null","plural":"null","type":"Noun/Verb/Adj","level":"A1-C2","meaning_fa":"معنی فارسی","principal_parts":"null","usage_pattern":"null","preposition":"null","synonyms":[],"antonyms":[],"examples":[{"de":"example","fa":"ترجمه"}],"grammar_tip":"null","priority":{"score":3,"reason":""}}';
+  const prompt='ورودی: "'+word+'"\nزبان: '+(isDE?'آلمانی':'انگلیسی')+' — پروفایل: سطح '+level+' — هدف: '+gt+'\nفقط JSON:\n'+schema+'\nقوانین: examples دقیقاً ۱ — synonyms حداکثر ۲ — فقط JSON خالص.';
 
   const headers={'Content-Type':'application/json'};
   if(sbUser?.id)headers['x-user-id']=sbUser.id;
-  const res=await fetch('/api',{method:'POST',headers,
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:900,messages:[{role:'user',content:prompt}]})});
-  if(!res.ok)return null;
+  let res;
+  try{
+    res=await fetch('/api',{method:'POST',headers,
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+  }catch(fetchErr){
+    throw new Error('خطای اتصال — اینترنت رو چک کن');
+  }
+  // Rate limit
+  if(res.status===429){
+    const retry=res.headers.get('Retry-After');
+    throw new Error('تعداد جستجو تموم شد'+(retry?' — '+retry+' ثانیه صبر کن':''));
+  }
+  if(!res.ok)throw new Error('خطای سرور ('+res.status+')');
+
   const txt=await res.text();
   let d;
   try{
-    // پاک کردن markdown code blocks
     const clean=txt.replace(/```json|```/g,'').trim();
     const m=clean.match(/\{[\s\S]*\}/);
     d=m?JSON.parse(m[0]):JSON.parse(clean);
-  }catch(e){return null;}
-  // بررسی content از Claude API
-  if(d.content&&Array.isArray(d.content)){
-    const textBlock=d.content.find(c=>c.type==='text');
-    if(textBlock){
-      try{
-        const inner=textBlock.text.replace(/```json|```/g,'').trim();
+    // Claude API response format
+    if(d.content&&Array.isArray(d.content)){
+      const tb=d.content.find(c=>c.type==='text');
+      if(tb){
+        const inner=(tb.text||'').replace(/```json|```/g,'').trim();
         const m2=inner.match(/\{[\s\S]*\}/);
-        d=m2?JSON.parse(m2[0]):JSON.parse(inner);
-      }catch(e){return null;}
+        if(m2)d=JSON.parse(m2[0]);
+      }
     }
-  }
+  }catch(e){return null;}
   return d?.meaning_fa?d:null;
 }
 function getAlts(word){
@@ -2083,7 +2341,9 @@ setTimeout(()=>{
 
 /* ══ CLICK OUTSIDE ══ */
 document.addEventListener('click',e=>{
-  if(Q('wp').style.display==='block'&&!Q('wp').contains(e.target)&&!Q('sp').contains(e.target))closeTT();
+  const mp=Q('mini-pop');
+  if(mp.style.display==='block'&&!mp.contains(e.target))closeMini();
+  if(Q('wp').style.display==='block'&&!Q('wp').contains(e.target)&&!mp.contains(e.target))closeTT();
   if(Q('sp').style.display==='block'&&!Q('sp').contains(e.target)){
     if(!window.getSelection()||window.getSelection().isCollapsed)closeSel();
   }
