@@ -2,269 +2,520 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Wortschatz Reader</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
-  --bg:#0f0f11;--bg2:#18181c;--bg3:#222228;--card:#1c1c22;--border:#2a2a34;
-  --ink:#f0eff4;--ink2:#a8a7b8;--ink3:#6b6a7e;
-  --accent:#1a3af2;--abl:rgba(26,58,242,.12);
-  --ok:#2a6e35;--okl:rgba(42,110,53,.15);
-  --page-bg:#faf9f6;--page-ink:#1a1916;
-  --r:10px;--r2:8px;
-  --sans:'Vazirmatn',sans-serif;--serif:'Playfair Display',serif;
+  --bg:#0c0c0e;
+  --bg2:#141416;
+  --bg3:#1c1c20;
+  --bg4:#242428;
+  --card:#18181c;
+  --border:#2c2c34;
+  --border2:#38383f;
+  --ink:#eeedf2;
+  --ink2:#9998a8;
+  --ink3:#5c5b6e;
+  --ink4:#3a3948;
+  --accent:#1a3af2;
+  --accent2:#2546ff;
+  --abl:rgba(26,58,242,.1);
+  --abm:rgba(26,58,242,.18);
+  --ok:#28683a;
+  --okl:rgba(40,104,58,.14);
+  --page:#f9f8f5;
+  --page-ink:#1c1b18;
+  --serif:'EB Garamond',Georgia,serif;
+  --sans:'Vazirmatn',sans-serif;
+  --top-h:48px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--sans);color:var(--ink)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--sans)}
+::selection{background:rgba(26,58,242,.25)}
+
+/* ── Progress ── */
+#prog{
+  position:fixed;top:0;left:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),#6b82ff);
+  transition:width .3s ease;z-index:1000;width:0;
+  pointer-events:none;
+  box-shadow:0 0 8px rgba(26,58,242,.4);
+}
+
+/* ── Layout ── */
 #app{display:flex;flex-direction:column;height:100vh}
 
-/* topbar */
+/* ── Topbar ── */
 #topbar{
-  display:flex;align-items:center;gap:8px;padding:9px 14px;
-  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;
+  height:var(--top-h);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;
+  background:rgba(12,12,14,.95);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  z-index:100;
+  position:relative;
 }
-#logo{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.3px;flex-shrink:0}
-#logo span{color:var(--accent)}
-#doc-title{
-  font-size:11px;color:var(--ink3);flex:1;text-align:center;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;
+/* subtle gradient line در top */
+#topbar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(26,58,242,.4),transparent);
+  pointer-events:none;
 }
-.tb-btn{
-  display:flex;align-items:center;gap:4px;background:var(--bg3);
-  border:1px solid var(--border);border-radius:var(--r2);
-  padding:5px 10px;font-size:11px;font-weight:600;color:var(--ink2);
-  cursor:pointer;font-family:var(--sans);transition:all .15s;white-space:nowrap;flex-shrink:0;
-}
-.tb-btn:hover{background:var(--border);color:var(--ink)}
-.tb-btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
-.tb-btn.accent:hover{background:#1530cc}
-#nav{display:none;align-items:center;gap:3px;flex-shrink:0}
-.nav-btn{
-  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
-  background:var(--bg3);border:1px solid var(--border);border-radius:6px;
-  color:var(--ink2);cursor:pointer;transition:all .12s;
-}
-.nav-btn:hover:not(:disabled){background:var(--border);color:var(--ink)}
-.nav-btn:disabled{opacity:.3;cursor:default}
-#page-info{font-size:10px;font-weight:700;color:var(--ink3);min-width:48px;text-align:center;direction:ltr}
-#zoom-wrap{display:none;align-items:center;gap:3px;flex-shrink:0}
-#zoom-val{font-size:10px;font-weight:700;color:var(--ink3);min-width:34px;text-align:center}
 
-/* body */
+/* Logo */
+#logo{
+  font-family:var(--serif);font-size:18px;font-weight:500;
+  color:var(--ink);letter-spacing:-.3px;flex-shrink:0;
+  display:flex;align-items:baseline;gap:1px;
+}
+#logo .dot{color:var(--accent);font-size:22px;line-height:1}
+
+/* Title */
+#doc-title{
+  flex:1;text-align:center;
+  font-size:11px;font-weight:500;color:var(--ink3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  direction:ltr;letter-spacing:.3px;
+}
+
+/* Nav */
+#nav{display:none;align-items:center;gap:2px;flex-shrink:0}
+.nav-btn{
+  width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--border);
+  border-radius:6px;color:var(--ink3);cursor:pointer;
+  transition:all .12s;
+}
+.nav-btn:hover:not(:disabled){background:var(--bg3);border-color:var(--border2);color:var(--ink)}
+.nav-btn:disabled{opacity:.25;cursor:default}
+#page-info{
+  font-size:10px;font-weight:700;color:var(--ink3);
+  min-width:50px;text-align:center;direction:ltr;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Zoom */
+#zoom-wrap{display:none;align-items:center;gap:2px;flex-shrink:0}
+#zoom-val{
+  font-size:10px;font-weight:700;color:var(--ink3);
+  min-width:36px;text-align:center;direction:ltr;
+}
+
+/* Topbar buttons */
+.tb{
+  display:flex;align-items:center;gap:5px;
+  padding:0 10px;height:28px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:7px;font-size:11px;font-weight:600;
+  color:var(--ink2);cursor:pointer;font-family:var(--sans);
+  transition:all .12s;white-space:nowrap;flex-shrink:0;
+  letter-spacing:.1px;
+}
+.tb:hover{background:var(--bg4);border-color:var(--border2);color:var(--ink)}
+.tb.blue{background:var(--accent);border-color:transparent;color:#fff}
+.tb.blue:hover{background:var(--accent2)}
+.tb-sep{width:1px;height:18px;background:var(--border);flex-shrink:0}
+
+/* ── Body ── */
 #body{display:flex;flex:1;overflow:hidden;min-height:0}
 
-/* canvas area */
+/* ── Canvas area ── */
 #area{
   flex:1;overflow:auto;background:var(--bg);
   display:flex;flex-direction:column;align-items:center;
-  padding:20px 20px 80px;gap:16px;position:relative;
+  padding:24px 20px 80px;gap:20px;
+  position:relative;
+  scroll-behavior:smooth;
+}
+/* subtle vignette */
+#area::before{
+  content:'';position:fixed;
+  top:var(--top-h);left:0;right:0;height:32px;
+  background:linear-gradient(to bottom,var(--bg),transparent);
+  pointer-events:none;z-index:5;
 }
 
-/* drop */
+/* Drop overlay */
 #drop-ov{
-  position:fixed;inset:0;background:rgba(15,15,17,.94);
-  border:3px dashed var(--accent);border-radius:0;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;z-index:999;pointer-events:none;
+  position:fixed;inset:0;
+  background:rgba(12,12,14,.92);
+  display:none;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;z-index:900;
+  border:2px dashed rgba(26,58,242,.4);
+  animation:fadeIn .15s ease;
 }
-#drop-ov h2{font-size:22px;color:var(--ink)}
-#drop-ov p{font-size:13px;color:var(--ink2)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#drop-ov .drop-icon{font-size:52px;filter:grayscale(.3)}
+#drop-ov h2{font-size:18px;font-weight:700;color:var(--ink)}
+#drop-ov p{font-size:12px;color:var(--ink2)}
 
-/* welcome */
+/* ── Welcome ── */
 #welcome{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100%;gap:20px;padding:24px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:100%;
+  gap:28px;padding:32px;text-align:center;
 }
-#welcome-logo{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--ink)}
-#welcome-logo span{color:var(--accent)}
-#welcome h2{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:3px}
-#welcome p{font-size:12px;color:var(--ink2);line-height:1.9;max-width:300px}
+.welcome-logo{
+  font-family:var(--serif);
+  font-size:36px;font-weight:400;color:var(--ink);
+  letter-spacing:-1px;
+}
+.welcome-logo em{color:var(--accent);font-style:normal}
+.welcome-tagline{
+  font-size:13px;color:var(--ink2);line-height:1.9;
+  max-width:300px;font-weight:300;
+}
+.welcome-tagline strong{color:var(--ink);font-weight:600}
+
+/* Drop zone */
 #drop-zone{
   width:100%;max-width:360px;
-  border:2px dashed var(--border);border-radius:14px;
-  padding:28px 20px;cursor:pointer;transition:all .2s;background:var(--bg2);
+  border:1.5px dashed var(--border2);border-radius:16px;
+  padding:32px 24px;cursor:pointer;transition:all .2s;
+  background:var(--bg2);position:relative;overflow:hidden;
 }
-#drop-zone:hover{border-color:var(--accent);background:var(--card)}
-#drop-zone-icon{font-size:36px;margin-bottom:8px}
-#drop-zone h3{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
-#drop-zone p{font-size:11px;color:var(--ink3)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:360px}
+#drop-zone::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,rgba(26,58,242,.06),transparent 70%);
+  pointer-events:none;
+}
+#drop-zone:hover{border-color:rgba(26,58,242,.4);background:var(--card)}
+#drop-zone:hover .dz-icon{transform:translateY(-3px)}
+.dz-icon{font-size:40px;margin-bottom:10px;display:block;transition:transform .2s}
+.dz-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.dz-sub{font-size:11px;color:var(--ink3)}
+.dz-btn{
+  margin-top:16px;display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent);color:#fff;border:none;
+  border-radius:8px;padding:8px 18px;font-size:12px;
+  font-weight:700;cursor:pointer;font-family:var(--sans);
+}
+
+/* Samples */
+.sample-section{width:100%;max-width:360px}
+.sample-label{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  color:var(--ink4);text-transform:uppercase;
+  text-align:center;margin-bottom:10px;
+}
+.sample-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .chip{
-  background:var(--bg2);border:1px solid var(--border);border-radius:20px;
-  padding:5px 13px;font-size:11px;font-weight:600;color:var(--ink2);
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;padding:5px 14px;
+  font-size:11px;font-weight:600;color:var(--ink2);
   cursor:pointer;transition:all .13s;font-family:var(--sans);
 }
 .chip:hover{border-color:var(--accent);color:var(--ink);background:var(--abl)}
-.chips-label{font-size:9px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
 
-/* page */
+/* ── Page ── */
 .pw{
   position:relative;flex-shrink:0;
-  background:var(--page-bg);border-radius:2px;
-  box-shadow:0 4px 28px rgba(0,0,0,.55),0 1px 4px rgba(0,0,0,.25);
+  background:var(--page);border-radius:1px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.08),
+    0 4px 12px rgba(0,0,0,.2),
+    0 12px 40px rgba(0,0,0,.35),
+    0 32px 80px rgba(0,0,0,.2);
+  transition:box-shadow .3s;
 }
-.pw canvas{display:block}
+.pw:hover{
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.1),
+    0 4px 16px rgba(0,0,0,.25),
+    0 16px 48px rgba(0,0,0,.4),
+    0 40px 90px rgba(0,0,0,.25);
+}
+canvas.pdf-canvas{display:block;cursor:crosshair}
+.hl-canvas{position:absolute;top:0;left:0;pointer-events:none}
 .pg-badge{
-  position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);
-  font-size:10px;color:var(--ink3);font-family:var(--sans);
+  position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  font-size:9px;color:var(--ink4);font-family:var(--sans);
+  letter-spacing:.5px;font-variant-numeric:tabular-nums;
 }
 
-/* highlight canvas روی PDF */
-.hl-canvas{
-  position:absolute;top:0;left:0;
-  pointer-events:none;
-}
-/* cursor روی canvas */
-.pdf-canvas{cursor:crosshair}
+/* Sample span */
+.gw{cursor:pointer;border-radius:2px;transition:background .08s,outline .08s;padding:0 1px}
+.gw:hover{background:rgba(26,58,242,.14);outline:1px solid rgba(26,58,242,.25)}
+.gw.sel{background:rgba(26,58,242,.22);outline:2px solid rgba(26,58,242,.45)}
+.gw.done{background:var(--okl);outline:1px solid rgba(40,104,58,.3)}
 
-/* sidebar */
+/* ── Sidebar ── */
 #sb{
-  width:210px;flex-shrink:0;background:var(--bg2);
+  width:200px;flex-shrink:0;
+  background:var(--bg2);
   border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
-  transition:width .22s ease;
+  display:flex;flex-direction:column;
+  overflow:hidden;
 }
-#sb.off{width:0;border:none}
 #sb-head{
-  padding:11px 13px 7px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+  padding:10px 12px 8px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
 }
-#sb-head h3{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--ink3);text-transform:uppercase}
-#sb-cnt{font-size:9px;font-weight:700;background:var(--abl);color:var(--accent);padding:2px 6px;border-radius:10px}
+#sb-head h3{
+  font-size:8px;font-weight:700;letter-spacing:1.5px;
+  color:var(--ink4);text-transform:uppercase;
+}
+#sb-cnt{
+  font-size:9px;font-weight:700;
+  background:var(--abl);color:var(--accent);
+  padding:2px 7px;border-radius:10px;
+  min-width:20px;text-align:center;
+}
 #sb-list{flex:1;overflow-y:auto;padding:4px 0}
-#sb-empty{padding:20px 12px;font-size:11px;color:var(--ink3);text-align:center;line-height:1.8}
-.wi{padding:7px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+#sb-list::-webkit-scrollbar{width:3px}
+#sb-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#sb-empty{
+  padding:24px 12px;font-size:11px;color:var(--ink4);
+  text-align:center;line-height:1.9;
+}
+.wi{
+  padding:8px 12px;border-bottom:1px solid rgba(44,44,52,.6);
+  cursor:pointer;transition:background .1s;
+  display:flex;align-items:flex-start;gap:4px;
+}
 .wi:hover{background:var(--bg3)}
-.wi-de{font-size:11px;font-weight:700;color:var(--ink);direction:ltr;font-family:var(--serif)}
-.wi-fa{font-size:9px;color:var(--ink3);margin-top:1px}
-.wi-lv{font-size:8px;font-weight:700;padding:1px 4px;border-radius:8px;background:var(--abl);color:var(--accent);direction:ltr;display:inline-block;margin-top:2px}
-.wi-x{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:13px;padding:0 0 0 6px;opacity:.5;transition:opacity .1s;flex-shrink:0}
+.wi-info{flex:1;min-width:0}
+.wi-de{
+  font-size:12px;font-weight:600;color:var(--ink);
+  direction:ltr;font-family:var(--serif);line-height:1.2;
+}
+.wi-fa{font-size:9px;color:var(--ink3);margin-top:2px;line-height:1.4}
+.wi-lv{
+  font-size:7px;font-weight:700;padding:1px 5px;
+  border-radius:8px;background:var(--abl);color:var(--accent);
+  direction:ltr;display:inline-block;margin-top:3px;
+  letter-spacing:.5px;
+}
+.wi-x{
+  background:none;border:none;color:var(--ink4);
+  cursor:pointer;font-size:14px;padding:0;
+  opacity:.4;transition:all .1s;flex-shrink:0;margin-top:1px;
+  line-height:1;
+}
 .wi-x:hover{opacity:1;color:#e05252}
 
-/* tooltip */
+/* ── Tooltip ── */
 #tt{
-  position:fixed;z-index:998;width:290px;
-  background:var(--card);border:1px solid var(--border);border-radius:14px;
-  box-shadow:0 16px 48px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.3);
+  position:fixed;z-index:990;width:300px;
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:16px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.03),
+    0 8px 24px rgba(0,0,0,.4),
+    0 24px 64px rgba(0,0,0,.5);
   display:none;overflow:hidden;direction:rtl;
-  animation:ttFade .13s ease;
+  animation:ttPop .14s cubic-bezier(.34,1.56,.64,1);
 }
-@keyframes ttFade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-#tt-top{
-  padding:12px 12px 9px;border-bottom:1px solid var(--border);
-  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+@keyframes ttPop{
+  from{opacity:0;transform:translateY(6px) scale(.97)}
+  to{opacity:1;transform:none}
 }
-#tt-w{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--ink);direction:ltr;line-height:1.1}
-#tt-m{font-size:9px;color:var(--ink3);direction:ltr;margin-top:3px}
-#tt-x{
-  background:var(--bg3);border:none;color:var(--ink3);
-  width:22px;height:22px;border-radius:6px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:13px;
-  flex-shrink:0;transition:all .1s;
-}
-#tt-x:hover{background:var(--border);color:var(--ink)}
-#tt-bd{padding:11px 12px 12px}
-#tt-spin{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3);padding:6px 0}
-.sp{width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-#tt-err{font-size:11px;color:#e05252;padding:4px 0}
-#tt-fa{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:7px;line-height:1.4}
-#tt-gram{font-size:10px;color:var(--ink2);line-height:1.6;margin-bottom:8px;padding:7px 9px;background:var(--bg3);border-radius:7px}
-#tt-ex{font-size:10px;color:var(--ink2);padding:7px 9px;background:var(--bg2);border-radius:7px;margin-bottom:9px;direction:ltr;font-style:italic;line-height:1.7;border-right:2px solid var(--border)}
-#tt-ex-fa{direction:rtl;font-style:normal;font-size:9px;color:var(--ink3);margin-top:3px}
-#tt-btn{
-  width:100%;padding:9px;background:var(--accent);color:#fff;
-  border:none;border-radius:var(--r2);font-size:12px;font-weight:700;
-  cursor:pointer;font-family:var(--sans);transition:all .15s;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-}
-#tt-btn:hover{background:#1530cc}
-#tt-btn.done{background:var(--ok)}
 
-/* toast */
+#tt-head{
+  padding:14px 14px 11px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+  background:linear-gradient(180deg,rgba(26,58,242,.05),transparent);
+}
+#tt-w{
+  font-family:var(--serif);font-size:24px;font-weight:500;
+  color:var(--ink);direction:ltr;line-height:1.1;letter-spacing:-.3px;
+}
+#tt-m{font-size:9px;color:var(--ink3);direction:ltr;margin-top:4px;letter-spacing:.5px}
+#tt-x{
+  width:24px;height:24px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:7px;cursor:pointer;color:var(--ink3);
+  font-size:14px;transition:all .1s;
+}
+#tt-x:hover{background:var(--bg4);color:var(--ink)}
+
+#tt-bd{padding:12px 14px 14px}
+
+#tt-spin{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;color:var(--ink3);padding:6px 0;
+}
+.sp{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--border2);
+  border-top-color:var(--accent);
+  animation:spin .7s linear infinite;flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#tt-err{
+  font-size:11px;color:#e06060;padding:4px 0;
+  display:flex;align-items:center;gap:6px;
+}
+
+#tt-fa{
+  font-size:16px;font-weight:600;color:var(--ink);
+  margin-bottom:9px;line-height:1.4;
+}
+#tt-gram{
+  font-size:10px;color:var(--ink2);line-height:1.65;
+  margin-bottom:9px;padding:8px 10px;
+  background:var(--bg3);border-radius:8px;
+  border-right:2px solid var(--border2);
+}
+#tt-ex{
+  font-size:10px;color:var(--ink2);
+  padding:8px 10px;background:var(--bg2);
+  border-radius:8px;margin-bottom:11px;
+  direction:ltr;font-style:italic;line-height:1.75;
+  font-family:var(--serif);font-size:12px;
+  border-right:2px solid rgba(26,58,242,.25);
+}
+#tt-ex-fa{
+  direction:rtl;font-style:normal;
+  font-size:9px;color:var(--ink3);
+  margin-top:5px;font-family:var(--sans);
+}
+#tt-btn{
+  width:100%;height:36px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--accent);color:#fff;border:none;
+  border-radius:9px;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:var(--sans);
+  transition:all .14s;letter-spacing:.1px;
+  position:relative;overflow:hidden;
+}
+#tt-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);
+  pointer-events:none;
+}
+#tt-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+#tt-btn:active{transform:translateY(0)}
+#tt-btn.done{background:var(--ok)}
+#tt-btn.done:hover{background:#2f7d43}
+
+/* ── Toast ── */
 #toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(0);
-  background:var(--card);border:1px solid var(--border);border-radius:20px;
-  padding:7px 16px;font-size:11px;font-weight:600;color:var(--ink);
-  box-shadow:0 6px 20px rgba(0,0,0,.4);display:none;z-index:1001;
-  white-space:nowrap;animation:toastA .18s ease;
+  position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%) translateY(0);
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:22px;padding:7px 18px;
+  font-size:11px;font-weight:600;color:var(--ink);
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  display:none;z-index:1000;white-space:nowrap;
+  animation:toastA .18s ease;pointer-events:none;
 }
 @keyframes toastA{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
-/* progress */
-#prog{position:fixed;top:0;left:0;height:2px;background:var(--accent);transition:width .25s;z-index:999;width:0;pointer-events:none}
-
-/* back button */
+/* ── Back button ── */
 #back{
-  position:fixed;bottom:18px;right:18px;background:var(--bg2);
-  border:1px solid var(--border);border-radius:20px;padding:7px 13px;
-  font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;
-  font-family:var(--sans);display:none;align-items:center;gap:5px;
+  position:fixed;bottom:18px;right:18px;
+  background:rgba(20,20,22,.9);backdrop-filter:blur(8px);
+  border:1px solid var(--border2);border-radius:20px;
+  padding:7px 14px;font-size:10px;font-weight:600;
+  color:var(--ink3);cursor:pointer;font-family:var(--sans);
+  display:none;align-items:center;gap:5px;
   transition:all .13s;z-index:50;text-decoration:none;
+  letter-spacing:.2px;
 }
-#back:hover{background:var(--border);color:var(--ink)}
+#back:hover{background:var(--bg3);color:var(--ink);border-color:var(--border2)}
 
 /* scrollbar */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+
+/* ── Responsive ── */
+@media(max-width:640px){
+  #sb{width:160px}
+  #tt{width:270px}
+}
 </style>
 </head>
 <body>
 <div id="prog"></div>
 
 <div id="app">
+
+  <!-- Topbar -->
   <div id="topbar">
-    <div id="logo">W<span>.</span></div>
+    <div id="logo">Wortschatz<span class="dot">.</span></div>
+
+    <div class="tb-sep"></div>
 
     <div id="nav">
       <button class="nav-btn" id="btn-p" onclick="goPage(-1)" disabled>
-        <svg width="9" height="9" viewBox="0 0 9 9"><path d="M5.5 1.5L3 4.5l2.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        <svg width="8" height="10" viewBox="0 0 8 10"><path d="M5 1L2 5l3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
       </button>
-      <span id="page-info">۱ / ۱</span>
+      <span id="page-info">— / —</span>
       <button class="nav-btn" id="btn-n" onclick="goPage(1)" disabled>
-        <svg width="9" height="9" viewBox="0 0 9 9"><path d="M3.5 1.5L6 4.5l-2.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        <svg width="8" height="10" viewBox="0 0 8 10"><path d="M3 1l3 4-3 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
       </button>
     </div>
 
-    <div id="doc-title">Wortschatz Reader</div>
+    <span id="doc-title">Reader</span>
 
     <div id="zoom-wrap">
-      <button class="tb-btn" onclick="zoom(-0.15)">−</button>
+      <button class="tb" onclick="zoom(-0.15)" style="width:28px;padding:0;justify-content:center;font-size:16px;font-weight:300">−</button>
       <span id="zoom-val">100%</span>
-      <button class="tb-btn" onclick="zoom(0.15)">+</button>
+      <button class="tb" onclick="zoom(0.15)" style="width:28px;padding:0;justify-content:center;font-size:16px;font-weight:300">+</button>
     </div>
 
-    <button class="tb-btn" onclick="Q('file-inp').click()">📂 PDF</button>
-    <button class="tb-btn accent" id="btn-save" onclick="saveAll()" style="display:none">✓ ذخیره همه (0)</button>
+    <div class="tb-sep"></div>
+
+    <button class="tb" onclick="Q('file-inp').click()">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 9V3a1 1 0 011-1h3.5L9 4.5V9a1 1 0 01-1 1H3a1 1 0 01-1-1z" stroke="currentColor" stroke-width="1.3"/><path d="M6 2v2.5h2.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      باز کردن
+    </button>
+
+    <button class="tb blue" id="btn-save" onclick="saveAll()" style="display:none">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="save-label">ذخیره (0)</span>
+    </button>
+
     <input type="file" id="file-inp" accept=".pdf" style="display:none" onchange="loadFile(this.files[0])">
   </div>
 
+  <!-- Body -->
   <div id="body">
+
+    <!-- Canvas area -->
     <div id="area">
       <div id="drop-ov">
-        <div style="font-size:44px">📄</div>
+        <span class="drop-icon">📄</span>
         <h2>PDF رو اینجا رها کن</h2>
-        <p>فایل PDF کتاب آلمانی</p>
+        <p>فایل کتاب آلمانی</p>
       </div>
 
+      <!-- Welcome -->
       <div id="welcome">
-        <div id="welcome-logo">Wort<span>schatz</span></div>
-        <div>
-          <h2>کتاب‌خوان هوشمند</h2>
-          <p>روی هر کلمه آلمانی کلیک کن — معنی فارسی فوری بگیر و به فلش‌کارت‌هات اضافه‌اش کن</p>
+        <div class="welcome-logo">Wort<em>schatz</em></div>
+        <div class="welcome-tagline">
+          کتاب آلمانیت رو باز کن<br>
+          روی هر کلمه کلیک کن — <strong>معنی فارسی</strong> بگیر<br>
+          و مستقیم به فلش‌کارت‌هات اضافه‌اش کن
         </div>
+
         <div id="drop-zone" onclick="Q('file-inp').click()">
-          <div id="drop-zone-icon">📚</div>
-          <h3>بارگذاری PDF کتاب آلمانی</h3>
-          <p>کلیک کن یا فایل رو اینجا بکش و رها کن</p>
+          <span class="dz-icon">📚</span>
+          <div class="dz-title">بارگذاری PDF</div>
+          <div class="dz-sub">کلیک کن یا فایل رو اینجا بکش و رها کن</div>
+          <button class="dz-btn" onclick="event.stopPropagation();Q('file-inp').click()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3-4 3 4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 10h10" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+            انتخاب فایل
+          </button>
         </div>
-        <div>
-          <div class="chips-label">یا یه متن نمونه امتحان کن</div>
-          <div class="chips" style="margin-top:6px">
+
+        <div class="sample-section">
+          <div class="sample-label">یا یه متن نمونه</div>
+          <div class="sample-grid">
             <button class="chip" onclick="loadSample('a1')">📗 A1</button>
             <button class="chip" onclick="loadSample('a2')">📘 A2</button>
             <button class="chip" onclick="loadSample('b1')">📙 B1</button>
@@ -275,21 +526,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--san
       </div>
     </div>
 
+    <!-- Sidebar -->
     <div id="sb">
       <div id="sb-head">
         <h3>لغات ذخیره‌شده</h3>
-        <span id="sb-cnt">۰</span>
+        <span id="sb-cnt">0</span>
       </div>
       <div id="sb-list">
-        <div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.5">روی هر کلمه آلمانی کلیک کن</span></div>
+        <div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.4">روی هر کلمه کلیک کن</span></div>
       </div>
     </div>
+
   </div>
 </div>
 
 <!-- Tooltip -->
 <div id="tt">
-  <div id="tt-top">
+  <div id="tt-head">
     <div>
       <div id="tt-w"></div>
       <div id="tt-m"></div>
@@ -298,7 +551,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--san
   </div>
   <div id="tt-bd">
     <div id="tt-spin" style="display:none"><div class="sp"></div>در حال جستجو…</div>
-    <div id="tt-err" style="display:none">لغت پیدا نشد — دوباره امتحان کن</div>
+    <div id="tt-err" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#e06060" stroke-width="1.3"/><path d="M6 3.5v3M6 8h.01" stroke="#e06060" stroke-width="1.3" stroke-linecap="round"/></svg>
+      لغت پیدا نشد
+    </div>
     <div id="tt-fa" style="display:none"></div>
     <div id="tt-gram" style="display:none"></div>
     <div id="tt-ex" style="display:none"></div>
@@ -307,19 +563,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--san
 </div>
 
 <div id="toast"></div>
-
-<a id="back" href="/">← بازگشت به Wortschatz</a>
+<a id="back" href="/">
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M6 2L3 5l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  بازگشت
+</a>
 
 <script>
-/* roundRect polyfill */
-if(!CanvasRenderingContext2D.prototype.roundRect){
-  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
-    this.moveTo(x+r,y);this.lineTo(x+w-r,y);this.arcTo(x+w,y,x+w,y+r,r);
-    this.lineTo(x+w,y+h-r);this.arcTo(x+w,y+h,x+w-r,y+h,r);
-    this.lineTo(x+r,y+h);this.arcTo(x,y+h,x,y+h-r,r);
-    this.lineTo(x,y+r);this.arcTo(x,y,x+r,y,r);this.closePath();return this;
-  };
-}
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 function Q(id){return document.getElementById(id)}
@@ -327,9 +576,11 @@ function Q(id){return document.getElementById(id)}
 /* ── State ── */
 var pdfDoc=null,scale=1.8,totalPages=0,curPage=1;
 var saved=[],savedSet=new Set();
-var curWord=null,curData=null,activeSpan=null;
+var curWord=null,curData=null;
 var searching=false,isSample=false,curSample=null;
+var pageTextItems={};
 var mc=document.createElement('canvas').getContext('2d');
+var currentHighlight=null;
 
 /* sync existing ws words */
 try{
@@ -352,7 +603,7 @@ area.addEventListener('drop',function(e){
 /* ── Load PDF ── */
 function loadFile(file){
   if(!file)return;
-  isSample=false;curSample=null;
+  isSample=false;curSample=null;pageTextItems={};
   prog(10);
   var fr=new FileReader();
   fr.onload=function(e){
@@ -372,7 +623,7 @@ function renderAll(){
   function next(n){
     if(n>totalPages){prog(100);setTimeout(function(){prog(0);},700);return;}
     pdfDoc.getPage(n).then(function(page){
-      var areaW=area.clientWidth-40;
+      var areaW=area.clientWidth-48;
       var vp0=page.getViewport({scale:1});
       var s=Math.min(scale,areaW/vp0.width);
       var vp=page.getViewport({scale:s});
@@ -389,7 +640,6 @@ function renderAll(){
       var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
       wrap.appendChild(canvas);
 
-      /* highlight canvas */
       var hlCanvas=document.createElement('canvas');
       hlCanvas.className='hl-canvas';
       hlCanvas.style.cssText='position:absolute;top:0;left:0;pointer-events:none;width:'+vp.width+'px;height:'+vp.height+'px;';
@@ -416,52 +666,38 @@ function renderAll(){
   updateNav();updateZoom();
 }
 
-/* ── Build Text Layer ── */
-/* ── Store text items per page ── */
-var pageTextItems={};  /* pageNum → {items, vp} */
-
+/* ── Store text items ── */
 function storeTextItems(tc,vp,wrap,pageNum){
   pageTextItems[pageNum]={items:tc.items,vp:vp};
-  /* attach click به canvas */
   var canvas=wrap.querySelector('canvas:not(.hl-canvas)');
   if(!canvas)return;
   ;(function(pn,w){
     canvas.addEventListener('click',function(e){
       var r=canvas.getBoundingClientRect();
-      var x=e.clientX-r.left;
-      var y=e.clientY-r.top;
-      hitTest(x,y,pn,w,e);
+      hitTest(e.clientX-r.left,e.clientY-r.top,pn,w,e);
     });
   })(pageNum,wrap);
-  /* highlight کلمات done از savedSet */
   setTimeout(function(){reHighlightPage(pageNum,wrap);},50);
 }
 
-/* ── Hit Test — پیدا کردن کلمه در (x,y) ── */
+/* ── Hit Test ── */
 function hitTest(x,y,pageNum,wrap,evt){
-  var pd=pageTextItems[pageNum];
-  if(!pd)return;
+  var pd=pageTextItems[pageNum];if(!pd)return;
   var vp=pd.vp,items=pd.items;
-
   var best=null,bestDist=999;
 
   for(var i=0;i<items.length;i++){
     var item=items[i];
     if(!item.str||!item.str.trim())continue;
-
     var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
     var fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
     if(fs<3)continue;
-
-    /* موقعیت item در viewport */
     var left=tx[4];
     var top=vp.height-tx[5]-fs*1.3;
-    var itemW=Math.max((item.width||0)*vp.scale, fs*0.5);
+    var itemW=Math.max((item.width||0)*vp.scale,fs*0.5);
     var itemH=fs*1.7;
-
     var tol=5;
-    if(x>=left-tol && x<=left+itemW+tol && y>=top-tol && y<=top+itemH+tol){
-      /* پیدا کردن کدوم کلمه دقیقاً */
+    if(x>=left-tol&&x<=left+itemW+tol&&y>=top-tol&&y<=top+itemH+tol){
       var word=findWordAt(item,tx,fs,x-left,vp.scale);
       if(word&&word.text.length>=2){
         var dist=Math.abs((top+itemH/2)-y)+Math.abs((left+itemW/2)-x)*0.3;
@@ -472,63 +708,50 @@ function hitTest(x,y,pageNum,wrap,evt){
       }
     }
   }
-
-  if(best){
-    highlightWord(best);
-    onWordHit(best.word.text,best,evt);
-  }
+  if(best){highlightWord(best);onWordHit(best.word.text,best,evt);}
 }
 
-/* ── پیدا کردن کلمه دقیق در offsetX ── */
+/* ── Find Word At X ── */
 function findWordAt(item,tx,fs,offsetX,scale){
   var str=item.str;
   var pdfW=(item.width||0)*scale;
   mc.font=fs+'px sans-serif';
   var mW=mc.measureText(str).width||1;
   var ratio=pdfW>0?pdfW/mW:1;
-
   var toks=tokenize(str);
   var cx=0;
   for(var i=0;i<toks.length;i++){
     var tok=toks[i];
     var tw=mc.measureText(tok.t).width*ratio;
     if(tok.w&&tok.c.length>=2){
-      if(offsetX>=cx-2&&offsetX<=cx+tw+2){
-        return {text:tok.c,offsetX:cx,width:tw};
-      }
+      if(offsetX>=cx-2&&offsetX<=cx+tw+2)return{text:tok.c,offsetX:cx,width:tw};
     }
     cx+=tw;
   }
-  /* fallback: کلمه اول */
-  var firstWord=toks.find(function(t){return t.w&&t.c.length>=2;});
-  if(firstWord)return {text:firstWord.c,offsetX:0,width:mc.measureText(firstWord.t).width*ratio};
+  var fw=toks.find(function(t){return t.w&&t.c.length>=2;});
+  if(fw)return{text:fw.c,offsetX:0,width:mc.measureText(fw.t).width*ratio};
   return null;
 }
 
-/* ── Highlight روی canvas ── */
-var currentHighlight=null;
-
+/* ── Highlight ── */
 function highlightWord(best){
-  /* پاک کردن highlight قبلی */
   clearHighlights();
   currentHighlight=best;
-
-  var hlCanvas=best.wrap.querySelector('.hl-canvas');
-  if(!hlCanvas)return;
+  var hlCanvas=best.wrap.querySelector('.hl-canvas');if(!hlCanvas)return;
   var dpr=Math.min(window.devicePixelRatio||1,2);
   var ctx=hlCanvas.getContext('2d');
   ctx.clearRect(0,0,hlCanvas.width,hlCanvas.height);
   ctx.save();ctx.scale(dpr,dpr);
-
   var l=best.left+(best.word.offsetX||0);
   var t=best.top;
   var w=best.word.width||60;
   var h=best.itemH;
-
-  ctx.fillStyle='rgba(26,58,242,.22)';
-  ctx.strokeStyle='rgba(26,58,242,.5)';
+  /* outer glow */
+  ctx.shadowColor='rgba(26,58,242,.3)';ctx.shadowBlur=8;
+  ctx.fillStyle='rgba(26,58,242,.2)';
+  ctx.strokeStyle='rgba(26,58,242,.55)';
   ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.roundRect(l-1,t,w+2,h,2);
+  ctx.beginPath();if(ctx.roundRect)ctx.roundRect(l-1,t,w+2,h,2);else ctx.rect(l-1,t,w+2,h);
   ctx.fill();ctx.stroke();
   ctx.restore();
 }
@@ -536,7 +759,6 @@ function highlightWord(best){
 function clearHighlights(){
   document.querySelectorAll('.hl-canvas').forEach(function(c){
     c.getContext('2d').clearRect(0,0,c.width,c.height);
-    /* re-draw added words */
     var pg=parseInt(c.closest('.pw').dataset.page||0);
     if(pg)reHighlightPage(pg,c.closest('.pw'));
   });
@@ -550,7 +772,7 @@ function reHighlightPage(pageNum,wrap){
   var ctx=hlCanvas.getContext('2d');
   var vp=pd.vp;
   ctx.save();ctx.scale(dpr,dpr);
-  ctx.fillStyle='rgba(42,110,53,.18)';
+  ctx.fillStyle='rgba(40,104,58,.18)';
   pd.items.forEach(function(item){
     if(!item.str)return;
     var toks=tokenize(item.str);
@@ -558,19 +780,15 @@ function reHighlightPage(pageNum,wrap){
       if(!tok.w||tok.c.length<2)return;
       if(!savedSet.has(tok.c.toLowerCase()))return;
       var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
-      var fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
-      if(fs<3)return;
+      var fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);if(fs<3)return;
       mc.font=fs+'px sans-serif';
       var pW=(item.width||0)*vp.scale;
       var mW=mc.measureText(item.str).width||1;
       var ratio=pW>0?pW/mW:1;
-      /* موقعیت کلمه */
       var ox=0;
       toks.forEach(function(t2){
         var tw=mc.measureText(t2.t).width*ratio;
-        if(t2===tok){
-          ctx.fillRect(tx[4]+ox-1,vp.height-tx[5]-fs*1.3,tw+2,fs*1.7);
-        }
+        if(t2===tok)ctx.fillRect(tx[4]+ox-1,vp.height-tx[5]-fs*1.3,tw+2,fs*1.7);
         ox+=tw;
       });
     });
@@ -578,25 +796,18 @@ function reHighlightPage(pageNum,wrap){
   ctx.restore();
 }
 
-
-/* ── Click Handler ── */
+/* ── Word Click ── */
 function onWordHit(word,best,e){
-  /* toggle: کلیک دوم روی همان کلمه → بستن */
   if(curWord===word&&Q('tt').style.display==='block'){closeTT();return;}
   curWord=word;curData=null;
-  showLoading(word,e);
-  doSearch(word);
+  showLoading(word,e);doSearch(word);
 }
-
-/* backward compat برای sample texts */
 function onClick(word,span,e){
   if(curWord===word&&Q('tt').style.display==='block'){closeTT();return;}
-  /* highlight برای sample */
   document.querySelectorAll('.gw.sel').forEach(function(s){s.classList.remove('sel');});
   span.classList.add('sel');
   curWord=word;curData=null;
-  showLoading(word,e);
-  doSearch(word);
+  showLoading(word,e);doSearch(word);
 }
 
 /* ── Tooltip ── */
@@ -605,21 +816,17 @@ function showLoading(word,e){
   show('tt-spin');hide('tt-err');hide('tt-fa');hide('tt-gram');hide('tt-ex');hide('tt-btn');
   Q('tt').style.display='block';posTT(e.clientX,e.clientY);
 }
-
 function posTT(cx,cy){
-  var w=290,h=200;
-  var left=cx+14;var top=cy-h-14;
-  if(left+w>window.innerWidth-10)left=cx-w-14;
-  if(top<56)top=cy+16;
+  var w=300,h=220;
+  var left=cx+16;var top=cy-h-16;
+  if(left+w>window.innerWidth-10)left=cx-w-16;
+  if(top<54)top=cy+16;
   if(top+h>window.innerHeight-16)top=window.innerHeight-h-16;
-  Q('tt').style.left=Math.max(6,left)+'px';Q('tt').style.top=Math.max(56,top)+'px';
+  Q('tt').style.left=Math.max(6,left)+'px';Q('tt').style.top=Math.max(54,top)+'px';
 }
-
 function closeTT(){
   Q('tt').style.display='none';
-  /* clear highlights */
   clearHighlights();
-  /* clear sample selection */
   document.querySelectorAll('.gw.sel').forEach(function(s){s.classList.remove('sel');});
   curWord=null;curData=null;
 }
@@ -667,9 +874,8 @@ function fillTT(d,word){
   var isAdded=savedSet.has(w.toLowerCase());
   var btn=Q('tt-btn');
   btn.textContent=isAdded?'✓ اضافه شد':'+ افزودن به فلش‌کارت';
-  btn.style.background=isAdded?'var(--ok)':'var(--accent)';
+  btn.style.background='';
   btn.className=isAdded?'done':'';
-  btn.style.cssText='width:100%;padding:9px;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:5px;background:'+(isAdded?'var(--ok)':'var(--accent)');
   btn.onclick=addWord;
   show('tt-btn');
 }
@@ -681,25 +887,16 @@ function addWord(){
   if(savedSet.has(word.toLowerCase()))return;
   savedSet.add(word.toLowerCase());
   saved.push({de:word,fa:curData.meaning_fa||'',level:curData.level||'',article:curData.article||''});
-
-  /* highlight sample spans */
   document.querySelectorAll('.gw').forEach(function(s){
     if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.add('done');
   });
-  /* highlight در PDF canvas ها */
   Object.keys(pageTextItems).forEach(function(pg){
     var wrap=document.querySelector('[data-page="'+pg+'"]');
     if(wrap)reHighlightPage(parseInt(pg),wrap);
   });
-
-  addToSidebar(word,curData);
-  syncLS(word,curData);
-
-  var btn=Q('tt-btn');
-  btn.textContent='✓ اضافه شد';btn.style.background='var(--ok)';
-
-  updateSaveBtn();
-  toast('✓ «'+word+'» ذخیره شد');
+  addToSidebar(word,curData);syncLS(word,curData);
+  var btn=Q('tt-btn');btn.textContent='✓ اضافه شد';btn.className='done';
+  updateSaveBtn();toast('✓ «'+word+'» ذخیره شد');
   setTimeout(closeTT,600);
 }
 
@@ -720,7 +917,7 @@ function addToSidebar(word,d){
   var list=Q('sb-list');
   var empty=Q('sb-empty');if(empty)empty.remove();
   var item=document.createElement('div');item.className='wi';
-  item.innerHTML='<div style="flex:1">'
+  item.innerHTML='<div class="wi-info">'
     +'<div class="wi-de">'+word+'</div>'
     +(d.meaning_fa?'<div class="wi-fa">'+d.meaning_fa+'</div>':'')
     +(d.level?'<span class="wi-lv">'+d.level+'</span>':'')
@@ -728,7 +925,6 @@ function addToSidebar(word,d){
   list.insertBefore(item,list.firstChild);
   Q('sb-cnt').textContent=saved.length;
 }
-
 function removeWord(btn,word){
   savedSet.delete(word.toLowerCase());
   saved=saved.filter(function(w){return w.de.toLowerCase()!==word.toLowerCase();});
@@ -736,7 +932,6 @@ function removeWord(btn,word){
   document.querySelectorAll('.gw').forEach(function(s){
     if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.remove('done');
   });
-  /* re-highlight همه صفحات بدون این کلمه */
   Object.keys(pageTextItems).forEach(function(pg){
     var wrap=document.querySelector('[data-page="'+pg+'"]');
     if(wrap){
@@ -746,19 +941,17 @@ function removeWord(btn,word){
     }
   });
   if(saved.length===0){
-    Q('sb-list').innerHTML='<div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.5">روی هر کلمه آلمانی کلیک کن</span></div>';
+    Q('sb-list').innerHTML='<div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.4">روی هر کلمه کلیک کن</span></div>';
     Q('btn-save').style.display='none';
   }
-  Q('sb-cnt').textContent=saved.length;
-  updateSaveBtn();
+  Q('sb-cnt').textContent=saved.length;updateSaveBtn();
 }
-
 function updateSaveBtn(){
-  var btn=Q('btn-save');
-  if(saved.length>0){btn.style.display='';btn.textContent='✓ ذخیره همه ('+saved.length+')';}
-  else btn.style.display='none';
+  if(saved.length>0){
+    Q('btn-save').style.display='';
+    Q('save-label').textContent='ذخیره ('+saved.length+')';
+  }else Q('btn-save').style.display='none';
 }
-
 function saveAll(){
   if(saved.length===0)return;
   toast('✓ '+saved.length+' لغت در Wortschatz موجوده');
@@ -770,14 +963,12 @@ function updateNav(){
   Q('page-info').textContent=curPage+' / '+totalPages;
   Q('btn-p').disabled=curPage<=1;Q('btn-n').disabled=curPage>=totalPages;
 }
-
 function goPage(dir){
   var n=curPage+dir;if(n<1||n>totalPages)return;
   curPage=n;updateNav();closeTT();
   var t=document.querySelector('[data-page="'+n+'"]');
   if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
 }
-
 area.addEventListener('scroll',function(){
   var pages=document.querySelectorAll('.pw[data-page]');
   var aTop=area.getBoundingClientRect().top;
@@ -794,38 +985,25 @@ function zoom(d){
 function updateZoom(){Q('zoom-val').textContent=Math.round(scale/1.8*100)+'%';}
 
 /* ── Helpers ── */
-function getGerman(str){
-  var m=str.match(/[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]{2,}(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*/);
-  return m?m[0]:null;
-}
 function tokenize(str){
   var re=/([a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*)|([^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)/g,m,r=[];
-  while((m=re.exec(str))!==null){
-    var t=m[0]||'',c=m[1]||'';
-    r.push({t:t,c:c,w:!!(c&&c.length>=2)});
-  }
+  while((m=re.exec(str))!==null){var t=m[0]||'',c=m[1]||'';r.push({t:t,c:c,w:!!(c&&c.length>=2)});}
   return r;
 }
 function show(id){var el=Q(id);if(el)el.style.display='';}
 function hide(id){var el=Q(id);if(el)el.style.display='none';}
 function prog(p){Q('prog').style.width=p+'%';}
-function setTitle(t){Q('doc-title').textContent=t.length>42?t.slice(0,40)+'…':t;}
-function showReader(){
-  Q('welcome').style.display='none';
-  Q('back').style.display='flex';
-}
+function setTitle(t){Q('doc-title').textContent=t.length>40?t.slice(0,38)+'…':t;}
+function showReader(){Q('welcome').style.display='none';Q('back').style.display='flex';}
 function toast(msg){
   var el=Q('toast');el.textContent=msg;el.style.display='block';
   clearTimeout(el._t);el._t=setTimeout(function(){el.style.display='none';},2200);
 }
-
 document.addEventListener('click',function(e){
-  if(Q('tt').style.display==='block'&&!Q('tt').contains(e.target)){
-    closeTT();
-  }
+  if(Q('tt').style.display==='block'&&!Q('tt').contains(e.target)){closeTT();}
 });
 
-/* ── Sample Texts ── */
+/* ── Samples ── */
 var SAMPLES={
   a1:{title:'Alltag auf Deutsch — A1',pages:[
     'Mein Name ist Anna. Ich bin 25 Jahre alt und komme aus Iran. Ich wohne jetzt in Berlin. Berlin ist eine große und schöne Stadt. Ich lerne Deutsch, weil ich hier arbeiten möchte.\n\nJeden Morgen stehe ich um sieben Uhr auf. Dann trinke ich Kaffee und esse Brot mit Butter. Meine Lehrerin heißt Frau Müller. Sie ist sehr nett und erklärt alles gut.\n\nNach der Schule kaufe ich im Supermarkt ein. Ich brauche Milch, Eier und Gemüse.',
@@ -848,63 +1026,52 @@ var SAMPLES={
     'Am nächsten Morgen gingen sie alle zusammen tief in den Wald. Hänsel ließ heimlich die weißen Steine fallen, einen nach dem anderen.\n\nDie Kinder fanden den Weg nach Hause zurück. Da sahen sie ein wunderbares kleines Haus aus Brot und Kuchen und Zucker.'
   ]}
 };
-
 function loadSample(key){
   var s=SAMPLES[key];if(!s)return;
-  isSample=true;curSample=s;pdfDoc=null;
+  isSample=true;curSample=s;pdfDoc=null;pageTextItems={};
   saved=[];savedSet=new Set();
-  Q('sb-list').innerHTML='<div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.5">روی هر کلمه آلمانی کلیک کن</span></div>';
-  Q('sb-cnt').textContent='۰';
-  Q('btn-save').style.display='none';
+  Q('sb-list').innerHTML='<div id="sb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.4">روی هر کلمه کلیک کن</span></div>';
+  Q('sb-cnt').textContent='0';Q('btn-save').style.display='none';
   setTitle(s.title);totalPages=s.pages.length;curPage=1;
   showReader();renderSample(s);
   Q('nav').style.display='flex';Q('zoom-wrap').style.display='flex';
   updateNav();updateZoom();
   prog(100);setTimeout(function(){prog(0);},500);
 }
-
 function renderSample(s){
   area.innerHTML='';
-  var areaW=area.clientWidth-40;
-  var pageW=Math.min(720,areaW);
-  var fs=Math.round(16*scale/1.5);
-
+  var areaW=area.clientWidth-48;
+  var pageW=Math.min(740,areaW);
+  var fs=Math.round(17*scale/1.8);
   s.pages.forEach(function(text,idx){
     var wrap=document.createElement('div');
     wrap.className='pw';wrap.dataset.page=idx+1;
-    wrap.style.cssText='width:'+pageW+'px;padding:'+(48*scale/1.5)+'px '+(56*scale/1.5)+'px '+(64*scale/1.5)+'px;'
-      +'font-family:\'Playfair Display\',Georgia,serif;font-size:'+fs+'px;line-height:1.9;'
+    wrap.style.cssText='width:'+pageW+'px;padding:'+(52*scale/1.8)+'px '+(64*scale/1.8)+'px '+(72*scale/1.8)+'px;'
+      +'font-family:\'EB Garamond\',Georgia,serif;font-size:'+fs+'px;line-height:1.95;'
       +'color:var(--page-ink);direction:ltr;position:relative;';
-
     var titleEl=document.createElement('div');
-    titleEl.style.cssText='font-size:'+(10*scale/1.5)+'px;font-weight:700;letter-spacing:2px;color:#aaa;'
-      +'text-transform:uppercase;margin-bottom:'+(24*scale/1.5)+'px;font-family:var(--sans)';
+    titleEl.style.cssText='font-size:'+(9*scale/1.8)+'px;font-weight:700;letter-spacing:2px;color:#aaa;'
+      +'text-transform:uppercase;margin-bottom:'+(28*scale/1.8)+'px;font-family:var(--sans)';
     titleEl.textContent=s.title;
     wrap.appendChild(titleEl);
-
     text.split('\n\n').forEach(function(para){
       if(!para.trim())return;
-      var p=document.createElement('p');
-      p.style.marginBottom=(16*scale/1.5)+'px';
+      var p=document.createElement('p');p.style.marginBottom=(18*scale/1.8)+'px';
       para.split(/(\s+)/).forEach(function(w){
         var clean=w.replace(/[^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]/g,'');
         if(clean.length>=2){
           var span=document.createElement('span');
-          span.className='gw';span.dataset.word=clean;span.dataset.pg=idx+1;
+          span.className='gw';span.dataset.word=clean;
           span.textContent=w;
-          span.style.cssText='color:var(--page-ink);cursor:pointer;border-radius:2px;transition:background .08s,outline .08s;padding:0 1px;';
+          span.style.cssText='color:var(--page-ink);';
           if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
-          ;(function(wd,s){s.addEventListener('click',function(e){e.stopPropagation();onClick(wd,s,e);});})(clean,span);
+          ;(function(wd,sp){sp.addEventListener('click',function(e){e.stopPropagation();onClick(wd,sp,e);});})(clean,span);
           p.appendChild(span);
-        } else {
-          p.appendChild(document.createTextNode(w));
-        }
+        }else{p.appendChild(document.createTextNode(w));}
       });
       wrap.appendChild(p);
     });
-
-    var badge=document.createElement('div');
-    badge.className='pg-badge';badge.textContent=idx+1;
+    var badge=document.createElement('div');badge.className='pg-badge';badge.textContent=idx+1;
     wrap.appendChild(badge);
     area.appendChild(wrap);
   });
