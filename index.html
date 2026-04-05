@@ -2507,54 +2507,92 @@ html,body{overflow-x:hidden!important}
 </div>
 
 <!-- PDF Reader Modal (fullscreen) -->
-<div id="pdf-reader-modal" style="
-  display:none;position:fixed;inset:0;z-index:500;
-  background:var(--bg);flex-direction:column;
-  animation:fadeUp .25s var(--ease);
-">
+<div id="pdf-reader-modal" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);flex-direction:column">
+
   <!-- Modal Topbar -->
-  <div style="
-    display:flex;align-items:center;gap:10px;
-    padding:12px 16px;background:var(--card);
-    border-bottom:1px solid var(--bg2);flex-shrink:0;
-  ">
-    <button onclick="closePDFReader()" style="
-      display:flex;align-items:center;gap:6px;
-      background:var(--bg2);border:none;border-radius:var(--r2);
-      padding:6px 12px;font-size:12px;font-weight:600;
-      color:var(--ink2);cursor:pointer;font-family:var(--sans);
-    ">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M7.5 2L3 6l4.5 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+  <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--bg2);flex-shrink:0">
+    <button onclick="closePDFReader()" style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:none;border-radius:var(--r2);padding:6px 11px;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans)">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L3 6l4.5 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       بستن
     </button>
-    <div id="pdf-modal-title" style="font-size:13px;font-weight:600;color:var(--ink);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">کتاب‌خوان آلمانی</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div id="pdf-modal-count" style="display:none;font-size:11px;font-weight:700;background:var(--accent);color:white;border-radius:20px;padding:2px 8px">۰ لغت</div>
-      <button onclick="Q('#pdf-file-input2').click()" style="
-        background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);
-        padding:5px 10px;font-size:11px;font-weight:600;color:var(--ink2);
-        cursor:pointer;font-family:var(--sans);
-      ">
-        📂 بارگذاری PDF
+    <div id="rdr-title" style="font-size:13px;font-weight:600;color:var(--ink);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">کتاب‌خوان آلمانی</div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <div id="rdr-count" style="display:none;font-size:11px;font-weight:700;background:var(--accent);color:white;border-radius:20px;padding:2px 8px">۰ لغت</div>
+      <!-- Page nav -->
+      <button id="rdr-prev" onclick="rdrGoPage(-1)" disabled style="width:28px;height:28px;border-radius:8px;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink2)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L3 6l5 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <input type="file" id="pdf-file-input2" accept=".pdf" style="display:none" onchange="pdfModalLoad(this.files[0])">
+      <span id="rdr-page-info" style="font-size:11px;color:var(--ink3);white-space:nowrap">۱ / ۱</span>
+      <button id="rdr-next" onclick="rdrGoPage(1)" style="width:28px;height:28px;border-radius:8px;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink2)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l5 4-5 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <!-- Zoom -->
+      <button onclick="rdrZoom(-0.2)" style="width:28px;height:28px;border-radius:8px;background:var(--bg2);border:none;cursor:pointer;font-size:14px;font-weight:700;color:var(--ink2)">−</button>
+      <button onclick="rdrZoom(0.2)" style="width:28px;height:28px;border-radius:8px;background:var(--bg2);border:none;cursor:pointer;font-size:14px;font-weight:700;color:var(--ink2)">+</button>
+      <!-- Upload -->
+      <button onclick="Q('#rdr-file-inp').click()" style="background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);padding:5px 10px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans)">
+        📂 PDF
+      </button>
+      <input type="file" id="rdr-file-inp" accept=".pdf" style="display:none" onchange="rdrLoadFile(this.files[0])">
     </div>
   </div>
 
-  <!-- Modal Body: iframe از read.html -->
-  <iframe
-    id="pdf-reader-iframe"
-    src="/read"
-    style="flex:1;border:none;width:100%;background:var(--bg)"
-    allow="fullscreen"
-  ></iframe>
-
-</div>
-  <div id="pt-content">
-    <div class="pt-loading">در حال جستجو...</div>
+  <!-- Upload prompt (نمایش اول) -->
+  <div id="rdr-upload-prompt" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px">
+    <div style="text-align:center">
+      <div style="font-size:44px;margin-bottom:12px">📚</div>
+      <div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px">PDF کتاب آلمانی رو بارگذاری کن</div>
+      <div style="font-size:12px;color:var(--ink3);line-height:1.7">روی هر کلمه کلیک کن — معنی فارسی فوری بگیر<br>و با یه کلیک به فلش‌کارت‌هات اضافه‌اش کن</div>
+    </div>
+    <div id="rdr-dropzone" onclick="Q('#rdr-file-inp').click()" style="width:100%;max-width:340px;border:2px dashed var(--bg3);border-radius:var(--r3);padding:28px;text-align:center;cursor:pointer;transition:all .2s;background:var(--card)">
+      <button style="background:var(--accent);color:white;border:none;border-radius:var(--r2);padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans)">انتخاب فایل PDF</button>
+      <div style="font-size:11px;color:var(--ink4);margin-top:8px">یا فایل رو اینجا بکش و رها کن</div>
+    </div>
+    <!-- Sample texts -->
+    <div style="width:100%;max-width:340px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;margin-bottom:8px">یا یه متن نمونه امتحان کن</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button onclick="rdrLoadSample('a1')" style="background:var(--card);border:1px solid var(--bg3);border-radius:8px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans)">📗 A1</button>
+        <button onclick="rdrLoadSample('a2')" style="background:var(--card);border:1px solid var(--bg3);border-radius:8px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans)">📘 A2</button>
+        <button onclick="rdrLoadSample('b1')" style="background:var(--card);border:1px solid var(--bg3);border-radius:8px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans)">📙 B1</button>
+        <button onclick="rdrLoadSample('b2')" style="background:var(--card);border:1px solid var(--bg3);border-radius:8px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans)">📕 B2</button>
+        <button onclick="rdrLoadSample('grimm')" style="background:var(--card);border:1px solid var(--bg3);border-radius:8px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--sans)">🧙 Grimm</button>
+      </div>
+    </div>
   </div>
+
+  <!-- Reader body -->
+  <div id="rdr-body" style="display:none;flex:1;overflow:hidden;min-height:0;flex-direction:row">
+    <!-- Sidebar -->
+    <div id="rdr-sidebar" style="width:200px;flex-shrink:0;border-right:1px solid var(--bg2);display:flex;flex-direction:column;background:var(--card);overflow:hidden">
+      <div style="padding:10px 12px 6px;border-bottom:1px solid var(--bg2);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;flex-shrink:0">لغات جمع‌آوری‌شده</div>
+      <div id="rdr-words" style="flex:1;overflow-y:auto">
+        <div id="rdr-words-empty" style="padding:16px 12px;font-size:11px;color:var(--ink3);text-align:center;line-height:1.7">روی هر کلمه کلیک کن</div>
+      </div>
+    </div>
+    <!-- Canvas area -->
+    <div id="rdr-canvas-area" style="flex:1;overflow:auto;display:flex;justify-content:center;padding:20px;background:var(--bg2)">
+      <div id="rdr-canvas-wrap" style="position:relative;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.15);border-radius:2px">
+        <canvas id="rdr-canvas"></canvas>
+        <div id="rdr-text-layer" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Word Tooltip -->
+  <div id="rdr-tooltip" style="display:none;position:fixed;z-index:600;background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);width:260px;box-shadow:0 8px 32px rgba(0,0,0,.15);direction:rtl;overflow:hidden">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:12px 12px 8px;border-bottom:1px solid var(--bg2)">
+      <div>
+        <div id="rdr-tt-word" style="font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);direction:ltr"></div>
+        <div id="rdr-tt-meta" style="font-size:10px;color:var(--ink3);direction:ltr;margin-top:1px"></div>
+      </div>
+      <button onclick="rdrCloseTT()" style="background:none;border:none;color:var(--ink3);cursor:pointer;font-size:18px;padding:0;line-height:1">×</button>
+    </div>
+    <div id="rdr-tt-body" style="padding:10px 12px">
+      <div style="font-size:12px;color:var(--ink3);text-align:center;padding:8px 0">در حال جستجو...</div>
+    </div>
+  </div>
+
 </div>
 
 <nav class="bottom-nav">
@@ -3395,37 +3433,353 @@ function syncOnline(){
 /* ══════════════════════════════
    DRAWER
 ══════════════════════════════ */
+// ══════════════════════════════════════
+//  BUILT-IN PDF READER
+// ══════════════════════════════════════
 function openPDFReader(){
-  var modal=Q('#pdf-reader-modal');
-  if(modal){
-    modal.style.display='flex';
-    // Telegram back button
-    if(window.tgApp&&window.tgApp.isTg){
-      window.tgApp.tg.BackButton.show();
-      window.tgApp.tg.BackButton.onClick(closePDFReader);
-    }
-  }
+  var m=Q('#pdf-reader-modal');
+  if(m){m.style.display='flex';}
+  if(window.tgApp&&window.tgApp.isTg){try{window.tgApp.tg.BackButton.show();}catch(e){}}
 }
 function closePDFReader(){
-  var modal=Q('#pdf-reader-modal');
-  if(modal) modal.style.display='none';
-  if(window.tgApp&&window.tgApp.isTg){
-    window.tgApp.tg.BackButton.hide();
-  }
+  var m=Q('#pdf-reader-modal');
+  if(m)m.style.display='none';
+  rdrCloseTT();
+  if(window.tgApp&&window.tgApp.isTg){try{window.tgApp.tg.BackButton.hide();}catch(e){}}
 }
-function pdfModalLoad(file){
-  // فایل رو به iframe بفرست
-  var iframe=Q('#pdf-reader-iframe');
-  if(!iframe) return;
-  // iframe loaded بشه و بعد فایل رو بهش بده
-  if(file){
-    iframe.contentWindow.postMessage({type:'loadPDF',name:file.name},'*');
-    var reader=new FileReader();
-    reader.onload=function(e){
-      iframe.contentWindow.postMessage({type:'pdfData',name:file.name,data:e.target.result},'*');
-    };
-    reader.readAsArrayBuffer(file);
+
+// ── State ──
+var rdrDoc=null,rdrPage=1,rdrTotal=0,rdrScale=1.3;
+var rdrTask=null,rdrAdded=new Set(),rdrCollected=[];
+var rdrTTWord=null,rdrSearching=false,rdrIsSample=false,rdrSamplePages={};
+
+// ── Drag & Drop ──
+(function(){
+  var dz=Q('#rdr-dropzone');
+  if(!dz)return;
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='var(--accent)';});
+  dz.addEventListener('dragleave',function(){dz.style.borderColor='';});
+  dz.addEventListener('drop',function(e){
+    e.preventDefault();dz.style.borderColor='';
+    var f=e.dataTransfer.files[0];
+    if(f&&f.type==='application/pdf')rdrLoadFile(f);
+    else showToast('فقط PDF قبول میشه','warn');
+  });
+})();
+
+// ── Load File ──
+function rdrLoadFile(file){
+  if(!file)return;
+  rdrIsSample=false;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var arr=new Uint8Array(e.target.result);
+    pdfjsLib.getDocument({data:arr}).promise.then(function(doc){
+      rdrDoc=doc;rdrTotal=doc.numPages;rdrPage=1;
+      rdrAdded=new Set();rdrCollected=[];
+      var name=file.name.replace(/\.pdf$/i,'');
+      if(name.length>35)name=name.slice(0,32)+'...';
+      Q('#rdr-title').textContent=name;
+      rdrShowReader();rdrRenderPage(1);
+      showToast('📄 '+file.name+' بارگذاری شد','ok');
+    }).catch(function(){showToast('خطا در بارگذاری PDF','warn');});
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── Show reader ──
+function rdrShowReader(){
+  Q('#rdr-upload-prompt').style.display='none';
+  var b=Q('#rdr-body');b.style.display='flex';b.style.flex='1';b.style.minHeight='0';
+}
+
+// ── Render Page ──
+function rdrRenderPage(num){
+  if(rdrIsSample){rdrRenderSample(num);return;}
+  if(!rdrDoc)return;
+  rdrPage=num;rdrUpdateNav();rdrCloseTT();
+  if(rdrTask){rdrTask.cancel();rdrTask=null;}
+  rdrDoc.getPage(num).then(function(page){
+    var area=Q('#rdr-canvas-area');
+    var maxW=area?area.clientWidth-40:320;
+    var vp0=page.getViewport({scale:1});
+    var s=Math.min(rdrScale,maxW/vp0.width);
+    var vp=page.getViewport({scale:s});
+    var canvas=Q('#rdr-canvas');
+    var ctx=canvas.getContext('2d');
+    canvas.width=vp.width;canvas.height=vp.height;
+    var wrap=Q('#rdr-canvas-wrap');
+    wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
+    rdrTask=page.render({canvasContext:ctx,viewport:vp});
+    rdrTask.promise.then(function(){
+      rdrTask=null;
+      page.getTextContent().then(function(tc){rdrBuildLayer(tc,vp);});
+    }).catch(function(){});
+  });
+}
+
+// ── Text Layer ──
+function rdrBuildLayer(tc,vp){
+  var layer=Q('#rdr-text-layer');
+  layer.innerHTML='';
+  layer.style.width=vp.width+'px';layer.style.height=vp.height+'px';
+  tc.items.forEach(function(item){
+    if(!item.str||!item.str.trim())return;
+    var tx=pdfjsLib.Util.transform(vp.transform,item.transform);
+    var angle=Math.atan2(tx[1],tx[0]);
+    var fontSize=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);
+    var totalW=Math.abs(item.width)*(vp.scale||1);
+    var charW=totalW/(item.str.length||1);
+    var tokens=rdrTokenize(item.str);
+    var offsetX=0;
+    tokens.forEach(function(tok){
+      var tw=tok.text.length*charW;
+      var span=document.createElement('span');
+      span.textContent=tok.text;
+      span.style.cssText='position:absolute;color:transparent;white-space:pre;cursor:pointer;border-radius:1px;transform-origin:0% 0%;transition:background .08s;'
+        +'left:'+(tx[4]+offsetX)+'px;'
+        +'top:'+(vp.height-tx[5]-fontSize)+'px;'
+        +'font-size:'+fontSize+'px;'
+        +'width:'+tw+'px;';
+      if(angle)span.style.transform='rotate('+(-angle)+'rad)';
+      if(tok.isWord){
+        span.dataset.word=tok.clean;
+        if(rdrAdded.has(tok.clean.toLowerCase()))span.style.background='rgba(42,110,53,.15)';
+        span.addEventListener('mouseenter',function(){if(!rdrAdded.has(tok.clean.toLowerCase()))this.style.background='rgba(26,58,242,.15)';});
+        span.addEventListener('mouseleave',function(){if(!rdrAdded.has(tok.clean.toLowerCase())&&!this.classList.contains('rdr-sel'))this.style.background='';});
+        span.addEventListener('click',function(e){e.stopPropagation();rdrWordClick(tok.clean,span,e);});
+      }
+      layer.appendChild(span);
+      offsetX+=tw;
+    });
+  });
+}
+
+function rdrTokenize(str){
+  var tokens=[],re=/([a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+(?:-[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)*)|([^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]+)/g,m;
+  while((m=re.exec(str))!==null){
+    if(m[1]&&m[1].length>=2)tokens.push({text:m[1],clean:m[1],isWord:true});
+    else tokens.push({text:m[0]||'',clean:'',isWord:false});
   }
+  return tokens;
+}
+
+// ── Word Click ──
+function rdrWordClick(word,span,e){
+  if(rdrSearching)return;
+  Q('#rdr-text-layer').querySelectorAll('.rdr-sel').forEach(function(el){el.classList.remove('rdr-sel');el.style.background='';});
+  span.classList.add('rdr-sel');span.style.background='rgba(26,58,242,.25)';
+  rdrTTWord=word;rdrShowTTLoading(word,e);
+  rdrSearchWord(word);
+}
+
+async function rdrSearchWord(word){
+  rdrSearching=true;
+  try{
+    var res=await fetch('/api/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({q:word,lang:targetLang||'de',profile:{lang:'fa',level:'B1',goals:[]}})});
+    var d=await res.json();
+    if(d.error)throw new Error(d.error);
+    rdrSearching=false;
+    if(rdrTTWord)rdrFillTT(d,word);
+  }catch(err){rdrSearching=false;Q('#rdr-tt-body').innerHTML='<div style="font-size:12px;color:var(--err);text-align:center;padding:8px">لغت پیدا نشد</div>';}
+}
+
+// ── Tooltip ──
+function rdrShowTTLoading(word,e){
+  var tt=Q('#rdr-tooltip');
+  Q('#rdr-tt-word').textContent=word;
+  Q('#rdr-tt-meta').textContent='';
+  Q('#rdr-tt-body').innerHTML='<div style="font-size:12px;color:var(--ink3);text-align:center;padding:8px">در حال جستجو...</div>';
+  var x=e.clientX,y=e.clientY;
+  var left=Math.min(x+12,window.innerWidth-272);
+  var top=y-180;if(top<60)top=y+18;
+  tt.style.left=left+'px';tt.style.top=top+'px';
+  tt.style.display='block';
+}
+
+function rdrFillTT(d,orig){
+  var tt=Q('#rdr-tooltip');if(tt.style.display==='none')return;
+  var word=d.word||orig;
+  Q('#rdr-tt-word').textContent=word;
+  Q('#rdr-tt-meta').textContent=[d.article,d.type,d.level].filter(Boolean).join(' · ');
+  var isAdded=rdrAdded.has(word.toLowerCase());
+  var ex=d.examples&&d.examples[0];
+  var safeD=JSON.stringify(d).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  var html='<div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px">'+(d.meaning_fa||'—')+'</div>';
+  if(d.grammar_tip)html+='<div style="font-size:11px;color:var(--ink3);margin-bottom:8px;line-height:1.5">'+d.grammar_tip+'</div>';
+  if(ex)html+='<div style="background:var(--bg2);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--ink2);direction:ltr;font-style:italic;margin-bottom:10px;line-height:1.6">'+ex.de+(ex.fa?'<div style="direction:rtl;font-style:normal;font-size:10px;color:var(--ink3);margin-top:3px">'+ex.fa+'</div>':'')+'</div>';
+  html+='<button id="rdr-add-btn" style="width:100%;padding:9px;background:'+(isAdded?'var(--ok)':'var(--accent)')+';color:white;border:none;border-radius:var(--r2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans)" onclick="rdrAddWord(\''+safeD+'\')">'+(isAdded?'✓ اضافه شد':'+ افزودن به فلش‌کارت')+'</button>';
+  Q('#rdr-tt-body').innerHTML=html;
+}
+
+function rdrCloseTT(){
+  var tt=Q('#rdr-tooltip');if(tt)tt.style.display='none';
+  rdrTTWord=null;rdrSearching=false;
+  if(Q('#rdr-text-layer'))Q('#rdr-text-layer').querySelectorAll('.rdr-sel').forEach(function(el){el.classList.remove('rdr-sel');el.style.background='';});
+}
+
+// ── Add Word ──
+function rdrAddWord(dStr){
+  var d=JSON.parse(dStr);var word=d.word;
+  if(rdrAdded.has(word.toLowerCase()))return;
+  rdrAdded.add(word.toLowerCase());
+  rdrCollected.push({word:word,meaning:d.meaning_fa||'',level:d.level||'',page:rdrPage});
+  var btn=Q('#rdr-add-btn');if(btn){btn.textContent='✓ اضافه شد';btn.style.background='var(--ok)';}
+  // highlight in layer
+  if(Q('#rdr-text-layer'))Q('#rdr-text-layer').querySelectorAll('[data-word]').forEach(function(el){
+    if(el.dataset.word&&el.dataset.word.toLowerCase()===word.toLowerCase())el.style.background='rgba(42,110,53,.15)';
+  });
+  // add to sidebar
+  var list=Q('#rdr-words');
+  var empty=Q('#rdr-words-empty');if(empty)empty.remove();
+  var item=document.createElement('div');
+  item.style.cssText='padding:9px 12px;border-bottom:1px solid var(--bg2)';
+  item.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--ink);direction:ltr;font-family:var(--serif)">'+word+'</div>'
+    +'<div style="font-size:10px;color:var(--ink3);margin-top:1px">'+(d.meaning_fa||'')+'</div>'
+    +(d.level?'<span style="font-size:9px;font-weight:700;padding:2px 5px;border-radius:20px;background:var(--abl);color:var(--accent)">'+d.level+'</span>':'');
+  list.insertBefore(item,list.firstChild);
+  // counter
+  var n=rdrCollected.length;
+  var cnt=Q('#rdr-count');cnt.style.display='block';cnt.textContent=n+' لغت';
+  // add to main app words
+  var nw={de:word,fa:d.meaning_fa||'',ex:(d.examples&&d.examples[0])?d.examples[0].de:'',article:d.article||'',level:d.level||'',score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  words.unshift(nw);
+  if(currentUser)dbAdd(nw).catch(function(){});
+  saveCache();updateBadges();updateStats();
+  showToast('✓ «'+word+'» اضافه شد','ok');
+  setTimeout(rdrCloseTT,500);
+}
+
+// ── Navigation ──
+function rdrGoPage(dir){var n=rdrPage+dir;if(n>=1&&n<=rdrTotal)rdrRenderPage(n);}
+function rdrUpdateNav(){
+  var inf=Q('#rdr-page-info');if(inf)inf.textContent=rdrPage+' / '+rdrTotal;
+  var p=Q('#rdr-prev');if(p)p.disabled=rdrPage<=1;
+  var n=Q('#rdr-next');if(n)n.disabled=rdrPage>=rdrTotal;
+}
+function rdrZoom(delta){rdrScale=Math.max(0.5,Math.min(3,rdrScale+delta));rdrRenderPage(rdrPage);}
+
+// close on outside click
+document.addEventListener('click',function(e){
+  if(Q('#rdr-tooltip')&&Q('#rdr-tooltip').style.display!=='none'){
+    if(!e.target.closest('#rdr-tooltip')&&!e.target.closest('#rdr-text-layer'))rdrCloseTT();
+  }
+});
+
+// ── Sample Texts ──
+var RDR_SAMPLES={
+  a1:{title:'Alltag auf Deutsch — A1',pages:[
+    ['Mein Name ist Anna. Ich bin 25 Jahre alt und komme aus Iran. Ich wohne jetzt in Berlin.',
+     'Berlin ist eine große und schöne Stadt. Ich lerne Deutsch, weil ich hier arbeiten möchte.',
+     'Jeden Morgen stehe ich um sieben Uhr auf. Dann trinke ich Kaffee und esse Brot mit Butter.',
+     'Ich gehe zu Fuß zur Sprachschule. Die Schule ist nicht weit von meiner Wohnung.',
+     'Meine Lehrerin heißt Frau Müller. Sie ist sehr nett und erklärt alles gut.',
+     'Nach der Schule kaufe ich im Supermarkt ein. Ich brauche Milch, Eier und Gemüse.'],
+    ['Das Wetter in Berlin ist oft kalt und regnerisch. Im Winter schneit es manchmal.',
+     'Meine Wohnung hat zwei Zimmer, eine Küche und ein Bad. Sie ist klein aber gemütlich.',
+     'Mein Nachbar heißt Thomas. Er ist Ingenieur und sehr freundlich.',
+     'Am Wochenende gehe ich in den Park. Ich mag die frische Luft und die Natur sehr.']
+  ]},
+  a2:{title:'Familie und Freunde — A2',pages:[
+    ['Meine Familie ist nicht sehr groß. Ich habe eine Schwester und einen Bruder.',
+     'Meine Schwester Sara ist älter als ich. Sie studiert Medizin in München.',
+     'Mein Bruder Ali ist jünger. Er geht noch zur Schule und möchte Informatiker werden.',
+     'Meine Eltern leben in Teheran. Wir telefonieren jeden Sonntag miteinander.',
+     'Mein Vater arbeitet als Lehrer. Er unterrichtet Mathematik an einer Universität.'],
+    ['In Deutschland habe ich auch neue Freunde gefunden. Das ist sehr wichtig für mich.',
+     'Meine beste Freundin heißt Leila. Sie kommt auch aus dem Iran und wohnt in meiner Straße.',
+     'Wir gehen oft zusammen einkaufen oder ins Café. Das macht uns viel Spaß.']
+  ]},
+  b1:{title:'Beruf und Arbeit — B1',pages:[
+    ['Die Arbeit spielt im Leben der Menschen eine zentrale Rolle. Sie gibt uns Struktur und Bedeutung.',
+     'In Deutschland suchen viele Unternehmen qualifizierte Fachkräfte aus dem Ausland.',
+     'Besonders in den Bereichen Ingenieurwesen, Informatik und Pflege fehlen Arbeitskräfte.',
+     'Das Vorstellungsgespräch ist ein wichtiger Schritt bei der Jobsuche.',
+     'Pünktlichkeit und Zuverlässigkeit sind in der deutschen Arbeitskultur besonders wichtig.'],
+    ['Die meisten Arbeitnehmer haben Anspruch auf mindestens 24 Tage Urlaub im Jahr.',
+     'Die Work-Life-Balance hat in Deutschland einen hohen Stellenwert.',
+     'Gewerkschaften spielen eine wichtige Rolle im deutschen Arbeitssystem.']
+  ]},
+  b2:{title:'Gesellschaft und Wandel — B2',pages:[
+    ['Die deutsche Gesellschaft befindet sich im Wandel. Demografische Veränderungen prägen das Bild.',
+     'Menschen aus über 190 Nationen leben heute in Deutschland und bereichern das kulturelle Leben.',
+     'Sprache ist dabei der Schlüssel. Wer Deutsch spricht, kann am gesellschaftlichen Leben teilnehmen.',
+     'Der Klimawandel ist eines der drängendsten Themen unserer Zeit.'],
+    ['Erneuerbare Energien wie Wind und Solar spielen dabei eine entscheidende Rolle.',
+     'Nachhaltigkeit ist kein Luxus, sondern eine Notwendigkeit für kommende Generationen.']
+  ]},
+  grimm:{title:'Hänsel und Gretel — Gebrüder Grimm',pages:[
+    ['Es war einmal ein armer Holzfäller, der lebte mit seiner Frau und seinen zwei Kindern vor einem großen Wald.',
+     'Das Mädchen hieß Gretel und der Junge hieß Hänsel. Sie waren arm, hatten aber immer Freude.',
+     'Hänsel war klug. Er stand leise auf und sammelte im Mondlicht viele kleine weiße Steine.',
+     'Am nächsten Morgen gingen sie alle zusammen in den tiefen dunklen Wald.',
+     'Hänsel ließ heimlich die Steine fallen, einen nach dem anderen auf dem Weg.'],
+    ['Die Kinder fanden den Weg nach Hause und klopften an die Tür.',
+     'Diesmal konnte Hänsel keine Steine sammeln. Er nahm Brotkrumen und streute sie auf den Weg.',
+     'Aber die Vögel des Waldes fraßen alle Krumen auf. Die Kinder waren verloren.',
+     'Da sahen sie ein wunderbares Haus aus Brot und Kuchen und Zucker.']
+  ]}
+};
+
+function rdrLoadSample(key){
+  var s=RDR_SAMPLES[key];if(!s)return;
+  rdrIsSample=true;rdrDoc=null;rdrSamplePages={};
+  s.pages.forEach(function(p,i){rdrSamplePages[i+1]=p;});
+  rdrTotal=s.pages.length;rdrPage=1;rdrAdded=new Set();rdrCollected=[];
+  Q('#rdr-title').textContent=s.title;
+  rdrShowReader();rdrRenderPage(1);
+  showToast('📖 '+s.title,'ok');
+}
+
+function rdrRenderSample(num){
+  rdrPage=num;rdrUpdateNav();rdrCloseTT();
+  var paras=rdrSamplePages[num]||[];
+  var canvas=Q('#rdr-canvas');
+  var layer=Q('#rdr-text-layer');
+  var area=Q('#rdr-canvas-area');
+  var W=Math.min((area?area.clientWidth-40:320),660);
+  var ctx=canvas.getContext('2d');
+  ctx.font='15px Georgia';
+  var lineH=26,margin=36,y=margin,fs=15;
+  // calculate height
+  var allLines=[];
+  paras.forEach(function(para){
+    var words=para.split(/\s+/),line=[],curr='';
+    words.forEach(function(w){var test=(curr?curr+' ':'')+w;if(ctx.measureText(test).width>W-margin*2&&line.length){allLines.push(line);line=[w];curr=w;}else{line.push(w);curr=test;}});
+    if(line.length)allLines.push(line);
+    allLines.push(null);
+  });
+  var H=allLines.length*lineH+60;
+  canvas.width=W;canvas.height=H;
+  var wrap=Q('#rdr-canvas-wrap');wrap.style.width=W+'px';wrap.style.height=H+'px';
+  ctx.fillStyle=document.body.classList.contains('dark')?'#1c1b19':'#fff';
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=document.body.classList.contains('dark')?'#f0ede6':'#1a1916';
+  ctx.font=fs+'px Georgia';
+  layer.innerHTML='';layer.style.width=W+'px';layer.style.height=H+'px';
+  y=margin;
+  allLines.forEach(function(lineWords){
+    if(!lineWords){y+=12;return;}
+    var x=margin;
+    lineWords.forEach(function(word){
+      var w=ctx.measureText(word+' ').width;
+      ctx.fillText(word+' ',x,y+fs);
+      var clean=word.replace(/[^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df-]/g,'');
+      if(clean.length>=2){
+        var span=document.createElement('span');
+        span.style.cssText='position:absolute;color:transparent;cursor:pointer;border-radius:1px;transition:background .08s;'
+          +'left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+lineH+'px;font-size:'+fs+'px;';
+        span.dataset.word=clean;
+        if(rdrAdded.has(clean.toLowerCase()))span.style.background='rgba(42,110,53,.15)';
+        span.addEventListener('mouseenter',function(){if(!rdrAdded.has(clean.toLowerCase()))this.style.background='rgba(26,58,242,.15)';});
+        span.addEventListener('mouseleave',function(){if(!rdrAdded.has(clean.toLowerCase()))this.style.background='';});
+        span.addEventListener('click',function(e){e.stopPropagation();rdrWordClick(clean,span,e);});
+        layer.appendChild(span);
+      }
+      x+=w;
+    });
+    y+=lineH;
+  });
 }
 function drawerClose(){Q('#drawer').classList.remove('open');}
 
@@ -6314,12 +6668,12 @@ function pdfTooltipError() {
 }
 
 function pdfTooltipHide() {
-  document.getElementById('pdf-tooltip').classList.remove('show');
+  var _t=document.getElementById('pdf-tooltip');if(_t)_t.classList.remove('show');
 }
 
 // کلیک بیرون از tooltip
 document.addEventListener('click', function(e) {
-  if(!e.target.closest('#pdf-tooltip') && !e.target.closest('.pdf-text-layer')) {
+  if(!e.target.closest('#pdf-tooltip') && !e.target.closest('.pdf-text-layer') && !e.target.closest('#pdf-reader-modal')) {
     pdfTooltipHide();
   }
 });
