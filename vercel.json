@@ -4,5 +4,8 @@
       "path": "/api/notify",
       "schedule": "0 17 * * *"
     }
+  ],
+  "rewrites": [
+    { "source": "/reader", "destination": "/reader.html" }
   ]
 }
