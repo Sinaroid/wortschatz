@@ -298,14 +298,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   background:linear-gradient(var(--bg),transparent);
   pointer-events:none;z-index:5;
 }
-#drop-ov{
-  position:fixed;inset:0;
-  background:rgba(10,10,12,.9);
-  border:2px dashed var(--blue);
-  display:none;flex-direction:column;
-  align-items:center;justify-content:center;
-  gap:10px;z-index:900;
-}
+/* drop-ov: inline styled */
 
 /* ════════ WELCOME ════════ */
 #welcome{
@@ -978,6 +971,11 @@ body.phrase-mode #phrase-tip{display:none!important}
 <div id="prog"></div>
 <div id="read-bar"></div>
 
+<div id="drop-ov" style="position:fixed;inset:0;background:rgba(10,10,12,.9);border:2px dashed var(--blue);display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:900">
+  <span style="font-size:48px">📄</span>
+  <p style="font-size:15px;font-weight:700;color:var(--text)">PDF رو اینجا رها کن</p>
+  <p style="font-size:12px;color:var(--text2)">کتاب آلمانی</p>
+</div>
 <div id="app">
   <div id="topbar">
     <div id="logo">Wort<span class="accent">schatz</span></div>
@@ -1066,11 +1064,6 @@ body.phrase-mode #phrase-tip{display:none!important}
   <div id="body">
     <div id="thumbs"></div>
     <div id="area">
-      <div id="drop-ov">
-        <span style="font-size:48px">📄</span>
-        <p style="font-size:15px;font-weight:700;color:var(--text)">PDF رو اینجا رها کن</p>
-        <p style="font-size:12px;color:var(--text2)">کتاب آلمانی</p>
-      </div>
       <div id="welcome">
         <div class="wl-logo">Wort<em>schatz</em></div>
         <div class="wl-sub">
@@ -1150,9 +1143,9 @@ body.phrase-mode #phrase-tip{display:none!important}
       <svg viewBox="0 0 13 13" fill="none"><path d="M2 4.5h2l2.5-2.5v9L4 8.5H2v-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 4a2.5 2.5 0 010 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span>تلفظ</span>
     </button>
-    <button class="mini-btn" onclick="miniHighlight()" title="highlight">
-      <svg viewBox="0 0 13 13" fill="none"><path d="M2.5 10l1.5-3.5 5-5 2 2-5 5L2.5 10z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M2 10.5h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      <span>mark</span>
+    <button class="mini-btn" onclick="miniPhrase()" title="معنی جمله">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M1.5 4h10M1.5 7h7M1.5 10h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>جمله</span>
     </button>
     <button class="mini-btn" onclick="miniCopy()" title="کپی">
       <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="3.5" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M4 3.5V2.5a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2"/></svg>
@@ -1502,12 +1495,24 @@ window.addEventListener('beforeunload',()=>{
 /* ══ DRAG & DROP ══ */
 const area=Q('area');
 setTimeout(refreshHistDot,100);
-area.addEventListener('dragover',e=>{e.preventDefault();Q('drop-ov').style.display='flex';});
-area.addEventListener('dragleave',e=>{if(!area.contains(e.relatedTarget))Q('drop-ov').style.display='none';});
-area.addEventListener('drop',e=>{
-  e.preventDefault();Q('drop-ov').style.display='none';
-  const f=e.dataTransfer.files[0];
-  if(f?.type==='application/pdf')loadFile(f);else toast('فقط PDF قبول میشه');
+
+// drop-ov باید روی document باشه نه area چون area.innerHTML='' پاکش می‌کنه
+document.addEventListener('dragover',e=>{
+  if(e.dataTransfer?.types?.includes('Files')){
+    e.preventDefault();
+    const dov=Q('drop-ov');if(dov)dov.style.display='flex';
+  }
+});
+document.addEventListener('dragleave',e=>{
+  if(!e.relatedTarget||e.relatedTarget===document.documentElement){
+    const dov=Q('drop-ov');if(dov)dov.style.display='none';
+  }
+});
+document.addEventListener('drop',e=>{
+  e.preventDefault();
+  const dov=Q('drop-ov');if(dov)dov.style.display='none';
+  const f=e.dataTransfer?.files[0];
+  if(f?.type==='application/pdf')loadFile(f);else if(f)toast('فقط PDF قبول میشه');
 });
 
 /* ══ KEYBOARD ══ */
@@ -1646,8 +1651,22 @@ function updateStats2(){
 function zoom(delta){
   scale=Math.max(.5,Math.min(3.5,scale+delta));
   updateZoom();
-  if(pdfDoc){renderAll(()=>{});}
-  else if(isSample&&curSample){renderSample(curSample);}
+  const savedPage=curPage;
+  if(pdfDoc){
+    renderAll(()=>{
+      // بعد از render برو به همون صفحه
+      requestAnimationFrame(()=>{
+        const el=document.querySelector('[data-page="'+savedPage+'"]');
+        if(el){el.scrollIntoView({behavior:'auto',block:'start'});curPage=savedPage;updateNav();}
+      });
+    });
+  }else if(isSample&&curSample){
+    renderSample(curSample);
+    requestAnimationFrame(()=>{
+      const el=document.querySelector('[data-page="'+savedPage+'"]');
+      if(el){el.scrollIntoView({behavior:'auto',block:'start'});curPage=savedPage;updateNav();}
+    });
+  }
 }
 function updateZoom(){
   const zd=Q('zoom-display');
@@ -1882,32 +1901,9 @@ function speak(){
   u.onend=()=>Q('wp-audio')?.classList.remove('playing');
 }
 
-/* ══ SELECTION ══ */
-document.addEventListener('mouseup',e=>{
-  if(e.target.closest('.panel'))return;
-  const sel=window.getSelection();
-  const txt=sel?.toString().trim()||'';
-  if(txt.length>=2&&txt.length<=200){
-    Q('sp-text').textContent=txt;
-    const words=txt.match(/[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]{3,}/g)||[];
-    const sw=Q('sp-words');
-    if(words.length>1){
-      sw.innerHTML=words.map(w=>`<span class="sw" onclick="lookupWord('${w}')">${w}</span>`).join('');
-      sw.style.display='flex';
-    }else sw.style.display='none';
-    Q('sp').classList.remove('out','in');Q('sp').style.display='block';
-    const x=e.clientX,y=e.clientY;
-    requestAnimationFrame(()=>{
-      const w=Q('sp').offsetWidth,h=Q('sp').offsetHeight;
-      let left=x-w/2,top=y-h-14;
-      if(left<6)left=6;if(left+w>innerWidth-6)left=innerWidth-w-6;
-      if(top<54)top=y+16;
-      Q('sp').style.left=Math.max(6,left)+'px';Q('sp').style.top=Math.max(54,top)+'px';
-    });
-    requestAnimationFrame(()=>Q('sp').classList.add('in'));
-    makeDraggable(Q('sp'),Q('sp-dh'));
-  }
-});
+/* ══ SELECTION — فقط Ctrl+C یا راست‌کلیک، نه popup خودکار ══ */
+// selection bar دستی — فقط وقتی user روی دکمه "معنی جمله" کلیک کنه فعال میشه
+// mouseup خودکار حذف شد چون مزاحم کلیک روی کلمات بود
 function searchSel(){
   const txt=Q('sp-text')?.textContent||'';
   closeSel();
@@ -2241,8 +2237,23 @@ function closeMini(){
 }
 function miniSearch(){
   if(!miniWord)return;
-  const word=miniWord,best=miniBest,e=miniE||{clientX:innerWidth/2,clientY:200};
+  const word=miniWord,e=miniE||{clientX:innerWidth/2,clientY:200};
   closeMini();curWord=word;curData=null;showLoading(word,e);doSearch(word);
+}
+function miniPhrase(){
+  if(!miniWord)return;
+  // پیدا کردن span انتخاب‌شده در text layer
+  const selSpan=document.querySelector('.ptl span.gw.sel,.gw.sel');
+  const word=miniWord;
+  closeMini();
+  if(selSpan){
+    startPhraseMode(selSpan);
+  } else {
+    // fallback: search همون کلمه
+    curWord=word;curData=null;
+    showLoading(word,{clientX:innerWidth/2,clientY:200});
+    doSearch(word);
+  }
 }
 function miniSpeak(){
   if(!miniWord)return;
