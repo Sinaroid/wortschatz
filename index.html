@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* IRANYekan via Google Fonts fallback */
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -97,14 +98,14 @@ button,input{font-family:var(--sans)}
 /* ═══════════════════════════════════
    APP WRAPPER
 ═══════════════════════════════════ */
-.app{max-width:600px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+.app{max-width:600px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 
 /* ═══════════════════════════════════
    TOPBAR
 ═══════════════════════════════════ */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px var(--s5);position:sticky;top:0;background:var(--bg);
+  padding:14px var(--s5);position:relative;top:0;background:var(--bg);flex-shrink:0;
   z-index:30;border-bottom:1px solid transparent;
   transition:border-color .2s,background .3s;
 }
@@ -137,7 +138,7 @@ body.offline .topbar{top:36px}
   display:flex;align-items:stretch;
   padding-bottom:env(safe-area-inset-bottom);
   z-index:30;
-}
+flex-shrink:0;}
 .nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;padding:10px 4px 8px;cursor:pointer;border:none;background:transparent;
@@ -180,8 +181,13 @@ body.offline .topbar{top:36px}
   display:none;
   padding:var(--s5) var(--s5) calc(var(--nav-h) + 20px);
   flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  
+  box-sizing:border-box;
 }
-.pane.on{display:block;animation:fade .2s var(--ease)}
+.pane.on{display:block;animation:fade .15s ease}
 
 /* ═══════════════════════════════════
    GATE
@@ -418,7 +424,7 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s2) 0 var(--s2);animation:up .4s var(--ease) both}
+.hero{padding:var(--s3) 0 var(--s3);animation:up .4s var(--ease) both}
 .hero-eye{
   font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
   color:var(--accent);margin-bottom:var(--s3);opacity:.8;
@@ -433,7 +439,7 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    SEARCH
 ═══════════════════════════════════ */
-.s-wrap{position:relative;margin-bottom:var(--s2);animation:up .35s .06s var(--ease) both;z-index:50}
+.s-wrap{position:sticky;top:0;background:var(--bg);padding:var(--s2) 0 var(--s2);margin-bottom:0;animation:up .35s .06s var(--ease) both;z-index:50;margin-left:calc(-1 * var(--s5));margin-right:calc(-1 * var(--s5));padding-left:var(--s5);padding-right:var(--s5);}
 .s-field{
   width:100%;padding:13px var(--s5) 13px 56px;border-radius:var(--r6);
   border:1.5px solid var(--bg3);background:var(--card);color:var(--ink);
@@ -900,21 +906,6 @@ body.offline .topbar{top:36px}
 .drw-upgrade-btn.hidden{display:none}
 
 /* Lang switcher inside drawer — compact toggle */
-.drw-lang-toggle{
-  display:flex;background:var(--bg2);border:1px solid var(--bg3);
-  border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:var(--s4);
-}
-.drw-lang-opt{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:8px;border-radius:8px;border:none;background:transparent;
-  font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink2);
-  cursor:pointer;transition:all .18s;
-}
-.drw-lang-opt.active{
-  background:var(--card);color:var(--accent);font-weight:700;
-  box-shadow:var(--sh1);
-}
-
 /* Action row */
 .drw-actions{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s4)}
 .drw-action-row{display:flex;gap:var(--s2)}
@@ -992,7 +983,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 /* ═══════════════════════════════════
    LIST
 ═══════════════════════════════════ */
-.list-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
+.list-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)position:sticky;top:0;background:var(--bg);z-index:40;}
 .list-title{font-family:var(--sans);font-size:24px;font-weight:700;color:var(--ink)}
 .list-count{font-size:12px;color:var(--ink3);background:var(--bg2);border:1px solid var(--bg3);padding:3px 10px;border-radius:20px}
 .due-banner{
@@ -1369,7 +1360,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .nav-item{padding:8px 4px 6px!important;gap:2px!important}
 .nav-label{font-size:10px!important;font-weight:500!important;display:block!important}
 .nav-item svg{width:19px!important;height:19px!important}
-html,body{overflow-x:hidden!important}
+html,body{overflow:hidden!important;height:100%;}
 .app{overflow-x:hidden!important;min-height:var(--tg-viewport-stable-height,100dvh)!important}
 .res{overflow-x:hidden!important;width:100%!important}
 .res-word-block{padding:var(--s4) var(--s4) var(--s3)!important;overflow-x:hidden!important}
@@ -1910,21 +1901,11 @@ html,body{overflow-x:hidden!important}
       </div>
     </div>
 
-    <!-- Language Toggle -->
-    <div class="drw-lang-toggle">
-      <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle();updatePackPresets()">
-        🇩🇪 آلمانی
-      </button>
-      <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle();updatePackPresets()">
-        🇬🇧 انگلیسی
-      </button>
-    </div>
-
-    <!-- Plan card — FREE -->
-    <!-- Free card -->
-    <div id="drw-plan-free" style="padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div id="drw-free-msg" style="font-size:11px;color:var(--ink3)">امروز ۰ از ۱۰ جستجو</div>
+    <!-- Plan: FREE -->
+    <div id="drw-plan-free" style="padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3);margin-bottom:var(--s3)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;color:var(--ink3)" id="drw-free-msg">امروز ۰ از ۱۰ جستجو</span>
+        <span style="font-size:11px;font-weight:700;color:var(--accent)">Free</span>
       </div>
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-bottom:10px">
         <div id="drw-free-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .4s"></div>
@@ -1939,8 +1920,8 @@ html,body{overflow-x:hidden!important}
       </button>
     </div>
 
-    <!-- Beta card -->
-    <div id="drw-plan-beta" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
+    <!-- Plan: BETA -->
+    <div id="drw-plan-beta" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3);margin-bottom:var(--s3)">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <span style="font-size:11px;color:var(--ink3)">دسترسی آزمایشی</span>
         <span style="font-size:11px;color:var(--ok);font-weight:600">فعال ✓</span>
@@ -1951,8 +1932,8 @@ html,body{overflow-x:hidden!important}
       <div style="font-size:10px;color:var(--ink3);margin-top:4px">ممنون که اپ رو تست می‌کنی ❤️</div>
     </div>
 
-    <!-- Plan card — PRO -->
-    <div id="drw-plan-pro" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
+    <!-- Plan: PRO -->
+    <div id="drw-plan-pro" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3);margin-bottom:var(--s3)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <span style="font-size:11px;color:var(--ink3)">اشتراک تا:</span>
         <span style="font-size:11px;font-weight:600" id="drw-pro-until">—</span>
@@ -1963,69 +1944,11 @@ html,body{overflow-x:hidden!important}
       <div style="font-size:10px;color:var(--ink3);margin-top:4px" id="drw-pro-days"></div>
     </div>
 
-    <!-- Language Settings -->
-    <div style="padding:var(--s4);border-top:1px solid var(--bg2);margin-top:var(--s4)">
-      <div id="drw-app-lang-lbl" style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--ink3);margin-bottom:10px;text-transform:uppercase">زبان اپ</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="ui-lang-grid">
-        <button onclick="setUILang('fa')" id="uilb-fa" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇮🇷</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">فارسی</span>
-        </button>
-        <button onclick="setUILang('en')" id="uilb-en" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇬🇧</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">English</span>
-        </button>
-        <button onclick="setUILang('ar')" id="uilb-ar" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇸🇦</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">العربية</span>
-        </button>
-        <button onclick="setUILang('tr')" id="uilb-tr" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇹🇷</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">Türkçe</span>
-        </button>
-        <button onclick="setUILang('de')" id="uilb-de" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇩🇪</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">Deutsch</span>
-        </button>
-        <button onclick="setUILang('fr')" id="uilb-fr" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇫🇷</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">Français</span>
-        </button>
-      </div>
-
-      <div id="drw-tgt-lang-lbl" style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--ink3);margin-bottom:10px;margin-top:14px;text-transform:uppercase">زبان یادگیری</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="tgt-lang-grid">
-        <button onclick="setTgtLang('de')" id="tgtb-de" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇩🇪</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">German</span>
-        </button>
-        <button onclick="setTgtLang('en')" id="tgtb-en" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇬🇧</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">English</span>
-        </button>
-        <button onclick="setTgtLang('fr')" id="tgtb-fr" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇫🇷</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">French</span>
-        </button>
-        <button onclick="setTgtLang('tr')" id="tgtb-tr" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇹🇷</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">Turkish</span>
-        </button>
-        <button onclick="setTgtLang('ar')" id="tgtb-ar" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇸🇦</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">Arabic</span>
-        </button>
-        <button onclick="setTgtLang('es')" id="tgtb-es" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1.5px solid var(--bg3);background:var(--bg2);cursor:pointer;font-family:var(--sans);transition:all .15s">
-          <span style="font-size:18px">🇪🇸</span>
-          <span style="font-size:10px;font-weight:600;color:var(--ink)">Spanish</span>
-        </button>
-      </div>
-    </div>
 
     <!-- Actions -->
     <div class="drw-actions">
       <div class="drw-action-row">
-        <button class="drw-action-btn" onclick="logout()">
+        <button class="drw-action-btn" id="drw-logout" onclick="logout()">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="opacity:.5"><path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           خروج
         </button>
@@ -2040,80 +1963,6 @@ html,body{overflow-x:hidden!important}
       </button>
     </div>
 
-  </div>
-</div>
-
-<!-- Edit modal -->
-<div class="modal-bg" id="edit-modal" onclick="if(event.target===this)editClose()">
-  <div class="modal">
-    <div class="modal-title" id="edit-title-txt">ویرایش لغت</div>
-    <div class="drw-lbl">آلمانی</div><input class="inp ltr" id="ed-de">
-    <div class="drw-lbl">فارسی</div><input class="inp" id="ed-fa">
-    <div class="drw-lbl" id="edit-ex-lbl">جمله نمونه (اختیاری)</div><input class="inp ltr" id="ed-ex">
-    <div class="modal-err" id="ed-err"></div>
-    <div class="modal-acts">
-      <button class="btn btn-p" style="flex:1" onclick="editSave()" id="edit-save-btn">ذخیره</button>
-      <button class="btn" onclick="editClose()" id="edit-cancel-btn">انصراف</button>
-    </div>
-  </div>
-</div>
-
-
-
-
-  <!-- PACKS -->
-<!-- Word Packs Section -->
-<!-- Session -->
-<!-- Session Intro -->
-<div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
-  <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
-  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
-  <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
-  <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
-    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()" id="intro-start-btn">شروع مرور →</button>
-    <button class="btn btn-full" onclick="introClose()">بعداً</button>
-  </div>
-</div>
-
-<div id="session">
-  <div class="ses-topbar">
-    <button class="ses-close" onclick="sesClose()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </button>
-    <div class="ses-info">
-      <div class="ses-cnt" id="ses-cnt">۱/۱</div>
-      <div class="ses-sub" id="ses-sub"></div>
-    </div>
-    <!-- دکمه دوباره حذف شد -->
-  </div>
-  <div class="ses-prog"><div class="ses-fill" id="ses-fill" style="width:0%"></div></div>
-
-
-  <div class="ses-body" id="ses-body">
-    <div class="card-scene" onclick="sesFlip()">
-      <div class="card-wrap" id="card-wrap">
-        <div class="card-face card-front">
-          <span class="c-type" id="c-type"></span>
-          <span class="c-hint" id="ses-tap-hint">برای دیدن معنی کلیک کن</span>
-          <span class="c-word" id="ses-word"></span>
-        </div>
-        <div class="card-face card-back">
-          <span class="c-hint" id="ses-meaning-lbl">معنی</span>
-          <span class="c-mean" id="ses-mean"></span>
-          <span class="c-sent" id="ses-sent"></span>
-        </div>
-      </div>
-    </div>
-    <div class="swipe-row"><span><span id="swipe-forgot">← بلد نبودم</span></span><span><span id="swipe-knew">بلد بودم →</span></span></div>
-    <div class="ses-acts">
-      <button class="sa bad" onclick="sesRate(false)">
-        <span class="sa-ic">✗</span><span>بلد نبودم</span><span class="sa-next">دوباره میاد</span>
-      </button>
-      <button class="flip-btn" onclick="sesFlip()">↺</button>
-      <button class="sa good" onclick="sesRate(true)">
-        <span class="sa-ic">✓</span><span>بلد بودم</span><span class="sa-next" id="ses-next">فردا</span>
-      </button>
-    </div>
   </div>
 
   <div class="ses-end" id="ses-end">
@@ -2162,11 +2011,9 @@ html,body{overflow-x:hidden!important}
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 7H2M5 4l-3 3 3 3M8 2h3a1 1 0 011 1v8a1 1 0 01-1 1H8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           ورود
         </button>
-        <div class="top-free-badge" id="top-free-badge" onclick="drawerOpen()" style="display:none">
-          <span id="top-free-n">10</span><span>جستجو</span>
-        </div>
+        <div class="top-free-badge" id="top-free-badge" style="display:none!important"></div>
         <div class="top-pro-badge" id="top-pro-badge" style="display:none">✦ Pro</div>
-        <div class="top-avatar" id="top-avatar-el" onclick="drawerOpen()" style="display:none">
+        <div class="top-avatar" id="top-avatar-el" onclick="drawerOpen()" style="display:none!important">
           <span id="top-avatar-lt">؟</span>
         </div>
       </div>
@@ -2175,11 +2022,7 @@ html,body{overflow-x:hidden!important}
           <path d="M12.5 8.5A5.5 5.5 0 116.5 3a4.5 4.5 0 006 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
-      <div class="user-chip" id="user-chip" onclick="drawerOpen()" style="display:none">
-        <div class="user-avatar" id="user-avatar">?</div>
-        <span class="user-name" id="user-name"></span>
-      </div>
-      <button class="btn-ic" id="settings-btn" onclick="drawerOpen()">
+      <button class="btn-ic" id="settings-btn" onclick="drawerOpen()" style="display:flex!important">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -2194,30 +2037,6 @@ html,body{overflow-x:hidden!important}
     </div>
 
     <div id="free-banner" style="display:none"></div>
-    <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
-      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
-        <span id="home-lang-flag">🇩🇪</span>
-        <span id="home-lang-label">آلمانی</span>
-        <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <!-- Lang mini popover -->
-      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
-        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇩🇪</span>
-          <span>آلمانی</span>
-          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
-        </button>
-        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇬🇧</span>
-          <div style="display:flex;flex-direction:column;align-items:flex-start">
-            <span>انگلیسی</span>
-            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
-          </div>
-          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
-        </button>
-      </div>
-    </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
         placeholder="لغت یا اصطلاح بنویس..."
@@ -2316,12 +2135,7 @@ html,body{overflow-x:hidden!important}
 
     <!-- Stats card -->
     
-    <div class="ws-empty" id="ws-empty">
-      <div class="ws-empty-icon">🇩🇪</div>
-      <div class="ws-empty-title" id="empty-title-txt">اولین لغتت رو سرچ کن</div>
-      <div class="ws-empty-sub" id="empty-sub-txt">یه لغت آلمانی بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن</div>
-      <button class="ws-empty-btn" onclick="document.getElementById('s-inp').focus()" id="empty-btn-txt">شروع کن ←</button>
-    </div>
+    <div class="ws-empty" id="ws-empty" style="display:none"></div>
     <div class="login-prompt" id="login-prompt">
       <div class="login-prompt-txt" id="login-prompt-txt">برای ذخیره لغت‌هات وارد شو 👤</div>
       <button class="login-prompt-btn" onclick="showGate();document.getElementById('login-prompt').classList.remove('show')">ورود</button>
@@ -2410,7 +2224,7 @@ html,body{overflow-x:hidden!important}
 
 
   <!-- PACKS -->
-  <div id="pane-packs" class="pane" style="padding-top:0">
+  <div id="pane-packs" class="pane" style="padding-top:0;display:none!important">
 
   <!-- Header -->
   <div style="padding:12px 16px 10px;border-bottom:1px solid var(--bg3);margin-bottom:12px">
@@ -2476,65 +2290,28 @@ html,body{overflow-x:hidden!important}
 <!-- Bottom nav -->
 
 <!-- PDF Reader Pane -->
-<div id="pane-pdf" class="pane">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100dvh - var(--nav-h) - 40px);padding:32px 20px;gap:20px">
-
-    <!-- Hero -->
-    <div style="text-align:center;margin-bottom:4px">
-      <div style="font-size:40px;margin-bottom:12px">📚</div>
-      <div style="font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px">کتاب‌خوان آلمانی</div>
-      <div style="font-size:12px;color:var(--ink3);line-height:1.7;max-width:280px;margin:0 auto">
-        PDF کتاب آلمانیت رو باز کن<br>
-        روی هر کلمه کلیک کن — معنی فارسی بگیر<br>
-        و به فلش‌کارت‌هات اضافه‌اش کن
-      </div>
-    </div>
-
-    <!-- Main Button -->
-    <a href="/reader" style="
-      display:flex;align-items:center;justify-content:center;gap:10px;
-      width:100%;max-width:320px;
-      background:var(--accent);color:white;border:none;
-      border-radius:var(--r3);padding:16px 24px;
-      font-size:15px;font-weight:700;cursor:pointer;
-      font-family:var(--sans);transition:opacity .2s;
-      text-decoration:none;
-    " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-        <path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="white" stroke-width="1.5"/>
-        <path d="M12 3v4h4" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
-        <path d="M7 10h6M7 13h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
+<div id="pane-pdf" class="pane" style="padding:0!important">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:24px 20px;gap:16px;padding-bottom:calc(var(--nav-h) + 24px);box-sizing:border-box">
+    <div style="font-size:44px">📚</div>
+    <div style="font-size:20px;font-weight:700;color:var(--ink);font-family:var(--sans)">کتاب‌خوان آلمانی</div>
+    <div style="font-size:12px;color:var(--ink3);line-height:1.8;text-align:center">PDF کتاب آلمانیت رو باز کن<br>روی هر کلمه کلیک کن — معنی فارسی بگیر</div>
+    <a href="/reader" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:300px;background:var(--accent);color:#fff;border-radius:var(--r3);padding:16px;font-size:15px;font-weight:700;font-family:var(--sans);text-decoration:none">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="white" stroke-width="1.5"/><path d="M12 3v4h4" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10h6M7 13h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
       باز کردن کتاب‌خوان
     </a>
-
-    <!-- Features -->
-    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px">
-      <div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:11px 14px">
-        <span style="font-size:18px">🖱️</span>
-        <div>
-          <div style="font-size:12px;font-weight:600;color:var(--ink)">کلیک روی هر کلمه</div>
-          <div style="font-size:11px;color:var(--ink3)">معنی فارسی + مثال فوری</div>
-        </div>
+    <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:12px">
+        <span style="font-size:22px">🖱️</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">کلیک روی هر کلمه</div><div style="font-size:11px;color:var(--ink3)">معنی فارسی + مثال با AI</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:11px 14px">
-        <span style="font-size:18px">➕</span>
-        <div>
-          <div style="font-size:12px;font-weight:600;color:var(--ink)">افزودن به فلش‌کارت‌ها</div>
-          <div style="font-size:11px;color:var(--ink3)">مستقیم ذخیره در حسابت</div>
-        </div>
+      <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:12px">
+        <span style="font-size:22px">➕</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">افزودن به فلش‌کارت</div><div style="font-size:11px;color:var(--ink3)">ذخیره مستقیم در حسابت</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:11px 14px">
-        <span style="font-size:18px">📖</span>
-        <div>
-          <div style="font-size:12px;font-weight:600;color:var(--ink)">متون نمونه آماده</div>
-          <div style="font-size:11px;color:var(--ink3)">A1 تا C1 + داستان گریم</div>
-        </div>
+      <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:12px">
+        <span style="font-size:22px">📖</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">متون A1 تا C1</div><div style="font-size:11px;color:var(--ink3)">Menschen، Schritte، Aspekte</div></div>
       </div>
-    </div>
-
-    <div style="font-size:10px;color:var(--ink4);text-align:center">
-      پشتیبانی از کتاب‌های Menschen، Schritte، Netzwerk، Aspekte
     </div>
   </div>
 </div>
@@ -2645,16 +2422,7 @@ html,body{overflow-x:hidden!important}
     </svg>
     <span class="nav-label" id="nl-home">خانه</span>
   </button>
-  <button class="nav-item" id="t-packs" onclick="go('packs')">
-    <div class="nav-dot" id="nd-packs"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-    </svg>
-    <span class="nav-label" id="nl-packs">جعبه‌ها</span>
-  </button>
+
   <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
     <div class="nav-dot" id="nd-cards"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -2748,10 +2516,10 @@ let userProUntil=null;
 let userPlan='free';
 let userWordCount=0;
 let userSearchCount=0;
-let targetLang='de'; // 'de' = German, 'en' = English
+const targetLang='de'; // fixed: German only
 
 // Helper: فقط لغت‌های زبان فعال
-const filteredWords = () => words.filter(w => (w.lang||'de') === targetLang);
+const filteredWords = () => words; // de only
 
 /* ══════════════════════════════
    HELPERS
@@ -2889,8 +2657,7 @@ function canAddMore(){
   return userSearchCount < FREE_LIMIT;
 }
 
-function updateFreeBanner(){ updateTopStatus();
-  const b=Q('#free-banner');
+function updateFreeBanner(){return; /* disabled */const b=Q('#free-banner');
   if(b) b.style.display='none';
   if(userPlan==='pro'||userPlan==='beta') return;
 
@@ -3205,7 +2972,7 @@ function hideGate(){
 
 function setUserUI(user){ updateTopStatus();
   currentUser=user;
-  const chip=Q('#user-chip'),avatar=Q('#user-avatar'),name=Q('#user-name');
+  const chip=null,avatar=null,name=null; /* removed - using drawer only */
   const bigAvatar=Q('#drw-avatar-big'),profileName=Q('#drw-profile-name'),emailEl=Q('#drw-email');
   const logoutBtn=Q('#drw-logout');
 
@@ -3214,13 +2981,7 @@ function setUserUI(user){ updateTopStatus();
     const displayName=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';
     const email=user.email||'';
 
-    // topbar chip
-    if(chip){
-      if(photoUrl)avatar.innerHTML=`<img src="${photoUrl}" alt="">`;
-      else avatar.textContent=displayName[0].toUpperCase();
-      if(name)name.textContent=displayName;
-      chip.style.display='flex';
-    }
+
     const settingsBtn=Q('#settings-btn');
     if(settingsBtn)settingsBtn.style.display='none';
 
@@ -3234,7 +2995,7 @@ function setUserUI(user){ updateTopStatus();
     if(logoutBtn)logoutBtn.style.display='flex';
 
   } else {
-    if(chip)chip.style.display='none';
+    /* chip removed */
     const settingsBtn=Q('#settings-btn');
     if(settingsBtn)settingsBtn.style.display='flex';
     if(profileName)profileName.textContent='وارد نشدی';
@@ -3254,7 +3015,7 @@ function saveUserProfile(lang,level,goals){
   if(window.currentUser&&window.sb){
     sb.from('profiles').update({lang:lang,level:level,goals:goals,onboarded:true}).eq('id',currentUser.id).catch(function(){});
   }
-  if(typeof setTargetLang==='function')setTargetLang(lang);
+  targetLang='de';
 }
 
 /* ── Empty State ── */
@@ -3279,7 +3040,7 @@ function updateTopStatus(){
     var name=(nm&&nm.textContent&&nm.textContent!=='—')?nm.textContent:(currentUser.user_metadata&&currentUser.user_metadata.full_name)||currentUser.email.split('@')[0]||'?';
     if(al)al.textContent=(name[0]||'?').toUpperCase();
     if(userPlan==='pro'||userPlan==='beta'){fb.style.display='none';pb.style.display='flex';av.classList.add('pro');}
-    else{pb.style.display='none';av.classList.remove('pro');var left=Math.max(0,(window.FREE_LIMIT||10)-(userSearchCount||0));if(fn)fn.textContent=left;fb.classList.toggle('warn',left<=2);fb.style.display='flex';}
+    else{pb.style.display='none';av.classList.remove('pro');var left=Math.max(0,(window.FREE_LIMIT||10)-(userSearchCount||0));if(fn)fn.textContent=left;fb.classList.toggle('warn',left<=2);fb.style.display='none';}
   }
 }
 
@@ -3319,7 +3080,7 @@ function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(
           if(r.data.lang)localStorage.setItem('ws_lang',r.data.lang);
           if(r.data.level)localStorage.setItem('ws_level',r.data.level);
           if(r.data.goals)localStorage.setItem('ws_goals',JSON.stringify(r.data.goals));
-          if(typeof setTargetLang==='function')setTargetLang(r.data.lang||'de');
+          targetLang='de';
           return;
         }
         _obShow();
@@ -4333,6 +4094,14 @@ function rdrRenderSample(num){
     y+=lineH;
   });
 }
+function drawerOpen(){
+  const d=Q('#drawer');
+  if(!d)return;
+  d.classList.add('open');
+  /* آپدیت اطلاعات drawer */
+  if(typeof updateDrawerPlan==='function')updateDrawerPlan();
+  if(typeof updateDrawerStats==='function')updateDrawerStats();
+}
 function drawerClose(){Q('#drawer').classList.remove('open');}
 
 // ── UI Language ──
@@ -4344,7 +4113,7 @@ var UI_STRINGS = {
     hero_sub:'لغت، جمله یا اصطلاح — هر زبانی', search_ph:'لغت یا اصطلاح بنویس...',
     search_tip:'💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong>',
     total_words:'کل لغت', due_today:'برای مرور', start_review:'شروع مرور',
-    nav_home:'خانه', nav_packs:'جعبه‌ها', nav_cards:'کارت‌ها', nav_list:'لیست',
+    nav_home:'خانه', nav_cards:'کارت‌ها', nav_list:'لیست',
     gate_google:'ورود با Google', gate_or:'یا با ایمیل', gate_magic:'ارسال لینک ورود', gate_login:'ورود',
     ob_title_0:'به Wortschatz خوش اومدی 👋', ob_sub_0:'چند سوال کوتاه تا بهترین تجربه رو برات بسازیم',
     ob_title_1:'کدوم زبان؟', ob_sub_1:'بعداً از تنظیمات می‌تونی تغییر بدی',
@@ -4367,7 +4136,7 @@ var UI_STRINGS = {
     packs_title:'📦 جعبه لغت‌ها', packs_sub:'مجموعه‌های آماده برای یادگیری سریع‌تر',
     pro_f1:'جستجوی نامحدود با AI', pro_f2:'همه pack های لغت + ساخت با AI', pro_f3:'sync روی همه دستگاه‌ها', pro_buy:'خرید از طریق تلگرام', beta_lbl:'کد بتا داری؟',
     drw_signout:'خروج', drw_clear:'پاک کردن لغات', drw_contact:'ارتباط با ما در تلگرام',
-    drw_searches:'جستجو', app_lang_lbl:'زبان اپ', tgt_lang_lbl:'زبان یادگیری',
+    drw_searches:'جستجو',
     edit_title:'ویرایش لغت', edit_ex:'جمله نمونه (اختیاری)', edit_save:'ذخیره', edit_cancel:'انصراف',
     offline:'📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره',
   },
@@ -4376,7 +4145,7 @@ var UI_STRINGS = {
     hero_sub:'Word, phrase or expression — any language', search_ph:'Search a word or phrase...',
     search_tip:'💡 Try <strong>Arbeit</strong>, <strong>bonjour</strong> or <strong>work</strong>',
     total_words:'Total Words', due_today:'Due Today', start_review:'Start Review',
-    nav_home:'Home', nav_packs:'Packs', nav_cards:'Cards', nav_list:'List',
+    nav_home:'Home', nav_cards:'Cards', nav_list:'List',
     gate_google:'Continue with Google', gate_or:'Or use email', gate_magic:'Send magic link', gate_login:'Sign in',
     ob_title_0:'Welcome to Fluenta 👋', ob_sub_0:'A few questions to personalize your experience',
     ob_title_1:'Which language?', ob_sub_1:'You can change this anytime in settings',
@@ -4399,7 +4168,7 @@ var UI_STRINGS = {
     packs_title:'📦 Word Packs', packs_sub:'Ready-made collections for faster learning',
     pro_f1:'Unlimited AI searches', pro_f2:'All word packs + AI-generated', pro_f3:'Sync across all devices', pro_buy:'Buy via Telegram', beta_lbl:'Have a beta code?',
     drw_signout:'Sign out', drw_clear:'Clear all words', drw_contact:'Contact us on Telegram',
-    drw_searches:'searches', app_lang_lbl:'App Language', tgt_lang_lbl:'Learning Language',
+    drw_searches:'searches',
     edit_title:'Edit Word', edit_ex:'Example sentence (optional)', edit_save:'Save', edit_cancel:'Cancel',
     offline:'📡 Offline — words available but search needs internet',
   },
@@ -4408,7 +4177,7 @@ var UI_STRINGS = {
     hero_sub:'كلمة أو عبارة — بأي لغة', search_ph:'ابحث عن كلمة أو عبارة...',
     search_tip:'💡 جرب <strong>Arbeit</strong> أو <strong>عمل</strong>',
     total_words:'إجمالي الكلمات', due_today:'مستحق اليوم', start_review:'ابدأ المراجعة',
-    nav_home:'الرئيسية', nav_packs:'الحزم', nav_cards:'البطاقات', nav_list:'القائمة',
+    nav_home:'الرئيسية', nav_cards:'البطاقات', nav_list:'القائمة',
     gate_google:'المتابعة مع Google', gate_or:'أو استخدم البريد', gate_magic:'إرسال رابط الدخول', gate_login:'تسجيل الدخول',
     ob_title_0:'مرحباً بك في Fluenta 👋', ob_sub_0:'بعض الأسئلة لتخصيص تجربتك',
     ob_title_1:'أي لغة؟', ob_sub_1:'يمكنك التغيير لاحقاً في الإعدادات',
@@ -4431,7 +4200,7 @@ var UI_STRINGS = {
     packs_title:'📦 حزم الكلمات', packs_sub:'مجموعات جاهزة للتعلم الأسرع',
     pro_f1:'بحث غير محدود', pro_f2:'جميع الحزم + الذكاء الاصطناعي', pro_f3:'المزامنة عبر الأجهزة', pro_buy:'الشراء عبر Telegram', beta_lbl:'هل لديك رمز بيتا؟',
     drw_signout:'تسجيل الخروج', drw_clear:'مسح الكلمات', drw_contact:'تواصل معنا',
-    drw_searches:'بحث', app_lang_lbl:'لغة التطبيق', tgt_lang_lbl:'لغة التعلم',
+    drw_searches:'بحث',
     edit_title:'تعديل الكلمة', edit_ex:'جملة مثال (اختياري)', edit_save:'حفظ', edit_cancel:'إلغاء',
     offline:'📡 غير متصل — الكلمات متاحة لكن البحث يحتاج إنترنت',
   },
@@ -4440,7 +4209,7 @@ var UI_STRINGS = {
     hero_sub:'Kelime veya cümle — herhangi bir dilde', search_ph:'Kelime veya cümle ara...',
     search_tip:'💡 <strong>Arbeit</strong> veya <strong>çalışmak</strong> deneyin',
     total_words:'Toplam Kelime', due_today:'Bugün Yapılacak', start_review:'Tekrara Başla',
-    nav_home:'Ana Sayfa', nav_packs:'Paketler', nav_cards:'Kartlar', nav_list:'Liste',
+    nav_home:'Ana Sayfa', nav_cards:'Kartlar', nav_list:'Liste',
     gate_google:'Google ile devam et', gate_or:'Veya e-posta kullan', gate_magic:'Giriş bağlantısı gönder', gate_login:'Giriş Yap',
     ob_title_0:"Fluenta'ya Hoş Geldiniz 👋", ob_sub_0:'Deneyiminizi kişiselleştirmek için birkaç soru',
     ob_title_1:'Hangi dil?', ob_sub_1:'Daha sonra ayarlardan değiştirebilirsiniz',
@@ -4463,7 +4232,7 @@ var UI_STRINGS = {
     packs_title:'📦 Kelime Paketleri', packs_sub:'Daha hızlı öğrenme için hazır koleksiyonlar',
     pro_f1:'Sınırsız AI araması', pro_f2:'Tüm paketler + AI', pro_f3:'Tüm cihazlarda senkronizasyon', pro_buy:"Telegram'dan satın al", beta_lbl:'Beta kodunuz var mı?',
     drw_signout:'Çıkış Yap', drw_clear:'Kelimeleri Sil', drw_contact:"Telegram'da bize ulaşın",
-    drw_searches:'arama', app_lang_lbl:'Uygulama Dili', tgt_lang_lbl:'Öğrenme Dili',
+    drw_searches:'arama',
     edit_title:'Kelimeyi Düzenle', edit_ex:'Örnek cümle (isteğe bağlı)', edit_save:'Kaydet', edit_cancel:'İptal',
     offline:'📡 Çevrimdışı — kelimeler mevcut ama arama internet gerektiriyor',
   },
@@ -4472,7 +4241,7 @@ var UI_STRINGS = {
     hero_sub:'Wort oder Satz — in jeder Sprache', search_ph:'Wort oder Satz suchen...',
     search_tip:'💡 Versuche <strong>Arbeit</strong> oder <strong>merci</strong>',
     total_words:'Gesamtwörter', due_today:'Heute fällig', start_review:'Wiederholung starten',
-    nav_home:'Startseite', nav_packs:'Pakete', nav_cards:'Karten', nav_list:'Liste',
+    nav_home:'Startseite', nav_cards:'Karten', nav_list:'Liste',
     gate_google:'Mit Google fortfahren', gate_or:'Oder E-Mail verwenden', gate_magic:'Magic Link senden', gate_login:'Anmelden',
     ob_title_0:'Willkommen bei Fluenta 👋', ob_sub_0:'Einige Fragen zur Personalisierung',
     ob_title_1:'Welche Sprache?', ob_sub_1:'Jederzeit in den Einstellungen änderbar',
@@ -4495,7 +4264,7 @@ var UI_STRINGS = {
     packs_title:'📦 Wortpakete', packs_sub:'Fertige Sammlungen zum schnelleren Lernen',
     pro_f1:'Unbegrenzte KI-Suchen', pro_f2:'Alle Pakete + KI', pro_f3:'Synchronisation auf allen Geräten', pro_buy:'Über Telegram kaufen', beta_lbl:'Hast du einen Beta-Code?',
     drw_signout:'Abmelden', drw_clear:'Wörter löschen', drw_contact:'Kontakt per Telegram',
-    drw_searches:'Suchen', app_lang_lbl:'App-Sprache', tgt_lang_lbl:'Lernsprache',
+    drw_searches:'Suchen',
     edit_title:'Wort bearbeiten', edit_ex:'Beispielsatz (optional)', edit_save:'Speichern', edit_cancel:'Abbrechen',
     offline:'📡 Offline — Wörter verfügbar, aber Suche braucht Internet',
   },
@@ -4504,7 +4273,7 @@ var UI_STRINGS = {
     hero_sub:"Mot ou expression — dans n'importe quelle langue", search_ph:'Chercher un mot ou une phrase...',
     search_tip:'💡 Essayez <strong>Arbeit</strong> ou <strong>travail</strong>',
     total_words:"Total des mots", due_today:"À réviser", start_review:"Commencer la révision",
-    nav_home:'Accueil', nav_packs:'Packs', nav_cards:'Cartes', nav_list:'Liste',
+    nav_home:'Accueil', nav_cards:'Cartes', nav_list:'Liste',
     gate_google:"Continuer avec Google", gate_or:"Ou utiliser l'e-mail", gate_magic:"Envoyer le lien magique", gate_login:"Se connecter",
     ob_title_0:'Bienvenue sur Fluenta 👋', ob_sub_0:"Quelques questions pour personnaliser",
     ob_title_1:'Quelle langue ?', ob_sub_1:"Vous pouvez changer cela dans les paramètres",
@@ -4527,7 +4296,7 @@ var UI_STRINGS = {
     packs_title:"📦 Packs de mots", packs_sub:"Collections prêtes pour apprendre plus vite",
     pro_f1:"Recherches IA illimitées", pro_f2:"Tous les packs + IA", pro_f3:"Synchronisation sur tous les appareils", pro_buy:"Acheter via Telegram", beta_lbl:"Vous avez un code bêta ?",
     drw_signout:"Se déconnecter", drw_clear:"Effacer les mots", drw_contact:"Nous contacter sur Telegram",
-    drw_searches:"recherches", app_lang_lbl:"Langue de l'app", tgt_lang_lbl:"Langue d'apprentissage",
+    drw_searches:"recherches",
     edit_title:"Modifier le mot", edit_ex:"Phrase exemple (optionnel)", edit_save:"Enregistrer", edit_cancel:"Annuler",
     offline:"📡 Hors ligne — mots disponibles mais la recherche nécessite Internet",
   },
@@ -4546,7 +4315,7 @@ function applyUIStrings(){
   var sumL=document.querySelectorAll('.sum-l'); if(sumL[0])sumL[0].textContent=s.total_words; if(sumL[1])sumL[1].textContent=s.due_today;
   setText('review-lbl',s.start_review);
   var drwL=document.querySelectorAll('.drw-hstat-l'); if(drwL[0])drwL[0].textContent=s.total_words; if(drwL[1])drwL[1].textContent=s.due_today;
-  setText('nl-home',s.nav_home); setText('nl-packs',s.nav_packs); setText('nl-cards',s.nav_cards); setText('nl-list',s.nav_list);
+  setText('nl-home',s.nav_home); setText('nl-cards',s.nav_cards); setText('nl-list',s.nav_list);
   setText('gate-google-txt',s.gate_google); setText('gate-or-txt',s.gate_or); setText('gate-magic-btn',s.gate_magic); setText('top-login-txt',s.gate_login);
   for(var i=0;i<5;i++){ setText('ob-title-'+i,s['ob_title_'+i]); setText('ob-sub-'+i,s['ob_sub_'+i]); }
   var obBtn=el('ob-btntxt'); if(obBtn)obBtn.textContent=s.ob_next;
@@ -4567,7 +4336,7 @@ function applyUIStrings(){
   setText('packs-title-txt',s.packs_title); setText('packs-sub-txt',s.packs_sub);
   setText('pro-f1',s.pro_f1); setText('pro-f2',s.pro_f2); setText('pro-f3',s.pro_f3); setText('pro-buy-btn',s.pro_buy); setText('beta-code-lbl',s.beta_lbl);
   setText('drw-signout-btn',s.drw_signout); setText('drw-clear-btn',s.drw_clear); setText('drw-contact-btn',s.drw_contact);
-  setText('drw-app-lang-lbl',s.app_lang_lbl); setText('drw-tgt-lang-lbl',s.tgt_lang_lbl);
+  /* app lang removed */ /* tgt lang removed */
   var freeMsg=el('drw-free-msg'); if(freeMsg){ var used=window.userSearchCount||0,lim=window.FREE_LIMIT||10; freeMsg.textContent='امروز '+used+' از '+lim+' '+s.drw_searches; }
   setText('edit-title-txt',s.edit_title); setText('edit-ex-lbl',s.edit_ex); setText('edit-save-btn',s.edit_save); setText('edit-cancel-btn',s.edit_cancel);
   var offEl=el('off-bar'); if(offEl)offEl.textContent=s.offline;
@@ -4576,213 +4345,7 @@ function applyUIStrings(){
 }
 
 
-function setUILang(lang) {
-  UI_LANG = lang;
-  localStorage.setItem('fluenta_ui_lang', lang);
-  var isRTL = lang === 'fa' || lang === 'ar';
-  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
-  document.documentElement.lang = lang;
-  if(lang === 'fa') {
-    document.documentElement.style.setProperty('--sans', "'Vazirmatn',system-ui,sans-serif");
-  } else {
-    document.documentElement.style.setProperty('--sans', 'system-ui,-apple-system,sans-serif');
-  }
-  applyUIStrings();
-  updateLangButtons();
-  drawerClose();
-  showToast({fa:'🌐 فارسی',en:'🌐 English',ar:'🌐 العربية',tr:'🌐 Türkçe',de:'🌐 Deutsch',fr:'🌐 Français'}[lang]||lang, 2000, 'ok');
-}
 
-
-
-function setTgtLang(lang) {
-  targetLang = lang;
-  localStorage.setItem('ws_target_lang'+(typeof uid==='function'?uid():''), lang);
-  if(typeof updateLangUI==='function') updateLangUI();
-  updateLangButtons();
-  drawerClose();
-  var names={de:'🇩🇪 German',en:'🇬🇧 English',fr:'🇫🇷 French',tr:'🇹🇷 Turkish',ar:'🇸🇦 Arabic',es:'🇪🇸 Spanish'};
-  showToast(names[lang]||lang, 2000, 'ok');
-}
-
-function updateLangButtons() {
-  // UI lang
-  ['fa','en','ar','tr','de','fr'].forEach(function(l){
-    var btn=Q('#uilb-'+l);
-    if(!btn) return;
-    btn.style.borderColor = l===UI_LANG ? 'var(--accent)' : 'var(--bg3)';
-    btn.style.background  = l===UI_LANG ? 'var(--abl)'    : 'var(--bg2)';
-  });
-  // target lang
-  ['de','en','fr','tr','ar','es'].forEach(function(l){
-    var btn=Q('#tgtb-'+l);
-    if(!btn) return;
-    btn.style.borderColor = l===targetLang ? 'var(--accent)' : 'var(--bg3)';
-    btn.style.background  = l===targetLang ? 'var(--abl)'    : 'var(--bg2)';
-  });
-}
-
-// اجرا در init — بعد از load کامل DOM
-(function initUILang(){
-  var saved = localStorage.getItem('fluenta_ui_lang');
-  if(saved && UI_STRINGS[saved]) {
-    UI_LANG = saved;
-  }
-  var isRTL = UI_LANG==='fa'||UI_LANG==='ar';
-  document.documentElement.dir = isRTL?'rtl':'ltr';
-  document.documentElement.lang = UI_LANG;
-  if(UI_LANG==='fa') {
-    document.documentElement.style.setProperty('--sans',"'Vazirmatn',system-ui,sans-serif");
-  } else {
-    document.documentElement.style.setProperty('--sans','system-ui,-apple-system,sans-serif');
-  }
-  // اجرا بعد از render کامل DOM
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded', function(){ applyUIStrings(); updateLangButtons(); });
-  } else {
-    setTimeout(function(){ applyUIStrings(); updateLangButtons(); }, 0);
-  }
-})();
-
-function saveSync(){
-  const c=Q('#drw-sync')?.value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
-  if(!c){alert('کد معتبر وارد کن');return;}
-  localStorage.setItem('ws_sync',c);
-  Q('#sync-st').textContent='کد: '+c+' ✓';
-  dbLoad();drawerClose();
-}
-
-async function clearAll(){
-  if(!confirm('همه لغات پاک بشن؟'))return;
-  words=[];saveCache();updateBadges();updateStats();renderList();
-  drawerClose();
-  if(currentUser)dbClear().catch(()=>{});
-}
-
-/* ══════════════════════════════
-   DARK MODE
-══════════════════════════════ */
-function setTargetLang(lang){
-  targetLang = lang;
-  localStorage.setItem('ws_target_lang', lang);
-  updateLangUI();
-  // Clear word cache when switching language
-  Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>localStorage.removeItem(k));
-  showToast(lang==='de' ? '🇩🇪 زبان هدف: آلمانی' : '🇬🇧 زبان هدف: انگلیسی');
-  if(Q('#pane-packs')?.classList.contains('on')) renderPackGrid();
-  if(Q('#pane-list')?.classList.contains('on')) renderList();
-  updateBadges(); updateStats();
-  const inp = Q('#s-inp');
-  if(inp) inp.placeholder = lang==='de'
-    ? 'جستجو — آلمانی، فارسی یا انگلیسی'
-    : 'جستجو — انگلیسی، فارسی یا آلمانی';
-}
-
-function updateLangUI(){
-  const isDE = targetLang === 'de';
-  // Home badge
-  const flag = document.getElementById('home-lang-flag');
-  const label = document.getElementById('home-lang-label');
-  if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
-  if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
-  // Hero texts
-  const heroLabel = document.getElementById('hero-label');
-  const heroTitle = document.getElementById('hero-title');
-  const heroSub   = document.getElementById('hero-sub');
-  if(heroLabel) heroLabel.textContent = isDE ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
-  if(heroTitle){
-    if(isDE){
-      heroTitle.style.fontFamily = 'var(--sans)';
-      heroTitle.style.letterSpacing = '0';
-      heroTitle.innerHTML = 'لغت یاد بگیر،<br><em>نه حفظ کنی</em>';
-    } else {
-      heroTitle.style.fontFamily = 'var(--serif)';
-      heroTitle.style.letterSpacing = '-.5px';
-      heroTitle.innerHTML = 'Words stick,<br><em>not memorized</em>';
-    }
-  }
-  if(heroSub) heroSub.textContent = isDE
-    ? 'لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی'
-    : 'لغت، جمله یا اصطلاح — فارسی، انگلیسی یا آلمانی';
-  // Drawer lang toggle
-  drawerUpdateLangToggle();
-  // Pack presets
-  updatePackPresets();
-  // Home empty chips
-  updateHomeEmptyChips();
-}
-
-function updateHomeEmptyChips(){
-  const wrap = document.getElementById('home-empty-chips');
-  if(!wrap) return;
-  const isDE = targetLang === 'de';
-  const chips = isDE
-    ? ['Arbeit','Freundschaft','Reise','Glück','Heimweh','Sehnsucht']
-    : ['happiness','freedom','journey','grateful','melancholy','serendipity'];
-  wrap.innerHTML = `
-    <div style="font-size:11px;color:var(--ink4);margin-bottom:var(--s3);letter-spacing:.3px">
-      ${isDE ? 'مثلاً امتحان کن:' : 'try searching:'}
-    </div>
-    <div style="display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center">
-      ${chips.map(w=>`<span class="hint-chip" onclick="qs('${w}')">${w}</span>`).join('')}
-    </div>
-  `;
-}
-
-const PACK_PRESETS = {
-  de: {
-    label: '📚 کتاب‌های محبوب آلمانی:',
-    placeholder: 'مثلاً: Sicher B2، لغات فوتبال، محیط زیست...',
-    items: [
-      { label: 'Nicos Weg A1',   prompt: 'کتاب Nicos Weg سطح A1' },
-      { label: 'Menschen A1',    prompt: 'کتاب Menschen A1 آلمانی' },
-      { label: 'Schritte Plus A2', prompt: 'کتاب Schritte Plus A2' },
-      { label: 'Sicher B1',      prompt: 'کتاب Sicher B1 آلمانی' },
-      { label: 'Aspekte B2',     prompt: 'کتاب Aspekte B2 آلمانی' },
-      { label: 'Dark 🎬',        prompt: 'سریال Dark آلمانی' },
-      { label: 'پزشکی 🏥',      prompt: 'لغات پزشکی آلمانی' },
-      { label: 'حقوق ⚖️',       prompt: 'لغات حقوقی آلمانی' },
-    ]
-  },
-  en: {
-    label: '📚 منابع محبوب انگلیسی:',
-    placeholder: 'e.g. Business English, Sherlock Holmes, medical terms...',
-    items: [
-      { label: 'Top Notch A1',   prompt: 'کتاب Top Notch A1 انگلیسی' },
-      { label: 'Interchange A2', prompt: 'کتاب Interchange A2 انگلیسی' },
-      { label: 'Headway B1',     prompt: 'کتاب Headway B1 انگلیسی' },
-      { label: 'Cutting Edge B2',prompt: 'کتاب Cutting Edge B2 انگلیسی' },
-      { label: 'Friends 🎬',     prompt: 'سریال Friends انگلیسی' },
-      { label: 'Business 💼',    prompt: 'لغات Business English' },
-      { label: 'پزشکی 🏥',      prompt: 'لغات پزشکی انگلیسی' },
-      { label: 'IELTS 📝',       prompt: 'لغات ضروری IELTS' },
-    ]
-  }
-};
-
-function updatePackPresets(){
-  const cfg = PACK_PRESETS[targetLang] || PACK_PRESETS.de;
-  const labelEl = document.getElementById('pack-presets-label');
-  const wrap    = document.getElementById('pack-presets-wrap');
-  const inp     = document.getElementById('ai-pack-tab-inp');
-  if(labelEl) labelEl.textContent = cfg.label;
-  if(inp) inp.placeholder = cfg.placeholder;
-  if(wrap){
-    wrap.innerHTML = cfg.items.map(it =>
-      `<button class="ai-preset-btn" onclick="setAIPackPreset('${it.prompt}')">${it.label}</button>`
-    ).join('');
-  }
-}
-
-function drawerUpdateLangToggle(){
-  const isDE = targetLang === 'de';
-  const de = document.getElementById('btn-lang-de');
-  const en = document.getElementById('btn-lang-en');
-  if(de){ de.classList.toggle('active', isDE); }
-  if(en){ en.classList.toggle('active', !isDE); }
-}
-
-function toggleDark(){const d=document.body.classList.toggle('dark');if(window.tgApp)window.tgApp.setTheme();localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
     ?'<circle cx="7" cy="7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
@@ -4799,14 +4362,16 @@ function go(t){
     const tab=Q('#t-'+id);
     if(tab) tab.classList.toggle('on',id===t);
   });
-  Q('#t-cards').classList.remove('on');
-  window.scrollTo({top:0,behavior:'smooth'});
+  const tc=Q('#t-cards');if(tc)tc.classList.remove('on');
+  /* scroll to top — پیدا کردن اولین scrollable parent */
+  const activePane=Q('#pane-'+t);
+  if(activePane){activePane.scrollTop=0;}
+  window.scrollTo({top:0,behavior:'instant'});
   if(t==='list') renderList();
-  if(t==='packs') renderPackGrid();
 }
 function updateBadges(){
   const has=filteredWords().length>0;
-  ['cards','list'].forEach(id=>{
+  ['list'].forEach(id=>{
     const el=Q('#t-'+id);
     if(el) el.classList.toggle('lit',has);
   });
@@ -4820,11 +4385,11 @@ function updateStats(){ updateEmptyState();
   const homeEmpty=Q('#home-empty');
   const fw=filteredWords();
   if(!fw.length){
-    card.classList.remove('show');
+    if(card)card.classList.remove('show');
     if(homeEmpty) homeEmpty.classList.add('show');
     return;
   }
-  card.classList.add('show');
+  if(card)card.classList.add('show');
   if(homeEmpty) homeEmpty.classList.remove('show');
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
@@ -5762,314 +5327,11 @@ init();
 /* ══════════════════════════════
    WORD PACKS
 ══════════════════════════════ */
-const PACKS = {
-  a1: {
-    name:'پایه A1', emoji:'🌱', free:true,
-    words:[
-      {de:'Hallo',fa:'سلام',ex:'Hallo! Wie geht es dir?',ex_fa:'سلام! حالت چطوره؟',tip:'رسمی‌ترش Guten Tag هست'},
-      {de:'Danke',fa:'ممنون',ex:'Danke schön!',ex_fa:'خیلی ممنون!',tip:'Bitte یعنی خواهش می‌کنم — جواب Danke'},
-      {de:'Bitte',fa:'خواهش می‌کنم',ex:'Bitte sehr!',ex_fa:'خواهش می‌کنم!',tip:'هم please هم you are welcome'},
-      {de:'Ja',fa:'بله',ex:'Ja, natürlich!',ex_fa:'بله، البته!',tip:'Jawohl خیلی رسمیه'},
-      {de:'Nein',fa:'نه',ex:'Nein, danke.',ex_fa:'نه، ممنون.',tip:'Nö محاوره‌ایه'},
-      {de:'Wasser',fa:'آب',ex:'Ich trinke Wasser.',ex_fa:'آب می‌نوشم.',tip:'das Wasser — خنثی'},
-      {de:'Essen',fa:'غذا / خوردن',ex:'Das Essen ist lecker.',ex_fa:'غذا خوشمزه‌ست.',tip:'هم اسم هم فعل'},
-      {de:'Haus',fa:'خانه',ex:'Ich bin zu Hause.',ex_fa:'خونه‌ام.',tip:'Heim هم خانه است ولی احساسی‌تر'},
-      {de:'Auto',fa:'ماشین',ex:'Das Auto ist neu.',ex_fa:'ماشین نوئه.',tip:'das Auto — خنثی'},
-      {de:'Arbeit',fa:'کار',ex:'Ich gehe zur Arbeit.',ex_fa:'می‌رم سر کار.',tip:'Job هم کار است — انگلیسی'},
-      {de:'Familie',fa:'خانواده',ex:'Meine Familie ist groß.',ex_fa:'خانواده‌ام بزرگه.',tip:'die Familie — مؤنث'},
-      {de:'Freund',fa:'دوست',ex:'Er ist mein Freund.',ex_fa:'اون دوستمه.',tip:'Freundin برای دختر'},
-      {de:'Zeit',fa:'وقت / زمان',ex:'Ich habe keine Zeit.',ex_fa:'وقت ندارم.',tip:'یکی از پرکاربردترین کلمات'},
-      {de:'Tag',fa:'روز',ex:'Guten Tag!',ex_fa:'روز بخیر!',tip:'Tage جمعشه'},
-      {de:'Nacht',fa:'شب',ex:'Gute Nacht!',ex_fa:'شب بخیر!',tip:'die Nacht — مؤنث'},
-      {de:'Geld',fa:'پول',ex:'Ich brauche Geld.',ex_fa:'پول لازم دارم.',tip:'das Geld — خنثی'},
-      {de:'Stadt',fa:'شهر',ex:'Die Stadt ist schön.',ex_fa:'شهر قشنگه.',tip:'Städte جمعشه'},
-      {de:'Land',fa:'کشور / روستا',ex:'Das Land ist groß.',ex_fa:'کشور بزرگه.',tip:'هم country هم countryside'},
-      {de:'Schule',fa:'مدرسه',ex:'Ich gehe zur Schule.',ex_fa:'می‌رم مدرسه.',tip:'die Schule — مؤنث'},
-      {de:'Buch',fa:'کتاب',ex:'Ich lese ein Buch.',ex_fa:'دارم کتاب می‌خونم.',tip:'das Buch — خنثی'},
-      {de:'Kind',fa:'بچه',ex:'Das Kind spielt.',ex_fa:'بچه بازی می‌کنه.',tip:'Kinder جمعشه'},
-      {de:'Mann',fa:'مرد / شوهر',ex:'Der Mann arbeitet.',ex_fa:'مرد کار می‌کنه.',tip:'der Mann — مذکر'},
-      {de:'Frau',fa:'زن / خانم',ex:'Die Frau ist nett.',ex_fa:'خانم مهربونه.',tip:'هم woman هم Mrs'},
-      {de:'groß',fa:'بزرگ',ex:'Er ist sehr groß.',ex_fa:'خیلی بلنده.',tip:'هم tall هم big'},
-      {de:'klein',fa:'کوچک',ex:'Das ist ein kleines Haus.',ex_fa:'اینه یه خونه کوچیکه.',tip:'مخالف groß'},
-      {de:'gut',fa:'خوب',ex:'Das ist gut!',ex_fa:'این خوبه!',tip:'besser=بهتر، best=بهترین'},
-      {de:'schlecht',fa:'بد',ex:'Das Wetter ist schlecht.',ex_fa:'هوا بده.',tip:'schlimm هم بد است — بدتر'},
-      {de:'neu',fa:'جدید',ex:'Ich habe ein neues Auto.',ex_fa:'ماشین جدید دارم.',tip:'مخالف alt'},
-      {de:'alt',fa:'قدیمی / پیر',ex:'Das Haus ist sehr alt.',ex_fa:'خونه خیلی قدیمیه.',tip:'هم old هم elderly'},
-      {de:'kalt',fa:'سرد',ex:'Es ist kalt draußen.',ex_fa:'بیرون سرده.',tip:'مخالف warm'},
-      {de:'warm',fa:'گرم',ex:'Das Wasser ist warm.',ex_fa:'آب گرمه.',tip:'heiß خیلی داغه'},
-      {de:'schnell',fa:'سریع',ex:'Fahr nicht so schnell!',ex_fa:'اینقدر سریع نرو!',tip:'مخالف langsam'},
-      {de:'langsam',fa:'آرام / کند',ex:'Bitte sprechen Sie langsam.',ex_fa:'لطفاً آروم صحبت کنید.',tip:'خیلی کاربردی برای مبتدیا'},
-      {de:'kommen',fa:'آمدن',ex:'Ich komme aus Iran.',ex_fa:'از ایران میام.',tip:'ich komme, du kommst'},
-      {de:'gehen',fa:'رفتن',ex:'Ich gehe nach Hause.',ex_fa:'می‌رم خونه.',tip:'پرکاربردترین فعل'},
-      {de:'sehen',fa:'دیدن',ex:'Ich sehe dich!',ex_fa:'می‌بینمت!',tip:'schauen هم نگاه کردنه'},
-      {de:'sprechen',fa:'صحبت کردن',ex:'Sprechen Sie Deutsch?',ex_fa:'آلمانی بلدید؟',tip:'reden محاوره‌ایه'},
-      {de:'hören',fa:'شنیدن',ex:'Ich höre Musik.',ex_fa:'موزیک گوش می‌دم.',tip:'zuhören = گوش دادن دقیق'},
-      {de:'essen',fa:'خوردن',ex:'Was essen wir heute?',ex_fa:'امروز چی می‌خوریم؟',tip:'ich esse, du isst'},
-      {de:'trinken',fa:'نوشیدن',ex:'Ich trinke Kaffee.',ex_fa:'قهوه می‌نوشم.',tip:'trinken = نوشیدن، essen = خوردن'},
-      {de:'schlafen',fa:'خوابیدن',ex:'Ich schlafe acht Stunden.',ex_fa:'۸ ساعت می‌خوابم.',tip:'ich schlafe, du schläfst'},
-      {de:'kaufen',fa:'خریدن',ex:'Ich kaufe ein Buch.',ex_fa:'یه کتاب می‌خرم.',tip:'verkaufen = فروختن'},
-      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
-      {de:'lesen',fa:'خواندن',ex:'Ich lese jeden Tag.',ex_fa:'هر روز می‌خونم.',tip:'ich lese, du liest'},
-      {de:'schreiben',fa:'نوشتن',ex:'Schreib mir!',ex_fa:'برام بنویس!',tip:'tippen = تایپ کردن'},
-      {de:'Straße',fa:'خیابان',ex:'Die Straße ist lang.',ex_fa:'خیابون بلنده.',tip:'die Straße — مؤنث'},
-      {de:'Bahnhof',fa:'ایستگاه قطار',ex:'Wo ist der Bahnhof?',ex_fa:'ایستگاه کجاست؟',tip:'der Bahnhof — مذکر'},
-      {de:'Supermarkt',fa:'سوپرمارکت',ex:'Ich gehe zum Supermarkt.',ex_fa:'می‌رم سوپرمارکت.',tip:'der Supermarkt — مذکر'},
-      {de:'Arzt',fa:'دکتر',ex:'Ich brauche einen Arzt.',ex_fa:'به دکتر نیاز دارم.',tip:'Ärztin برای دکتر زن'},
-      {de:'Krankenhaus',fa:'بیمارستان',ex:'Er ist im Krankenhaus.',ex_fa:'اون توی بیمارستانه.',tip:'das Krankenhaus — خنثی'}
-    ]
-  },
-  b1:{name:'مکالمه روزمره',emoji:'💬',free:false,words:[
-    {de:'Wie geht es Ihnen?',fa:'حالتون چطوره؟',ex:'Guten Tag! Wie geht es Ihnen?',ex_fa:'روز بخیر! حالتون چطوره؟',tip:'رسمی — برای غریبه‌ها'},
-    {de:'Mir geht es gut',fa:'حالم خوبه',ex:'Danke, mir geht es gut.',ex_fa:'ممنون، حالم خوبه.',tip:'پاسخ رسمی به Wie geht es Ihnen'},
-    {de:'Wie heißen Sie?',fa:'اسمتون چیه؟',ex:'Entschuldigung, wie heißen Sie?',ex_fa:'ببخشید، اسمتون چیه؟',tip:'رسمی — Wie heißt du? غیررسمیه'},
-    {de:'Ich heiße',fa:'اسمم ... هست',ex:'Ich heiße Sara.',ex_fa:'اسمم ساراست.',tip:'mein Name ist هم همینه'},
-    {de:'Woher kommen Sie?',fa:'اهل کجایید؟',ex:'Woher kommen Sie ursprünglich?',ex_fa:'اصالتاً اهل کجایید؟',tip:'woher = از کجا'},
-    {de:'Ich komme aus Iran',fa:'من از ایران میام',ex:'Ich komme aus Iran. Und Sie?',ex_fa:'من از ایرانم. شما چطور؟',tip:'aus + کشور بدون حرف تعریف'},
-    {de:'Entschuldigung',fa:'ببخشید / عذرخواهی',ex:'Entschuldigung, wo ist der Bahnhof?',ex_fa:'ببخشید، ایستگاه قطار کجاست؟',tip:'برای جلب توجه یا عذرخواهی'},
-    {de:'Können Sie mir helfen?',fa:'می‌تونید کمکم کنید؟',ex:'Entschuldigung, können Sie mir helfen?',ex_fa:'ببخشید، می‌تونید کمکم کنید؟',tip:'können = توانستن'},
-    {de:'Ich verstehe nicht',fa:'نمی‌فهمم',ex:'Es tut mir leid, ich verstehe nicht.',ex_fa:'ببخشید، نمی‌فهمم.',tip:'اولین جمله‌ای که باید بلد باشی!'},
-    {de:'Können Sie das wiederholen?',fa:'می‌تونید تکرار کنید؟',ex:'Entschuldigung, können Sie das wiederholen?',ex_fa:'ببخشید، می‌تونید تکرار کنید؟',tip:'wiederholen = تکرار کردن'},
-    {de:'Sprechen Sie Englisch?',fa:'انگلیسی بلدید؟',ex:'Sprechen Sie Englisch oder Persisch?',ex_fa:'انگلیسی یا فارسی بلدید؟',tip:'نجات‌دهنده در موقعیت‌های اضطراری!'},
-    {de:'Ich spreche ein bisschen Deutsch',fa:'کمی آلمانی بلدم',ex:'Ich spreche erst ein bisschen Deutsch.',ex_fa:'فعلاً کمی آلمانی بلدم.',tip:'ein bisschen = کمی'},
-    {de:'Was kostet das?',fa:'این چقدر میشه؟',ex:'Entschuldigung, was kostet das?',ex_fa:'ببخشید، این چقدر میشه؟',tip:'kosten = ارزش داشتن / هزینه داشتن'},
-    {de:'Wo ist die Toilette?',fa:'دستشویی کجاست؟',ex:'Entschuldigung, wo ist die Toilette?',ex_fa:'ببخشید، دستشویی کجاست؟',tip:'WC هم گفته میشه'},
-    {de:'Ich brauche Hilfe',fa:'به کمک نیاز دارم',ex:'Ich brauche dringend Hilfe!',ex_fa:'فوری به کمک نیاز دارم!',tip:'dringend = فوری'},
-    {de:'Bitte schreiben Sie das auf',fa:'لطفاً بنویسیدش',ex:'Können Sie das bitte aufschreiben?',ex_fa:'می‌تونید لطفاً بنویسیدش؟',tip:'aufschreiben = نوشتن روی کاغذ'},
-    {de:'Verabschiedung',fa:'خداحافظی',ex:'Auf Wiedersehen! Tschüss!',ex_fa:'خداحافظ! بای!',tip:'Tschüss غیررسمی، Auf Wiedersehen رسمیه'},
-    {de:'Guten Morgen',fa:'صبح بخیر',ex:'Guten Morgen! Wie war Ihr Schlaf?',ex_fa:'صبح بخیر! خوب خوابیدید؟',tip:'صبح تا حدود ۱۰'},
-    {de:'Guten Abend',fa:'عصر/شب بخیر',ex:'Guten Abend! Schön Sie zu sehen.',ex_fa:'عصر بخیر! خوشحالم می‌بینمتون.',tip:'از حدود ۶ بعدازظهر'},
-    {de:'Ich wohne in',fa:'من در ... زندگی می‌کنم',ex:'Ich wohne in Berlin seit zwei Jahren.',ex_fa:'دو ساله توی برلین زندگی می‌کنم.',tip:'wohnen = زندگی کردن، اقامت داشتن'},
-  ]},
-  work:{name:'کار و شغل',emoji:'💼',free:false,words:[
-    {de:'die Bewerbung',fa:'درخواست کار / اپلیکیشن',ex:'Ich habe eine Bewerbung geschickt.',ex_fa:'یه درخواست کار فرستادم.',tip:'sich bewerben = درخواست دادن'},
-    {de:'das Vorstellungsgespräch',fa:'مصاحبه کاری',ex:'Morgen habe ich ein Vorstellungsgespräch.',ex_fa:'فردا مصاحبه کاری دارم.',tip:'vorstellen = معرفی کردن'},
-    {de:'der Lebenslauf',fa:'رزومه',ex:'Ich schicke Ihnen meinen Lebenslauf.',ex_fa:'رزومه‌ام رو برایتون می‌فرستم.',tip:'مثل CV انگلیسی'},
-    {de:'die Stelle',fa:'موقعیت شغلی / پست',ex:'Die Stelle ist noch offen.',ex_fa:'موقعیت شغلی هنوز پره.',tip:'Job هم کاربرد داره'},
-    {de:'das Gehalt',fa:'حقوق',ex:'Was ist Ihr gewünschtes Gehalt?',ex_fa:'حقوق مد نظرتون چقدره؟',tip:'der Lohn برای کار ساعتی'},
-    {de:'die Arbeitszeit',fa:'ساعت کاری',ex:'Die Arbeitszeit ist von 9 bis 17 Uhr.',ex_fa:'ساعت کاری از ۹ تا ۵ هست.',tip:'Vollzeit = تمام وقت، Teilzeit = پاره وقت'},
-    {de:'der Urlaub',fa:'مرخصی / تعطیلات',ex:'Ich nehme nächste Woche Urlaub.',ex_fa:'هفته دیگه مرخصی می‌گیرم.',tip:'Urlaub nehmen = مرخصی گرفتن'},
-    {de:'die Kündigung',fa:'اخراج / استعفا',ex:'Er hat die Kündigung erhalten.',ex_fa:'اخراج شد.',tip:'kündigen = بیرون کردن یا استعفا دادن'},
-    {de:'die Überstunden',fa:'اضافه‌کاری',ex:'Ich mache heute Überstunden.',ex_fa:'امروز اضافه‌کاری دارم.',tip:'همیشه جمع استفاده میشه'},
-    {de:'die Besprechung',fa:'جلسه / میتینگ',ex:'Wir haben um 10 Uhr eine Besprechung.',ex_fa:'ساعت ۱۰ جلسه داریم.',tip:'das Meeting هم رایجه'},
-    {de:'der Kollege',fa:'همکار',ex:'Meine Kollegen sind sehr nett.',ex_fa:'همکارام خیلی مهربانن.',tip:'die Kollegin برای زن'},
-    {de:'der Chef',fa:'رئیس / مدیر',ex:'Mein Chef ist sehr streng.',ex_fa:'رئیسم خیلی سختگیره.',tip:'die Chefin برای زن'},
-    {de:'das Büro',fa:'دفتر / اداره',ex:'Ich arbeite im Büro.',ex_fa:'توی دفتر کار می‌کنم.',tip:'das Homeoffice = دورکاری'},
-    {de:'die Aufgabe',fa:'وظیفه / تکلیف',ex:'Was ist meine Aufgabe?',ex_fa:'وظیفه‌ام چیه؟',tip:'die Pflicht هم وظیفه است ولی اخلاقی‌تر'},
-    {de:'der Vertrag',fa:'قرارداد',ex:'Ich habe einen unbefristeten Vertrag.',ex_fa:'قرارداد دائمی دارم.',tip:'unbefristet = نامحدود، befristet = موقت'},
-    {de:'die Erfahrung',fa:'تجربه',ex:'Ich habe 5 Jahre Erfahrung.',ex_fa:'۵ سال تجربه دارم.',tip:'erfahren = باتجربه'},
-    {de:'die Ausbildung',fa:'آموزش حرفه‌ای / دوره',ex:'Ich mache eine Ausbildung als Koch.',ex_fa:'دوره آشپزی می‌گذرونم.',tip:'سیستم آموزش حرفه‌ای آلمان — خیلی مهم!'},
-    {de:'Homeoffice',fa:'دورکاری',ex:'Ich arbeite heute im Homeoffice.',ex_fa:'امروز دورکارم.',tip:'خیلی رایج بعد از کرونا'},
-    {de:'das Praktikum',fa:'کارآموزی',ex:'Ich mache ein Praktikum bei BMW.',ex_fa:'توی BMW کارآموزی می‌کنم.',tip:'der Praktikant = کارآموز'},
-    {de:'berufstätig',fa:'شاغل',ex:'Meine Mutter ist berufstätig.',ex_fa:'مادرم شاغله.',tip:'nicht berufstätig = بیکار / خانه‌دار'},
-  ]},
-  travel:{name:'سفر',emoji:'✈️',free:false,words:[
-    {de:'der Flughafen',fa:'فرودگاه',ex:'Wir fahren zum Flughafen.',ex_fa:'می‌ریم فرودگاه.',tip:'der Flug = پرواز'},
-    {de:'der Flug',fa:'پرواز',ex:'Mein Flug ist um 8 Uhr morgens.',ex_fa:'پروازم ساعت ۸ صبحه.',tip:'fliegen = پرواز کردن'},
-    {de:'das Gepäck',fa:'بار / چمدان',ex:'Wie viel Gepäck darf ich mitnehmen?',ex_fa:'چقدر بار می‌تونم ببرم؟',tip:'der Koffer = چمدان'},
-    {de:'die Unterkunft',fa:'اقامتگاه',ex:'Ich suche eine Unterkunft in Berlin.',ex_fa:'دنبال اقامتگاه توی برلین می‌گردم.',tip:'das Hotel, die Pension, das Hostel'},
-    {de:'einchecken',fa:'چک این کردن',ex:'Wann kann ich einchecken?',ex_fa:'کی می‌تونم چک این کنم؟',tip:'auschecken = چک اوت کردن'},
-    {de:'der Zug',fa:'قطار',ex:'Der Zug fährt pünktlich ab.',ex_fa:'قطار سر وقت حرکت می‌کنه.',tip:'die U-Bahn = مترو، die S-Bahn = قطار شهری'},
-    {de:'die Fahrkarte',fa:'بلیت',ex:'Wo kann ich eine Fahrkarte kaufen?',ex_fa:'کجا می‌تونم بلیت بخرم؟',tip:'das Ticket هم گفته میشه'},
-    {de:'Wo ist...?',fa:'... کجاست؟',ex:'Entschuldigung, wo ist der Marktplatz?',ex_fa:'ببخشید، میدان بازار کجاست؟',tip:'پرکاربردترین سوال سفر'},
-    {de:'Wie weit ist es?',fa:'چقدر فاصله داره؟',ex:'Wie weit ist es zum Bahnhof?',ex_fa:'تا ایستگاه چقدر فاصله داره؟',tip:'weit = دور، nah = نزدیک'},
-    {de:'links / rechts',fa:'چپ / راست',ex:'Biegen Sie links ab.',ex_fa:'بپیچید چپ.',tip:'geradeaus = مستقیم'},
-    {de:'der Stadtplan',fa:'نقشه شهر',ex:'Haben Sie einen Stadtplan?',ex_fa:'نقشه شهر دارید؟',tip:'die Karte هم نقشه است'},
-    {de:'die Sehenswürdigkeit',fa:'جاذبه گردشگری',ex:'Was sind die Sehenswürdigkeiten hier?',ex_fa:'جاذبه‌های اینجا چیان؟',tip:'یکی از طولانی‌ترین کلمات رایج!'},
-    {de:'das Museum',fa:'موزه',ex:'Das Museum ist dienstags geschlossen.',ex_fa:'موزه سه‌شنبه‌ها تعطیله.',tip:'die Ausstellung = نمایشگاه'},
-    {de:'die Reise',fa:'سفر',ex:'Gute Reise!',ex_fa:'سفر خوش!',tip:'reisen = سفر کردن'},
-    {de:'das Visum',fa:'ویزا',ex:'Ich brauche ein Visum für Deutschland.',ex_fa:'برای آلمان ویزا لازم دارم.',tip:'der Reisepass = پاسپورت'},
-    {de:'die Versicherung',fa:'بیمه',ex:'Ich habe eine Reiseversicherung.',ex_fa:'بیمه سفر دارم.',tip:'krankenversichert = بیمه درمانی'},
-    {de:'das Wechselgeld',fa:'پول خرد / باقی',ex:'Stimmt so — kein Wechselgeld nötig.',ex_fa:'باقی نمی‌خوام.',tip:'wechseln = تعویض کردن'},
-    {de:'der Notfall',fa:'اورژانس / اضطرار',ex:'Ich brauche einen Arzt — Notfall!',ex_fa:'به دکتر نیاز دارم — اورژانسه!',tip:'Notruf = شماره اورژانس — ۱۱۰ پلیس، ۱۱۲ امداد'},
-    {de:'verloren',fa:'گم شده',ex:'Ich habe meinen Pass verloren.',ex_fa:'پاسپورتم رو گم کردم.',tip:'verlieren = گم کردن'},
-    {de:'Ich bin allergisch gegen',fa:'به ... آلرژی دارم',ex:'Ich bin allergisch gegen Nüsse.',ex_fa:'به آجیل آلرژی دارم.',tip:'خیلی مهم در سفر و رستوران!'},
-  ]},
-  food:{name:'غذا و رستوران',emoji:'🍕',free:false,words:[
-    {de:'die Speisekarte',fa:'منو / فهرست غذا',ex:'Kann ich bitte die Speisekarte haben?',ex_fa:'میشه منو داشته باشم؟',tip:'die Karte هم گفته میشه'},
-    {de:'Ich möchte bestellen',fa:'می‌خوام سفارش بدم',ex:'Wir möchten jetzt gerne bestellen.',ex_fa:'الان می‌خوایم سفارش بدیم.',tip:'bestellen = سفارش دادن'},
-    {de:'das Gericht',fa:'غذا / ظرف',ex:'Was ist das Tagesgericht?',ex_fa:'غذای روز چیه؟',tip:'die Mahlzeit = وعده غذایی'},
-    {de:'vegetarisch',fa:'گیاهی',ex:'Haben Sie vegetarische Gerichte?',ex_fa:'غذای گیاهی دارید؟',tip:'vegan = وگان'},
-    {de:'lecker',fa:'خوشمزه',ex:'Das schmeckt sehr lecker!',ex_fa:'خیلی خوشمزه‌ست!',tip:'schmecken = مزه دادن'},
-    {de:'die Rechnung',fa:'صورتحساب',ex:'Die Rechnung bitte!',ex_fa:'صورتحساب لطفاً!',tip:'zahlen = پرداخت کردن'},
-    {de:'Trinkgeld',fa:'انعام',ex:'Das Trinkgeld ist im Preis inbegriffen.',ex_fa:'انعام توی قیمت هست.',tip:'معمولاً ۱۰٪ در آلمان'},
-    {de:'das Frühstück',fa:'صبحانه',ex:'Das Frühstück ist im Preis enthalten.',ex_fa:'صبحانه توی قیمت هست.',tip:'frühstücken = صبحانه خوردن'},
-    {de:'das Mittagessen',fa:'ناهار',ex:'Was gibt es zum Mittagessen?',ex_fa:'برای ناهار چی داریم؟',tip:'zu Mittag essen = ناهار خوردن'},
-    {de:'das Abendessen',fa:'شام',ex:'Wir essen um 19 Uhr Abendessen.',ex_fa:'ساعت ۷ شام می‌خوریم.',tip:'zu Abend essen = شام خوردن'},
-    {de:'das Getränk',fa:'نوشیدنی',ex:'Was möchten Sie trinken?',ex_fa:'چی می‌خواید بنوشید؟',tip:'der Saft = آبمیوه، das Wasser = آب'},
-    {de:'die Portion',fa:'پرس / وعده',ex:'Eine Portion reicht für zwei.',ex_fa:'یه پرس برای دو نفر کافیه.',tip:'groß/klein = بزرگ/کوچیک'},
-    {de:'allergisch',fa:'آلرژیک',ex:'Ich bin allergisch gegen Gluten.',ex_fa:'به گلوتن آلرژی دارم.',tip:'die Allergie = آلرژی'},
-    {de:'zum Mitnehmen',fa:'برای بردن / تیک اوی',ex:'Kann ich das zum Mitnehmen haben?',ex_fa:'میشه اینو برای بردن بگیرم؟',tip:'مخالف: hier essen = اینجا بخورم'},
-    {de:'der Nachtisch',fa:'دسر',ex:'Was haben Sie als Nachtisch?',ex_fa:'به عنوان دسر چی دارید؟',tip:'das Dessert هم گفته میشه'},
-    {de:'scharf',fa:'تند / تیز',ex:'Ist das Gericht scharf?',ex_fa:'این غذا تنده؟',tip:'mild = ملایم'},
-    {de:'das Trinkwasser',fa:'آب آشامیدنی',ex:'Kann ich Leitungswasser haben?',ex_fa:'می‌تونم آب شیر داشته باشم؟',tip:'در آلمان آب شیر قابل نوشیدنه!'},
-    {de:'die Reservierung',fa:'رزرو',ex:'Ich habe eine Reservierung auf den Namen Schmidt.',ex_fa:'به اسم اشمیت رزرو دارم.',tip:'reservieren = رزرو کردن'},
-    {de:'vollwertig',fa:'کامل / مقوی',ex:'Ich esse vollwertige Mahlzeiten.',ex_fa:'وعده‌های مقوی می‌خورم.',tip:'Vollkornbrot = نان سبوس‌دار'},
-    {de:'Guten Appetit',fa:'نوش جان',ex:'Guten Appetit!',ex_fa:'نوش جان!',tip:'معادل Bon appétit فرانسوی'},
-  ]},
-}
-
-const EN_PACKS = {
-  basics: {
-    name:'Everyday Basics', emoji:'🌱', free:true,
-    words:[
-      {de:'Hello',fa:'سلام',ex:'Hello! How are you?',ex_fa:'سلام! حالت چطوره؟',tip:'Hi is more casual'},
-      {de:'Thank you',fa:'ممنون',ex:'Thank you so much!',ex_fa:'خیلی ممنون!',tip:'You\'re welcome is the reply'},
-      {de:'Please',fa:'لطفاً',ex:'Can you help me, please?',ex_fa:'می‌تونی کمکم کنی، لطفاً؟',tip:'Also used in requests'},
-      {de:'Sorry',fa:'ببخشید / متأسفم',ex:'Sorry, I didn\'t mean that.',ex_fa:'ببخشید، منظورم اون نبود.',tip:'Excuse me = ببخشید برای گذر کردن'},
-      {de:'Yes / No',fa:'بله / نه',ex:'Yes, I agree. No, thank you.',ex_fa:'بله، موافقم. نه، ممنون.',tip:'Yeah is informal for Yes'},
-      {de:'Good morning',fa:'صبح بخیر',ex:'Good morning! Did you sleep well?',ex_fa:'صبح بخیر! خوب خوابیدی؟',tip:'Good night = شب بخیر'},
-      {de:'How are you?',fa:'حالت چطوره؟',ex:'How are you? I\'m fine, thanks.',ex_fa:'حالت چطوره؟ خوبم، ممنون.',tip:'Fine, thanks is the common reply'},
-      {de:'My name is...',fa:'اسمم ... هست',ex:'My name is Sara. Nice to meet you.',ex_fa:'اسمم ساراست. خوشوقتم.',tip:'What\'s your name? = اسمت چیه؟'},
-    ]
-  },
-  work: {
-    name:'Work & Office', emoji:'💼', free:false,
-    words:[
-      {de:'deadline',fa:'مهلت / ددلاین',ex:'The deadline is Friday.',ex_fa:'مهلت جمعه‌ست.',tip:'Miss the deadline = از مهلت جا موندن'},
-      {de:'meeting',fa:'جلسه',ex:'We have a meeting at 10.',ex_fa:'ساعت ۱۰ جلسه داریم.',tip:'Schedule a meeting = جلسه تنظیم کردن'},
-      {de:'feedback',fa:'بازخورد',ex:'Can I get your feedback on this?',ex_fa:'می‌تونم بازخوردت رو بدونم؟',tip:'Constructive feedback = بازخورد سازنده'},
-      {de:'remote work',fa:'کار از راه دور',ex:'I work remotely three days a week.',ex_fa:'سه روز در هفته از خونه کار می‌کنم.',tip:'Work from home = کار از خونه'},
-      {de:'promote',fa:'ترفیع دادن',ex:'She was promoted to manager.',ex_fa:'اون به مدیر ترفیع گرفت.',tip:'Promotion = ترفیع'},
-      {de:'resign',fa:'استعفا دادن',ex:'He resigned from his position.',ex_fa:'اون از سمتش استعفا داد.',tip:'Notice period = دوره اطلاع‌رسانی'},
-      {de:'negotiate',fa:'مذاکره کردن',ex:'We need to negotiate the salary.',ex_fa:'باید حقوق رو مذاکره کنیم.',tip:'Negotiation = مذاکره'},
-      {de:'brainstorm',fa:'طوفان فکری',ex:'Let\'s brainstorm some ideas.',ex_fa:'بیا چند ایده طرح کنیم.',tip:'Out-of-the-box thinking = تفکر خلاق'},
-    ]
-  },
-  travel: {
-    name:'Travel & Places', emoji:'✈️', free:false,
-    words:[
-      {de:'boarding pass',fa:'کارت پرواز',ex:'Please show your boarding pass.',ex_fa:'لطفاً کارت پروازتون رو نشون بدید.',tip:'Gate = دروازه پرواز'},
-      {de:'customs',fa:'گمرک',ex:'You must declare items at customs.',ex_fa:'باید اجناستون رو در گمرک اعلام کنید.',tip:'Duty-free = بدون عوارض گمرکی'},
-      {de:'check in',fa:'چک‌این کردن',ex:'Check-in opens 2 hours before departure.',ex_fa:'چک‌این ۲ ساعت قبل از پرواز باز میشه.',tip:'Check out = تسویه حساب هتل'},
-      {de:'delay',fa:'تأخیر',ex:'The flight is delayed by one hour.',ex_fa:'پرواز یک ساعت تأخیر داره.',tip:'On time = به موقع'},
-      {de:'accommodation',fa:'اقامتگاه / محل اقامت',ex:'We booked accommodation in the city center.',ex_fa:'اقامتگاه در مرکز شهر رزرو کردیم.',tip:'Book in advance = از قبل رزرو کردن'},
-      {de:'exchange rate',fa:'نرخ ارز',ex:'What\'s the exchange rate today?',ex_fa:'نرخ ارز امروز چقدره؟',tip:'Currency = واحد پولی'},
-    ]
-  },
-  idioms: {
-    name:'Common Idioms', emoji:'💬', free:false,
-    words:[
-      {de:'break the ice',fa:'یخ رو شکستن / شروع به صحبت کردن',ex:'He told a joke to break the ice.',ex_fa:'یه جوک گفت تا یخ رو بشکنه.',tip:'Used when meeting strangers'},
-      {de:'hit the nail on the head',fa:'دقیقاً درست گفتن',ex:'You hit the nail on the head with that suggestion.',ex_fa:'با اون پیشنهاد دقیقاً درست گفتی.',tip:'Be spot on = کاملاً درست بودن'},
-      {de:'under the weather',fa:'حالم خوب نیست',ex:'I\'m feeling under the weather today.',ex_fa:'امروز حالم خوب نیست.',tip:'Also: feel off = حال خوبی نداشتن'},
-      {de:'once in a blue moon',fa:'هر چند وقت یه بار / به ندرت',ex:'We only meet once in a blue moon.',ex_fa:'هر از گاهی همدیگه رو می‌بینیم.',tip:'Rarely = به ندرت'},
-      {de:'bite the bullet',fa:'دندون رو جگر گذاشتن',ex:'Just bite the bullet and do it.',ex_fa:'فقط دندون رو جگر بذار و انجامش بده.',tip:'Face the pain bravely'},
-      {de:'cost an arm and a leg',fa:'خیلی گرون بودن',ex:'That car cost an arm and a leg.',ex_fa:'اون ماشین خیلی گرون بود.',tip:'Pricey = گرون‌قیمت (informal)'},
-    ]
-  },
-  academic: {
-    name:'Academic English', emoji:'📚', free:false,
-    words:[
-      {de:'analyze',fa:'تحلیل کردن',ex:'We need to analyze the data carefully.',ex_fa:'باید داده‌ها رو با دقت تحلیل کنیم.',tip:'Analysis = تحلیل (noun)'},
-      {de:'hypothesis',fa:'فرضیه',ex:'The hypothesis was proven correct.',ex_fa:'فرضیه درست بود.',tip:'Hypothesize = فرضیه دادن'},
-      {de:'significant',fa:'قابل توجه / معنادار',ex:'The results are statistically significant.',ex_fa:'نتایج از نظر آماری معنادار هستن.',tip:'Significance = اهمیت / معناداری'},
-      {de:'furthermore',fa:'علاوه بر این',ex:'Furthermore, the study shows...',ex_fa:'علاوه بر این، مطالعه نشان می‌دهد...',tip:'Moreover / In addition = همین معنا'},
-      {de:'conclude',fa:'نتیجه گرفتن',ex:'We can conclude that the method works.',ex_fa:'می‌تونیم نتیجه بگیریم که روش کار می‌کنه.',tip:'Conclusion = نتیجه‌گیری'},
-      {de:'cite',fa:'ارجاع دادن / استناد کردن',ex:'Always cite your sources.',ex_fa:'همیشه منابعت رو ارجاع بده.',tip:'Citation = ارجاع / استناد'},
-    ]
-  },
-};
-;
-
-
+/* PACKS removed */
 /* ══════════════════════════════
    RENDER PACKS GRID
 ══════════════════════════════ */
-function renderPackGrid(){
-  const activePacks = targetLang === 'en' ? EN_PACKS : PACKS;
-  const container = Q('#packs-grid-container');
-  if(!container) return;
-
-  const packList = [
-    { id:'a1',     emoji:'🌱', name:'پایه A1',        count:50, free:true,  level:'A1', desc:'لغات پایه برای شروع' },
-    { id:'b1',     emoji:'💬', name:'مکالمه روزمره',  count:80, free:false, level:'A2', desc:'گفتگوی روزانه' },
-    { id:'work',   emoji:'💼', name:'کار و شغل',      count:60, free:false, level:'B1', desc:'محیط کاری' },
-    { id:'travel', emoji:'✈️', name:'سفر',            count:50, free:false, level:'A2', desc:'سفر و گردشگری' },
-  ];
-
-  const inFlashcard = new Set(words.map(w=>w.de));
-  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
-
-  var packHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-  packList.forEach(function(pack){
-    var packWords = (activePacks[pack.id] && activePacks[pack.id].words) || [];
-    var total = packWords.length;
-    var seenSet = getSeenPackWords(pack.id);
-    var learned = packWords.filter(function(w){
-      return inFlashcard.has(w.de) || inSavedList.has(w.de) || seenSet.has(w.de);
-    }).length;
-    var pct = total > 0 ? Math.round(learned/total*100) : 0;
-    var isDone = pct === 100;
-    var isLocked = !pack.free && userPlan === 'free';
-    var isStarted = learned > 0 && !isDone;
-
-    var cardStyle = 'font-family:var(--sans);border-radius:16px;padding:13px;display:flex;flex-direction:column;align-items:flex-start;text-align:right;min-height:150px;cursor:pointer;transition:border-color .15s,transform .12s;width:100%;position:relative;box-sizing:border-box;';
-    if(isDone){
-      cardStyle += 'background:rgba(18,110,53,.05);border:2px solid rgba(18,110,53,.3);';
-    } else if(isStarted){
-      cardStyle += 'background:var(--card);border:2px solid var(--accent);';
-    } else if(isLocked){
-      cardStyle += 'background:var(--bg2);border:1.5px solid var(--bg3);opacity:.85;';
-    } else {
-      cardStyle += 'background:var(--card);border:1.5px solid var(--bg3);';
-    }
-
-    // badge
-    var badge;
-    if(isDone){
-      badge = '<div style="font-size:10px;color:var(--ok);background:rgba(18,110,53,.1);padding:3px 10px;border-radius:20px;font-weight:600;margin-bottom:10px;font-family:var(--sans)">✓ تکمیل</div>';
-    } else if(isLocked){
-      badge = '<div style="font-size:10px;color:var(--ink3);background:var(--card);border:1px solid var(--bg3);padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:10px;font-family:var(--sans)">🔒 Pro</div>';
-    } else if(isStarted){
-      badge = '<div style="font-size:10px;color:var(--accent);background:var(--abl);padding:3px 10px;border-radius:20px;font-weight:600;margin-bottom:10px;font-family:var(--sans)">در حال یادگیری</div>';
-    } else if(pack.free){
-      badge = '<div style="font-size:10px;color:var(--ok);background:rgba(18,110,53,.1);padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:10px;font-family:var(--sans)">رایگان</div>';
-    } else {
-      badge = '<div style="font-size:10px;color:var(--ink3);background:var(--bg2);padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:10px;font-family:var(--sans)">Pro</div>';
-    }
-
-    // bottom
-    var bottom;
-    if(isDone){
-      bottom = '<div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between">'
-        + '<span style="font-size:11px;color:var(--ok);font-family:var(--sans)">مرور دوباره</span>'
-        + '<div style="width:28px;height:28px;border-radius:50%;background:rgba(18,110,53,.12);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="var(--ok)" stroke-width="1.5" stroke-linecap="round"/></svg></div>'
-        + '</div>';
-    } else if(isLocked){
-      bottom = '<div style="margin-top:auto;padding-top:12px">'
-        + '<div style="background:var(--accent);border-radius:10px;padding:9px;text-align:center;color:#fff;font-size:11px;font-weight:600;font-family:var(--sans)">ارتقا به Pro</div>'
-        + '</div>';
-    } else if(isStarted){
-      bottom = '<div style="margin-top:auto;padding-top:12px;width:100%">'
-        + '<div style="display:flex;justify-content:space-between;margin-bottom:5px">'
-        + '<span style="font-size:10px;color:var(--accent);font-weight:600;font-family:var(--sans)">' + (total-learned) + ' لغت مونده</span>'
-        + '<span style="font-size:10px;color:var(--ink3);font-family:var(--sans)">' + pct + '٪</span>'
-        + '</div>'
-        + '<div style="background:var(--bg3);border-radius:4px;height:3px"><div style="height:100%;border-radius:4px;background:var(--accent);width:' + pct + '%"></div></div>'
-        + '</div>';
-    } else {
-      bottom = '<div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between">'
-        + '<span style="font-size:11px;color:var(--ink3);font-family:var(--sans)">' + total + ' لغت</span>'
-        + '<div style="width:28px;height:28px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round"/></svg></div>'
-        + '</div>';
-    }
-
-    var checkmark = isDone ? '<div style="position:absolute;top:12px;left:12px;width:20px;height:20px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>' : '';
-
-    var clickHandler = isLocked ? 'showUpgrade()' : 'openPack(this.dataset.pid)';
-
-    packHtml += '<button data-pid="' + pack.id + '" onclick="' + clickHandler + '" type="button" style="' + cardStyle + '">'
-      + checkmark
-      + badge
-      + '<div style="font-size:15px;font-weight:600;color:' + (isDone ? 'var(--ok)' : 'var(--ink)') + ';line-height:1.2;margin-bottom:3px;font-family:var(--sans)">' + pack.name + '</div>'
-      + '<div style="font-size:11px;color:var(--ink3);line-height:1.5;font-family:var(--sans)">' + pack.desc + '</div>'
-      + bottom
-      + '</button>';
-  });
-  packHtml += '</div>';
-  container.innerHTML = packHtml;
-  container.innerHTML = packHtml;
-}
+function renderPackGrid(){/* packs removed */}
 
 
 let curPack = null;
@@ -6384,38 +5646,7 @@ function markPackWordSeen(packId, word){
   localStorage.setItem(key, JSON.stringify([...seen]));
 }
 
-function openPack(id){
-  const activePacks = targetLang==='en'?EN_PACKS:PACKS;
-  const pack = activePacks[id];
-  if(!pack) return;
-  if(!pack.free && userPlan==='free'){
-    showUpgrade();
-    return;
-  }
-  if(!pack.free && !pack.words.length){
-    showToast('این pack به‌زودی اضافه میشه 🔜');
-    return;
-  }
-  // Start learning flow — لغات قبلاً اضافه‌شده رو فیلتر کن
-  plPack = pack;
-  plPackId = id;
-  const inFlash = new Set(words.map(w=>w.de));
-  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
-  const inSeen  = getSeenPackWords(id);
-  plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
-
-  if(!plWords.length){
-    showToast('همه لغات این pack رو قبلاً خوندی! 🎉');
-    return;
-  }
-
-  plIdx = 0; plFlashCount = 0; plSaveCount = 0; plSkipCount = 0;
-  plFlipped = false;
-
-  Q('#pl-summary').style.display='none';
-  Q('#pack-learn-modal').classList.add('open');
-  plShowCard();
-}
+function openPack(){/* packs removed */}
 
 function plShowCard(){
   if(plIdx >= plWords.length){ plShowSummary(); return; }
@@ -6957,35 +6188,12 @@ function packLearnRestart(){
 </html>
 <script>
 // ── Lang Popover ──────────────────────────────
-function langPopoverToggle(e){
-  e.stopPropagation();
-  const pop = document.getElementById('lang-popover');
-  const chev = document.getElementById('lang-badge-chevron');
-  const open = pop.style.display === 'block';
-  pop.style.display = open ? 'none' : 'block';
-  chev.style.transform = open ? '' : 'rotate(180deg)';
-  langPopoverUpdateChecks();
-}
-function langPopoverPick(lang){
-  setTargetLang(lang);
-  document.getElementById('lang-popover').style.display = 'none';
-  document.getElementById('lang-badge-chevron').style.transform = '';
-  langPopoverUpdateChecks();
-  // توضیح برای زبان انگلیسی
-  if(lang === 'en'){
-    showToast('🇬🇧 حالا میتونی لغت انگلیسی یاد بگیری — همون سیستم هوشمند، برای انگلیسی', 4000, 'info');
-  }
-}
-function langPopoverUpdateChecks(){
-  const isDE = (typeof targetLang !== 'undefined' ? targetLang : 'de') === 'de';
-  const deCheck = document.getElementById('pop-de-check');
-  const enCheck = document.getElementById('pop-en-check');
-  if(deCheck) deCheck.style.visibility = isDE ? 'visible' : 'hidden';
-  if(enCheck) enCheck.style.visibility = isDE ? 'hidden' : 'visible';
-}
+
+
+
 document.addEventListener('click', function(e){
   const pop = document.getElementById('lang-popover');
-  const badge = document.getElementById('home-lang-badge');
+  
   if(pop && badge && !pop.contains(e.target) && !badge.contains(e.target)){
     pop.style.display = 'none';
     const chev = document.getElementById('lang-badge-chevron');
