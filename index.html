@@ -424,7 +424,7 @@ flex-shrink:0;}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s3) 0 var(--s3);animation:up .4s var(--ease) both}
+.hero{padding:var(--s2) 0 var(--s2);animation:up .4s var(--ease) both}
 .hero-eye{
   font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
   color:var(--accent);margin-bottom:var(--s3);opacity:.8;
@@ -439,7 +439,7 @@ flex-shrink:0;}
 /* ═══════════════════════════════════
    SEARCH
 ═══════════════════════════════════ */
-.s-wrap{position:sticky;top:0;background:var(--bg);padding:var(--s2) 0 var(--s2);margin-bottom:0;animation:up .35s .06s var(--ease) both;z-index:50;margin-left:calc(-1 * var(--s5));margin-right:calc(-1 * var(--s5));padding-left:var(--s5);padding-right:var(--s5);}
+.s-wrap{position:sticky;top:0;background:var(--bg);padding:var(--s1) 0 var(--s2);margin-bottom:0;animation:up .35s .06s var(--ease) both;z-index:50;margin-left:calc(-1 * var(--s5));margin-right:calc(-1 * var(--s5));padding-left:var(--s5);padding-right:var(--s5);}
 .s-field{
   width:100%;padding:13px var(--s5) 13px 56px;border-radius:var(--r6);
   border:1.5px solid var(--bg3);background:var(--card);color:var(--ink);
@@ -2348,28 +2348,37 @@ html,body{overflow:hidden!important;height:100%;}
 <!-- Bottom nav -->
 
 <!-- PDF Reader Pane -->
-<div id="pane-pdf" class="pane" style="padding:0!important">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:24px 20px;gap:16px;padding-bottom:calc(var(--nav-h) + 24px);box-sizing:border-box">
-    <div style="font-size:44px">📚</div>
-    <div style="font-size:20px;font-weight:700;color:var(--ink);font-family:var(--sans)">کتاب‌خوان آلمانی</div>
-    <div style="font-size:12px;color:var(--ink3);line-height:1.8;text-align:center">PDF کتاب آلمانیت رو باز کن<br>روی هر کلمه کلیک کن — معنی فارسی بگیر</div>
-    <a href="/reader" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:300px;background:var(--accent);color:#fff;border-radius:var(--r3);padding:16px;font-size:15px;font-weight:700;font-family:var(--sans);text-decoration:none">
-      <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="white" stroke-width="1.5"/><path d="M12 3v4h4" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10h6M7 13h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-      باز کردن کتاب‌خوان
-    </a>
-    <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:12px">
-        <span style="font-size:22px">🖱️</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">کلیک روی هر کلمه</div><div style="font-size:11px;color:var(--ink3)">معنی فارسی + مثال با AI</div></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:12px">
-        <span style="font-size:22px">➕</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">افزودن به فلش‌کارت</div><div style="font-size:11px;color:var(--ink3)">ذخیره مستقیم در حسابت</div></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:12px">
-        <span style="font-size:22px">📖</span>
-        <div><div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">متون A1 تا C1</div><div style="font-size:11px;color:var(--ink3)">Menschen، Schritte، Aspekte</div></div>
-      </div>
+<div id="pane-pdf" class="pane">
+  <div style="text-align:center;padding-bottom:var(--s6)">
+    <div style="font-size:44px;margin-bottom:var(--s3)">📚</div>
+    <div style="font-family:var(--sans);font-size:19px;font-weight:700;color:var(--ink);margin-bottom:var(--s2)">کتاب‌خوان آلمانی</div>
+    <div style="font-size:12px;color:var(--ink3);line-height:1.8">PDF کتاب آلمانیت رو باز کن<br>روی هر کلمه کلیک کن — معنی فارسی بگیر</div>
+  </div>
+
+  <a href="/reader" style="display:flex;align-items:center;justify-content:center;gap:10px;background:var(--accent);color:#fff;border-radius:var(--r3);padding:16px;font-size:15px;font-weight:700;font-family:var(--sans);text-decoration:none;margin-bottom:var(--s4)">
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="white" stroke-width="1.5"/><path d="M12 3v4h4" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10h6M7 13h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+    باز کردن کتاب‌خوان
+  </a>
+
+  <div style="display:flex;align-items:center;gap:var(--s3);background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s2)">
+    <span style="font-size:22px">🖱️</span>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">کلیک روی هر کلمه</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:2px">معنی فارسی + مثال با AI</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:var(--s3);background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s2)">
+    <span style="font-size:22px">➕</span>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">افزودن به فلش‌کارت</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:2px">ذخیره مستقیم در حسابت</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:var(--s3);background:var(--card);border:1px solid var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4)">
+    <span style="font-size:22px">📖</span>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ink);font-family:var(--sans)">متون نمونه A1–C1</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:2px">Menschen، Schritte، Aspekte</div>
     </div>
   </div>
 </div>
