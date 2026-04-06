@@ -246,8 +246,8 @@ async function loadAll() {
 
 async function loadUsers() {
   try {
-    const { data, error } = await sb.from('profiles')
-      .select('id,plan,word_count,is_beta,search_count,pro_until,last_seen_at,session_count,email')
+    const { data, error } = await sb.from('admin_users')
+      .select('id,plan,word_count,is_beta,search_count,pro_until,last_seen_at,session_count,email,created_at')
       .order('created_at', { ascending: false });
     if (error) throw error;
 
