@@ -9,11 +9,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* IRANYekan via Google Fonts fallback */
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -98,14 +96,14 @@ button,input{font-family:var(--sans)}
 /* ═══════════════════════════════════
    APP WRAPPER
 ═══════════════════════════════════ */
-.app{max-width:600px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.app{max-width:600px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
 
 /* ═══════════════════════════════════
    TOPBAR
 ═══════════════════════════════════ */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px var(--s5);position:relative;top:0;background:var(--bg);flex-shrink:0;
+  padding:14px var(--s5);position:sticky;top:0;background:var(--bg);
   z-index:30;border-bottom:1px solid transparent;
   transition:border-color .2s,background .3s;
 }
@@ -138,7 +136,7 @@ body.offline .topbar{top:36px}
   display:flex;align-items:stretch;
   padding-bottom:env(safe-area-inset-bottom);
   z-index:30;
-flex-shrink:0;}
+}
 .nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;padding:10px 4px 8px;cursor:pointer;border:none;background:transparent;
@@ -181,13 +179,8 @@ flex-shrink:0;}
   display:none;
   padding:var(--s5) var(--s5) calc(var(--nav-h) + 20px);
   flex:1;
-  overflow-y:auto;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  
-  box-sizing:border-box;
 }
-.pane.on{display:block;animation:fade .15s ease}
+.pane.on{display:block;animation:fade .2s var(--ease)}
 
 /* ═══════════════════════════════════
    GATE
@@ -439,7 +432,7 @@ flex-shrink:0;}
 /* ═══════════════════════════════════
    SEARCH
 ═══════════════════════════════════ */
-.s-wrap{position:sticky;top:0;background:var(--bg);padding:var(--s1) 0 var(--s2);margin-bottom:0;animation:up .35s .06s var(--ease) both;z-index:50;margin-left:calc(-1 * var(--s5));margin-right:calc(-1 * var(--s5));padding-left:var(--s5);padding-right:var(--s5);}
+.s-wrap{position:relative;margin-bottom:var(--s2);animation:up .35s .06s var(--ease) both;z-index:50}
 .s-field{
   width:100%;padding:13px var(--s5) 13px 56px;border-radius:var(--r6);
   border:1.5px solid var(--bg3);background:var(--card);color:var(--ink);
@@ -906,6 +899,21 @@ flex-shrink:0;}
 .drw-upgrade-btn.hidden{display:none}
 
 /* Lang switcher inside drawer — compact toggle */
+.drw-lang-toggle{
+  display:flex;background:var(--bg2);border:1px solid var(--bg3);
+  border-radius:var(--r2);padding:3px;gap:3px;margin-bottom:var(--s4);
+}
+.drw-lang-opt{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px;border-radius:8px;border:none;background:transparent;
+  font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink2);
+  cursor:pointer;transition:all .18s;
+}
+.drw-lang-opt.active{
+  background:var(--card);color:var(--accent);font-weight:700;
+  box-shadow:var(--sh1);
+}
+
 /* Action row */
 .drw-actions{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s4)}
 .drw-action-row{display:flex;gap:var(--s2)}
@@ -983,7 +991,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 /* ═══════════════════════════════════
    LIST
 ═══════════════════════════════════ */
-.list-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)position:sticky;top:0;background:var(--bg);z-index:40;}
+.list-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s4)}
 .list-title{font-family:var(--sans);font-size:24px;font-weight:700;color:var(--ink)}
 .list-count{font-size:12px;color:var(--ink3);background:var(--bg2);border:1px solid var(--bg3);padding:3px 10px;border-radius:20px}
 .due-banner{
@@ -1329,425 +1337,12 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
-/* ══ TG MINI APP ══ */
-.low-perf *,.low-perf *::before,.low-perf *::after{animation:none!important;transition:none!important}
-
-/* ══ UI REFRESH ══ */
-.reminder,#reminder{display:none!important}
-.hero{padding:var(--s2) 0 var(--s3)!important}
-.hero-eye{display:none!important}
-.hero p{display:none!important}
-.hero h1{font-size:24px!important;font-weight:700!important;line-height:1.25!important;margin-bottom:var(--s3)!important;letter-spacing:-.3px!important}
-.hint-chips,#hint-chips,.hint{display:none!important}
-.search-tip{font-size:11px!important;margin-bottom:var(--s2)!important}
-.sum-card{padding:var(--s3) var(--s4)!important;border-radius:var(--r3)!important;margin-top:var(--s2)!important}
-.sum-header{margin-bottom:var(--s3)!important}
-.sum-title{font-size:12px!important}
-.sum-streak{font-size:11px!important;padding:3px 8px!important}
-.sum-nums{gap:var(--s1)!important;margin-bottom:var(--s3)!important}
-.sum-nb{padding:var(--s2) var(--s1)!important;border-radius:var(--r2)!important}
-.sum-n{font-size:22px!important}
-.sum-l{font-size:9px!important}
-.sum-dots{margin-bottom:var(--s3)!important}
-.sd-c{width:6px!important;height:6px!important}
-.sum-acts{gap:var(--s1)!important}
-.sum-review{padding:10px var(--s3)!important;font-size:12px!important;border-radius:var(--r2)!important}
-.sum-all{padding:10px var(--s3)!important;font-size:12px!important;border-radius:var(--r2)!important}
-.sync-dot{display:none!important}
-.topbar{padding:10px var(--s5)!important}
-.logo-name{font-size:16px!important}
-.logo-mark{width:24px!important;height:24px!important;border-radius:7px!important}
-.nav-item{padding:8px 4px 6px!important;gap:2px!important}
-.nav-label{font-size:10px!important;font-weight:500!important;display:block!important}
-.nav-item svg{width:19px!important;height:19px!important}
-html,body{overflow:hidden!important;height:100%;}
-.app{overflow-x:hidden!important;min-height:var(--tg-viewport-stable-height,100dvh)!important}
-.res{overflow-x:hidden!important;width:100%!important}
-.res-word-block{padding:var(--s4) var(--s4) var(--s3)!important;overflow-x:hidden!important}
-.res-footer{padding:var(--s3) var(--s4)!important}
-.pane{padding-right:var(--s4)!important;padding-left:var(--s4)!important}
-#pane-home{padding-right:var(--s4)!important;padding-left:var(--s4)!important}
-
-/* ══ TOPBAR STATES ══ */
-.btn-login{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r6);background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0}
-.btn-login:active{opacity:.75}
-.top-pro-badge{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
-.top-free-badge{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;background:var(--bg2);border:1px solid var(--bg3);color:var(--ink3);font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .15s}
-.top-free-badge.warn{background:var(--warnbg);border-color:var(--warn);color:var(--warn)}
-.top-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:1.5px solid transparent;transition:border-color .2s}
-.top-avatar.pro{border-color:#f59e0b}
-
-/* ══ EMPTY STATE ══ */
-.ws-empty{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--s8) var(--s5);gap:var(--s3)}
-.ws-empty.show{display:flex}
-.ws-empty-icon{font-size:40px;margin-bottom:var(--s2)}
-.ws-empty-title{font-size:17px;font-weight:700;color:var(--ink)}
-.ws-empty-sub{font-size:13px;color:var(--ink3);line-height:1.6;max-width:260px}
-.ws-empty-btn{margin-top:var(--s2);background:var(--accent);color:#fff;border:none;border-radius:var(--r2);padding:11px var(--s6);font-size:13px;font-weight:600;font-family:var(--sans);cursor:pointer}
-
-/* ══ LOGIN PROMPT ══ */
-.login-prompt{display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--abl);border:1px solid rgba(26,58,242,.15);border-radius:var(--r2);padding:10px 14px;margin-top:var(--s2)}
-.login-prompt.show{display:flex}
-.login-prompt-txt{font-size:12px;color:var(--accent);font-weight:500;line-height:1.4}
-.login-prompt-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r1);padding:6px 12px;font-size:12px;font-weight:600;font-family:var(--sans);cursor:pointer;white-space:nowrap;flex-shrink:0}
-.login-prompt-x{background:transparent;border:none;color:var(--ink3);cursor:pointer;font-size:14px;padding:2px 4px;flex-shrink:0}
-
-/* ══ NOTIFICATION PROMPT ══ */
-.notif-prompt{display:none;flex-direction:column;gap:10px;background:linear-gradient(135deg,rgba(26,58,242,.08),rgba(26,58,242,.04));border:1px solid rgba(26,58,242,.18);border-radius:var(--r3);padding:var(--s4);margin-top:var(--s3)}
-.notif-prompt.show{display:flex}
-.notif-prompt-top{display:flex;align-items:flex-start;gap:10px}
-.notif-prompt-ico{font-size:22px;flex-shrink:0;margin-top:1px}
-.notif-prompt-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
-.notif-prompt-sub{font-size:11px;color:var(--ink3);line-height:1.5}
-.notif-prompt-actions{display:flex;gap:8px}
-.notif-prompt-yes{flex:1;padding:9px;border-radius:var(--r2);background:var(--accent);color:#fff;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer}
-.notif-prompt-no{padding:9px 14px;border-radius:var(--r2);background:var(--bg2);border:1px solid var(--bg3);color:var(--ink3);font-family:var(--sans);font-size:12px;cursor:pointer}
-
-/* ══ ONBOARDING ══ */
-.ob{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;background:#0f0f0e}
-.ob.hide{display:none}
-.ob-prog{height:2px;background:rgba(255,255,255,.08);flex-shrink:0}
-.ob-prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease}
-.ob-track{flex:1;overflow:hidden;cursor:grab;min-height:0}
-.ob-track:active{cursor:grabbing}
-.ob-reel{display:flex;height:100%;transition:transform .4s cubic-bezier(.4,0,.2,1)}
-.ob-reel.drag{transition:none}
-.ob-slide{min-width:100%;height:100%;display:flex;flex-direction:column;padding:22px 22px 10px}
-.ob-vis{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.ob-vi{width:100%}
-.ob-txt{flex-shrink:0;text-align:center}
-.ob-step{font-size:9px;font-weight:700;letter-spacing:2.5px;color:rgba(255,255,255,.18);margin-bottom:5px}
-.ob-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.2}
-.ob-sub{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6}
-.ob-foot{padding:10px 22px 20px;display:flex;flex-direction:column;align-items:center;gap:9px;flex-shrink:0}
-.ob-dots{display:flex;gap:4px;align-items:center}
-.ob-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.14);transition:all .3s}
-.ob-dot.on{width:16px;border-radius:3px;background:var(--accent)}
-.ob-btn{width:100%;padding:13px;border-radius:13px;border:none;background:var(--accent);color:#fff;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .15s,transform .15s}
-.ob-btn:active{opacity:.8;transform:scale(.98)}
-.ob-skip{font-size:11px;color:rgba(255,255,255,.2);cursor:pointer;background:transparent;border:none;font-family:var(--sans);padding:3px 10px}
-.s1-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px}
-.s1-row{display:flex;align-items:center;gap:10px}
-.s1-inp{font-family:var(--serif);font-style:italic;font-size:18px;color:rgba(255,255,255,.9);flex:1;min-height:26px}
-.s1-cur{display:inline-block;width:2px;height:17px;background:#fff;vertical-align:middle;margin-right:1px}
-.s1-cur.blink{animation:obblk .7s step-end infinite}
-@keyframes obblk{0%,100%{opacity:1}50%{opacity:0}}
-.s1-btn{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.s1-btn.pop{animation:obbp .25s cubic-bezier(.34,1.56,.64,1)}
-@keyframes obbp{0%{transform:scale(1)}50%{transform:scale(.82)}100%{transform:scale(1)}}
-.s1-res{max-height:0;overflow:hidden;opacity:0;margin-top:0;transition:max-height .5s ease,opacity .4s ease,margin-top .4s ease}
-.s1-res.show{max-height:150px;opacity:1;margin-top:12px}
-.s1-card{background:rgba(255,255,255,.05);border-radius:12px;padding:14px;border-right:2px solid var(--accent)}
-.s1-word{font-family:var(--serif);font-size:26px;font-weight:700;color:#fff;direction:ltr;line-height:1;margin-bottom:4px}
-.s1-fa{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:8px}
-.s1-tags{display:flex;gap:5px}
-.s1-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(26,58,242,.28);color:rgba(150,170,255,.9)}
-.ob-lang-list{display:flex;flex-direction:column;gap:10px;width:100%}
-.ob-lc{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:14px;padding:15px 16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.ob-lc::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
-.ob-lc.sel{border-color:var(--accent)}.ob-lc.sel::before{opacity:1}
-.ob-lc:active{transform:scale(.97)}
-.ob-lc-flag{font-size:26px;flex-shrink:0;position:relative;z-index:1}
-.ob-lc-info{flex:1;position:relative;z-index:1}
-.ob-lc-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
-.ob-lc-sub{font-size:11px;color:rgba(255,255,255,.35)}
-.ob-lc-radio{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;position:relative;z-index:1}
-.ob-lc.sel .ob-lc-radio{background:var(--accent);border-color:var(--accent)}
-.ob-lc.sel .ob-lc-radio::after{content:'';display:block;width:5px;height:8px;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg) translateY(-1px)}
-.ob-lv-list{display:flex;flex-direction:column;gap:7px;width:100%}
-.ob-lvcard{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.ob-lvcard::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
-.ob-lvcard.sel{border-color:var(--accent)}.ob-lvcard.sel::before{opacity:1}
-.ob-lvcard:active{transform:scale(.97)}
-.ob-lv-tag{font-family:var(--serif);font-size:16px;font-weight:700;color:#fff;min-width:28px;position:relative;z-index:1}
-.ob-lvcard.sel .ob-lv-tag{color:#7090ff}
-.ob-lv-info{flex:1;position:relative;z-index:1}
-.ob-lv-name{font-size:12px;font-weight:600;color:#fff}
-.ob-lv-desc{font-size:10px;color:rgba(255,255,255,.35);margin-top:1px}
-.ob-lv-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:4px;overflow:hidden}
-.ob-lv-fill{height:100%;border-radius:2px;background:var(--accent)}
-.ob-goal-hint{font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:8px}
-.ob-goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%}
-.ob-gc{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 8px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.ob-gc::before{content:'';position:absolute;inset:0;background:rgba(26,58,242,.12);opacity:0;transition:opacity .2s}
-.ob-gc.sel{border-color:var(--accent)}.ob-gc.sel::before{opacity:1}
-.ob-gc:active{transform:scale(.95)}
-.ob-gc-chk{position:absolute;top:6px;left:6px;width:16px;height:16px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:all .2s cubic-bezier(.34,1.56,.64,1);z-index:2}
-.ob-gc.sel .ob-gc-chk{opacity:1;transform:scale(1)}
-.ob-gc-ico{font-size:20px;position:relative;z-index:1}
-.ob-gc-name{font-size:11px;font-weight:600;color:#fff;text-align:center;line-height:1.3;position:relative;z-index:1}
-.ob-gc.sel .ob-gc-name{color:#a0b4ff}
-.ob-sum-wrap{display:flex;flex-direction:column;gap:8px;width:100%}
-.ob-sum-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 16px}
-.ob-sum-row{display:flex;align-items:flex-start;gap:10px}
-.ob-sum-ico{font-size:18px;flex-shrink:0;margin-top:1px}
-.ob-sum-lbl{font-size:10px;color:rgba(255,255,255,.3);margin-bottom:3px}
-.ob-sum-val{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
-.ob-sum-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
-.ob-sum-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(26,58,242,.2);color:rgba(130,160,255,.9)}
-.ob-sum-ai{display:flex;align-items:center;gap:8px;background:rgba(26,58,242,.1);border:1px solid rgba(26,58,242,.2);border-radius:12px;padding:11px 13px}
-.ob-sum-ai-ico{font-size:16px;flex-shrink:0}
-.ob-sum-ai-txt{font-size:11px;color:rgba(100,140,255,.85);line-height:1.5}
-
-
-/* ── PDF Reader ── */
-#rdr-canvas-wrap{position:relative;flex-shrink:0;box-shadow:0 4px 24px rgba(0,0,0,.18);border-radius:2px}
-
-/* PDF.js official text layer — invisible ولی قابل select */
-#rdr-text-layer{
-  position:absolute;top:0;left:0;
-  overflow:hidden;opacity:1;
-  line-height:1;user-select:text;-webkit-user-select:text;
-}
-#rdr-text-layer span{
-  color:transparent;
-  position:absolute;
-  white-space:pre;
-  transform-origin:0% 0%;
-  cursor:text;
-}
-/* وقتی کاربر select می‌کنه */
-#rdr-text-layer span::selection{
-  background:rgba(26,58,242,.25);
-  color:transparent;
-}
-/* کلمه زیر موس */
-#rdr-text-layer span.rdr-hover{
-  background:rgba(26,58,242,.12);
-  border-radius:1px;
-  cursor:pointer;
-}
-/* کلمه انتخاب‌شده */
-#rdr-text-layer span.rdr-sel{
-  background:rgba(26,58,242,.22);
-  outline:1.5px solid rgba(26,58,242,.4);
-  border-radius:2px;
-  cursor:pointer;
-}
-/* کلمه اضافه‌شده به فلش‌کارت */
-#rdr-text-layer span.rdr-added{
-  background:rgba(42,110,53,.15);
-  border-radius:1px;
-}
-.pdf-topbar{
-  display:flex;align-items:center;gap:10px;
-  padding:10px var(--s4);border-bottom:1px solid var(--bg2);
-  flex-shrink:0;background:var(--bg);
-}
-.pdf-upload-area{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:16px;padding:40px 24px;
-  border:2px dashed var(--bg3);border-radius:var(--r4);
-  margin:20px;cursor:pointer;transition:border-color .2s;
-  text-align:center;
-}
-.pdf-upload-area:hover{border-color:var(--accent)}
-.pdf-upload-icon{font-size:40px;line-height:1}
-.pdf-upload-title{font-size:16px;font-weight:600;color:var(--ink)}
-.pdf-upload-sub{font-size:12px;color:var(--ink3);line-height:1.6}
-.pdf-upload-btn{
-  background:var(--accent);color:white;border:none;
-  border-radius:var(--r2);padding:10px 20px;
-  font-size:14px;font-weight:600;cursor:pointer;
-  font-family:var(--sans);transition:opacity .2s;
-}
-.pdf-upload-btn:hover{opacity:.88}
-.pdf-body{flex:1;display:flex;min-height:0;overflow:hidden}
-.pdf-viewer{
-  flex:1;overflow-y:auto;padding:20px;
-  background:var(--bg2);display:flex;flex-direction:column;align-items:center;gap:12px;
-}
-.pdf-canvas-wrap{
-  background:white;border-radius:var(--r2);
-  box-shadow:0 2px 12px rgba(0,0,0,.1);
-  position:relative;overflow:hidden;
-}
-.pdf-canvas-wrap canvas{display:block}
-.pdf-sidebar{
-  width:220px;flex-shrink:0;border-right:1px solid var(--bg2);
-  display:flex;flex-direction:column;overflow:hidden;
-  background:var(--bg);
-}
-.pdf-sidebar-title{
-  font-size:10px;font-weight:700;letter-spacing:1px;
-  color:var(--ink3);padding:12px 14px 8px;
-  text-transform:uppercase;border-bottom:1px solid var(--bg2);
-  flex-shrink:0;
-}
-.pdf-words-list{flex:1;overflow-y:auto}
-.pdf-word-item{
-  padding:10px 14px;border-bottom:1px solid var(--bg2);
-  cursor:pointer;transition:background .12s;
-}
-.pdf-word-item:hover{background:var(--bg2)}
-.pdf-word-de{font-size:13px;font-weight:600;color:var(--ink);direction:ltr}
-.pdf-word-fa{font-size:11px;color:var(--ink3);margin-top:2px}
-.pdf-word-badge{
-  display:inline-block;font-size:9px;font-weight:700;
-  padding:2px 6px;border-radius:20px;margin-top:4px;
-  background:var(--abl);color:var(--accent);
-}
-.pdf-word-empty{
-  padding:20px 14px;font-size:12px;color:var(--ink3);
-  line-height:1.7;text-align:center;
-}
-.pdf-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px var(--s4);border-top:1px solid var(--bg2);
-  flex-shrink:0;background:var(--bg);gap:12px;
-}
-.pdf-page-info{font-size:12px;color:var(--ink3);white-space:nowrap}
-.pdf-progress{flex:1;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
-.pdf-progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
-.pdf-nav-btn{
-  background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);
-  padding:5px 12px;font-size:12px;font-weight:600;color:var(--ink);
-  cursor:pointer;font-family:var(--sans);transition:background .15s;
-}
-.pdf-nav-btn:hover{background:var(--bg3)}
-.pdf-nav-btn:disabled{opacity:.4;cursor:not-allowed}
-
-/* tooltip روی selection */
-#pdf-tooltip{
-  position:fixed;z-index:999;
-  background:var(--card);border:1px solid var(--bg3);
-  border-radius:var(--r3);padding:14px 16px;
-  width:260px;box-shadow:0 8px 32px rgba(0,0,0,.15);
-  display:none;
-}
-#pdf-tooltip.show{display:block}
-.pt-loading{font-size:12px;color:var(--ink3);text-align:center;padding:8px 0}
-.pt-word{font-size:16px;font-weight:700;color:var(--ink);direction:ltr;margin-bottom:2px}
-.pt-article{font-size:11px;color:var(--ink3);margin-bottom:6px}
-.pt-meaning{font-size:13px;color:var(--ink2);margin-bottom:8px}
-.pt-example{
-  font-size:11px;color:var(--ink3);direction:ltr;
-  border-right:2px solid var(--bg3);padding-right:8px;
-  margin-bottom:12px;font-style:italic;line-height:1.6;
-}
-.pt-add-btn{
-  width:100%;padding:9px;background:var(--accent);color:white;
-  border:none;border-radius:var(--r2);font-size:13px;font-weight:600;
-  cursor:pointer;font-family:var(--sans);transition:opacity .2s;
-}
-.pt-add-btn:hover{opacity:.88}
-.pt-add-btn.added{background:var(--ok);pointer-events:none}
-.pt-add-btn:disabled{opacity:.6;cursor:not-allowed}
-.pt-close{
-  position:absolute;top:8px;left:10px;
-  background:none;border:none;color:var(--ink3);
-  font-size:16px;cursor:pointer;padding:2px 6px;
-  border-radius:4px;
-}
-.pt-close:hover{background:var(--bg2)}
 </style>
 </head>
 <body>
-<script>
-(function(){
-  var tg=window.Telegram&&window.Telegram.WebApp;
-  if(!tg){window.tgApp=null;return;}
-  tg.ready();tg.expand();
-  if(tg.colorScheme==='dark')document.body.classList.add('dark');
-  function syncHeader(){var dark=document.body.classList.contains('dark');try{tg.setHeaderColor(dark?'#0d0d0c':'#f5f4f0');}catch(e){}try{tg.setBackgroundColor(dark?'#0d0d0c':'#f5f4f0');}catch(e){}try{tg.setBottomBarColor(dark?'#161614':'#ffffff');}catch(e){}}
-  syncHeader();
-  tg.onEvent('themeChanged',function(){if(tg.colorScheme==='dark')document.body.classList.add('dark');else document.body.classList.remove('dark');syncHeader();});
-  function applySafeArea(){var sa=tg.safeAreaInset||{};var tb=document.getElementById('topbar');if(tb)tb.style.paddingTop=((sa.top||0)+10)+'px';var bn=document.querySelector('.bottom-nav');if(bn)bn.style.paddingBottom=(sa.bottom||0)+'px';}
-  applySafeArea();tg.onEvent('safeAreaChanged',applySafeArea);tg.onEvent('contentSafeAreaChanged',applySafeArea);
-  try{tg.disableVerticalSwipes();}catch(e){}
-  var pm=navigator.userAgent.match(/TelegramPerformanceClass\/([0-9]+)/);if(pm&&parseInt(pm[1])<2)document.body.classList.add('low-perf');
-  tg.BackButton.onClick(function(){
-    var ses=document.getElementById('session-overlay'),drw=document.getElementById('drawer'),res=document.getElementById('res'),ph=document.getElementById('ph-res');
-    if(ses&&ses.classList.contains('open')){try{sesEnd();}catch(e){ses.classList.remove('open');}tg.BackButton.hide();return;}
-    if(drw&&drw.classList.contains('open')){try{drawerClose();}catch(e){}tg.BackButton.hide();return;}
-    if(res&&res.classList.contains('show')){try{clearResult();}catch(e){res.classList.remove('show');}tg.BackButton.hide();return;}
-    if(ph&&ph.classList.contains('show')){ph.classList.remove('show');tg.BackButton.hide();return;}
-    tg.BackButton.hide();
-  });
-  var BB=tg.BottomButton||tg.MainButton;
-  if(BB){BB.setParams({text:'افزودن به فلش‌کارت',color:'#1a3af2',text_color:'#ffffff',is_active:true,is_visible:false});BB.onClick(function(){tg.HapticFeedback.impactOccurred('medium');var ph=document.getElementById('ph-res');if(ph&&ph.classList.contains('show')){try{addPhrase();}catch(e){}}else{try{addWord();}catch(e){}}BB.hide();});}
-  document.addEventListener('click',function(e){if(e.target.closest('button,.nav-item,.s-btn'))tg.HapticFeedback.impactOccurred('light');},{passive:true});
-  window.tgApp={tg:tg,isTg:true,user:tg.initDataUnsafe&&tg.initDataUnsafe.user,showBack:function(){tg.BackButton.show();},hideBack:function(){tg.BackButton.hide();},showAdd:function(t){if(BB){BB.setText(t||'افزودن به فلش‌کارت');BB.show();}},hideAdd:function(){if(BB)BB.hide();},haptic:function(t){try{if(['success','error','warning'].includes(t))tg.HapticFeedback.notificationOccurred(t);else tg.HapticFeedback.impactOccurred(t||'medium');}catch(e){}},setTheme:syncHeader};
-  console.log('[TG]',tg.version,tg.platform,tg.colorScheme);
-})();
-</script>
-<!-- ══ ONBOARDING ══ -->
-<div class="ob hide" id="ob">
-  <div class="ob-prog"><div class="ob-prog-fill" id="ob-prog" style="width:20%"></div></div>
-  <div class="ob-track" id="ob-track"><div class="ob-reel" id="ob-reel">
-
-    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-      <div class="s1-box">
-        <div class="s1-row">
-          <div class="s1-inp" id="s1i"><span class="s1-cur blink"></span></div>
-          <div class="s1-btn" id="s1b"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        </div>
-        <div class="s1-res" id="s1r"><div class="s1-card">
-          <div class="s1-word">Sehnsucht</div><div class="s1-fa">دلتنگی عمیق · اشتیاق</div>
-          <div class="s1-tags"><span class="s1-tag">C1</span><span class="s1-tag">اسم · مؤنث</span></div>
-        </div></div>
-      </div>
-    </div></div>
-    <div class="ob-txt"><div class="ob-step">۱ از ۵</div><div class="ob-title" id="ob-title-0">به Wortschatz خوش اومدی 👋</div><div class="ob-sub" id="ob-sub-0">چند سوال کوتاه تا بهترین تجربه رو برات بسازیم</div></div></div>
-
-    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-      <div class="ob-lang-list">
-        <div class="ob-lc sel" id="ob-lde" onclick="obPickLang('de')"><div class="ob-lc-flag">🇩🇪</div><div class="ob-lc-info"><div class="ob-lc-name">آلمانی یاد می‌گیرم</div><div class="ob-lc-sub">Deutsch lernen</div></div><div class="ob-lc-radio"></div></div>
-        <div class="ob-lc" id="ob-len" onclick="obPickLang('en')"><div class="ob-lc-flag">🇬🇧</div><div class="ob-lc-info"><div class="ob-lc-name">انگلیسی یاد می‌گیرم</div><div class="ob-lc-sub">Learning English</div></div><div class="ob-lc-radio"></div></div>
-      </div>
-    </div></div>
-    <div class="ob-txt"><div class="ob-step">۲ از ۵</div><div class="ob-title" id="ob-title-1">کدوم زبان؟</div><div class="ob-sub" id="ob-sub-1">بعداً از تنظیمات می‌تونی تغییر بدی</div></div></div>
-
-    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-      <div class="ob-lv-list">
-        <div class="ob-lvcard" id="ob-la1" onclick="obPickLevel('A1')"><div class="ob-lv-tag">A1</div><div class="ob-lv-info"><div class="ob-lv-name">تازه شروع کردم</div><div class="ob-lv-desc">هیچ پیش‌زمینه‌ای ندارم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:8%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-la2" onclick="obPickLevel('A2')"><div class="ob-lv-tag">A2</div><div class="ob-lv-info"><div class="ob-lv-name">یه کم بلدم</div><div class="ob-lv-desc">جملات ساده رو می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:22%"></div></div></div></div>
-        <div class="ob-lvcard sel" id="ob-lb1" onclick="obPickLevel('B1')"><div class="ob-lv-tag">B1</div><div class="ob-lv-info"><div class="ob-lv-name">متوسطم</div><div class="ob-lv-desc">می‌تونم صحبت کنم ولی محدودم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:45%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-lb2" onclick="obPickLevel('B2')"><div class="ob-lv-tag">B2</div><div class="ob-lv-info"><div class="ob-lv-name">نسبتاً خوبم</div><div class="ob-lv-desc">روان صحبت می‌کنم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:65%"></div></div></div></div>
-        <div class="ob-lvcard" id="ob-lc1" onclick="obPickLevel('C1')"><div class="ob-lv-tag">C1</div><div class="ob-lv-info"><div class="ob-lv-name">پیشرفته‌ام</div><div class="ob-lv-desc">فیلم و کتاب می‌فهمم</div><div class="ob-lv-bar"><div class="ob-lv-fill" style="width:82%"></div></div></div></div>
-      </div>
-    </div></div>
-    <div class="ob-txt"><div class="ob-step">۳ از ۵</div><div class="ob-title" id="ob-title-2">سطحت الان کجاست؟</div><div class="ob-sub" id="ob-sub-2">صادقانه انتخاب کن — روی لغات پیشنهادی تأثیر داره</div></div></div>
-
-    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-      <div class="ob-goal-hint">می‌تونی چند تا انتخاب کنی</div>
-      <div class="ob-goal-grid">
-        <div class="ob-gc sel" id="ob-g-travel" onclick="obToggleGoal('travel',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">✈️</div><div class="ob-gc-name">سفر و مهاجرت</div></div>
-        <div class="ob-gc" id="ob-g-work" onclick="obToggleGoal('work',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💼</div><div class="ob-gc-name">کار و تجارت</div></div>
-        <div class="ob-gc" id="ob-g-exam" onclick="obToggleGoal('exam',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">📝</div><div class="ob-gc-name">آزمون Goethe</div></div>
-        <div class="ob-gc" id="ob-g-daily" onclick="obToggleGoal('daily',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">💬</div><div class="ob-gc-name">مکالمه روزمره</div></div>
-        <div class="ob-gc" id="ob-g-study" onclick="obToggleGoal('study',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">🎓</div><div class="ob-gc-name">تحصیل در خارج</div></div>
-        <div class="ob-gc" id="ob-g-fun" onclick="obToggleGoal('fun',this)"><div class="ob-gc-chk"><svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ob-gc-ico">❤️</div><div class="ob-gc-name">علاقه شخصی</div></div>
-      </div>
-    </div></div>
-    <div class="ob-txt"><div class="ob-step">۴ از ۵</div><div class="ob-title" id="ob-title-3">هدفت چیه؟</div><div class="ob-sub" id="ob-sub-3">بر اساس انتخابت بهترین لغات رو پیشنهاد میدیم</div></div></div>
-
-    <div class="ob-slide"><div class="ob-vis"><div class="ob-vi">
-      <div class="ob-sum-wrap">
-        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico" id="ob-sum-flag">🇩🇪</div><div><div class="ob-sum-lbl">زبان</div><div class="ob-sum-val" id="ob-sum-lang">آلمانی</div></div></div></div>
-        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">📊</div><div><div class="ob-sum-lbl">سطح فعلی</div><div class="ob-sum-val" id="ob-sum-level">B1 — متوسط</div></div></div></div>
-        <div class="ob-sum-card"><div class="ob-sum-row"><div class="ob-sum-ico">🎯</div><div><div class="ob-sum-lbl">اهداف</div><div class="ob-sum-tags" id="ob-sum-goals"></div></div></div></div>
-        <div class="ob-sum-ai"><div class="ob-sum-ai-ico">✨</div><div class="ob-sum-ai-txt">یه مجموعه لغت شخصی‌سازی‌شده بر اساس پروفایلت آماده کردیم</div></div>
-      </div>
-    </div></div>
-    <div class="ob-txt"><div class="ob-step">۵ از ۵</div><div class="ob-title" id="ob-title-4">همه چیز آماده‌ست 🚀</div><div class="ob-sub" id="ob-sub-4">می‌تونی هر وقت از پروفایلت تغییر بدی</div></div></div>
-
-  </div></div>
-  <div class="ob-foot">
-    <div class="ob-dots">
-      <div class="ob-dot on" id="obd0"></div><div class="ob-dot" id="obd1"></div>
-      <div class="ob-dot" id="obd2"></div><div class="ob-dot" id="obd3"></div><div class="ob-dot" id="obd4"></div>
-    </div>
-    <button class="ob-btn" onclick="obNext()">
-      <span id="ob-btntxt">بعدی</span>
-      <svg id="ob-btnarr" width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <button class="ob-skip" id="ob-skip" onclick="obClose()">رد کن</button>
-  </div>
-</div>
 
 
-<div class="off-bar" id="off-bar" id="offline-bar-txt">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
+<div class="off-bar" id="off-bar">📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره</div>
 
 <!-- Auth Gate -->
 <div id="gate">
@@ -1854,9 +1449,9 @@ html,body{overflow:hidden!important;height:100%;}
       <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M17.1 9.2c0-.6-.1-1.2-.2-1.7H9v3.3h4.6c-.2 1-.8 1.8-1.7 2.4v2h2.7c1.6-1.5 2.5-3.6 2.5-6z" fill="#4285F4"/><path d="M9 18c2.3 0 4.2-.7 5.6-2l-2.7-2c-.8.5-1.7.8-2.9.8-2.2 0-4.1-1.5-4.7-3.5H1.5v2.1C3 16 5.8 18 9 18z" fill="#34A853"/><path d="M4.3 11.3c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5V6.2H1.5C.8 7.5.5 8.7.5 10s.3 2.5 1 3.8l2.8-2.5z" fill="#FBBC04"/><path d="M9 3.6c1.3 0 2.4.4 3.3 1.3l2.4-2.4C13.2 1 11.3.1 9 .1 5.8.1 3 2.1 1.5 5L4.3 7.6C4.9 5.6 6.8 3.6 9 3.6z" fill="#EA4335"/></svg>
       ورود با Google
     </button>
-    <div class="gate-or" id="gate-or-txt">یا با ایمیل</div>
+    <div class="gate-or">یا با ایمیل</div>
     <input class="inp ltr" id="gate-email" type="email" placeholder="your@email.com" style="margin-bottom:8px">
-    <button class="btn btn-p btn-full" onclick="loginMagicLink()" id="gate-btn" id="gate-magic-btn">ارسال لینک ورود</button>
+    <button class="btn btn-p btn-full" onclick="loginMagicLink()" id="gate-btn">ارسال لینک ورود</button>
     <div id="gate-err" style="font-size:11px;color:var(--ok);text-align:center;margin-top:6px;min-height:14px"></div>
   </div>
 
@@ -1901,11 +1496,21 @@ html,body{overflow:hidden!important;height:100%;}
       </div>
     </div>
 
-    <!-- Plan: FREE -->
-    <div id="drw-plan-free" style="padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3);margin-bottom:var(--s3)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:11px;color:var(--ink3)" id="drw-free-msg">امروز ۰ از ۱۰ جستجو</span>
-        <span style="font-size:11px;font-weight:700;color:var(--accent)">Free</span>
+    <!-- Language Toggle -->
+    <div class="drw-lang-toggle">
+      <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle();updatePackPresets()">
+        🇩🇪 آلمانی
+      </button>
+      <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle();updatePackPresets()">
+        🇬🇧 انگلیسی
+      </button>
+    </div>
+
+    <!-- Plan card — FREE -->
+    <!-- Free card -->
+    <div id="drw-plan-free" style="padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div id="drw-free-msg" style="font-size:11px;color:var(--ink3)">امروز ۰ از ۱۰ جستجو</div>
       </div>
       <div style="background:var(--bg3);border-radius:4px;height:3px;overflow:hidden;margin-bottom:10px">
         <div id="drw-free-bar" style="height:100%;background:var(--accent);border-radius:4px;transition:width .4s"></div>
@@ -1920,8 +1525,8 @@ html,body{overflow:hidden!important;height:100%;}
       </button>
     </div>
 
-    <!-- Plan: BETA -->
-    <div id="drw-plan-beta" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3);margin-bottom:var(--s3)">
+    <!-- Beta card -->
+    <div id="drw-plan-beta" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <span style="font-size:11px;color:var(--ink3)">دسترسی آزمایشی</span>
         <span style="font-size:11px;color:var(--ok);font-weight:600">فعال ✓</span>
@@ -1932,8 +1537,8 @@ html,body{overflow:hidden!important;height:100%;}
       <div style="font-size:10px;color:var(--ink3);margin-top:4px">ممنون که اپ رو تست می‌کنی ❤️</div>
     </div>
 
-    <!-- Plan: PRO -->
-    <div id="drw-plan-pro" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3);margin-bottom:var(--s3)">
+    <!-- Plan card — PRO -->
+    <div id="drw-plan-pro" style="display:none;padding:var(--s3) var(--s4);background:var(--bg2);border-radius:var(--r3);border:1px solid var(--bg3)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <span style="font-size:11px;color:var(--ink3)">اشتراک تا:</span>
         <span style="font-size:11px;font-weight:600" id="drw-pro-until">—</span>
@@ -1944,11 +1549,10 @@ html,body{overflow:hidden!important;height:100%;}
       <div style="font-size:10px;color:var(--ink3);margin-top:4px" id="drw-pro-days"></div>
     </div>
 
-
     <!-- Actions -->
     <div class="drw-actions">
       <div class="drw-action-row">
-        <button class="drw-action-btn" id="drw-logout" onclick="logout()">
+        <button class="drw-action-btn" onclick="logout()">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="opacity:.5"><path d="M5 7h7M9 4l3 3-3 3M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           خروج
         </button>
@@ -1964,63 +1568,81 @@ html,body{overflow:hidden!important;height:100%;}
     </div>
 
   </div>
-
 </div>
 
-<!-- ═══ SESSION OVERLAY ═══ -->
-<div id="session" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;flex-direction:column;align-items:center;justify-content:center">
-
-  <!-- Intro -->
-  <div id="ses-intro" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center;position:absolute;inset:0">
-    <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
-    <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
-    <div style="font-size:14px;color:var(--ink3);margin-bottom:var(--s6);max-width:280px;line-height:1.6" id="intro-sub"></div>
-    <button class="btn btn-p" style="min-width:180px;font-size:15px;padding:var(--s3) var(--s5)" onclick="introStart()" id="intro-start-btn">شروع مرور →</button>
-    <button class="btn" style="margin-top:var(--s3)" onclick="introClose()" id="intro-later-btn">بعداً</button>
+<!-- Edit modal -->
+<div class="modal-bg" id="edit-modal" onclick="if(event.target===this)editClose()">
+  <div class="modal">
+    <div class="modal-title">ویرایش لغت</div>
+    <div class="drw-lbl">آلمانی</div><input class="inp ltr" id="ed-de">
+    <div class="drw-lbl">فارسی</div><input class="inp" id="ed-fa">
+    <div class="drw-lbl">جمله نمونه (اختیاری)</div><input class="inp ltr" id="ed-ex">
+    <div class="modal-err" id="ed-err"></div>
+    <div class="modal-acts">
+      <button class="btn btn-p" style="flex:1" onclick="editSave()">ذخیره</button>
+      <button class="btn" onclick="editClose()">انصراف</button>
+    </div>
   </div>
+</div>
 
-  <!-- Card body -->
-  <div id="ses-body" style="display:none;flex-direction:column;width:100%;max-width:480px;height:100%;padding:var(--s4)">
-    <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
-      <button class="btn-ic" onclick="sesClose()" style="flex-shrink:0">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <div style="flex:1;background:var(--bg2);border-radius:4px;height:6px;overflow:hidden">
-        <div id="ses-fill" style="height:100%;background:var(--accent);border-radius:4px;transition:width .3s;width:0%"></div>
-      </div>
-      <div style="font-size:12px;color:var(--ink3);font-family:var(--sans)" id="ses-cnt">1 / 10</div>
+
+
+
+  <!-- PACKS -->
+<!-- Word Packs Section -->
+<!-- Session -->
+<!-- Session Intro -->
+<div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
+  <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
+  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
+  <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
+  <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
+    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">شروع مرور →</button>
+    <button class="btn btn-full" onclick="introClose()">بعداً</button>
+  </div>
+</div>
+
+<div id="session">
+  <div class="ses-topbar">
+    <button class="ses-close" onclick="sesClose()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5l10 10M11.5 1.5l-10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="ses-info">
+      <div class="ses-cnt" id="ses-cnt">۱/۱</div>
+      <div class="ses-sub" id="ses-sub"></div>
     </div>
-    <div style="font-size:11px;color:var(--ink3);text-align:center;margin-bottom:var(--s3)" id="ses-sub"></div>
-    <div class="card-scene">
-      <div id="card-wrap" style="flex:1;position:relative;cursor:pointer" onclick="sesFlip()">
-        <div class="card-front">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--ink4);text-transform:uppercase;margin-bottom:var(--s3)" id="ses-meaning-lbl">لغت</div>
-          <div style="font-family:var(--serif);font-size:32px;font-weight:700;color:var(--ink);direction:ltr;text-align:center;word-break:break-word" id="ses-word">—</div>
-          <div class="c-type" id="c-type"></div>
-          <div style="margin-top:auto;font-size:12px;color:var(--ink4)" id="ses-tap-hint">برای دیدن معنی کلیک کن</div>
+    <!-- دکمه دوباره حذف شد -->
+  </div>
+  <div class="ses-prog"><div class="ses-fill" id="ses-fill" style="width:0%"></div></div>
+
+
+  <div class="ses-body" id="ses-body">
+    <div class="card-scene" onclick="sesFlip()">
+      <div class="card-wrap" id="card-wrap">
+        <div class="card-face card-front">
+          <span class="c-type" id="c-type"></span>
+          <span class="c-hint">برای دیدن معنی کلیک کن</span>
+          <span class="c-word" id="ses-word"></span>
         </div>
-        <div class="card-back" style="display:none">
-          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--ink4);text-transform:uppercase;margin-bottom:var(--s3)" id="ses-meaning-lbl2">معنی</div>
-          <div style="font-family:var(--serif);font-size:32px;font-weight:700;color:var(--ink);direction:ltr;text-align:center;word-break:break-word" id="ses-word2">—</div>
-          <div style="font-size:18px;color:var(--ink2);margin-top:var(--s2)" id="ses-mean">—</div>
-          <div style="font-size:13px;color:var(--ink3);font-style:italic;margin-top:var(--s3);direction:ltr;line-height:1.5" id="ses-sent"></div>
+        <div class="card-face card-back">
+          <span class="c-hint">معنی</span>
+          <span class="c-mean" id="ses-mean"></span>
+          <span class="c-sent" id="ses-sent"></span>
         </div>
       </div>
     </div>
-    <div id="ses-next-wrap" style="text-align:center;font-size:11px;color:var(--ink4);margin:var(--s2) 0">بعدی: <span id="ses-next">—</span></div>
-    <div class="swipe-row"><span><span id="swipe-forgot">← بلد نبودم</span></span><span><span id="swipe-knew">بلد بودم →</span></span></div>
+    <div class="swipe-row"><span>← بلد نبودم</span><span>بلد بودم →</span></div>
     <div class="ses-acts">
-      <button class="sa bad" onclick="sesRate(false)" id="btn-forgot">
+      <button class="sa bad" onclick="sesRate(false)">
         <span class="sa-ic">✗</span><span>بلد نبودم</span><span class="sa-next">دوباره میاد</span>
       </button>
       <button class="flip-btn" onclick="sesFlip()">↺</button>
-      <button class="sa good" onclick="sesRate(true)" id="btn-knew">
-        <span class="sa-ic">✓</span><span>بلد بودم</span><span class="sa-next" id="ses-next2">فردا</span>
+      <button class="sa good" onclick="sesRate(true)">
+        <span class="sa-ic">✓</span><span>بلد بودم</span><span class="sa-next" id="ses-next">فردا</span>
       </button>
     </div>
   </div>
 
-  <!-- End screen -->
   <div class="ses-end" id="ses-end">
     <div class="end-icon">🎉</div>
     <div class="end-title">دور تموم شد!</div>
@@ -2034,21 +1656,19 @@ html,body{overflow:hidden!important;height:100%;}
     <div class="end-btns">
       <button class="btn btn-p" id="end-more-btn" onclick="sesOpenSmart()" style="display:none">سشن بعدی ←</button>
       <button class="btn btn-p" onclick="sesRestart()">دوباره همین</button>
-      <button class="btn" onclick="sesClose(true)" id="ses-close-btn">بستن</button>
+      <button class="btn" onclick="sesClose(true)">بستن</button>
     </div>
   </div>
 
-  <!-- Confirm exit -->
   <div class="ses-confirm" id="ses-confirm">
     <div style="font-size:48px">🤔</div>
     <div class="con-title">می‌خوای بری؟</div>
-    <div class="con-sub" id="ses-exit-q">یادگیری نصفه میمونه — مطمئنی؟</div>
+    <div class="con-sub">یادگیری نصفه میمونه — مطمئنی؟</div>
     <div class="con-btns">
-      <button class="btn btn-p" onclick="sesResume()" id="ses-continue-btn">ادامه میدم 💪</button>
+      <button class="btn btn-p" onclick="sesResume()">ادامه میدم 💪</button>
       <button class="btn btn-danger" onclick="sesClose(true)">خروج</button>
     </div>
   </div>
-
 </div>
 
 <!-- ═══ APP ═══ -->
@@ -2064,23 +1684,16 @@ html,body{overflow:hidden!important;height:100%;}
     </a>
     <div class="top-r">
       <div class="sync-dot" id="sync-dot"></div>
-      <div id="top-status" style="display:flex;align-items:center;gap:6px">
-        <button class="btn-login" id="top-login-btn" onclick="showGate()" style="display:none">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 7H2M5 4l-3 3 3 3M8 2h3a1 1 0 011 1v8a1 1 0 01-1 1H8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          ورود
-        </button>
-        <div class="top-free-badge" id="top-free-badge" style="display:none!important"></div>
-        <div class="top-pro-badge" id="top-pro-badge" style="display:none">✦ Pro</div>
-        <div class="top-avatar" id="top-avatar-el" onclick="drawerOpen()" style="display:none!important">
-          <span id="top-avatar-lt">؟</span>
-        </div>
-      </div>
       <button class="btn-ic" id="theme-btn" onclick="toggleDark()">
         <svg id="theme-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M12.5 8.5A5.5 5.5 0 116.5 3a4.5 4.5 0 006 5.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
-      <button class="btn-ic" id="settings-btn" onclick="drawerOpen()" style="display:flex!important">
+      <div class="user-chip" id="user-chip" onclick="drawerOpen()" style="display:none">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span class="user-name" id="user-name"></span>
+      </div>
+      <button class="btn-ic" id="settings-btn" onclick="drawerOpen()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -2090,14 +1703,38 @@ html,body{overflow:hidden!important;height:100%;}
   <div class="pane on" id="pane-home">
     <div class="hero">
       <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">لغت آلمانی یاد بگیر<br><em>با هوش مصنوعی</em></h1>
+      <h1 id="hero-title">لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
       <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
     </div>
 
     <div id="free-banner" style="display:none"></div>
+    <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
+      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
+        <span id="home-lang-flag">🇩🇪</span>
+        <span id="home-lang-label">آلمانی</span>
+        <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <!-- Lang mini popover -->
+      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
+        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇩🇪</span>
+          <span>آلمانی</span>
+          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+        </button>
+        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇬🇧</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-start">
+            <span>انگلیسی</span>
+            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
+          </div>
+          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+        </button>
+      </div>
+    </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
-        placeholder="لغت یا اصطلاح بنویس..."
+        placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
       <div class="ac-drop" id="ac-drop"></div>
       <button class="s-btn" id="s-btn" onclick="doSearch()">
@@ -2184,38 +1821,17 @@ html,body{overflow:hidden!important;height:100%;}
     <!-- Reminder -->
     <div class="reminder" id="reminder">
       <div class="rem-head">
-        <div><div class="rem-title" id="rem-title" id="rem-title-txt">وقت مرور! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
+        <div><div class="rem-title" id="rem-title">وقت مرور! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
         <button class="rem-x" onclick="remDismiss()">✕</button>
       </div>
       <div class="rem-chips" id="rem-chips"></div>
-      <button class="rem-btn" onclick="remStart()" id="rem-start-btn">شروع مرور ←</button>
+      <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
     </div>
 
     <!-- Stats card -->
-    
-    <div class="ws-empty" id="ws-empty" style="display:none"></div>
-    <div class="login-prompt" id="login-prompt">
-      <div class="login-prompt-txt" id="login-prompt-txt">برای ذخیره لغت‌هات وارد شو 👤</div>
-      <button class="login-prompt-btn" onclick="showGate();document.getElementById('login-prompt').classList.remove('show')">ورود</button>
-      <button class="login-prompt-x" onclick="this.parentElement.classList.remove('show');localStorage.setItem('ws_prompt_dismissed','1')">✕</button>
-    </div>
-    <div class="notif-prompt" id="notif-prompt">
-      <div class="notif-prompt-top">
-        <div class="notif-prompt-ico">🔔</div>
-        <div>
-          <div class="notif-prompt-title" id="notif-title-txt">یادآوری روزانه فعال کن</div>
-          <div class="notif-prompt-sub" id="notif-sub-txt">هر روز ساعت ۸:۳۰ شب یادت میاره لغاتت رو مرور کنی</div>
-        </div>
-      </div>
-      <div class="notif-prompt-actions">
-        <button class="notif-prompt-yes" onclick="enableNotifications()" id="notif-yes-btn">فعال کن 🔔</button>
-        <button class="notif-prompt-no" onclick="dismissNotifPrompt()">بعداً</button>
-      </div>
-    </div>
-
     <div class="sum-card" id="sum-card">
       <div class="sum-header">
-        <div class="sum-title" id="stat-progress-lbl">پیشرفت تو</div>
+        <div class="sum-title">پیشرفت تو</div>
         <div class="sum-streak">
           🔥 <span id="sn-streak">0</span> روز
         </div>
@@ -2238,19 +1854,19 @@ html,body{overflow:hidden!important;height:100%;}
       <div class="sum-dots" id="sum-dots"></div>
       <div class="sum-acts">
         <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">شروع مرور</span> →</button>
-        <button class="sum-all" onclick="sesOpen()" id="stat-all-lbl">همه لغات</button>
+        <button class="sum-all" onclick="sesOpen()">همه لغات</button>
       </div>
+    </div>
 
-    <!-- Reader Entry Card -->
-    <a href="/reader" id="reader-entry-card" style="display:none;text-decoration:none;margin:0 0 var(--s3);background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r3);padding:14px 16px;align-items:center;gap:12px;transition:border-color .2s,transform .15s;cursor:pointer" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--bg3)'">
-      <div style="width:38px;height:38px;background:var(--abl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+    <a href="/reader" id="reader-card" style="display:none;text-decoration:none;background:var(--card);border:1.5px solid var(--abl);border-radius:var(--r3);padding:14px 16px;align-items:center;gap:12px;margin-bottom:var(--s3)">
+      <div style="width:36px;height:36px;background:var(--abl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="var(--accent)" stroke-width="1.5"/><path d="M12 3v4h4" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10h6M7 13h4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
       </div>
-      <div style="flex:1;min-width:0">
+      <div style="flex:1">
         <div style="font-size:13px;font-weight:700;color:var(--ink);font-family:var(--sans)">کتاب‌خوان آلمانی</div>
-        <div style="font-size:11px;color:var(--ink3);margin-top:2px">PDF باز کن، روی کلمه کلیک کن — معنی بگیر</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:2px">PDF باز کن — روی کلمه کلیک کن — معنی بگیر</div>
       </div>
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;opacity:.4"><path d="M4 2L10 7l-6 5" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2L8 6l-4 4" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
 
     <!-- Home empty state -->
@@ -2264,21 +1880,21 @@ html,body{overflow:hidden!important;height:100%;}
   <!-- LIST -->
   <div class="pane" id="pane-list">
     <div class="list-topbar">
-      <div class="list-title" id="list-title-txt">لیست لغات</div>
+      <div class="list-title">لیست لغات</div>
       <span class="list-count" id="list-count"></span>
     </div>
     <div class="due-banner" id="due-banner">
       <div class="due-head">
-        <div class="due-label" id="due-label-txt">⏰ نیاز به مرور</div>
+        <div class="due-label">⏰ نیاز به مرور</div>
         <button class="due-btn" onclick="sesOpenDue()">شروع مرور ←</button>
       </div>
       <div class="due-chips" id="due-chips"></div>
     </div>
     <div class="sort-tabs">
-      <button class="sort-tab on" id="st-new" onclick="setSort('new')">جدیدترین</button>
-      <button class="sort-tab"    id="st-due" onclick="setSort('due')">دیر شده</button>
-      <button class="sort-tab"    id="st-weak" onclick="setSort('weak')">ضعیف‌ترین</button>
-      <button class="sort-tab"    id="st-best" onclick="setSort('best')">بهترین</button>
+      <button class="sort-tab on" id="st-new"   onclick="setSort('new')">جدیدترین</button>
+      <button class="sort-tab"    id="st-due"   onclick="setSort('due')">دیر شده</button>
+      <button class="sort-tab"    id="st-weak"  onclick="setSort('weak')">ضعیف‌ترین</button>
+      <button class="sort-tab"    id="st-best"  onclick="setSort('best')">بهترین</button>
       <button class="sort-tab"    id="st-alpha" onclick="setSort('alpha')">الفبا</button>
     </div>
     <div class="list-s-wrap">
@@ -2293,12 +1909,12 @@ html,body{overflow:hidden!important;height:100%;}
 
 
   <!-- PACKS -->
-  <div id="pane-packs" class="pane" style="padding-top:0;display:none!important">
+  <div id="pane-packs" class="pane" style="padding-top:0">
 
   <!-- Header -->
   <div style="padding:12px 16px 10px;border-bottom:1px solid var(--bg3);margin-bottom:12px">
-    <div style="font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px" id="packs-title-txt">📦 جعبه لغت‌ها</div>
-    <div style="font-size:12px;color:var(--ink3)" id="packs-sub-txt">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
+    <div style="font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px">📦 جعبه لغت‌ها</div>
+    <div style="font-size:12px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
   </div>
 
   <!-- Pack Grid -->
@@ -2357,9 +1973,6 @@ html,body{overflow:hidden!important;height:100%;}
 </div><!-- .app -->
 
 <!-- Bottom nav -->
-
-
-
 <nav class="bottom-nav">
   <button class="nav-item on" id="t-home" onclick="go('home')">
     <div class="nav-dot" id="nd-home"></div>
@@ -2367,24 +1980,32 @@ html,body{overflow:hidden!important;height:100%;}
       <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
       <path d="M7 18v-6h6v6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
     </svg>
-    <span class="nav-label" id="nl-home">خانه</span>
+    <span class="nav-label">خانه</span>
   </button>
-
+  <button class="nav-item" id="t-packs" onclick="go('packs')">
+    <div class="nav-dot" id="nd-packs"></div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <span class="nav-label">جعبه‌ها</span>
+  </button>
   <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
     <div class="nav-dot" id="nd-cards"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <rect x="3" y="6" width="14" height="11" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
       <path d="M6 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
-    <span class="nav-label" id="nl-cards">کارت‌ها</span>
+    <span class="nav-label">کارت‌ها</span>
   </button>
-
   <button class="nav-item" id="t-list" onclick="go('list')">
     <div class="nav-dot" id="nd-list"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
-    <span class="nav-label" id="nl-list">لیست</span>
+    <span class="nav-label">لیست</span>
   </button>
 </nav>
 
@@ -2459,10 +2080,10 @@ let userProUntil=null;
 let userPlan='free';
 let userWordCount=0;
 let userSearchCount=0;
-let targetLang='de'; // de only
+let targetLang='de'; // 'de' = German, 'en' = English
 
 // Helper: فقط لغت‌های زبان فعال
-const filteredWords = () => words; // de only
+const filteredWords = () => words.filter(w => (w.lang||'de') === targetLang);
 
 /* ══════════════════════════════
    HELPERS
@@ -2505,7 +2126,7 @@ async function dbLoad(){
       reviewed_at:r.reviewed_at||null
     }));
     saveCache();updateBadges();updateStats();
-    setSdot('ok'); if(window._obTryShow)window._obTryShow();
+    setSdot('ok');
   }catch(e){setSdot('');console.error(e);}
 }
 
@@ -2592,7 +2213,7 @@ async function loadProfile(){
     }
   }catch(e){console.error('loadProfile:',e);}
   updateFreeBanner();
-  updateDrawerPlan(); updateTopStatus();
+  updateDrawerPlan();
 }
 
 function canAddMore(){
@@ -2600,7 +2221,8 @@ function canAddMore(){
   return userSearchCount < FREE_LIMIT;
 }
 
-function updateFreeBanner(){return; /* disabled */const b=Q('#free-banner');
+function updateFreeBanner(){
+  const b=Q('#free-banner');
   if(b) b.style.display='none';
   if(userPlan==='pro'||userPlan==='beta') return;
 
@@ -2890,7 +2512,6 @@ function showGate(){
   Q('#gate').classList.add('open');
 }
 function hideGate(){
-  var _p=document.getElementById('login-prompt');if(_p)_p.classList.remove('show');
   const g=Q('#gate');
   g.style.opacity='0';g.style.transition='opacity .3s';
   setTimeout(()=>{g.classList.remove('open');g.style.opacity='';g.style.transition='';},300);
@@ -2913,9 +2534,9 @@ function hideGate(){
   setTimeout(()=>{g.classList.remove('open');g.style.opacity='';g.style.transition='';},300);
 }
 
-function setUserUI(user){ updateTopStatus();
+function setUserUI(user){
   currentUser=user;
-  const chip=null,avatar=null,name=null; /* removed - using drawer only */
+  const chip=Q('#user-chip'),avatar=Q('#user-avatar'),name=Q('#user-name');
   const bigAvatar=Q('#drw-avatar-big'),profileName=Q('#drw-profile-name'),emailEl=Q('#drw-email');
   const logoutBtn=Q('#drw-logout');
 
@@ -2924,7 +2545,13 @@ function setUserUI(user){ updateTopStatus();
     const displayName=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';
     const email=user.email||'';
 
-
+    // topbar chip
+    if(chip){
+      if(photoUrl)avatar.innerHTML=`<img src="${photoUrl}" alt="">`;
+      else avatar.textContent=displayName[0].toUpperCase();
+      if(name)name.textContent=displayName;
+      chip.style.display='flex';
+    }
     const settingsBtn=Q('#settings-btn');
     if(settingsBtn)settingsBtn.style.display='none';
 
@@ -2938,7 +2565,7 @@ function setUserUI(user){ updateTopStatus();
     if(logoutBtn)logoutBtn.style.display='flex';
 
   } else {
-    /* chip removed */
+    if(chip)chip.style.display='none';
     const settingsBtn=Q('#settings-btn');
     if(settingsBtn)settingsBtn.style.display='flex';
     if(profileName)profileName.textContent='وارد نشدی';
@@ -2950,165 +2577,8 @@ function setUserUI(user){ updateTopStatus();
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
-/* ── User Profile ── */
-function saveUserProfile(lang,level,goals){
-  localStorage.setItem('ws_lang',lang);
-  localStorage.setItem('ws_level',level);
-  localStorage.setItem('ws_goals',JSON.stringify(goals));
-  if(window.currentUser&&window.sb){
-    sb.from('profiles').update({lang:lang,level:level,goals:goals,onboarded:true}).eq('id',currentUser.id).catch(function(){});
-  }
-  targetLang='de';
-}
-
-/* ── Empty State ── */
-function updateEmptyState(){
-  var empty=document.getElementById('ws-empty'),card=document.getElementById('sum-card');
-  if(!empty)return;
-  var has=window.words&&window.words.length>0;
-  if(has){empty.classList.remove('show');empty.style.display='none';if(card)card.classList.add('show');}
-  else{empty.classList.add('show');if(card)card.classList.remove('show');}
-}
-
-/* ── Topbar Status ── */
-function updateTopStatus(){
-  var lb=document.getElementById('top-login-btn'),fb=document.getElementById('top-free-badge');
-  var pb=document.getElementById('top-pro-badge'),av=document.getElementById('top-avatar-el');
-  var al=document.getElementById('top-avatar-lt'),fn=document.getElementById('top-free-n');
-  if(!lb)return;
-  if(!currentUser){lb.style.display='flex';fb.style.display='none';pb.style.display='none';av.style.display='none';}
-  else{
-    lb.style.display='none';av.style.display='flex';
-    var nm=document.getElementById('drw-profile-name');
-    var name=(nm&&nm.textContent&&nm.textContent!=='—')?nm.textContent:(currentUser.user_metadata&&currentUser.user_metadata.full_name)||currentUser.email.split('@')[0]||'?';
-    if(al)al.textContent=(name[0]||'?').toUpperCase();
-    if(userPlan==='pro'||userPlan==='beta'){fb.style.display='none';pb.style.display='flex';av.classList.add('pro');}
-    else{pb.style.display='none';av.classList.remove('pro');var left=Math.max(0,(window.FREE_LIMIT||10)-(userSearchCount||0));if(fn)fn.textContent=left;fb.classList.toggle('warn',left<=2);fb.style.display='none';}
-  }
-}
-
-/* ── Notifications ── */
-var _notifDismissed=!!localStorage.getItem('ws_notif_dismissed');
-var _notifEnabled=!!localStorage.getItem('ws_notif_enabled');
-function checkNotifPrompt(){
-  if(_notifDismissed||_notifEnabled)return;
-  if(!window.tgApp||!currentUser)return;
-  if(!window.words||window.words.length<1)return;
-  setTimeout(function(){var el=document.getElementById('notif-prompt');if(el)el.classList.add('show');},2000);
-}
-function enableNotifications(){
-  var el=document.getElementById('notif-prompt');if(el)el.classList.remove('show');
-  localStorage.setItem('ws_notif_enabled','1');_notifEnabled=true;
-  if(window.tgApp&&window.tgApp.user&&currentUser){
-    sb.from('notifications').upsert({user_id:currentUser.id,telegram_chat_id:window.tgApp.user.id,enabled:true,hour:17},{onConflict:'user_id'}).then(function(){showToast('🔔 یادآوری روزانه فعال شد! هر شب ۸:۳۰',3000,'ok');if(window.tgApp)window.tgApp.haptic('success');}).catch(function(e){console.error('notif',e);});
-  }
-}
-function dismissNotifPrompt(){var el=document.getElementById('notif-prompt');if(el)el.classList.remove('show');localStorage.setItem('ws_notif_dismissed','1');_notifDismissed=true;}
-
-/* ── Onboarding ── */
-(function(){
-  var KEY='ws_ob_seen',cur=0,TOTAL=5,s1done=false;
-  var obLang='de',obLevel='B1',obGoals=new Set(['travel']);
-  var LEVEL_NAMES={A1:'مبتدی',A2:'پایه',B1:'متوسط',B2:'بالاتر از متوسط',C1:'پیشرفته'};
-  var GOAL_NAMES={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
-  var reel,track;
-
-  window._obTryShow=function(){
-    if(localStorage.getItem(KEY))return;
-    if(window.words&&window.words.length>0){localStorage.setItem(KEY,'1');return;}
-    if(window.currentUser&&window.sb){
-      sb.from('profiles').select('onboarded,lang,level,goals').eq('id',currentUser.id).single().then(function(r){
-        if(r.data&&r.data.onboarded){
-          localStorage.setItem(KEY,'1');
-          if(r.data.lang)localStorage.setItem('ws_lang',r.data.lang);
-          if(r.data.level)localStorage.setItem('ws_level',r.data.level);
-          if(r.data.goals)localStorage.setItem('ws_goals',JSON.stringify(r.data.goals));
-          /* lang fixed to de */
-          return;
-        }
-        _obShow();
-      }).catch(function(){_obShow();});
-    } else { _obShow(); }
-  };
-  function _obShow(){
-    reel=document.getElementById('ob-reel');track=document.getElementById('ob-track');
-    document.getElementById('ob').classList.remove('hide');
-    setTimeout(_obA1,500);
-  }
-  function _obA1(){
-    if(s1done)return;s1done=true;
-    var inp=document.getElementById('s1i'),btn=document.getElementById('s1b'),res=document.getElementById('s1r'),w='Sehnsucht',i=0;
-    inp.innerHTML='<span class="s1-cur blink"></span>';
-    var t=setInterval(function(){if(i<w.length){inp.innerHTML=w.slice(0,++i)+'<span class="s1-cur blink"></span>';}else{clearInterval(t);setTimeout(function(){btn.classList.add('pop');setTimeout(function(){btn.classList.remove('pop');res.classList.add('show');},220);},350);}},80);
-  }
-  window.obPickLang=function(l){obLang=l;document.getElementById('ob-lde').classList.toggle('sel',l==='de');document.getElementById('ob-len').classList.toggle('sel',l==='en');};
-  window.obPickLevel=function(l){obLevel=l;['a1','a2','b1','b2','c1'].forEach(function(x){document.getElementById('ob-l'+x).classList.remove('sel');});document.getElementById('ob-l'+l.toLowerCase()).classList.add('sel');};
-  window.obToggleGoal=function(g,el){if(obGoals.has(g)){if(obGoals.size===1)return;obGoals.delete(g);el.classList.remove('sel');}else{obGoals.add(g);el.classList.add('sel');}};
-  function _obSummary(){
-    document.getElementById('ob-sum-flag').textContent=obLang==='de'?'🇩🇪':'🇬🇧';
-    document.getElementById('ob-sum-lang').textContent=obLang==='de'?'آلمانی':'انگلیسی';
-    document.getElementById('ob-sum-level').textContent=obLevel+' — '+(LEVEL_NAMES[obLevel]||'');
-    var el=document.getElementById('ob-sum-goals');el.innerHTML='';
-    obGoals.forEach(function(g){var t=document.createElement('span');t.className='ob-sum-tag';t.textContent=GOAL_NAMES[g]||g;el.appendChild(t);});
-  }
-  function _obGo(n){
-    if(!reel){reel=document.getElementById('ob-reel');track=document.getElementById('ob-track');}
-    reel.classList.remove('drag');reel.style.transform='translateX('+n*100+'%)';
-    for(var i=0;i<TOTAL;i++)document.getElementById('obd'+i).classList.toggle('on',i===n);
-    document.getElementById('ob-prog').style.width=((n+1)/TOTAL*100)+'%';
-    var last=n===TOTAL-1;
-    document.getElementById('ob-btntxt').textContent=last?'شروع کن 🇩🇪':'بعدی';
-    document.getElementById('ob-btnarr').style.display=last?'none':'';
-    document.getElementById('ob-skip').style.display=n===0?'':'none';
-    if(last)_obSummary();
-    if(n===0)setTimeout(_obA1,300);
-    cur=n;
-  }
-  window.obNext=function(){if(cur<TOTAL-1)_obGo(cur+1);else obClose();};
-  window.obClose=function(){
-    localStorage.setItem(KEY,'1');
-    if(typeof saveUserProfile==='function')saveUserProfile(obLang,obLevel,Array.from(obGoals));
-    var ob=document.getElementById('ob');
-    ob.style.transition='opacity .3s,transform .3s';ob.style.opacity='0';ob.style.transform='scale(.97)';
-    setTimeout(function(){ob.classList.add('hide');ob.style.cssText='';},320);
-    if(window.tgApp)window.tgApp.haptic('success');
-  };
-  var dx=null,dc=0;
-  function gx(e){return e.touches?e.touches[0].clientX:e.clientX;}
-  setTimeout(function(){
-    var tr=document.getElementById('ob-track');if(!tr)return;
-    tr.addEventListener('mousedown',function(e){dx=gx(e);dc=0;if(reel)reel.classList.add('drag');document.addEventListener('mousemove',dm);document.addEventListener('mouseup',de);});
-    tr.addEventListener('touchstart',function(e){dx=gx(e);dc=0;if(reel)reel.classList.add('drag');document.addEventListener('touchmove',dm,{passive:false});document.addEventListener('touchend',de);},{passive:true});
-  },200);
-  function dm(e){if(dx===null)return;dc=gx(e)-dx;if(e.cancelable)e.preventDefault();var r=((cur===0&&dc>0)||(cur===TOTAL-1&&dc<0))?0.2:1;if(reel)reel.style.transform='translateX(calc('+cur*100+'% + '+(dc*r)+'px))';}
-  function de(){document.removeEventListener('mousemove',dm);document.removeEventListener('touchmove',dm);document.removeEventListener('mouseup',de);document.removeEventListener('touchend',de);var th=(track?track.offsetWidth:300)*0.22;if(dc<-th&&cur<TOTAL-1)_obGo(cur+1);else if(dc>th&&cur>0)_obGo(cur-1);else _obGo(cur);dx=null;}
-})();
-
-async function tgAutoLogin(u){
-  var email='tg'+u.id+'@wortschatz.app',pass='ws_tg_'+u.id+'_2025!';
-  var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'کاربر';
-  try{
-    var r=await sb.auth.signInWithPassword({email:email,password:pass});
-    if(r.error)r=await sb.auth.signUp({email:email,password:pass,options:{data:{full_name:name,tg_id:String(u.id),tg_username:u.username||''}}});
-    if(r.error)throw r.error;
-    if(r.data&&r.data.user){
-      setUserUI(r.data.user);hideGate();
-      var nm=document.getElementById('drw-profile-name');if(nm)nm.textContent=name;
-      var av=document.getElementById('drw-avatar-big');if(av)av.textContent=(name[0]||'T').toUpperCase();
-      await dbLoad();await loadProfile();
-      setTimeout(function(){if(window._obTryShow)window._obTryShow();},600);
-      setTimeout(checkReminder,2500);
-      if(window.tgApp)window.tgApp.haptic('success');
-      showToast('سلام '+(u.first_name||'دوست')+'! 👋',2200,'ok');
-      updateTopStatus();
-    }
-  }catch(e){console.error('[TG]',e.message);}
-}
-
 async function init(){
-  targetLang = 'de'; // fixed
-  // apply UI language
-  applyUIStrings();
+  targetLang = 'de';
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
 
   // Handle Stripe redirect
@@ -3139,9 +2609,7 @@ async function init(){
     await loadProfile();
     setTimeout(checkReminder,2500);
   } else {
-    var _tgu=window.tgApp&&window.tgApp.user;
-    if(_tgu&&_tgu.id){await tgAutoLogin(_tgu);}
-    updateTopStatus();
+    showGate();
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
@@ -3158,7 +2626,7 @@ async function init(){
     }
   });
 
-  // gate اجباری حذف شد
+  setTimeout(()=>{ if(!currentUser) showGate(); }, 1500);
 
   window.addEventListener('scroll',()=>Q('#topbar')?.classList.toggle('raised',window.scrollY>4));
   syncOnline();
@@ -3177,285 +2645,148 @@ function syncOnline(){
 /* ══════════════════════════════
    DRAWER
 ══════════════════════════════ */
-function openPDFReader(){
-  if(window.tgApp&&window.tgApp.isTg){
-    var m=Q('#pdf-reader-modal');
-    if(m){m.style.display='flex';}
-    try{window.tgApp.tg.BackButton.show();}catch(e){}
-    return;
-  }
-  window.open('/reader.html','_blank');
-}
-function closePDFReader(){
-  var m=Q('#pdf-reader-modal');
-  if(m)m.style.display='none';
-  rdrCloseTT();rdrHideSelBar();
-  if(window.tgApp&&window.tgApp.isTg){try{window.tgApp.tg.BackButton.hide();}catch(e){}}
-}
-
-
-// PDF.js viewer URL (Mozilla CDN)
-var PDFJS_VIEWER='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/web/viewer.html';
-
-// ── Drag & Drop ──
-(function initRdrDrop(){
-  var dz=Q('#rdr-dropzone');
-  if(!dz)return;
-  dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='var(--accent)';});
-  dz.addEventListener('dragleave',function(){dz.style.borderColor='';});
-  dz.addEventListener('drop',function(e){
-    e.preventDefault();dz.style.borderColor='';
-    var f=e.dataTransfer.files[0];
-    if(f&&f.type==='application/pdf')rdrLoadFile(f);
-    else showToast('فقط PDF قبول میشه','warn');
-  });
-})();
-
-// ── Load File → iframe ──
+function drawerOpen(){Q('#drawer').classList.add('open');updateDrawerPlan();}
 function drawerClose(){Q('#drawer').classList.remove('open');}
 
-// ── UI Language ──
-var UI_LANG = localStorage.getItem('fluenta_ui_lang') || 'fa';
-
-var UI_STRINGS = {
-  fa: {
-    hero_label:'دستیار یادگیری زبان', hero_title:'لغت یاد بگیر<br><em>با هوش مصنوعی</em>',
-    hero_sub:'لغت، جمله یا اصطلاح — هر زبانی', search_ph:'لغت یا اصطلاح بنویس...',
-    search_tip:'💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong>',
-    total_words:'کل لغت', due_today:'برای مرور', start_review:'شروع مرور',
-    nav_home:'خانه', nav_cards:'کارت‌ها', nav_list:'لیست',
-    gate_google:'ورود با Google', gate_or:'یا با ایمیل', gate_magic:'ارسال لینک ورود', gate_login:'ورود',
-    ob_title_0:'به Wortschatz خوش اومدی 👋', ob_sub_0:'چند سوال کوتاه تا بهترین تجربه رو برات بسازیم',
-    ob_title_1:'کدوم زبان؟', ob_sub_1:'بعداً از تنظیمات می‌تونی تغییر بدی',
-    ob_title_2:'سطحت الان کجاست؟', ob_sub_2:'صادقانه انتخاب کن — روی لغات پیشنهادی تأثیر داره',
-    ob_title_3:'هدفت چیه؟', ob_sub_3:'بر اساس انتخابت بهترین لغات رو پیشنهاد میدیم',
-    ob_title_4:'همه چیز آماده‌ست 🚀', ob_sub_4:'می‌تونی هر وقت از پروفایلت تغییر بدی',
-    ob_next:'بعدی', ob_start:'شروع کن 🚀', ob_skip:'رد کن',
-    ses_review_title:'وقت مرور!', ses_start:'شروع مرور →', ses_later:'بعداً',
-    ses_tap:'برای دیدن معنی کلیک کن', ses_meaning:'معنی',
-    ses_forgot:'← بلد نبودم', ses_knew:'بلد بودم →',
-    btn_forgot:'بلد نبودم', btn_knew:'بلد بودم',
-    ses_close:'بستن', ses_next:'سشن بعدی ←',
-    ses_exit_q:'یادگیری نصفه میمونه — مطمئنی؟', ses_continue:'ادامه میدم 💪',
-    rem_title:'وقت مرور! 🌙', rem_start:'شروع مرور ←',
-    empty_title:'اولین لغتت رو سرچ کن', empty_sub:'یه لغت بنویس بالا و به فلش‌کارت‌هات اضافه‌اش کن',
-    empty_btn:'شروع کن ←', login_prompt:'برای ذخیره لغت‌هات وارد شو 👤',
-    notif_title:'یادآوری روزانه فعال کن', notif_sub:'هر روز ساعت ۸:۳۰ شب یادت میاره مرور کنی', notif_yes:'فعال کن 🔔',
-    due_label:'⏰ نیاز به مرور', list_title:'لیست لغات',
-    sort_new:'جدیدترین', sort_due:'دیر شده', sort_weak:'ضعیف‌ترین', sort_best:'بهترین', sort_alpha:'الفبا',
-    packs_title:'📦 جعبه لغت‌ها', packs_sub:'مجموعه‌های آماده برای یادگیری سریع‌تر',
-    pro_f1:'جستجوی نامحدود با AI', pro_f2:'همه pack های لغت + ساخت با AI', pro_f3:'sync روی همه دستگاه‌ها', pro_buy:'خرید از طریق تلگرام', beta_lbl:'کد بتا داری؟',
-    drw_signout:'خروج', drw_clear:'پاک کردن لغات', drw_contact:'ارتباط با ما در تلگرام',
-    drw_searches:'جستجو',
-    edit_title:'ویرایش لغت', edit_ex:'جمله نمونه (اختیاری)', edit_save:'ذخیره', edit_cancel:'انصراف',
-    offline:'📡 آفلاین — لغاتت قابل مروره ولی جستجو نیاز به اینترنت داره',
-  },
-  en: {
-    hero_label:'AI Language Learning', hero_title:'Master vocabulary,<br><em>powered by AI</em>',
-    hero_sub:'Word, phrase or expression — any language', search_ph:'Search a word or phrase...',
-    search_tip:'💡 Try <strong>Arbeit</strong>, <strong>bonjour</strong> or <strong>work</strong>',
-    total_words:'Total Words', due_today:'Due Today', start_review:'Start Review',
-    nav_home:'Home', nav_cards:'Cards', nav_list:'List',
-    gate_google:'Continue with Google', gate_or:'Or use email', gate_magic:'Send magic link', gate_login:'Sign in',
-    ob_title_0:'Welcome to Fluenta 👋', ob_sub_0:'A few questions to personalize your experience',
-    ob_title_1:'Which language?', ob_sub_1:'You can change this anytime in settings',
-    ob_title_2:'What is your level?', ob_sub_2:'Be honest — this affects your suggestions',
-    ob_title_3:'What is your goal?', ob_sub_3:'We will suggest the best words for you',
-    ob_title_4:'All set! 🚀', ob_sub_4:'You can change this anytime from your profile',
-    ob_next:'Next', ob_start:'Get Started 🚀', ob_skip:'Skip',
-    ses_review_title:'Review Time!', ses_start:'Start Review →', ses_later:'Later',
-    ses_tap:'Tap to reveal meaning', ses_meaning:'Meaning',
-    ses_forgot:"← Didn't know", ses_knew:'I knew it →',
-    btn_forgot:"Didn't know", btn_knew:'I knew it',
-    ses_close:'Close', ses_next:'Next Session →',
-    ses_exit_q:'Session incomplete — are you sure?', ses_continue:'Keep going 💪',
-    rem_title:'Review Time! 🌙', rem_start:'Start Review →',
-    empty_title:'Search your first word', empty_sub:'Search any word above and add it to your flashcards',
-    empty_btn:'Get started →', login_prompt:'Sign in to save your words 👤',
-    notif_title:'Enable daily reminder', notif_sub:'Daily reminder at 8:30 PM to review', notif_yes:'Enable 🔔',
-    due_label:'⏰ Due for Review', list_title:'Word List',
-    sort_new:'Newest', sort_due:'Overdue', sort_weak:'Weakest', sort_best:'Best', sort_alpha:'A-Z',
-    packs_title:'📦 Word Packs', packs_sub:'Ready-made collections for faster learning',
-    pro_f1:'Unlimited AI searches', pro_f2:'All word packs + AI-generated', pro_f3:'Sync across all devices', pro_buy:'Buy via Telegram', beta_lbl:'Have a beta code?',
-    drw_signout:'Sign out', drw_clear:'Clear all words', drw_contact:'Contact us on Telegram',
-    drw_searches:'searches',
-    edit_title:'Edit Word', edit_ex:'Example sentence (optional)', edit_save:'Save', edit_cancel:'Cancel',
-    offline:'📡 Offline — words available but search needs internet',
-  },
-  ar: {
-    hero_label:'تعلم اللغة بالذكاء الاصطناعي', hero_title:'أتقن المفردات،<br><em>مع الذكاء الاصطناعي</em>',
-    hero_sub:'كلمة أو عبارة — بأي لغة', search_ph:'ابحث عن كلمة أو عبارة...',
-    search_tip:'💡 جرب <strong>Arbeit</strong> أو <strong>عمل</strong>',
-    total_words:'إجمالي الكلمات', due_today:'مستحق اليوم', start_review:'ابدأ المراجعة',
-    nav_home:'الرئيسية', nav_cards:'البطاقات', nav_list:'القائمة',
-    gate_google:'المتابعة مع Google', gate_or:'أو استخدم البريد', gate_magic:'إرسال رابط الدخول', gate_login:'تسجيل الدخول',
-    ob_title_0:'مرحباً بك في Fluenta 👋', ob_sub_0:'بعض الأسئلة لتخصيص تجربتك',
-    ob_title_1:'أي لغة؟', ob_sub_1:'يمكنك التغيير لاحقاً في الإعدادات',
-    ob_title_2:'ما مستواك؟', ob_sub_2:'كن صادقاً — هذا يؤثر على اقتراحاتك',
-    ob_title_3:'ما هدفك؟', ob_sub_3:'سنقترح أفضل الكلمات',
-    ob_title_4:'كل شيء جاهز! 🚀', ob_sub_4:'يمكنك التغيير في أي وقت من ملفك',
-    ob_next:'التالي', ob_start:'ابدأ 🚀', ob_skip:'تخطي',
-    ses_review_title:'وقت المراجعة!', ses_start:'ابدأ المراجعة →', ses_later:'لاحقاً',
-    ses_tap:'انقر للكشف عن المعنى', ses_meaning:'المعنى',
-    ses_forgot:'← لم أعرفها', ses_knew:'عرفتها ←',
-    btn_forgot:'لم أعرفها', btn_knew:'عرفتها',
-    ses_close:'إغلاق', ses_next:'الجلسة التالية →',
-    ses_exit_q:'الجلسة غير مكتملة — هل أنت متأكد؟', ses_continue:'استمر 💪',
-    rem_title:'وقت المراجعة! 🌙', rem_start:'ابدأ المراجعة ←',
-    empty_title:'ابحث عن كلمتك الأولى', empty_sub:'ابحث عن أي كلمة وأضفها إلى بطاقاتك',
-    empty_btn:'ابدأ الآن ←', login_prompt:'سجّل الدخول لحفظ كلماتك 👤',
-    notif_title:'تفعيل التذكير اليومي', notif_sub:'تذكير يومي الساعة 8:30 م', notif_yes:'تفعيل 🔔',
-    due_label:'⏰ مواعيد المراجعة', list_title:'قائمة الكلمات',
-    sort_new:'الأحدث', sort_due:'متأخر', sort_weak:'الأضعف', sort_best:'الأفضل', sort_alpha:'أبجدي',
-    packs_title:'📦 حزم الكلمات', packs_sub:'مجموعات جاهزة للتعلم الأسرع',
-    pro_f1:'بحث غير محدود', pro_f2:'جميع الحزم + الذكاء الاصطناعي', pro_f3:'المزامنة عبر الأجهزة', pro_buy:'الشراء عبر Telegram', beta_lbl:'هل لديك رمز بيتا؟',
-    drw_signout:'تسجيل الخروج', drw_clear:'مسح الكلمات', drw_contact:'تواصل معنا',
-    drw_searches:'بحث',
-    edit_title:'تعديل الكلمة', edit_ex:'جملة مثال (اختياري)', edit_save:'حفظ', edit_cancel:'إلغاء',
-    offline:'📡 غير متصل — الكلمات متاحة لكن البحث يحتاج إنترنت',
-  },
-  tr: {
-    hero_label:'Yapay Zeka Dil Öğrenimi', hero_title:'Kelimelere hakim ol,<br><em>yapay zeka ile</em>',
-    hero_sub:'Kelime veya cümle — herhangi bir dilde', search_ph:'Kelime veya cümle ara...',
-    search_tip:'💡 <strong>Arbeit</strong> veya <strong>çalışmak</strong> deneyin',
-    total_words:'Toplam Kelime', due_today:'Bugün Yapılacak', start_review:'Tekrara Başla',
-    nav_home:'Ana Sayfa', nav_cards:'Kartlar', nav_list:'Liste',
-    gate_google:'Google ile devam et', gate_or:'Veya e-posta kullan', gate_magic:'Giriş bağlantısı gönder', gate_login:'Giriş Yap',
-    ob_title_0:"Fluenta'ya Hoş Geldiniz 👋", ob_sub_0:'Deneyiminizi kişiselleştirmek için birkaç soru',
-    ob_title_1:'Hangi dil?', ob_sub_1:'Daha sonra ayarlardan değiştirebilirsiniz',
-    ob_title_2:'Seviyeniz nedir?', ob_sub_2:'Dürüst olun — bu önerilerini etkiler',
-    ob_title_3:'Hedefiniz nedir?', ob_sub_3:'En iyi kelimeleri önereceğiz',
-    ob_title_4:'Hazır! 🚀', ob_sub_4:'Profilinizden istediğiniz zaman değiştirebilirsiniz',
-    ob_next:'İleri', ob_start:'Başla 🚀', ob_skip:'Atla',
-    ses_review_title:'Tekrar Zamanı!', ses_start:'Tekrara Başla →', ses_later:'Sonra',
-    ses_tap:'Anlamı görmek için dokunun', ses_meaning:'Anlam',
-    ses_forgot:'← Bilmiyordum', ses_knew:'Biliyordum →',
-    btn_forgot:'Bilmiyordum', btn_knew:'Biliyordum',
-    ses_close:'Kapat', ses_next:'Sonraki Oturum →',
-    ses_exit_q:'Oturum tamamlanmadı — emin misiniz?', ses_continue:'Devam et 💪',
-    rem_title:'Tekrar Zamanı! 🌙', rem_start:'Tekrara Başla ←',
-    empty_title:'İlk kelimenizi arayın', empty_sub:'Herhangi bir kelime arayın ve kartlarınıza ekleyin',
-    empty_btn:'Başla ←', login_prompt:'Kelimeleri kaydetmek için giriş yapın 👤',
-    notif_title:'Günlük hatırlatmayı etkinleştir', notif_sub:"Her gün 20:30'da hatırlatma", notif_yes:'Etkinleştir 🔔',
-    due_label:'⏰ Tekrar Zamanı', list_title:'Kelime Listesi',
-    sort_new:'En Yeni', sort_due:'Gecikmiş', sort_weak:'En Zayıf', sort_best:'En İyi', sort_alpha:'A-Z',
-    packs_title:'📦 Kelime Paketleri', packs_sub:'Daha hızlı öğrenme için hazır koleksiyonlar',
-    pro_f1:'Sınırsız AI araması', pro_f2:'Tüm paketler + AI', pro_f3:'Tüm cihazlarda senkronizasyon', pro_buy:"Telegram'dan satın al", beta_lbl:'Beta kodunuz var mı?',
-    drw_signout:'Çıkış Yap', drw_clear:'Kelimeleri Sil', drw_contact:"Telegram'da bize ulaşın",
-    drw_searches:'arama',
-    edit_title:'Kelimeyi Düzenle', edit_ex:'Örnek cümle (isteğe bağlı)', edit_save:'Kaydet', edit_cancel:'İptal',
-    offline:'📡 Çevrimdışı — kelimeler mevcut ama arama internet gerektiriyor',
-  },
-  de: {
-    hero_label:'KI-Sprachlernapp', hero_title:'Wortschatz meistern,<br><em>mit KI</em>',
-    hero_sub:'Wort oder Satz — in jeder Sprache', search_ph:'Wort oder Satz suchen...',
-    search_tip:'💡 Versuche <strong>Arbeit</strong> oder <strong>merci</strong>',
-    total_words:'Gesamtwörter', due_today:'Heute fällig', start_review:'Wiederholung starten',
-    nav_home:'Startseite', nav_cards:'Karten', nav_list:'Liste',
-    gate_google:'Mit Google fortfahren', gate_or:'Oder E-Mail verwenden', gate_magic:'Magic Link senden', gate_login:'Anmelden',
-    ob_title_0:'Willkommen bei Fluenta 👋', ob_sub_0:'Einige Fragen zur Personalisierung',
-    ob_title_1:'Welche Sprache?', ob_sub_1:'Jederzeit in den Einstellungen änderbar',
-    ob_title_2:'Dein Niveau?', ob_sub_2:'Sei ehrlich — das beeinflusst deine Vorschläge',
-    ob_title_3:'Dein Ziel?', ob_sub_3:'Wir schlagen die besten Wörter vor',
-    ob_title_4:'Alles bereit! 🚀', ob_sub_4:'Jederzeit im Profil änderbar',
-    ob_next:'Weiter', ob_start:'Loslegen 🚀', ob_skip:'Überspringen',
-    ses_review_title:'Wiederholungszeit!', ses_start:'Wiederholung starten →', ses_later:'Später',
-    ses_tap:'Tippe um die Bedeutung zu sehen', ses_meaning:'Bedeutung',
-    ses_forgot:'← Wusste nicht', ses_knew:'Wusste →',
-    btn_forgot:'Wusste nicht', btn_knew:'Wusste',
-    ses_close:'Schließen', ses_next:'Nächste Sitzung →',
-    ses_exit_q:'Sitzung unvollständig — bist du sicher?', ses_continue:'Weiter 💪',
-    rem_title:'Wiederholungszeit! 🌙', rem_start:'Wiederholung starten ←',
-    empty_title:'Suche dein erstes Wort', empty_sub:'Suche ein Wort und füge es zu deinen Karten hinzu',
-    empty_btn:'Loslegen →', login_prompt:'Anmelden um Wörter zu speichern 👤',
-    notif_title:'Tägliche Erinnerung aktivieren', notif_sub:'Tägliche Erinnerung um 20:30', notif_yes:'Aktivieren 🔔',
-    due_label:'⏰ Zur Wiederholung fällig', list_title:'Wortliste',
-    sort_new:'Neueste', sort_due:'Überfällig', sort_weak:'Schwächste', sort_best:'Beste', sort_alpha:'A-Z',
-    packs_title:'📦 Wortpakete', packs_sub:'Fertige Sammlungen zum schnelleren Lernen',
-    pro_f1:'Unbegrenzte KI-Suchen', pro_f2:'Alle Pakete + KI', pro_f3:'Synchronisation auf allen Geräten', pro_buy:'Über Telegram kaufen', beta_lbl:'Hast du einen Beta-Code?',
-    drw_signout:'Abmelden', drw_clear:'Wörter löschen', drw_contact:'Kontakt per Telegram',
-    drw_searches:'Suchen',
-    edit_title:'Wort bearbeiten', edit_ex:'Beispielsatz (optional)', edit_save:'Speichern', edit_cancel:'Abbrechen',
-    offline:'📡 Offline — Wörter verfügbar, aber Suche braucht Internet',
-  },
-  fr: {
-    hero_label:'Apprentissage IA', hero_title:"Maîtrisez le vocabulaire,<br><em>avec l'IA</em>",
-    hero_sub:"Mot ou expression — dans n'importe quelle langue", search_ph:'Chercher un mot ou une phrase...',
-    search_tip:'💡 Essayez <strong>Arbeit</strong> ou <strong>travail</strong>',
-    total_words:"Total des mots", due_today:"À réviser", start_review:"Commencer la révision",
-    nav_home:'Accueil', nav_cards:'Cartes', nav_list:'Liste',
-    gate_google:"Continuer avec Google", gate_or:"Ou utiliser l'e-mail", gate_magic:"Envoyer le lien magique", gate_login:"Se connecter",
-    ob_title_0:'Bienvenue sur Fluenta 👋', ob_sub_0:"Quelques questions pour personnaliser",
-    ob_title_1:'Quelle langue ?', ob_sub_1:"Vous pouvez changer cela dans les paramètres",
-    ob_title_2:'Quel est votre niveau ?', ob_sub_2:'Soyez honnête — cela affecte vos suggestions',
-    ob_title_3:'Quel est votre objectif ?', ob_sub_3:'Nous suggérerons les meilleurs mots',
-    ob_title_4:"C'est parti ! 🚀", ob_sub_4:"Vous pouvez changer cela depuis votre profil",
-    ob_next:'Suivant', ob_start:'Commencer 🚀', ob_skip:'Passer',
-    ses_review_title:'Temps de révision !', ses_start:'Commencer →', ses_later:"Plus tard",
-    ses_tap:'Appuyez pour révéler', ses_meaning:"Signification",
-    ses_forgot:'← Ne savais pas', ses_knew:'Je savais →',
-    btn_forgot:'Ne savais pas', btn_knew:'Je savais',
-    ses_close:"Fermer", ses_next:"Session suivante →",
-    ses_exit_q:"Session incomplète — êtes-vous sûr ?", ses_continue:"Continuer 💪",
-    rem_title:'Temps de révision ! 🌙', rem_start:'Commencer ←',
-    empty_title:'Cherchez votre premier mot', empty_sub:"Cherchez n'importe quel mot et ajoutez-le",
-    empty_btn:"Commencer →", login_prompt:"Connectez-vous pour sauvegarder vos mots 👤",
-    notif_title:"Activer le rappel quotidien", notif_sub:"Rappel quotidien à 20h30", notif_yes:"Activer 🔔",
-    due_label:'⏰ À réviser', list_title:'Liste des mots',
-    sort_new:'Récents', sort_due:'En retard', sort_weak:'Plus faibles', sort_best:'Meilleurs', sort_alpha:'A-Z',
-    packs_title:"📦 Packs de mots", packs_sub:"Collections prêtes pour apprendre plus vite",
-    pro_f1:"Recherches IA illimitées", pro_f2:"Tous les packs + IA", pro_f3:"Synchronisation sur tous les appareils", pro_buy:"Acheter via Telegram", beta_lbl:"Vous avez un code bêta ?",
-    drw_signout:"Se déconnecter", drw_clear:"Effacer les mots", drw_contact:"Nous contacter sur Telegram",
-    drw_searches:"recherches",
-    edit_title:"Modifier le mot", edit_ex:"Phrase exemple (optionnel)", edit_save:"Enregistrer", edit_cancel:"Annuler",
-    offline:"📡 Hors ligne — mots disponibles mais la recherche nécessite Internet",
-  },
-};
-
-function ts(key){ var s=UI_STRINGS[UI_LANG]||UI_STRINGS['fa']; return s[key]!==undefined?s[key]:((UI_STRINGS['fa'][key])||key); }
-function el(id){ return document.getElementById(id); }
-function setText(id,val){ var e=el(id); if(e) e.textContent=val; }
-function setHTML(id,val){ var e=el(id); if(e) e.innerHTML=val; }
-function setAttr(id,attr,val){ var e=el(id); if(e) e.setAttribute(attr,val); }
-
-function applyUIStrings(){
-  var s=UI_STRINGS[UI_LANG]||UI_STRINGS['fa'];
-  setHTML('hero-title',s.hero_title); setText('hero-label',s.hero_label); setText('hero-sub',s.hero_sub);
-  setAttr('s-inp','placeholder',s.search_ph); setHTML('search-tip',s.search_tip);
-  var sumL=document.querySelectorAll('.sum-l'); if(sumL[0])sumL[0].textContent=s.total_words; if(sumL[1])sumL[1].textContent=s.due_today;
-  setText('review-lbl',s.start_review);
-  var drwL=document.querySelectorAll('.drw-hstat-l'); if(drwL[0])drwL[0].textContent=s.total_words; if(drwL[1])drwL[1].textContent=s.due_today;
-  setText('nl-home',s.nav_home); setText('nl-cards',s.nav_cards); setText('nl-list',s.nav_list);
-  setText('gate-google-txt',s.gate_google); setText('gate-or-txt',s.gate_or); setText('gate-magic-btn',s.gate_magic); setText('top-login-txt',s.gate_login);
-  for(var i=0;i<5;i++){ setText('ob-title-'+i,s['ob_title_'+i]); setText('ob-sub-'+i,s['ob_sub_'+i]); }
-  var obBtn=el('ob-btntxt'); if(obBtn)obBtn.textContent=s.ob_next;
-  var obSkip=el('ob-skip'); if(obSkip)obSkip.textContent=s.ob_skip;
-  setText('intro-title',s.ses_review_title); setText('intro-start-btn',s.ses_start); setText('intro-later-btn',s.ses_later);
-  setText('ses-tap-hint',s.ses_tap); setText('ses-meaning-lbl',s.ses_meaning);
-  var sf=el('swipe-forgot'); if(sf)sf.textContent=s.ses_forgot;
-  var sk=el('swipe-knew'); if(sk)sk.textContent=s.ses_knew;
-  setText('btn-forgot',s.btn_forgot); setText('btn-knew',s.btn_knew);
-  setText('ses-close-btn',s.ses_close); setText('ses-next-btn',s.ses_next);
-  setText('ses-exit-q',s.ses_exit_q); setText('ses-continue-btn',s.ses_continue);
-  setText('rem-title-txt',s.rem_title); setText('rem-start-btn',s.rem_start);
-  setText('empty-title-txt',s.empty_title); setText('empty-sub-txt',s.empty_sub); setText('empty-btn-txt',s.empty_btn);
-  setText('login-prompt-txt',s.login_prompt);
-  setText('notif-title-txt',s.notif_title); setText('notif-sub-txt',s.notif_sub); setText('notif-yes-btn',s.notif_yes);
-  setText('due-label-txt',s.due_label); setText('list-title-txt',s.list_title);
-  setText('st-new',s.sort_new); setText('st-due',s.sort_due); setText('st-weak',s.sort_weak); setText('st-best',s.sort_best); setText('st-alpha',s.sort_alpha);
-  setText('packs-title-txt',s.packs_title); setText('packs-sub-txt',s.packs_sub);
-  setText('pro-f1',s.pro_f1); setText('pro-f2',s.pro_f2); setText('pro-f3',s.pro_f3); setText('pro-buy-btn',s.pro_buy); setText('beta-code-lbl',s.beta_lbl);
-  setText('drw-signout-btn',s.drw_signout); setText('drw-clear-btn',s.drw_clear); setText('drw-contact-btn',s.drw_contact);
-  /* app lang removed */ /* tgt lang removed */
-  var freeMsg=el('drw-free-msg'); if(freeMsg){ var used=window.userSearchCount||0,lim=window.FREE_LIMIT||10; freeMsg.textContent='امروز '+used+' از '+lim+' '+s.drw_searches; }
-  setText('edit-title-txt',s.edit_title); setText('edit-ex-lbl',s.edit_ex); setText('edit-save-btn',s.edit_save); setText('edit-cancel-btn',s.edit_cancel);
-  var offEl=el('off-bar'); if(offEl)offEl.textContent=s.offline;
-  setAttr('list-q','placeholder',s.nav_list+'...');
-  document.documentElement.dir=(UI_LANG==='fa'||UI_LANG==='ar')?'rtl':'ltr';
+function saveSync(){
+  const c=Q('#drw-sync')?.value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  if(!c){alert('کد معتبر وارد کن');return;}
+  localStorage.setItem('ws_sync',c);
+  Q('#sync-st').textContent='کد: '+c+' ✓';
+  dbLoad();drawerClose();
 }
 
+async function clearAll(){
+  if(!confirm('همه لغات پاک بشن؟'))return;
+  words=[];saveCache();updateBadges();updateStats();renderList();
+  drawerClose();
+  if(currentUser)dbClear().catch(()=>{});
+}
 
+/* ══════════════════════════════
+   DARK MODE
+══════════════════════════════ */
+function setTargetLang(lang){
+  targetLang = lang;
+  localStorage.setItem('ws_target_lang', lang);
+  updateLangUI();
+  // Clear word cache when switching language
+  Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>localStorage.removeItem(k));
+  showToast(lang==='de' ? '🇩🇪 زبان هدف: آلمانی' : '🇬🇧 زبان هدف: انگلیسی');
+  if(Q('#pane-packs')?.classList.contains('on')) renderPackGrid();
+  if(Q('#pane-list')?.classList.contains('on')) renderList();
+  updateBadges(); updateStats();
+  const inp = Q('#s-inp');
+  if(inp) inp.placeholder = lang==='de'
+    ? 'جستجو — آلمانی، فارسی یا انگلیسی'
+    : 'جستجو — انگلیسی، فارسی یا آلمانی';
+}
 
+function updateLangUI(){
+  const isDE = targetLang === 'de';
+  // Home badge
+  const flag = document.getElementById('home-lang-flag');
+  const label = document.getElementById('home-lang-label');
+  if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
+  if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
+  // Hero texts
+  const heroLabel = document.getElementById('hero-label');
+  const heroTitle = document.getElementById('hero-title');
+  const heroSub   = document.getElementById('hero-sub');
+  if(heroLabel) heroLabel.textContent = isDE ? 'دستیار یادگیری آلمانی' : 'دستیار یادگیری انگلیسی';
+  if(heroTitle){
+    if(isDE){
+      heroTitle.style.fontFamily = 'var(--sans)';
+      heroTitle.style.letterSpacing = '0';
+      heroTitle.innerHTML = 'لغت یاد بگیر،<br><em>نه حفظ کنی</em>';
+    } else {
+      heroTitle.style.fontFamily = 'var(--serif)';
+      heroTitle.style.letterSpacing = '-.5px';
+      heroTitle.innerHTML = 'Words stick,<br><em>not memorized</em>';
+    }
+  }
+  if(heroSub) heroSub.textContent = isDE
+    ? 'لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی'
+    : 'لغت، جمله یا اصطلاح — فارسی، انگلیسی یا آلمانی';
+  // Drawer lang toggle
+  drawerUpdateLangToggle();
+  // Pack presets
+  updatePackPresets();
+  // Home empty chips
+  updateHomeEmptyChips();
+}
+
+function updateHomeEmptyChips(){
+  const wrap = document.getElementById('home-empty-chips');
+  if(!wrap) return;
+  const isDE = targetLang === 'de';
+  const chips = isDE
+    ? ['Arbeit','Freundschaft','Reise','Glück','Heimweh','Sehnsucht']
+    : ['happiness','freedom','journey','grateful','melancholy','serendipity'];
+  wrap.innerHTML = `
+    <div style="font-size:11px;color:var(--ink4);margin-bottom:var(--s3);letter-spacing:.3px">
+      ${isDE ? 'مثلاً امتحان کن:' : 'try searching:'}
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center">
+      ${chips.map(w=>`<span class="hint-chip" onclick="qs('${w}')">${w}</span>`).join('')}
+    </div>
+  `;
+}
+
+const PACK_PRESETS = {
+  de: {
+    label: '📚 کتاب‌های محبوب آلمانی:',
+    placeholder: 'مثلاً: Sicher B2، لغات فوتبال، محیط زیست...',
+    items: [
+      { label: 'Nicos Weg A1',   prompt: 'کتاب Nicos Weg سطح A1' },
+      { label: 'Menschen A1',    prompt: 'کتاب Menschen A1 آلمانی' },
+      { label: 'Schritte Plus A2', prompt: 'کتاب Schritte Plus A2' },
+      { label: 'Sicher B1',      prompt: 'کتاب Sicher B1 آلمانی' },
+      { label: 'Aspekte B2',     prompt: 'کتاب Aspekte B2 آلمانی' },
+      { label: 'Dark 🎬',        prompt: 'سریال Dark آلمانی' },
+      { label: 'پزشکی 🏥',      prompt: 'لغات پزشکی آلمانی' },
+      { label: 'حقوق ⚖️',       prompt: 'لغات حقوقی آلمانی' },
+    ]
+  },
+  en: {
+    label: '📚 منابع محبوب انگلیسی:',
+    placeholder: 'e.g. Business English, Sherlock Holmes, medical terms...',
+    items: [
+      { label: 'Top Notch A1',   prompt: 'کتاب Top Notch A1 انگلیسی' },
+      { label: 'Interchange A2', prompt: 'کتاب Interchange A2 انگلیسی' },
+      { label: 'Headway B1',     prompt: 'کتاب Headway B1 انگلیسی' },
+      { label: 'Cutting Edge B2',prompt: 'کتاب Cutting Edge B2 انگلیسی' },
+      { label: 'Friends 🎬',     prompt: 'سریال Friends انگلیسی' },
+      { label: 'Business 💼',    prompt: 'لغات Business English' },
+      { label: 'پزشکی 🏥',      prompt: 'لغات پزشکی انگلیسی' },
+      { label: 'IELTS 📝',       prompt: 'لغات ضروری IELTS' },
+    ]
+  }
+};
+
+function updatePackPresets(){
+  const cfg = PACK_PRESETS[targetLang] || PACK_PRESETS.de;
+  const labelEl = document.getElementById('pack-presets-label');
+  const wrap    = document.getElementById('pack-presets-wrap');
+  const inp     = document.getElementById('ai-pack-tab-inp');
+  if(labelEl) labelEl.textContent = cfg.label;
+  if(inp) inp.placeholder = cfg.placeholder;
+  if(wrap){
+    wrap.innerHTML = cfg.items.map(it =>
+      `<button class="ai-preset-btn" onclick="setAIPackPreset('${it.prompt}')">${it.label}</button>`
+    ).join('');
+  }
+}
+
+function drawerUpdateLangToggle(){
+  const isDE = targetLang === 'de';
+  const de = document.getElementById('btn-lang-de');
+  const en = document.getElementById('btn-lang-en');
+  if(de){ de.classList.toggle('active', isDE); }
+  if(en){ en.classList.toggle('active', !isDE); }
+}
+
+function toggleDark(){const d=document.body.classList.toggle('dark');localStorage.setItem('ws_dark',d?'1':'0');setThemeIc(d);}
 function setThemeIc(d){
   Q('#theme-ic').innerHTML=d
     ?'<circle cx="7" cy="7" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.8 2.8l1.4 1.4M9.8 9.8l1.4 1.4M2.8 11.2l1.4-1.4M9.8 4.2l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
@@ -3472,16 +2803,14 @@ function go(t){
     const tab=Q('#t-'+id);
     if(tab) tab.classList.toggle('on',id===t);
   });
-  const tc=Q('#t-cards');if(tc)tc.classList.remove('on');
-  /* scroll to top — پیدا کردن اولین scrollable parent */
-  const activePane=Q('#pane-'+t);
-  if(activePane){activePane.scrollTop=0;}
-  window.scrollTo({top:0,behavior:'instant'});
+  Q('#t-cards').classList.remove('on');
+  window.scrollTo({top:0,behavior:'smooth'});
   if(t==='list') renderList();
+  if(t==='packs') renderPackGrid();
 }
 function updateBadges(){
   const has=filteredWords().length>0;
-  ['list'].forEach(id=>{
+  ['cards','list'].forEach(id=>{
     const el=Q('#t-'+id);
     if(el) el.classList.toggle('lit',has);
   });
@@ -3490,18 +2819,18 @@ function updateBadges(){
 /* ══════════════════════════════
    STATS / SUMMARY CARD
 ══════════════════════════════ */
-function updateStats(){ updateEmptyState();
+function updateStats(){
   const card=Q('#sum-card');
   const homeEmpty=Q('#home-empty');
-  const fw=filteredWords()||[];
+  const fw=filteredWords();
   if(!fw.length){
-    if(card)card.classList.remove('show');
+    card.classList.remove('show');
     if(homeEmpty) homeEmpty.classList.add('show');
-    var rc=document.getElementById('reader-entry-card');if(rc)rc.style.display='none';
     return;
   }
-  if(card)card.classList.add('show');
+  card.classList.add('show');
   if(homeEmpty) homeEmpty.classList.remove('show');
+  var _rc=document.getElementById('reader-card');if(_rc)_rc.style.display='flex';
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
@@ -3581,7 +2910,6 @@ async function doSearch(){
     if(detectMode(q)==='word') await searchWord(q);
     else await searchPhrase(q);
     setMsg('','');Q('#s-inp').value='';
-    if(!currentUser&&!localStorage.getItem('ws_prompt_dismissed')){setTimeout(function(){var p=document.getElementById('login-prompt');if(p)p.classList.add('show');},800);}
     // لاگ کردن سرچ
     if(currentUser && navigator.onLine){
       sb.from('search_logs').insert({
@@ -3654,27 +2982,17 @@ async function searchWord(q){
     : '{"word":"word without article","corrected_from":"null or original word","article":"null (English has no grammatical gender)","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs only: past tense and past participle e.g. go – went – gone","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"important grammar note or null","priority":{"score":3,"reason":"why important"}}';
 
   const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
-  var _ul=localStorage.getItem('ws_level')||'B1';
-  var _ug=JSON.parse(localStorage.getItem('ws_goals')||'["travel"]');
-  var _gc={travel:'سفر',work:'کار',exam:'آزمون',daily:'مکالمه',study:'تحصیل',fun:'علاقه'};
-  var _gt=_ug.map(function(g){return _gc[g]||g;}).join('، ');
-  const p=[
-    'ورودی: "'+q+'"',
-    'زبان ورودی: ممکنه '+langLabel+'، فارسی یا انگلیسی باشه.',
-    isDE?'اگه تایپ انگلیسی بود تصحیح کن: ae→ä, oe→ö, ue→ü, ss→ß':'',
-    'اگه فارسی بود: معادل '+langLabel+' پیدا کن.',
-    'پروفایل کاربر: سطح '+_ul+' — هدف: '+_gt,
-    'مثال‌ها و توضیحات متناسب با سطح '+_ul+' و هدف '+_gt+' باشن.',
-    'خروجی: فقط JSON خالص بدون ```:',
-    schema,'',
-    'قوانین:',
-    isDE?'- synonyms: مترادف‌های آلمانی — de: آلمانی، fa: فارسی':'- synonyms: مترادف‌های انگلیسی — de: انگلیسی، fa: فارسی',
-    isDE?'- examples: جمله آلمانی متناسب با هدف '+_gt:'- examples: جمله انگلیسی طبیعی',
-    isDE?'- principal_parts: فقط Verb — Präteritum و Perfekt':'- principal_parts: فقط irregular Verb — 3 شکل',
-    '- synonyms: حداکثر ۲ تا','- examples: دقیقاً ۱ جمله',
-    '- level: بر اساس CEFR واقعی','- priority.score: 5=روزمره 4=مهم 3=متوسط 2=کم 1=نادر',
-    'فقط JSON.',
-  ].filter(Boolean).join('\n');
+  const p = 'ورودی: "'+q+'"\n'
+   +'ممکنه '+langLabel+'، فارسی یا انگلیسی باشه.\n'
+   +(isDE ? 'آلمانی یا تایپ انگلیسی: تصحیح کن (ae→ä, oe→ö, ue→ü, ss→ß)\n' : '')
+   +'فارسی: معادل '+langLabel+' پیدا کن\n\n'
+   +'JSON خالص:\n'+schema+'\n\n'
+   +'قوانین:\n'
+   +(isDE ? '- principal_parts: فقط برای Verb، فقط ۲ شکل Präteritum و Perfekt\n' : '- principal_parts: only for irregular verbs, 3 forms\n')
+   +'- synonyms: حداکثر ۲ تا\n'
+   +'- examples: دقیقاً ۱ جمله\n'
+   +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
+   +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
 
   // retry تا ۲ بار اگه parse fail شد
   let curWord2=null;
@@ -3792,7 +3110,6 @@ function qs(w){Q('#s-inp').value=w;doSearch();}
 
 async function addWord(){
   if(!curWord)return;
-  if(!currentUser){showGate();showToast('برای ذخیره لغت، وارد شو 👤',2500,'warn');return;}
   if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
@@ -3880,7 +3197,6 @@ function rephrase(){
 }
 async function addPhrase(){
   if(!curPhrase)return;
-  if(!currentUser){showGate();showToast('برای ذخیره اصطلاح، وارد شو 👤',2500,'warn');return;}
   if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const de=curPhrase.original;
   if(words.some(w=>w.de===de))return;
@@ -4075,11 +3391,10 @@ function introClose(){
 }
 
 function startSession(){
-  const _s=Q('#session');if(!_s)return;
   Q('#ses-end').classList.remove('show'); Q('#ses-end').style.display='none';
   Q('#ses-confirm').classList.remove('show'); Q('#ses-confirm').style.display='none';
   Q('#ses-body').style.display='flex';
-  _s.style.display='flex';_s.classList.add('open');
+  Q('#session').classList.add('open');
   document.body.style.overflow='hidden';
   showCard();
 }
@@ -4091,7 +3406,7 @@ function sesClose(force){
     requestAnimationFrame(()=>Q('#ses-confirm').classList.add('show'));
     return;
   }
-  const _sc=Q('#session');if(_sc){_sc.classList.remove('open');_sc.style.display='none';}
+  Q('#session').classList.remove('open');
   document.body.style.overflow='';
   updateStats();
 }
@@ -4141,18 +3456,7 @@ function showCard(){
   const _an=Q('#again-n'); if(_an) _an.classList.remove('show');
 }
 
-function sesFlip(){
-  const cw=Q('#card-wrap');if(!cw)return;
-  cw.classList.toggle('flip');
-  const front=Q('.card-front'),back=Q('.card-back');
-  if(cw.classList.contains('flip')){
-    if(front)front.style.display='none';
-    if(back)back.style.display='flex';
-  }else{
-    if(front)front.style.display='flex';
-    if(back)back.style.display='none';
-  }
-}
+function sesFlip(){ Q('#card-wrap').classList.toggle('flip'); }
 
 async function sesRate(good){
   const w = sesDeck[sesI];
@@ -4431,17 +3735,16 @@ async function editSave(){
    KEYBOARD
 ══════════════════════════════ */
 document.addEventListener('keydown',e=>{
-  const _ses=Q('#session');
-  if(e.key==='Enter'&&Q('#pane-home')?.classList.contains('on')&&document.activeElement===Q('#s-inp'))doSearch();
-  if(_ses?.classList.contains('open')){
+  if(e.key==='Enter'&&Q('#pane-home').classList.contains('on')&&document.activeElement===Q('#s-inp'))doSearch();
+  if(Q('#session').classList.contains('open')){
     if(e.key===' '){e.preventDefault(); sesFlip();}
-    if(e.key==='ArrowRight'&&Q('#card-wrap')?.classList.contains('flip'))sesRate(true);
-    if(e.key==='ArrowLeft'&&Q('#card-wrap')?.classList.contains('flip'))sesRate(false);
+    if(e.key==='ArrowRight'&&Q('#card-wrap').classList.contains('flip'))sesRate(true);
+    if(e.key==='ArrowLeft'&&Q('#card-wrap').classList.contains('flip'))sesRate(false);
   }
   if(e.key==='Escape'){
-    Q('#drawer')?.classList.remove('open');
-    Q('#edit-modal')?.classList.remove('open');
-    if(_ses?.classList.contains('open'))sesClose();
+    Q('#drawer').classList.remove('open');
+    Q('#edit-modal').classList.remove('open');
+    if(Q('#session').classList.contains('open'))sesClose();
   }
 });
 
@@ -4451,11 +3754,314 @@ init();
 /* ══════════════════════════════
    WORD PACKS
 ══════════════════════════════ */
-/* PACKS removed */
+const PACKS = {
+  a1: {
+    name:'پایه A1', emoji:'🌱', free:true,
+    words:[
+      {de:'Hallo',fa:'سلام',ex:'Hallo! Wie geht es dir?',ex_fa:'سلام! حالت چطوره؟',tip:'رسمی‌ترش Guten Tag هست'},
+      {de:'Danke',fa:'ممنون',ex:'Danke schön!',ex_fa:'خیلی ممنون!',tip:'Bitte یعنی خواهش می‌کنم — جواب Danke'},
+      {de:'Bitte',fa:'خواهش می‌کنم',ex:'Bitte sehr!',ex_fa:'خواهش می‌کنم!',tip:'هم please هم you are welcome'},
+      {de:'Ja',fa:'بله',ex:'Ja, natürlich!',ex_fa:'بله، البته!',tip:'Jawohl خیلی رسمیه'},
+      {de:'Nein',fa:'نه',ex:'Nein, danke.',ex_fa:'نه، ممنون.',tip:'Nö محاوره‌ایه'},
+      {de:'Wasser',fa:'آب',ex:'Ich trinke Wasser.',ex_fa:'آب می‌نوشم.',tip:'das Wasser — خنثی'},
+      {de:'Essen',fa:'غذا / خوردن',ex:'Das Essen ist lecker.',ex_fa:'غذا خوشمزه‌ست.',tip:'هم اسم هم فعل'},
+      {de:'Haus',fa:'خانه',ex:'Ich bin zu Hause.',ex_fa:'خونه‌ام.',tip:'Heim هم خانه است ولی احساسی‌تر'},
+      {de:'Auto',fa:'ماشین',ex:'Das Auto ist neu.',ex_fa:'ماشین نوئه.',tip:'das Auto — خنثی'},
+      {de:'Arbeit',fa:'کار',ex:'Ich gehe zur Arbeit.',ex_fa:'می‌رم سر کار.',tip:'Job هم کار است — انگلیسی'},
+      {de:'Familie',fa:'خانواده',ex:'Meine Familie ist groß.',ex_fa:'خانواده‌ام بزرگه.',tip:'die Familie — مؤنث'},
+      {de:'Freund',fa:'دوست',ex:'Er ist mein Freund.',ex_fa:'اون دوستمه.',tip:'Freundin برای دختر'},
+      {de:'Zeit',fa:'وقت / زمان',ex:'Ich habe keine Zeit.',ex_fa:'وقت ندارم.',tip:'یکی از پرکاربردترین کلمات'},
+      {de:'Tag',fa:'روز',ex:'Guten Tag!',ex_fa:'روز بخیر!',tip:'Tage جمعشه'},
+      {de:'Nacht',fa:'شب',ex:'Gute Nacht!',ex_fa:'شب بخیر!',tip:'die Nacht — مؤنث'},
+      {de:'Geld',fa:'پول',ex:'Ich brauche Geld.',ex_fa:'پول لازم دارم.',tip:'das Geld — خنثی'},
+      {de:'Stadt',fa:'شهر',ex:'Die Stadt ist schön.',ex_fa:'شهر قشنگه.',tip:'Städte جمعشه'},
+      {de:'Land',fa:'کشور / روستا',ex:'Das Land ist groß.',ex_fa:'کشور بزرگه.',tip:'هم country هم countryside'},
+      {de:'Schule',fa:'مدرسه',ex:'Ich gehe zur Schule.',ex_fa:'می‌رم مدرسه.',tip:'die Schule — مؤنث'},
+      {de:'Buch',fa:'کتاب',ex:'Ich lese ein Buch.',ex_fa:'دارم کتاب می‌خونم.',tip:'das Buch — خنثی'},
+      {de:'Kind',fa:'بچه',ex:'Das Kind spielt.',ex_fa:'بچه بازی می‌کنه.',tip:'Kinder جمعشه'},
+      {de:'Mann',fa:'مرد / شوهر',ex:'Der Mann arbeitet.',ex_fa:'مرد کار می‌کنه.',tip:'der Mann — مذکر'},
+      {de:'Frau',fa:'زن / خانم',ex:'Die Frau ist nett.',ex_fa:'خانم مهربونه.',tip:'هم woman هم Mrs'},
+      {de:'groß',fa:'بزرگ',ex:'Er ist sehr groß.',ex_fa:'خیلی بلنده.',tip:'هم tall هم big'},
+      {de:'klein',fa:'کوچک',ex:'Das ist ein kleines Haus.',ex_fa:'اینه یه خونه کوچیکه.',tip:'مخالف groß'},
+      {de:'gut',fa:'خوب',ex:'Das ist gut!',ex_fa:'این خوبه!',tip:'besser=بهتر، best=بهترین'},
+      {de:'schlecht',fa:'بد',ex:'Das Wetter ist schlecht.',ex_fa:'هوا بده.',tip:'schlimm هم بد است — بدتر'},
+      {de:'neu',fa:'جدید',ex:'Ich habe ein neues Auto.',ex_fa:'ماشین جدید دارم.',tip:'مخالف alt'},
+      {de:'alt',fa:'قدیمی / پیر',ex:'Das Haus ist sehr alt.',ex_fa:'خونه خیلی قدیمیه.',tip:'هم old هم elderly'},
+      {de:'kalt',fa:'سرد',ex:'Es ist kalt draußen.',ex_fa:'بیرون سرده.',tip:'مخالف warm'},
+      {de:'warm',fa:'گرم',ex:'Das Wasser ist warm.',ex_fa:'آب گرمه.',tip:'heiß خیلی داغه'},
+      {de:'schnell',fa:'سریع',ex:'Fahr nicht so schnell!',ex_fa:'اینقدر سریع نرو!',tip:'مخالف langsam'},
+      {de:'langsam',fa:'آرام / کند',ex:'Bitte sprechen Sie langsam.',ex_fa:'لطفاً آروم صحبت کنید.',tip:'خیلی کاربردی برای مبتدیا'},
+      {de:'kommen',fa:'آمدن',ex:'Ich komme aus Iran.',ex_fa:'از ایران میام.',tip:'ich komme, du kommst'},
+      {de:'gehen',fa:'رفتن',ex:'Ich gehe nach Hause.',ex_fa:'می‌رم خونه.',tip:'پرکاربردترین فعل'},
+      {de:'sehen',fa:'دیدن',ex:'Ich sehe dich!',ex_fa:'می‌بینمت!',tip:'schauen هم نگاه کردنه'},
+      {de:'sprechen',fa:'صحبت کردن',ex:'Sprechen Sie Deutsch?',ex_fa:'آلمانی بلدید؟',tip:'reden محاوره‌ایه'},
+      {de:'hören',fa:'شنیدن',ex:'Ich höre Musik.',ex_fa:'موزیک گوش می‌دم.',tip:'zuhören = گوش دادن دقیق'},
+      {de:'essen',fa:'خوردن',ex:'Was essen wir heute?',ex_fa:'امروز چی می‌خوریم؟',tip:'ich esse, du isst'},
+      {de:'trinken',fa:'نوشیدن',ex:'Ich trinke Kaffee.',ex_fa:'قهوه می‌نوشم.',tip:'trinken = نوشیدن، essen = خوردن'},
+      {de:'schlafen',fa:'خوابیدن',ex:'Ich schlafe acht Stunden.',ex_fa:'۸ ساعت می‌خوابم.',tip:'ich schlafe, du schläfst'},
+      {de:'kaufen',fa:'خریدن',ex:'Ich kaufe ein Buch.',ex_fa:'یه کتاب می‌خرم.',tip:'verkaufen = فروختن'},
+      {de:'lernen',fa:'یاد گرفتن',ex:'Ich lerne Deutsch.',ex_fa:'آلمانی یاد می‌گیرم.',tip:'studieren = تحصیل کردن'},
+      {de:'lesen',fa:'خواندن',ex:'Ich lese jeden Tag.',ex_fa:'هر روز می‌خونم.',tip:'ich lese, du liest'},
+      {de:'schreiben',fa:'نوشتن',ex:'Schreib mir!',ex_fa:'برام بنویس!',tip:'tippen = تایپ کردن'},
+      {de:'Straße',fa:'خیابان',ex:'Die Straße ist lang.',ex_fa:'خیابون بلنده.',tip:'die Straße — مؤنث'},
+      {de:'Bahnhof',fa:'ایستگاه قطار',ex:'Wo ist der Bahnhof?',ex_fa:'ایستگاه کجاست؟',tip:'der Bahnhof — مذکر'},
+      {de:'Supermarkt',fa:'سوپرمارکت',ex:'Ich gehe zum Supermarkt.',ex_fa:'می‌رم سوپرمارکت.',tip:'der Supermarkt — مذکر'},
+      {de:'Arzt',fa:'دکتر',ex:'Ich brauche einen Arzt.',ex_fa:'به دکتر نیاز دارم.',tip:'Ärztin برای دکتر زن'},
+      {de:'Krankenhaus',fa:'بیمارستان',ex:'Er ist im Krankenhaus.',ex_fa:'اون توی بیمارستانه.',tip:'das Krankenhaus — خنثی'}
+    ]
+  },
+  b1:{name:'مکالمه روزمره',emoji:'💬',free:false,words:[
+    {de:'Wie geht es Ihnen?',fa:'حالتون چطوره؟',ex:'Guten Tag! Wie geht es Ihnen?',ex_fa:'روز بخیر! حالتون چطوره؟',tip:'رسمی — برای غریبه‌ها'},
+    {de:'Mir geht es gut',fa:'حالم خوبه',ex:'Danke, mir geht es gut.',ex_fa:'ممنون، حالم خوبه.',tip:'پاسخ رسمی به Wie geht es Ihnen'},
+    {de:'Wie heißen Sie?',fa:'اسمتون چیه؟',ex:'Entschuldigung, wie heißen Sie?',ex_fa:'ببخشید، اسمتون چیه؟',tip:'رسمی — Wie heißt du? غیررسمیه'},
+    {de:'Ich heiße',fa:'اسمم ... هست',ex:'Ich heiße Sara.',ex_fa:'اسمم ساراست.',tip:'mein Name ist هم همینه'},
+    {de:'Woher kommen Sie?',fa:'اهل کجایید؟',ex:'Woher kommen Sie ursprünglich?',ex_fa:'اصالتاً اهل کجایید؟',tip:'woher = از کجا'},
+    {de:'Ich komme aus Iran',fa:'من از ایران میام',ex:'Ich komme aus Iran. Und Sie?',ex_fa:'من از ایرانم. شما چطور؟',tip:'aus + کشور بدون حرف تعریف'},
+    {de:'Entschuldigung',fa:'ببخشید / عذرخواهی',ex:'Entschuldigung, wo ist der Bahnhof?',ex_fa:'ببخشید، ایستگاه قطار کجاست؟',tip:'برای جلب توجه یا عذرخواهی'},
+    {de:'Können Sie mir helfen?',fa:'می‌تونید کمکم کنید؟',ex:'Entschuldigung, können Sie mir helfen?',ex_fa:'ببخشید، می‌تونید کمکم کنید؟',tip:'können = توانستن'},
+    {de:'Ich verstehe nicht',fa:'نمی‌فهمم',ex:'Es tut mir leid, ich verstehe nicht.',ex_fa:'ببخشید، نمی‌فهمم.',tip:'اولین جمله‌ای که باید بلد باشی!'},
+    {de:'Können Sie das wiederholen?',fa:'می‌تونید تکرار کنید؟',ex:'Entschuldigung, können Sie das wiederholen?',ex_fa:'ببخشید، می‌تونید تکرار کنید؟',tip:'wiederholen = تکرار کردن'},
+    {de:'Sprechen Sie Englisch?',fa:'انگلیسی بلدید؟',ex:'Sprechen Sie Englisch oder Persisch?',ex_fa:'انگلیسی یا فارسی بلدید؟',tip:'نجات‌دهنده در موقعیت‌های اضطراری!'},
+    {de:'Ich spreche ein bisschen Deutsch',fa:'کمی آلمانی بلدم',ex:'Ich spreche erst ein bisschen Deutsch.',ex_fa:'فعلاً کمی آلمانی بلدم.',tip:'ein bisschen = کمی'},
+    {de:'Was kostet das?',fa:'این چقدر میشه؟',ex:'Entschuldigung, was kostet das?',ex_fa:'ببخشید، این چقدر میشه؟',tip:'kosten = ارزش داشتن / هزینه داشتن'},
+    {de:'Wo ist die Toilette?',fa:'دستشویی کجاست؟',ex:'Entschuldigung, wo ist die Toilette?',ex_fa:'ببخشید، دستشویی کجاست؟',tip:'WC هم گفته میشه'},
+    {de:'Ich brauche Hilfe',fa:'به کمک نیاز دارم',ex:'Ich brauche dringend Hilfe!',ex_fa:'فوری به کمک نیاز دارم!',tip:'dringend = فوری'},
+    {de:'Bitte schreiben Sie das auf',fa:'لطفاً بنویسیدش',ex:'Können Sie das bitte aufschreiben?',ex_fa:'می‌تونید لطفاً بنویسیدش؟',tip:'aufschreiben = نوشتن روی کاغذ'},
+    {de:'Verabschiedung',fa:'خداحافظی',ex:'Auf Wiedersehen! Tschüss!',ex_fa:'خداحافظ! بای!',tip:'Tschüss غیررسمی، Auf Wiedersehen رسمیه'},
+    {de:'Guten Morgen',fa:'صبح بخیر',ex:'Guten Morgen! Wie war Ihr Schlaf?',ex_fa:'صبح بخیر! خوب خوابیدید؟',tip:'صبح تا حدود ۱۰'},
+    {de:'Guten Abend',fa:'عصر/شب بخیر',ex:'Guten Abend! Schön Sie zu sehen.',ex_fa:'عصر بخیر! خوشحالم می‌بینمتون.',tip:'از حدود ۶ بعدازظهر'},
+    {de:'Ich wohne in',fa:'من در ... زندگی می‌کنم',ex:'Ich wohne in Berlin seit zwei Jahren.',ex_fa:'دو ساله توی برلین زندگی می‌کنم.',tip:'wohnen = زندگی کردن، اقامت داشتن'},
+  ]},
+  work:{name:'کار و شغل',emoji:'💼',free:false,words:[
+    {de:'die Bewerbung',fa:'درخواست کار / اپلیکیشن',ex:'Ich habe eine Bewerbung geschickt.',ex_fa:'یه درخواست کار فرستادم.',tip:'sich bewerben = درخواست دادن'},
+    {de:'das Vorstellungsgespräch',fa:'مصاحبه کاری',ex:'Morgen habe ich ein Vorstellungsgespräch.',ex_fa:'فردا مصاحبه کاری دارم.',tip:'vorstellen = معرفی کردن'},
+    {de:'der Lebenslauf',fa:'رزومه',ex:'Ich schicke Ihnen meinen Lebenslauf.',ex_fa:'رزومه‌ام رو برایتون می‌فرستم.',tip:'مثل CV انگلیسی'},
+    {de:'die Stelle',fa:'موقعیت شغلی / پست',ex:'Die Stelle ist noch offen.',ex_fa:'موقعیت شغلی هنوز پره.',tip:'Job هم کاربرد داره'},
+    {de:'das Gehalt',fa:'حقوق',ex:'Was ist Ihr gewünschtes Gehalt?',ex_fa:'حقوق مد نظرتون چقدره؟',tip:'der Lohn برای کار ساعتی'},
+    {de:'die Arbeitszeit',fa:'ساعت کاری',ex:'Die Arbeitszeit ist von 9 bis 17 Uhr.',ex_fa:'ساعت کاری از ۹ تا ۵ هست.',tip:'Vollzeit = تمام وقت، Teilzeit = پاره وقت'},
+    {de:'der Urlaub',fa:'مرخصی / تعطیلات',ex:'Ich nehme nächste Woche Urlaub.',ex_fa:'هفته دیگه مرخصی می‌گیرم.',tip:'Urlaub nehmen = مرخصی گرفتن'},
+    {de:'die Kündigung',fa:'اخراج / استعفا',ex:'Er hat die Kündigung erhalten.',ex_fa:'اخراج شد.',tip:'kündigen = بیرون کردن یا استعفا دادن'},
+    {de:'die Überstunden',fa:'اضافه‌کاری',ex:'Ich mache heute Überstunden.',ex_fa:'امروز اضافه‌کاری دارم.',tip:'همیشه جمع استفاده میشه'},
+    {de:'die Besprechung',fa:'جلسه / میتینگ',ex:'Wir haben um 10 Uhr eine Besprechung.',ex_fa:'ساعت ۱۰ جلسه داریم.',tip:'das Meeting هم رایجه'},
+    {de:'der Kollege',fa:'همکار',ex:'Meine Kollegen sind sehr nett.',ex_fa:'همکارام خیلی مهربانن.',tip:'die Kollegin برای زن'},
+    {de:'der Chef',fa:'رئیس / مدیر',ex:'Mein Chef ist sehr streng.',ex_fa:'رئیسم خیلی سختگیره.',tip:'die Chefin برای زن'},
+    {de:'das Büro',fa:'دفتر / اداره',ex:'Ich arbeite im Büro.',ex_fa:'توی دفتر کار می‌کنم.',tip:'das Homeoffice = دورکاری'},
+    {de:'die Aufgabe',fa:'وظیفه / تکلیف',ex:'Was ist meine Aufgabe?',ex_fa:'وظیفه‌ام چیه؟',tip:'die Pflicht هم وظیفه است ولی اخلاقی‌تر'},
+    {de:'der Vertrag',fa:'قرارداد',ex:'Ich habe einen unbefristeten Vertrag.',ex_fa:'قرارداد دائمی دارم.',tip:'unbefristet = نامحدود، befristet = موقت'},
+    {de:'die Erfahrung',fa:'تجربه',ex:'Ich habe 5 Jahre Erfahrung.',ex_fa:'۵ سال تجربه دارم.',tip:'erfahren = باتجربه'},
+    {de:'die Ausbildung',fa:'آموزش حرفه‌ای / دوره',ex:'Ich mache eine Ausbildung als Koch.',ex_fa:'دوره آشپزی می‌گذرونم.',tip:'سیستم آموزش حرفه‌ای آلمان — خیلی مهم!'},
+    {de:'Homeoffice',fa:'دورکاری',ex:'Ich arbeite heute im Homeoffice.',ex_fa:'امروز دورکارم.',tip:'خیلی رایج بعد از کرونا'},
+    {de:'das Praktikum',fa:'کارآموزی',ex:'Ich mache ein Praktikum bei BMW.',ex_fa:'توی BMW کارآموزی می‌کنم.',tip:'der Praktikant = کارآموز'},
+    {de:'berufstätig',fa:'شاغل',ex:'Meine Mutter ist berufstätig.',ex_fa:'مادرم شاغله.',tip:'nicht berufstätig = بیکار / خانه‌دار'},
+  ]},
+  travel:{name:'سفر',emoji:'✈️',free:false,words:[
+    {de:'der Flughafen',fa:'فرودگاه',ex:'Wir fahren zum Flughafen.',ex_fa:'می‌ریم فرودگاه.',tip:'der Flug = پرواز'},
+    {de:'der Flug',fa:'پرواز',ex:'Mein Flug ist um 8 Uhr morgens.',ex_fa:'پروازم ساعت ۸ صبحه.',tip:'fliegen = پرواز کردن'},
+    {de:'das Gepäck',fa:'بار / چمدان',ex:'Wie viel Gepäck darf ich mitnehmen?',ex_fa:'چقدر بار می‌تونم ببرم؟',tip:'der Koffer = چمدان'},
+    {de:'die Unterkunft',fa:'اقامتگاه',ex:'Ich suche eine Unterkunft in Berlin.',ex_fa:'دنبال اقامتگاه توی برلین می‌گردم.',tip:'das Hotel, die Pension, das Hostel'},
+    {de:'einchecken',fa:'چک این کردن',ex:'Wann kann ich einchecken?',ex_fa:'کی می‌تونم چک این کنم؟',tip:'auschecken = چک اوت کردن'},
+    {de:'der Zug',fa:'قطار',ex:'Der Zug fährt pünktlich ab.',ex_fa:'قطار سر وقت حرکت می‌کنه.',tip:'die U-Bahn = مترو، die S-Bahn = قطار شهری'},
+    {de:'die Fahrkarte',fa:'بلیت',ex:'Wo kann ich eine Fahrkarte kaufen?',ex_fa:'کجا می‌تونم بلیت بخرم؟',tip:'das Ticket هم گفته میشه'},
+    {de:'Wo ist...?',fa:'... کجاست؟',ex:'Entschuldigung, wo ist der Marktplatz?',ex_fa:'ببخشید، میدان بازار کجاست؟',tip:'پرکاربردترین سوال سفر'},
+    {de:'Wie weit ist es?',fa:'چقدر فاصله داره؟',ex:'Wie weit ist es zum Bahnhof?',ex_fa:'تا ایستگاه چقدر فاصله داره؟',tip:'weit = دور، nah = نزدیک'},
+    {de:'links / rechts',fa:'چپ / راست',ex:'Biegen Sie links ab.',ex_fa:'بپیچید چپ.',tip:'geradeaus = مستقیم'},
+    {de:'der Stadtplan',fa:'نقشه شهر',ex:'Haben Sie einen Stadtplan?',ex_fa:'نقشه شهر دارید؟',tip:'die Karte هم نقشه است'},
+    {de:'die Sehenswürdigkeit',fa:'جاذبه گردشگری',ex:'Was sind die Sehenswürdigkeiten hier?',ex_fa:'جاذبه‌های اینجا چیان؟',tip:'یکی از طولانی‌ترین کلمات رایج!'},
+    {de:'das Museum',fa:'موزه',ex:'Das Museum ist dienstags geschlossen.',ex_fa:'موزه سه‌شنبه‌ها تعطیله.',tip:'die Ausstellung = نمایشگاه'},
+    {de:'die Reise',fa:'سفر',ex:'Gute Reise!',ex_fa:'سفر خوش!',tip:'reisen = سفر کردن'},
+    {de:'das Visum',fa:'ویزا',ex:'Ich brauche ein Visum für Deutschland.',ex_fa:'برای آلمان ویزا لازم دارم.',tip:'der Reisepass = پاسپورت'},
+    {de:'die Versicherung',fa:'بیمه',ex:'Ich habe eine Reiseversicherung.',ex_fa:'بیمه سفر دارم.',tip:'krankenversichert = بیمه درمانی'},
+    {de:'das Wechselgeld',fa:'پول خرد / باقی',ex:'Stimmt so — kein Wechselgeld nötig.',ex_fa:'باقی نمی‌خوام.',tip:'wechseln = تعویض کردن'},
+    {de:'der Notfall',fa:'اورژانس / اضطرار',ex:'Ich brauche einen Arzt — Notfall!',ex_fa:'به دکتر نیاز دارم — اورژانسه!',tip:'Notruf = شماره اورژانس — ۱۱۰ پلیس، ۱۱۲ امداد'},
+    {de:'verloren',fa:'گم شده',ex:'Ich habe meinen Pass verloren.',ex_fa:'پاسپورتم رو گم کردم.',tip:'verlieren = گم کردن'},
+    {de:'Ich bin allergisch gegen',fa:'به ... آلرژی دارم',ex:'Ich bin allergisch gegen Nüsse.',ex_fa:'به آجیل آلرژی دارم.',tip:'خیلی مهم در سفر و رستوران!'},
+  ]},
+  food:{name:'غذا و رستوران',emoji:'🍕',free:false,words:[
+    {de:'die Speisekarte',fa:'منو / فهرست غذا',ex:'Kann ich bitte die Speisekarte haben?',ex_fa:'میشه منو داشته باشم؟',tip:'die Karte هم گفته میشه'},
+    {de:'Ich möchte bestellen',fa:'می‌خوام سفارش بدم',ex:'Wir möchten jetzt gerne bestellen.',ex_fa:'الان می‌خوایم سفارش بدیم.',tip:'bestellen = سفارش دادن'},
+    {de:'das Gericht',fa:'غذا / ظرف',ex:'Was ist das Tagesgericht?',ex_fa:'غذای روز چیه؟',tip:'die Mahlzeit = وعده غذایی'},
+    {de:'vegetarisch',fa:'گیاهی',ex:'Haben Sie vegetarische Gerichte?',ex_fa:'غذای گیاهی دارید؟',tip:'vegan = وگان'},
+    {de:'lecker',fa:'خوشمزه',ex:'Das schmeckt sehr lecker!',ex_fa:'خیلی خوشمزه‌ست!',tip:'schmecken = مزه دادن'},
+    {de:'die Rechnung',fa:'صورتحساب',ex:'Die Rechnung bitte!',ex_fa:'صورتحساب لطفاً!',tip:'zahlen = پرداخت کردن'},
+    {de:'Trinkgeld',fa:'انعام',ex:'Das Trinkgeld ist im Preis inbegriffen.',ex_fa:'انعام توی قیمت هست.',tip:'معمولاً ۱۰٪ در آلمان'},
+    {de:'das Frühstück',fa:'صبحانه',ex:'Das Frühstück ist im Preis enthalten.',ex_fa:'صبحانه توی قیمت هست.',tip:'frühstücken = صبحانه خوردن'},
+    {de:'das Mittagessen',fa:'ناهار',ex:'Was gibt es zum Mittagessen?',ex_fa:'برای ناهار چی داریم؟',tip:'zu Mittag essen = ناهار خوردن'},
+    {de:'das Abendessen',fa:'شام',ex:'Wir essen um 19 Uhr Abendessen.',ex_fa:'ساعت ۷ شام می‌خوریم.',tip:'zu Abend essen = شام خوردن'},
+    {de:'das Getränk',fa:'نوشیدنی',ex:'Was möchten Sie trinken?',ex_fa:'چی می‌خواید بنوشید؟',tip:'der Saft = آبمیوه، das Wasser = آب'},
+    {de:'die Portion',fa:'پرس / وعده',ex:'Eine Portion reicht für zwei.',ex_fa:'یه پرس برای دو نفر کافیه.',tip:'groß/klein = بزرگ/کوچیک'},
+    {de:'allergisch',fa:'آلرژیک',ex:'Ich bin allergisch gegen Gluten.',ex_fa:'به گلوتن آلرژی دارم.',tip:'die Allergie = آلرژی'},
+    {de:'zum Mitnehmen',fa:'برای بردن / تیک اوی',ex:'Kann ich das zum Mitnehmen haben?',ex_fa:'میشه اینو برای بردن بگیرم؟',tip:'مخالف: hier essen = اینجا بخورم'},
+    {de:'der Nachtisch',fa:'دسر',ex:'Was haben Sie als Nachtisch?',ex_fa:'به عنوان دسر چی دارید؟',tip:'das Dessert هم گفته میشه'},
+    {de:'scharf',fa:'تند / تیز',ex:'Ist das Gericht scharf?',ex_fa:'این غذا تنده؟',tip:'mild = ملایم'},
+    {de:'das Trinkwasser',fa:'آب آشامیدنی',ex:'Kann ich Leitungswasser haben?',ex_fa:'می‌تونم آب شیر داشته باشم؟',tip:'در آلمان آب شیر قابل نوشیدنه!'},
+    {de:'die Reservierung',fa:'رزرو',ex:'Ich habe eine Reservierung auf den Namen Schmidt.',ex_fa:'به اسم اشمیت رزرو دارم.',tip:'reservieren = رزرو کردن'},
+    {de:'vollwertig',fa:'کامل / مقوی',ex:'Ich esse vollwertige Mahlzeiten.',ex_fa:'وعده‌های مقوی می‌خورم.',tip:'Vollkornbrot = نان سبوس‌دار'},
+    {de:'Guten Appetit',fa:'نوش جان',ex:'Guten Appetit!',ex_fa:'نوش جان!',tip:'معادل Bon appétit فرانسوی'},
+  ]},
+}
+
+const EN_PACKS = {
+  basics: {
+    name:'Everyday Basics', emoji:'🌱', free:true,
+    words:[
+      {de:'Hello',fa:'سلام',ex:'Hello! How are you?',ex_fa:'سلام! حالت چطوره؟',tip:'Hi is more casual'},
+      {de:'Thank you',fa:'ممنون',ex:'Thank you so much!',ex_fa:'خیلی ممنون!',tip:'You\'re welcome is the reply'},
+      {de:'Please',fa:'لطفاً',ex:'Can you help me, please?',ex_fa:'می‌تونی کمکم کنی، لطفاً؟',tip:'Also used in requests'},
+      {de:'Sorry',fa:'ببخشید / متأسفم',ex:'Sorry, I didn\'t mean that.',ex_fa:'ببخشید، منظورم اون نبود.',tip:'Excuse me = ببخشید برای گذر کردن'},
+      {de:'Yes / No',fa:'بله / نه',ex:'Yes, I agree. No, thank you.',ex_fa:'بله، موافقم. نه، ممنون.',tip:'Yeah is informal for Yes'},
+      {de:'Good morning',fa:'صبح بخیر',ex:'Good morning! Did you sleep well?',ex_fa:'صبح بخیر! خوب خوابیدی؟',tip:'Good night = شب بخیر'},
+      {de:'How are you?',fa:'حالت چطوره؟',ex:'How are you? I\'m fine, thanks.',ex_fa:'حالت چطوره؟ خوبم، ممنون.',tip:'Fine, thanks is the common reply'},
+      {de:'My name is...',fa:'اسمم ... هست',ex:'My name is Sara. Nice to meet you.',ex_fa:'اسمم ساراست. خوشوقتم.',tip:'What\'s your name? = اسمت چیه؟'},
+    ]
+  },
+  work: {
+    name:'Work & Office', emoji:'💼', free:false,
+    words:[
+      {de:'deadline',fa:'مهلت / ددلاین',ex:'The deadline is Friday.',ex_fa:'مهلت جمعه‌ست.',tip:'Miss the deadline = از مهلت جا موندن'},
+      {de:'meeting',fa:'جلسه',ex:'We have a meeting at 10.',ex_fa:'ساعت ۱۰ جلسه داریم.',tip:'Schedule a meeting = جلسه تنظیم کردن'},
+      {de:'feedback',fa:'بازخورد',ex:'Can I get your feedback on this?',ex_fa:'می‌تونم بازخوردت رو بدونم؟',tip:'Constructive feedback = بازخورد سازنده'},
+      {de:'remote work',fa:'کار از راه دور',ex:'I work remotely three days a week.',ex_fa:'سه روز در هفته از خونه کار می‌کنم.',tip:'Work from home = کار از خونه'},
+      {de:'promote',fa:'ترفیع دادن',ex:'She was promoted to manager.',ex_fa:'اون به مدیر ترفیع گرفت.',tip:'Promotion = ترفیع'},
+      {de:'resign',fa:'استعفا دادن',ex:'He resigned from his position.',ex_fa:'اون از سمتش استعفا داد.',tip:'Notice period = دوره اطلاع‌رسانی'},
+      {de:'negotiate',fa:'مذاکره کردن',ex:'We need to negotiate the salary.',ex_fa:'باید حقوق رو مذاکره کنیم.',tip:'Negotiation = مذاکره'},
+      {de:'brainstorm',fa:'طوفان فکری',ex:'Let\'s brainstorm some ideas.',ex_fa:'بیا چند ایده طرح کنیم.',tip:'Out-of-the-box thinking = تفکر خلاق'},
+    ]
+  },
+  travel: {
+    name:'Travel & Places', emoji:'✈️', free:false,
+    words:[
+      {de:'boarding pass',fa:'کارت پرواز',ex:'Please show your boarding pass.',ex_fa:'لطفاً کارت پروازتون رو نشون بدید.',tip:'Gate = دروازه پرواز'},
+      {de:'customs',fa:'گمرک',ex:'You must declare items at customs.',ex_fa:'باید اجناستون رو در گمرک اعلام کنید.',tip:'Duty-free = بدون عوارض گمرکی'},
+      {de:'check in',fa:'چک‌این کردن',ex:'Check-in opens 2 hours before departure.',ex_fa:'چک‌این ۲ ساعت قبل از پرواز باز میشه.',tip:'Check out = تسویه حساب هتل'},
+      {de:'delay',fa:'تأخیر',ex:'The flight is delayed by one hour.',ex_fa:'پرواز یک ساعت تأخیر داره.',tip:'On time = به موقع'},
+      {de:'accommodation',fa:'اقامتگاه / محل اقامت',ex:'We booked accommodation in the city center.',ex_fa:'اقامتگاه در مرکز شهر رزرو کردیم.',tip:'Book in advance = از قبل رزرو کردن'},
+      {de:'exchange rate',fa:'نرخ ارز',ex:'What\'s the exchange rate today?',ex_fa:'نرخ ارز امروز چقدره؟',tip:'Currency = واحد پولی'},
+    ]
+  },
+  idioms: {
+    name:'Common Idioms', emoji:'💬', free:false,
+    words:[
+      {de:'break the ice',fa:'یخ رو شکستن / شروع به صحبت کردن',ex:'He told a joke to break the ice.',ex_fa:'یه جوک گفت تا یخ رو بشکنه.',tip:'Used when meeting strangers'},
+      {de:'hit the nail on the head',fa:'دقیقاً درست گفتن',ex:'You hit the nail on the head with that suggestion.',ex_fa:'با اون پیشنهاد دقیقاً درست گفتی.',tip:'Be spot on = کاملاً درست بودن'},
+      {de:'under the weather',fa:'حالم خوب نیست',ex:'I\'m feeling under the weather today.',ex_fa:'امروز حالم خوب نیست.',tip:'Also: feel off = حال خوبی نداشتن'},
+      {de:'once in a blue moon',fa:'هر چند وقت یه بار / به ندرت',ex:'We only meet once in a blue moon.',ex_fa:'هر از گاهی همدیگه رو می‌بینیم.',tip:'Rarely = به ندرت'},
+      {de:'bite the bullet',fa:'دندون رو جگر گذاشتن',ex:'Just bite the bullet and do it.',ex_fa:'فقط دندون رو جگر بذار و انجامش بده.',tip:'Face the pain bravely'},
+      {de:'cost an arm and a leg',fa:'خیلی گرون بودن',ex:'That car cost an arm and a leg.',ex_fa:'اون ماشین خیلی گرون بود.',tip:'Pricey = گرون‌قیمت (informal)'},
+    ]
+  },
+  academic: {
+    name:'Academic English', emoji:'📚', free:false,
+    words:[
+      {de:'analyze',fa:'تحلیل کردن',ex:'We need to analyze the data carefully.',ex_fa:'باید داده‌ها رو با دقت تحلیل کنیم.',tip:'Analysis = تحلیل (noun)'},
+      {de:'hypothesis',fa:'فرضیه',ex:'The hypothesis was proven correct.',ex_fa:'فرضیه درست بود.',tip:'Hypothesize = فرضیه دادن'},
+      {de:'significant',fa:'قابل توجه / معنادار',ex:'The results are statistically significant.',ex_fa:'نتایج از نظر آماری معنادار هستن.',tip:'Significance = اهمیت / معناداری'},
+      {de:'furthermore',fa:'علاوه بر این',ex:'Furthermore, the study shows...',ex_fa:'علاوه بر این، مطالعه نشان می‌دهد...',tip:'Moreover / In addition = همین معنا'},
+      {de:'conclude',fa:'نتیجه گرفتن',ex:'We can conclude that the method works.',ex_fa:'می‌تونیم نتیجه بگیریم که روش کار می‌کنه.',tip:'Conclusion = نتیجه‌گیری'},
+      {de:'cite',fa:'ارجاع دادن / استناد کردن',ex:'Always cite your sources.',ex_fa:'همیشه منابعت رو ارجاع بده.',tip:'Citation = ارجاع / استناد'},
+    ]
+  },
+};
+;
+
+
 /* ══════════════════════════════
    RENDER PACKS GRID
 ══════════════════════════════ */
-function renderPackGrid(){/* packs removed */}
+function renderPackGrid(){
+  const activePacks = targetLang === 'en' ? EN_PACKS : PACKS;
+  const container = Q('#packs-grid-container');
+  if(!container) return;
+
+  const packList = [
+    { id:'a1',     emoji:'🌱', name:'پایه A1',        count:50, free:true,  level:'A1', desc:'لغات پایه برای شروع' },
+    { id:'b1',     emoji:'💬', name:'مکالمه روزمره',  count:80, free:false, level:'A2', desc:'گفتگوی روزانه' },
+    { id:'work',   emoji:'💼', name:'کار و شغل',      count:60, free:false, level:'B1', desc:'محیط کاری' },
+    { id:'travel', emoji:'✈️', name:'سفر',            count:50, free:false, level:'A2', desc:'سفر و گردشگری' },
+  ];
+
+  const inFlashcard = new Set(words.map(w=>w.de));
+  const inSavedList = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
+
+  var packHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  packList.forEach(function(pack){
+    var packWords = (activePacks[pack.id] && activePacks[pack.id].words) || [];
+    var total = packWords.length;
+    var seenSet = getSeenPackWords(pack.id);
+    var learned = packWords.filter(function(w){
+      return inFlashcard.has(w.de) || inSavedList.has(w.de) || seenSet.has(w.de);
+    }).length;
+    var pct = total > 0 ? Math.round(learned/total*100) : 0;
+    var isDone = pct === 100;
+    var isLocked = !pack.free && userPlan === 'free';
+    var isStarted = learned > 0 && !isDone;
+
+    var cardStyle = 'font-family:var(--sans);border-radius:16px;padding:13px;display:flex;flex-direction:column;align-items:flex-start;text-align:right;min-height:150px;cursor:pointer;transition:border-color .15s,transform .12s;width:100%;position:relative;box-sizing:border-box;';
+    if(isDone){
+      cardStyle += 'background:rgba(18,110,53,.05);border:2px solid rgba(18,110,53,.3);';
+    } else if(isStarted){
+      cardStyle += 'background:var(--card);border:2px solid var(--accent);';
+    } else if(isLocked){
+      cardStyle += 'background:var(--bg2);border:1.5px solid var(--bg3);opacity:.85;';
+    } else {
+      cardStyle += 'background:var(--card);border:1.5px solid var(--bg3);';
+    }
+
+    // badge
+    var badge;
+    if(isDone){
+      badge = '<div style="font-size:10px;color:var(--ok);background:rgba(18,110,53,.1);padding:3px 10px;border-radius:20px;font-weight:600;margin-bottom:10px;font-family:var(--sans)">✓ تکمیل</div>';
+    } else if(isLocked){
+      badge = '<div style="font-size:10px;color:var(--ink3);background:var(--card);border:1px solid var(--bg3);padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:10px;font-family:var(--sans)">🔒 Pro</div>';
+    } else if(isStarted){
+      badge = '<div style="font-size:10px;color:var(--accent);background:var(--abl);padding:3px 10px;border-radius:20px;font-weight:600;margin-bottom:10px;font-family:var(--sans)">در حال یادگیری</div>';
+    } else if(pack.free){
+      badge = '<div style="font-size:10px;color:var(--ok);background:rgba(18,110,53,.1);padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:10px;font-family:var(--sans)">رایگان</div>';
+    } else {
+      badge = '<div style="font-size:10px;color:var(--ink3);background:var(--bg2);padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:10px;font-family:var(--sans)">Pro</div>';
+    }
+
+    // bottom
+    var bottom;
+    if(isDone){
+      bottom = '<div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between">'
+        + '<span style="font-size:11px;color:var(--ok);font-family:var(--sans)">مرور دوباره</span>'
+        + '<div style="width:28px;height:28px;border-radius:50%;background:rgba(18,110,53,.12);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="var(--ok)" stroke-width="1.5" stroke-linecap="round"/></svg></div>'
+        + '</div>';
+    } else if(isLocked){
+      bottom = '<div style="margin-top:auto;padding-top:12px">'
+        + '<div style="background:var(--accent);border-radius:10px;padding:9px;text-align:center;color:#fff;font-size:11px;font-weight:600;font-family:var(--sans)">ارتقا به Pro</div>'
+        + '</div>';
+    } else if(isStarted){
+      bottom = '<div style="margin-top:auto;padding-top:12px;width:100%">'
+        + '<div style="display:flex;justify-content:space-between;margin-bottom:5px">'
+        + '<span style="font-size:10px;color:var(--accent);font-weight:600;font-family:var(--sans)">' + (total-learned) + ' لغت مونده</span>'
+        + '<span style="font-size:10px;color:var(--ink3);font-family:var(--sans)">' + pct + '٪</span>'
+        + '</div>'
+        + '<div style="background:var(--bg3);border-radius:4px;height:3px"><div style="height:100%;border-radius:4px;background:var(--accent);width:' + pct + '%"></div></div>'
+        + '</div>';
+    } else {
+      bottom = '<div style="margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between">'
+        + '<span style="font-size:11px;color:var(--ink3);font-family:var(--sans)">' + total + ' لغت</span>'
+        + '<div style="width:28px;height:28px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round"/></svg></div>'
+        + '</div>';
+    }
+
+    var checkmark = isDone ? '<div style="position:absolute;top:12px;left:12px;width:20px;height:20px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>' : '';
+
+    var clickHandler = isLocked ? 'showUpgrade()' : 'openPack(this.dataset.pid)';
+
+    packHtml += '<button data-pid="' + pack.id + '" onclick="' + clickHandler + '" type="button" style="' + cardStyle + '">'
+      + checkmark
+      + badge
+      + '<div style="font-size:15px;font-weight:600;color:' + (isDone ? 'var(--ok)' : 'var(--ink)') + ';line-height:1.2;margin-bottom:3px;font-family:var(--sans)">' + pack.name + '</div>'
+      + '<div style="font-size:11px;color:var(--ink3);line-height:1.5;font-family:var(--sans)">' + pack.desc + '</div>'
+      + bottom
+      + '</button>';
+  });
+  packHtml += '</div>';
+  container.innerHTML = packHtml;
+  container.innerHTML = packHtml;
+}
 
 
 let curPack = null;
@@ -4770,7 +4376,38 @@ function markPackWordSeen(packId, word){
   localStorage.setItem(key, JSON.stringify([...seen]));
 }
 
-function openPack(){/* packs removed */}
+function openPack(id){
+  const activePacks = targetLang==='en'?EN_PACKS:PACKS;
+  const pack = activePacks[id];
+  if(!pack) return;
+  if(!pack.free && userPlan==='free'){
+    showUpgrade();
+    return;
+  }
+  if(!pack.free && !pack.words.length){
+    showToast('این pack به‌زودی اضافه میشه 🔜');
+    return;
+  }
+  // Start learning flow — لغات قبلاً اضافه‌شده رو فیلتر کن
+  plPack = pack;
+  plPackId = id;
+  const inFlash = new Set(words.map(w=>w.de));
+  const inSaved = new Set(JSON.parse(localStorage.getItem('ws_saved_words_'+uid())||'[]').map(w=>w.de));
+  const inSeen  = getSeenPackWords(id);
+  plWords = pack.words.filter(w => !inFlash.has(w.de) && !inSaved.has(w.de) && !inSeen.has(w.de));
+
+  if(!plWords.length){
+    showToast('همه لغات این pack رو قبلاً خوندی! 🎉');
+    return;
+  }
+
+  plIdx = 0; plFlashCount = 0; plSaveCount = 0; plSkipCount = 0;
+  plFlipped = false;
+
+  Q('#pl-summary').style.display='none';
+  Q('#pack-learn-modal').classList.add('open');
+  plShowCard();
+}
 
 function plShowCard(){
   if(plIdx >= plWords.length){ plShowSummary(); return; }
@@ -5194,7 +4831,7 @@ function packLearnRestart(){
 
       <!-- Beta code -->
       <div style="border-top:1px solid var(--bg3);padding-top:var(--s3)">
-        <div style="font-size:12px;color:var(--ink3);margin-bottom:var(--s2);text-align:right;font-family:var(--sans)" id="beta-code-lbl">کد بتا داری؟</div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:var(--s2);text-align:right;font-family:var(--sans)">کد بتا داری؟</div>
         <div style="display:flex;gap:var(--s2)">
           <input class="inp ltr" id="beta-code-inp" placeholder="BETA-XXXX" style="margin:0;flex:1;font-size:13px;text-transform:uppercase">
           <button class="btn btn-p btn-sm" onclick="redeemBeta()">فعال</button>
@@ -5308,26 +4945,54 @@ function packLearnRestart(){
     <div id="word-detail-body"></div>
   </div>
 </div>
-
-</div>
+</body>
+</html>
 <script>
-document.addEventListener('click',function(e){
-  var pop=document.getElementById('lang-popover');
-  var badge=document.getElementById('home-lang-badge');
-  if(pop&&badge&&!pop.contains(e.target)&&!badge.contains(e.target)){
-    pop.style.display='none';
-    var chev=document.getElementById('lang-badge-chevron');
-    if(chev)chev.style.transform='';
+// ── Lang Popover ──────────────────────────────
+function langPopoverToggle(e){
+  e.stopPropagation();
+  const pop = document.getElementById('lang-popover');
+  const chev = document.getElementById('lang-badge-chevron');
+  const open = pop.style.display === 'block';
+  pop.style.display = open ? 'none' : 'block';
+  chev.style.transform = open ? '' : 'rotate(180deg)';
+  langPopoverUpdateChecks();
+}
+function langPopoverPick(lang){
+  setTargetLang(lang);
+  document.getElementById('lang-popover').style.display = 'none';
+  document.getElementById('lang-badge-chevron').style.transform = '';
+  langPopoverUpdateChecks();
+  // توضیح برای زبان انگلیسی
+  if(lang === 'en'){
+    showToast('🇬🇧 حالا میتونی لغت انگلیسی یاد بگیری — همون سیستم هوشمند، برای انگلیسی', 4000, 'info');
+  }
+}
+function langPopoverUpdateChecks(){
+  const isDE = (typeof targetLang !== 'undefined' ? targetLang : 'de') === 'de';
+  const deCheck = document.getElementById('pop-de-check');
+  const enCheck = document.getElementById('pop-en-check');
+  if(deCheck) deCheck.style.visibility = isDE ? 'visible' : 'hidden';
+  if(enCheck) enCheck.style.visibility = isDE ? 'hidden' : 'visible';
+}
+document.addEventListener('click', function(e){
+  const pop = document.getElementById('lang-popover');
+  const badge = document.getElementById('home-lang-badge');
+  if(pop && badge && !pop.contains(e.target) && !badge.contains(e.target)){
+    pop.style.display = 'none';
+    const chev = document.getElementById('lang-badge-chevron');
+    if(chev) chev.style.transform = '';
   }
 });
 </script>
 <script>
-window.addEventListener('unhandledrejection',function(e){
-  var err=e.reason;if(!err)return;
-  var m=(err.message||'').toLowerCase();
-  if(m.includes('supabase')||m.includes('postgrest'))return;
-  console.warn('[Wortschatz] unhandled:',err.message);
+// ── Global error safety net ──────────────────
+window.addEventListener('unhandledrejection', e => {
+  const err = e.reason;
+  if(!err) return;
+  const m = (err.message||'').toLowerCase();
+  // Silence non-critical DB/sync errors
+  if(m.includes('supabase') || m.includes('postgrest') || m.includes('fetch') && !m.includes('api')) return;
+  console.warn('[Wortschatz] unhandled:', err.message);
 });
 </script>
-</body>
-</html>
