@@ -3231,9 +3231,8 @@ async function tgAutoLogin(u){
 
 async function init(){
   targetLang = 'de'; // fixed
-  updateLangUI();
   // apply UI language
-  applyUIStrings(); updateLangButtons();
+  applyUIStrings();
   if(localStorage.getItem('ws_dark')==='1'){document.body.classList.add('dark');setThemeIc(true);}
 
   // Handle Stripe redirect
