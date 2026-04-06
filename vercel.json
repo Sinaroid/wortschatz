@@ -6,6 +6,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
     { "source": "/reader", "destination": "/reader.html" }
   ]
 }
