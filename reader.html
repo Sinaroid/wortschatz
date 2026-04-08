@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ════════ TOKENS ════════ */
 :root{
@@ -965,6 +966,78 @@ body.phrase-mode #phrase-tip{display:none!important}
   #rsb{width:142px}
   #stats{right:0;width:190px}
 }
+
+/* ════════ FLOATING ACTION BAR (drag-select) ════════ */
+#sel-bar{
+  position:fixed;z-index:996;
+  display:none;align-items:center;gap:3px;
+  background:var(--surface);border:1px solid var(--line2);
+  border-radius:12px;padding:4px 5px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3);
+  animation:miniIn .12s cubic-bezier(.34,1.5,.64,1);
+  direction:rtl;
+}
+#sel-bar.visible{display:flex}
+.sb-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 12px;height:32px;
+  background:none;border:none;border-radius:8px;
+  font-size:11px;font-weight:600;font-family:var(--sans);
+  color:var(--text2);cursor:pointer;transition:all .1s;
+  white-space:nowrap;
+}
+.sb-btn:hover{background:var(--surface2);color:var(--text)}
+.sb-btn.primary{background:var(--blue);color:#fff}
+.sb-btn.primary:hover{background:var(--blue2)}
+.sb-btn svg{flex-shrink:0;width:12px;height:12px}
+.sb-sep{width:1px;height:18px;background:var(--line);flex-shrink:0}
+
+/* ════════ FOCUS MODE ════════ */
+body.focus-mode #topbar,
+body.focus-mode #rsb,
+body.focus-mode #read-bar,
+body.focus-mode #back,
+body.focus-mode #prog{display:none!important}
+body.focus-mode #area{padding-top:16px}
+body.focus-mode #body{height:100dvh}
+#focus-ctrl{
+  position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%);
+  display:none;align-items:center;gap:6px;
+  background:rgba(17,17,20,.92);backdrop-filter:blur(16px);
+  border:1px solid var(--line2);border-radius:24px;
+  padding:5px 8px;z-index:200;
+  animation:toastIn .2s ease;
+}
+body.focus-mode #focus-ctrl{display:flex}
+.fc-btn{
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;border-radius:50%;
+  color:var(--text3);cursor:pointer;transition:all .1s;
+}
+.fc-btn:hover{background:var(--surface2);color:var(--text)}
+#fc-page{
+  font-size:11px;font-weight:700;color:var(--text3);
+  min-width:56px;text-align:center;direction:ltr;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ════════ EPUB/TXT page styling ════════ */
+.txt-page{
+  width:100%;max-width:740px;
+  background:var(--page);color:var(--page-ink);
+  border-radius:2px;padding:52px 60px 68px;
+  font-family:var(--serif);font-size:17px;line-height:1.95;
+  direction:ltr;position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.15),0 6px 20px rgba(0,0,0,.25),0 20px 60px rgba(0,0,0,.22);
+}
+.txt-page p{margin-bottom:18px}
+.txt-chapter-title{
+  font-size:22px;font-weight:600;margin-bottom:24px;
+  padding-bottom:14px;border-bottom:1px solid #ddd;
+  color:var(--page-ink);
+}
+body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
 </style>
 </head>
 <body>
@@ -973,8 +1046,8 @@ body.phrase-mode #phrase-tip{display:none!important}
 
 <div id="drop-ov" style="position:fixed;inset:0;background:rgba(10,10,12,.9);border:2px dashed var(--blue);display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:900">
   <span style="font-size:48px">📄</span>
-  <p style="font-size:15px;font-weight:700;color:var(--text)">PDF رو اینجا رها کن</p>
-  <p style="font-size:12px;color:var(--text2)">کتاب آلمانی</p>
+  <p style="font-size:15px;font-weight:700;color:var(--text)">فایل رو اینجا رها کن</p>
+  <p style="font-size:12px;color:var(--text2)">PDF · EPUB · TXT</p>
 </div>
 <div id="app">
   <div id="topbar">
@@ -1021,6 +1094,9 @@ body.phrase-mode #phrase-tip{display:none!important}
     <button class="ib" id="btn-stats" onclick="toggleStats()" title="آمار">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 10V7.5M4.5 10V5M7.5 10V6.5M10.5 10V2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
     </button>
+    <button class="ib" id="btn-focus" onclick="toggleFocus()" title="حالت فوکوس (F11)">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 4V1h3M8 1h3v3M11 8v3H8M4 11H1V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
     <button class="ib" id="btn-export" onclick="showExport()" title="خروجی">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v7M3.5 5.5l2.5-4 2.5 4M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
@@ -1033,7 +1109,7 @@ body.phrase-mode #phrase-tip{display:none!important}
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="3.5" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 9c0-1.93 1.57-3.5 3.5-3.5S8.5 7.07 8.5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="auth-label">ورود</span>
     </div>
-    <input type="file" id="file-inp" accept=".pdf" style="display:none" onchange="loadFile(this.files[0]);this.value=''">
+    <input type="file" id="file-inp" accept=".pdf,.epub,.txt,.text" style="display:none" onchange="loadFile(this.files[0]);this.value=''">
   </div>
 
   <div id="find-bar">
@@ -1073,8 +1149,8 @@ body.phrase-mode #phrase-tip{display:none!important}
         </div>
         <div id="dz" onclick="document.getElementById('file-inp').click()">
           <span class="dz-icon">📚</span>
-          <div class="dz-h">بارگذاری PDF</div>
-          <div class="dz-s">کلیک کن یا فایل رو اینجا بکش</div>
+          <div class="dz-h">بارگذاری فایل</div>
+          <div class="dz-s">PDF · EPUB · TXT — کلیک کن یا فایل رو بکش</div>
           <button class="dz-btn" onclick="event.stopPropagation();document.getElementById('file-inp').click()">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v6M3.5 4.5l2.5-3 2.5 3M2 9.5h8" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
             انتخاب فایل
@@ -1247,6 +1323,38 @@ body.phrase-mode #phrase-tip{display:none!important}
     </button>
     <button class="exp-cancel" onclick="hidePanel('exp-modal')">انصراف</button>
   </div>
+</div>
+
+<!-- Floating selection action bar -->
+<div id="sel-bar">
+  <button class="sb-btn primary" id="sb-translate" onclick="selBarTranslate()">
+    <svg viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="white" stroke-width="1.2"/><path d="M8.5 8.5l2 2" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
+    ترجمه
+  </button>
+  <div class="sb-sep"></div>
+  <button class="sb-btn" id="sb-speak" onclick="selBarSpeak()">
+    <svg viewBox="0 0 12 12" fill="none"><path d="M2 4h2l2.5-2.5v9L4 8H2V4z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M8 3.5a3 3 0 010 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+    تلفظ
+  </button>
+  <button class="sb-btn" id="sb-copy" onclick="selBarCopy()">
+    <svg viewBox="0 0 12 12" fill="none"><rect x="1.5" y="3.5" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M4 3.5V2.5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H9" stroke="currentColor" stroke-width="1.1"/></svg>
+    کپی
+  </button>
+</div>
+
+<!-- Focus mode controls -->
+<div id="focus-ctrl">
+  <button class="fc-btn" onclick="goPage(-1)">
+    <svg width="10" height="12" viewBox="0 0 8 10" fill="none"><path d="M5 1.5L2.5 5 5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <span id="fc-page">— / —</span>
+  <button class="fc-btn" onclick="goPage(1)">
+    <svg width="10" height="12" viewBox="0 0 8 10" fill="none"><path d="M3 1.5L5.5 5 3 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="sb-sep"></div>
+  <button class="fc-btn" onclick="toggleFocus()" title="خروج از فوکوس">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 1.5l3 3M7.5 7.5l3 3M10.5 1.5l-3 3M1.5 10.5l3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+  </button>
 </div>
 
 <div id="toast"></div>
@@ -1512,13 +1620,17 @@ document.addEventListener('drop',e=>{
   e.preventDefault();
   const dov=Q('drop-ov');if(dov)dov.style.display='none';
   const f=e.dataTransfer?.files[0];
-  if(f?.type==='application/pdf')loadFile(f);else if(f)toast('فقط PDF قبول میشه');
+  if(!f)return;
+  var ext=f.name.split('.').pop().toLowerCase();
+  if(ext==='pdf'||ext==='epub'||ext==='txt'||ext==='text')loadFile(f);
+  else toast('فرمت‌های پشتیبانی: PDF, EPUB, TXT');
 });
 
 /* ══ KEYBOARD ══ */
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='f'){e.preventDefault();toggleSearch();}
   if(e.key==='Escape'){
+    if(Q('sel-bar')?.classList.contains('visible')){hideSelBar();return;}
     if(_phraseMode){cancelPhraseMode();return;}
     if(searchOn)toggleSearch();else{closeTT();closeSel();}
   }
@@ -2059,31 +2171,78 @@ function confirmPhrase(){
 })();
 
 function attachTL(tl,pn){
-  tl.querySelectorAll('span').forEach(function(span){
-    var raw=(span.textContent||'').trim();
+  /* Split multi-word spans into individual word spans */
+  const origSpans=Array.from(tl.querySelectorAll('span'));
+  origSpans.forEach(function(span){
+    var raw=span.textContent||'';
     if(raw.length<2)return;
     if(!/[a-zA-ZäöüÄÖÜß]{2,}/.test(raw))return;
-    span.classList.add('gw');span.dataset.word=extractWord(raw);span.dataset.pg=pn;
-    if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
+    /* Split into word tokens and non-word tokens */
+    var parts=raw.split(/(\b[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df\-]{2,}\b)/g);
+    if(parts.length<=1){
+      /* Single word span — just mark it */
+      span.classList.add('gw');span.dataset.word=extractWord(raw);span.dataset.pg=pn;
+      if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
+      return;
+    }
+    /* Multiple tokens — split into individual spans */
+    var frag=document.createDocumentFragment();
+    var style=span.style.cssText;
+    var isFirst=true;
+    parts.forEach(function(part){
+      if(!part)return;
+      var isWord=/^[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df\-]{2,}$/.test(part);
+      if(isWord){
+        var ws=document.createElement('span');
+        ws.textContent=part;
+        if(isFirst){ws.style.cssText=style;isFirst=false;}
+        else{ws.style.position='absolute';ws.style.color='transparent';}
+        ws.classList.add('gw');ws.dataset.word=extractWord(part);ws.dataset.pg=pn;
+        if(savedSet.has(ws.dataset.word.toLowerCase()))ws.classList.add('done');
+        frag.appendChild(ws);
+      }else{
+        var ts=document.createElement('span');
+        ts.textContent=part;
+        if(isFirst){ts.style.cssText=style;isFirst=false;}
+        else{ts.style.position='absolute';ts.style.color='transparent';}
+        frag.appendChild(ts);
+      }
+    });
+    span.replaceWith(frag);
   });
+
+  /* Click — directly open word panel (skip mini-popup) */
   tl.addEventListener('click',function(e){
     var span=e.target.closest('.gw');if(!span)return;e.stopPropagation();
-    if(_phraseMode){_togglePhrase(span);return;}
-    _hidePT();
-    var word=getClickWord(span,e);if(!word||word.length<2)return;
+    hideSelBar();
+    var word=span.dataset.word||extractWord(span.textContent);
+    if(!word||word.length<2)return;
     tl.querySelectorAll('.gw.sel').forEach(function(el){el.classList.remove('sel');});
     span.classList.add('sel');
     if(curWord===word&&Q('wp').style.display==='block'){closeTT();return;}
-    curWord=word;curData=null;showLoading(word,e,span);doSearch(word);
+    curWord=word;curData=null;
+    closeMini();showLoading(word,e,span);doSearch(word);
   });
-  var _t=null;
+
+  /* Hover — show subtle highlight, no tooltip delay */
   tl.addEventListener('mouseover',function(e){
-    var span=e.target.closest('.gw');clearTimeout(_t);
-    if(!span){_hT=setTimeout(_hidePT,400);return;}
-    if(_hSpan&&_hSpan!==span)if(_hSpan)_hSpan.classList.remove('hov-main');
-    _t=setTimeout(function(){_showPT(span,pn);},120);
+    var span=e.target.closest('.gw');
+    if(!span)return;
+    if(_hSpan&&_hSpan!==span)_hSpan.classList.remove('hov-main');
+    span.classList.add('hov-main');_hSpan=span;
   });
-  tl.addEventListener('mouseleave',function(){clearTimeout(_t);_hT=setTimeout(_hidePT,350);});
+  tl.addEventListener('mouseleave',function(){
+    if(_hSpan)_hSpan.classList.remove('hov-main');_hSpan=null;
+  });
+
+  /* Double-click — select sentence */
+  tl.addEventListener('dblclick',function(e){
+    var span=e.target.closest('.gw');if(!span)return;e.preventDefault();e.stopPropagation();
+    var sentence=getSentenceAround(span,tl);
+    if(sentence&&sentence.length>2){
+      showSelBar(sentence,e.clientX,e.clientY);
+    }
+  });
 }
 
 function manualTL(tc,vp,tl,pn){
@@ -2589,14 +2748,17 @@ function renderSample(s){
           span.style.color='var(--page-ink)';
           if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
           span.addEventListener('click',e=>{
-            e.stopPropagation();_clearNbr();
+            e.stopPropagation();
             document.querySelectorAll('.gw.sel').forEach(s=>s.classList.remove('sel'));
-            span.classList.add('sel');
+            span.classList.add('sel');hideSelBar();
             if(curWord===clean&&Q('wp').style.display==='block'){closeTT();return;}
             curWord=clean;curData=null;showLoading(clean,e);doSearch(clean);
           });
-          span.addEventListener('mouseenter',function(){_clearNbr();_showNbr(span,0);});
-          span.addEventListener('mouseleave',function(){_hT=setTimeout(_clearNbr,200);});
+          span.addEventListener('dblclick',e=>{
+            e.preventDefault();e.stopPropagation();
+            var sentence=getSentenceAround(span,p);
+            if(sentence&&sentence.length>2)showSelBar(sentence,e.clientX,e.clientY);
+          });
           p.appendChild(span);
         }else p.appendChild(document.createTextNode(w));
       });
@@ -2606,6 +2768,414 @@ function renderSample(s){
     area.appendChild(wrap);
   });
 }
+/* ══════════════════════════════════════════
+   NEW: SENTENCE DETECTION
+══════════════════════════════════════════ */
+function getSentenceAround(span,container){
+  /* Collect full text from all child nodes (including text nodes for spaces) */
+  var walker=document.createTreeWalker(container,NodeFilter.SHOW_TEXT,null,false);
+  var fullText='';
+  while(walker.nextNode()){fullText+=walker.currentNode.textContent;}
+  /* Find the clicked word's position in fullText */
+  var word=span.dataset.word||span.textContent.trim();
+  var spanText=span.textContent||'';
+  /* Build positions for lookup */
+  var allNodes=Array.from(container.childNodes);
+  var charIdx=-1,pos=0;
+  function walkNode(node){
+    if(charIdx>=0)return;
+    if(node===span){charIdx=pos;return;}
+    if(node.nodeType===3){pos+=node.textContent.length;return;}
+    if(node.childNodes)Array.from(node.childNodes).forEach(walkNode);
+    else pos+=(node.textContent||'').length;
+  }
+  walkNode(container);
+  if(charIdx<0){/* fallback */charIdx=fullText.indexOf(spanText);}
+  if(charIdx<0)return '';
+  /* Find sentence start (look back for . ! ? or start of text) */
+  var sStart=0;
+  for(var i=charIdx-1;i>=0;i--){
+    if(/[.!?]/.test(fullText[i])){sStart=i+1;break;}
+  }
+  /* Find sentence end */
+  var sEnd=fullText.length;
+  for(var j=charIdx;j<fullText.length;j++){
+    if(/[.!?]/.test(fullText[j])){sEnd=j+1;break;}
+  }
+  return fullText.slice(sStart,sEnd).trim();
+}
+
+/* ══════════════════════════════════════════
+   NEW: FLOATING SELECTION BAR
+══════════════════════════════════════════ */
+var _selText='';
+function showSelBar(text,cx,cy){
+  _selText=text;
+  var bar=Q('sel-bar');if(!bar)return;
+  bar.classList.add('visible');
+  var bw=bar.offsetWidth||220,bh=bar.offsetHeight||40;
+  var left=cx-bw/2,top=cy-bh-14;
+  if(left<6)left=6;if(left+bw>innerWidth-6)left=innerWidth-bw-6;
+  if(top<54)top=cy+14;
+  bar.style.left=left+'px';bar.style.top=top+'px';
+}
+function hideSelBar(){
+  var bar=Q('sel-bar');if(bar)bar.classList.remove('visible');
+  _selText='';
+}
+function selBarTranslate(){
+  var txt=_selText||window.getSelection()?.toString()?.trim()||'';
+  hideSelBar();window.getSelection()?.removeAllRanges();
+  if(!txt||txt.length<2)return;
+  curWord=txt;curData=null;
+  showLoading(txt,{clientX:innerWidth/2,clientY:200});
+  if(txt.includes(' '))doSearchPhrase(txt,innerWidth/2,200);
+  else doSearch(txt);
+}
+function selBarSpeak(){
+  var txt=_selText||window.getSelection()?.toString()?.trim()||'';
+  if(!txt)return;
+  speakText(txt);
+  toast('🔊 در حال تلفظ…');
+}
+function selBarCopy(){
+  var txt=_selText||window.getSelection()?.toString()?.trim()||'';
+  hideSelBar();window.getSelection()?.removeAllRanges();
+  if(!txt)return;
+  navigator.clipboard.writeText(txt).then(()=>toast('✓ کپی شد')).catch(()=>toast('کپی انجام نشد'));
+}
+
+/* Drag-to-select: detect text selection and show action bar */
+document.addEventListener('mouseup',function(e){
+  /* Small delay to let selection finalize */
+  setTimeout(function(){
+    var sel=window.getSelection();
+    var txt=(sel?.toString()||'').trim();
+    if(txt.length>=3&&/[a-zA-ZäöüÄÖÜß]{2,}/.test(txt)){
+      /* Only trigger inside reader area */
+      var node=sel?.anchorNode;
+      if(node&&(node.closest?.('#area')||node.parentElement?.closest?.('#area'))){
+        showSelBar(txt,e.clientX,e.clientY);
+      }
+    }
+  },100);
+});
+/* Hide bar on click outside */
+document.addEventListener('mousedown',function(e){
+  if(!e.target.closest('#sel-bar'))hideSelBar();
+});
+
+/* ══════════════════════════════════════════
+   NEW: SENTENCE TTS
+══════════════════════════════════════════ */
+function speakText(text){
+  if(!text)return;
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang=targetLang==='en'?'en-US':'de-DE';
+  u.rate=text.length>20?0.8:0.85;
+  window.speechSynthesis?.cancel();
+  window.speechSynthesis?.speak(u);
+}
+
+/* ══════════════════════════════════════════
+   NEW: FOCUS READING MODE
+══════════════════════════════════════════ */
+var focusMode=false;
+function toggleFocus(){
+  focusMode=!focusMode;
+  document.body.classList.toggle('focus-mode',focusMode);
+  Q('btn-focus')?.classList.toggle('on',focusMode);
+  updateFocusNav();
+}
+function updateFocusNav(){
+  var fp=Q('fc-page');
+  if(fp)fp.textContent=(curPage||'—')+' / '+(totalPages||'—');
+}
+/* F11 toggles focus */
+document.addEventListener('keydown',function(e){
+  if(e.key==='F11'){e.preventDefault();toggleFocus();}
+});
+
+/* ══════════════════════════════════════════
+   NEW: BETTER SCROLL POSITION PERSISTENCE
+══════════════════════════════════════════ */
+var _origSaveSessionLocal=saveSessionLocal;
+saveSessionLocal=function(){
+  if(!curDocKey)return;
+  var areaEl=Q('area');
+  var scrollRatio=areaEl?(areaEl.scrollTop/(areaEl.scrollHeight-areaEl.clientHeight||1)):0;
+  var data={docKey:curDocKey,docName:Q('doc-title')?.textContent||'',lastPage:curPage,lastScale:scale,highlights:sessionHighlights,bookmarks:[...bookmarks],savedWords:saved,totalPages,readingSeconds,scrollRatio:scrollRatio,ts:Date.now()};
+  try{localStorage.setItem('ws_reader_session_'+curDocKey,JSON.stringify(data));}catch(e){}
+  saveToHistory(curDocKey,data.docName,{lastPage:curPage,totalPages,savedWords:saved.length,bookmarks:bookmarks.size,readingSeconds});
+};
+
+/* Patch applySession to restore scroll position */
+var _origApplySession=applySession;
+applySession=async function(docKey){
+  var session=await loadSession(docKey);if(!session)return;
+  if(session.last_scale&&session.last_scale!==scale){scale=session.last_scale;updateZoom();}
+  if(session.reading_time_seconds)readingSeconds=session.reading_time_seconds;
+  if(session.bookmarks?.length)bookmarks=new Set(session.bookmarks);
+  if(session.highlights?.length)sessionHighlights=session.highlights||[];
+  if(session.saved_words?.length){
+    session.saved_words.forEach(function(w){
+      if(!savedSet.has(w.de?.toLowerCase())){savedSet.add(w.de?.toLowerCase());saved.push(w);addToSidebar(w.de,w);}
+    });
+    updateSaveBtn();
+  }
+  /* Restore exact scroll position */
+  var scrollRatio=session.scrollRatio||0;
+  var lp=session.last_page||1;
+  if(lp>1||scrollRatio>0){
+    setTimeout(function(){
+      var areaEl=Q('area');
+      if(scrollRatio>0&&areaEl){
+        areaEl.scrollTop=scrollRatio*(areaEl.scrollHeight-areaEl.clientHeight);
+        curPage=lp;updateNav();
+      }else{
+        var t=document.querySelector('[data-page="'+lp+'"]');
+        if(t){t.scrollIntoView({behavior:'auto',block:'start'});curPage=lp;updateNav();}
+      }
+    },600);
+  }
+  if(lp>1||session.saved_words?.length){
+    var msg='📖 از صفحه '+lp+' ادامه دادی'+(session.saved_words?.length?' · '+session.saved_words.length+' لغت ذخیره شده':'');
+    setTimeout(function(){toast(msg);},900);
+  }
+};
+
+/* ══════════════════════════════════════════
+   NEW: EPUB/TXT SUPPORT
+══════════════════════════════════════════ */
+var _origLoadFile=loadFile;
+loadFile=function(file){
+  if(!file)return;
+  var ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='txt'||ext==='text')return loadTxtFile(file);
+  if(ext==='epub')return loadEpubFile(file);
+  /* Default: PDF — call original */
+  return _origLoadFile(file);
+};
+
+function loadTxtFile(file){
+  isSample=false;curSample=null;pdfDoc=null;pageItems={};
+  saved=[];savedSet=new Set();sessionHighlights=[];
+  bookmarks=new Set();readingSeconds=0;
+  Q('rsb-list').innerHTML='<div id="rsb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.45">روی هر کلمه کلیک کن</span></div>';
+  Q('rsb-cnt').textContent='0';
+  setProgress(30);
+  curDocKey=makeDocKey(file.name);
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var text=e.target.result;
+    var paragraphs=text.split(/\n\s*\n/).filter(function(p){return p.trim();});
+    /* Split into pages of ~5 paragraphs each */
+    var pages=[],chunk=[];
+    paragraphs.forEach(function(p,i){
+      chunk.push(p.trim());
+      if(chunk.length>=5||i===paragraphs.length-1){pages.push(chunk.join('\n\n'));chunk=[];}
+    });
+    if(!pages.length)pages=[text];
+    totalPages=pages.length;curPage=1;
+    setTitle(file.name.replace(/\.(txt|text)$/i,''));
+    showReader();
+    renderTextPages(pages,file.name.replace(/\.(txt|text)$/i,''));
+    Q('nav-cluster').style.display='flex';Q('zoom-cluster').style.display='flex';
+    updateNav();updateZoom();
+    setProgress(100);setTimeout(function(){setProgress(0);},500);
+    startAutoSave();
+  };
+  reader.readAsText(file,'utf-8');
+}
+
+async function loadEpubFile(file){
+  if(typeof JSZip==='undefined'){toast('EPUB پشتیبانی نمیشه — JSZip بارگذاری نشد');return;}
+  isSample=false;curSample=null;pdfDoc=null;pageItems={};
+  saved=[];savedSet=new Set();sessionHighlights=[];
+  bookmarks=new Set();readingSeconds=0;
+  Q('rsb-list').innerHTML='<div id="rsb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.45">روی هر کلمه کلیک کن</span></div>';
+  Q('rsb-cnt').textContent='0';
+  setProgress(20);
+  curDocKey=makeDocKey(file.name);
+  try{
+    var zip=await JSZip.loadAsync(file);
+    /* Find container.xml → rootfile → content.opf */
+    var containerXml=await zip.file('META-INF/container.xml')?.async('text');
+    if(!containerXml)throw new Error('Invalid EPUB');
+    var parser=new DOMParser();
+    var containerDoc=parser.parseFromString(containerXml,'application/xml');
+    var rootPath=containerDoc.querySelector('rootfile')?.getAttribute('full-path')||'';
+    var rootDir=rootPath.split('/').slice(0,-1).join('/');
+    if(rootDir)rootDir+='/';
+    var opfText=await zip.file(rootPath)?.async('text');
+    if(!opfText)throw new Error('Cannot read OPF');
+    var opfDoc=parser.parseFromString(opfText,'application/xml');
+    /* Get spine order */
+    var manifest={};
+    opfDoc.querySelectorAll('manifest item').forEach(function(item){
+      manifest[item.getAttribute('id')]={href:item.getAttribute('href'),type:item.getAttribute('media-type')};
+    });
+    var spineItems=[];
+    opfDoc.querySelectorAll('spine itemref').forEach(function(ref){
+      var id=ref.getAttribute('idref');
+      if(manifest[id]&&manifest[id].type?.includes('html'))spineItems.push(manifest[id].href);
+    });
+    /* Extract text from chapters */
+    setProgress(50);
+    var chapters=[];
+    for(var i=0;i<spineItems.length;i++){
+      var chapterPath=rootDir+spineItems[i];
+      var chapterFile=zip.file(chapterPath);
+      if(!chapterFile)continue;
+      var html=await chapterFile.async('text');
+      var doc=parser.parseFromString(html,'text/html');
+      /* Remove scripts and styles */
+      doc.querySelectorAll('script,style,link').forEach(function(el){el.remove();});
+      var bodyText=(doc.body?.textContent||'').trim();
+      if(bodyText.length>20)chapters.push({title:'فصل '+(chapters.length+1),text:bodyText});
+      setProgress(50+Math.round(i/spineItems.length*40));
+    }
+    if(!chapters.length)throw new Error('No readable chapters');
+    /* Get book title */
+    var bookTitle=opfDoc.querySelector('metadata title')?.textContent||file.name.replace(/\.epub$/i,'');
+    totalPages=chapters.length;curPage=1;
+    setTitle(bookTitle);
+    showReader();
+    renderEpubChapters(chapters,bookTitle);
+    Q('nav-cluster').style.display='flex';Q('zoom-cluster').style.display='flex';
+    updateNav();updateZoom();
+    setProgress(100);setTimeout(function(){setProgress(0);},500);
+    startAutoSave();
+  }catch(err){
+    toast('خطا در خواندن EPUB: '+err.message);setProgress(0);
+  }
+}
+
+function renderTextPages(pages,title){
+  area.innerHTML='';
+  var aW=area.clientWidth-40,pW=Math.min(740,aW),fs=Math.round(17*scale/1.8);
+  pages.forEach(function(text,idx){
+    var wrap=document.createElement('div');
+    wrap.className='pw txt-page';wrap.dataset.page=idx+1;
+    wrap.style.width=pW+'px';wrap.style.fontSize=fs+'px';
+    if(idx===0){
+      var th=document.createElement('div');th.className='txt-chapter-title';th.textContent=title;wrap.appendChild(th);
+    }
+    text.split('\n\n').forEach(function(para){
+      if(!para.trim())return;
+      var p=document.createElement('p');
+      _renderWordsInto(p,para,idx+1);
+      wrap.appendChild(p);
+    });
+    var lbl=document.createElement('div');lbl.className='pg-n';lbl.textContent=idx+1;wrap.appendChild(lbl);
+    area.appendChild(wrap);
+  });
+}
+
+function renderEpubChapters(chapters,bookTitle){
+  area.innerHTML='';
+  var aW=area.clientWidth-40,pW=Math.min(740,aW),fs=Math.round(17*scale/1.8);
+  chapters.forEach(function(ch,idx){
+    var wrap=document.createElement('div');
+    wrap.className='pw txt-page';wrap.dataset.page=idx+1;
+    wrap.style.width=pW+'px';wrap.style.fontSize=fs+'px';
+    var th=document.createElement('div');th.className='txt-chapter-title';th.textContent=ch.title;wrap.appendChild(th);
+    /* Split chapter text into paragraphs */
+    var paras=ch.text.split(/\n\s*\n/).filter(function(p){return p.trim().length>10;});
+    if(!paras.length)paras=[ch.text];
+    paras.forEach(function(para){
+      var p=document.createElement('p');
+      _renderWordsInto(p,para.trim(),idx+1);
+      wrap.appendChild(p);
+    });
+    var lbl=document.createElement('div');lbl.className='pg-n';lbl.textContent=idx+1;wrap.appendChild(lbl);
+    area.appendChild(wrap);
+  });
+}
+
+/* Shared: render clickable words into a paragraph element */
+function _renderWordsInto(p,text,pageNum){
+  text.split(/(\s+)/).forEach(function(w){
+    var clean=w.replace(/[^a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df]/g,'');
+    if(clean.length>=2){
+      var span=document.createElement('span');
+      span.className='gw';span.dataset.word=clean;span.textContent=w;
+      span.style.color='var(--page-ink)';
+      if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
+      span.addEventListener('click',function(e){
+        e.stopPropagation();hideSelBar();
+        document.querySelectorAll('.gw.sel').forEach(function(s){s.classList.remove('sel');});
+        span.classList.add('sel');
+        if(curWord===clean&&Q('wp').style.display==='block'){closeTT();return;}
+        curWord=clean;curData=null;showLoading(clean,e);doSearch(clean);
+      });
+      span.addEventListener('dblclick',function(e){
+        e.preventDefault();e.stopPropagation();
+        var sentence=getSentenceAround(span,p);
+        if(sentence&&sentence.length>2)showSelBar(sentence,e.clientX,e.clientY);
+      });
+      p.appendChild(span);
+    }else{
+      p.appendChild(document.createTextNode(w));
+    }
+  });
+}
+
+/* Drop handler updated in main section above */
+
+/* Patch updateNav to also update focus mode nav */
+var _origUpdateNav=updateNav;
+updateNav=function(){
+  _origUpdateNav();
+  updateFocusNav();
+};
+
+/* Add TTS button to word panel example */
+var _origFillTT=fillTT;
+fillTT=function(d,word){
+  _origFillTT(d,word);
+  /* Add speak button to example if exists */
+  var ex=Q('wp-ex');
+  if(ex&&d?.examples?.[0]?.de){
+    var oldBtn=ex.querySelector('.ex-speak');if(oldBtn)oldBtn.remove();
+    var btn=document.createElement('button');
+    btn.className='ex-speak';
+    btn.style.cssText='position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--surface2);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;font-size:11px;';
+    btn.innerHTML='<svg width="11" height="11" viewBox="0 0 13 13" fill="none"><path d="M2 4.5h2l3-3v10L4 8.5H2v-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 4a3 3 0 010 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+    btn.title='تلفظ جمله';
+    btn.addEventListener('click',function(ev){ev.stopPropagation();speakText(d.examples[0].de);});
+    btn.addEventListener('mouseover',function(){this.style.background='var(--surface3)';this.style.color='var(--text)';});
+    btn.addEventListener('mouseout',function(){this.style.background='var(--surface2)';this.style.color='var(--text3)';});
+    ex.appendChild(btn);
+  }
+  /* Add sentence translate chip */
+  var body=Q('wp-body');
+  var oldChip=body?.querySelector('.wp-sentence-chip');if(oldChip)oldChip.remove();
+  if(body){
+    var chip=document.createElement('button');
+    chip.className='wp-sentence-chip';
+    chip.style.cssText='display:inline-flex;align-items:center;gap:4px;margin-bottom:10px;padding:4px 10px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;font-family:var(--sans);transition:all .12s;';
+    chip.innerHTML='<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1.5 4h9M1.5 7h6M1.5 10h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> ترجمه جمله';
+    chip.addEventListener('mouseover',function(){this.style.borderColor='rgba(26,58,242,.4)';this.style.color='var(--blue)';this.style.background='var(--blue-a)';});
+    chip.addEventListener('mouseout',function(){this.style.borderColor='var(--line)';this.style.color='var(--text3)';this.style.background='var(--surface2)';});
+    chip.addEventListener('click',function(){
+      /* Find current word's sentence from the text layer */
+      var selSpan=document.querySelector('.gw.sel');
+      var sentence='';
+      if(selSpan){
+        var container=selSpan.closest('.ptl')||selSpan.closest('p')||selSpan.parentElement;
+        sentence=getSentenceAround(selSpan,container);
+      }
+      if(!sentence||sentence.length<3)sentence=word;
+      curWord=sentence;curData=null;
+      Q('wp-word').textContent=sentence;
+      sho('wp-spin');hid('wp-err');hid('wp-fa');hid('wp-badges');hid('wp-gram');hid('wp-ex');hid('wp-add');
+      doSearchPhrase(sentence,parseInt(Q('wp').style.left||300),parseInt(Q('wp').style.top||200));
+    });
+    body.insertBefore(chip,body.firstChild);
+  }
+};
+
 </script>
 </body>
 </html>
