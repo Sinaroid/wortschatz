@@ -374,10 +374,17 @@ canvas.pdf-c{display:block;pointer-events:none}
 }
 .ptl span,.ptl br{
   color:transparent;position:absolute;
-  white-space:pre;transform-origin:0% 0%;cursor:text;
+  white-space:pre;transform-origin:0% 0%;cursor:pointer;
 }
-.ptl span::selection{background:rgba(26,58,242,.3);color:transparent}
+.ptl{user-select:none;-webkit-user-select:none}
 .ptl span.gw.done{background:rgba(31,122,63,.18);border-radius:2px}
+.ptl span.gw.active-word{
+  background:rgba(26,58,242,.22);border-radius:2px;
+  outline:1.5px solid rgba(26,58,242,.45);
+}
+.ptl span.gw.active-sentence{
+  background:rgba(26,58,242,.12);border-radius:2px;
+}
 /* removed old hover neighbor styles */
 .ptl span.sh{background:rgba(255,196,0,.3);border-radius:1px}
 .ptl span.sh.sa{background:rgba(255,140,0,.5);border-radius:1px}
@@ -2127,7 +2134,7 @@ function confirmPhrase(){
 })();
 
 function attachTL(tl,pn){
-  /* Mark word spans for highlight only — no click/hover handlers */
+  /* Mark word spans — highlight saved words */
   tl.querySelectorAll('span').forEach(function(span){
     var raw=(span.textContent||'').trim();
     if(raw.length<2)return;
@@ -2136,15 +2143,46 @@ function attachTL(tl,pn){
     if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
   });
 
+  /* Single click — find exact word, show action bar */
+  var _clickTimer=null;
+  tl.addEventListener('click',function(e){
+    /* Wait to distinguish single vs double click */
+    if(_clickTimer){clearTimeout(_clickTimer);_clickTimer=null;return;}
+    _clickTimer=setTimeout(function(){
+      _clickTimer=null;
+      clearPdfHighlights(tl);
+      var span=e.target.closest('.gw');
+      var word=span?getClickWord(span,e):null;
+      if(!word||word.length<2)return;
+      span.classList.add('active-word');
+      showSelBar(word,e.clientX,e.clientY);
+    },220);
+  });
+
   /* Double-click — select full sentence */
   tl.addEventListener('dblclick',function(e){
     e.preventDefault();
+    if(_clickTimer){clearTimeout(_clickTimer);_clickTimer=null;}
+    clearPdfHighlights(tl);
     var span=e.target.closest('.gw');
-    var word=span?span.dataset.word:null;
-    var sentence=word?getPdfSentence(pn,word):(window.getSelection()?.toString()||'').trim();
+    var word=span?span.dataset.word||extractWord(span.textContent):null;
+    if(!word)return;
+    var sentence=getPdfSentence(pn,word);
     if(sentence&&sentence.length>2){
+      /* Highlight all spans in the sentence */
+      var sentWords=sentence.toLowerCase().split(/\s+/);
+      tl.querySelectorAll('.gw').forEach(function(s){
+        var w=(s.dataset.word||'').toLowerCase();
+        if(w&&sentWords.includes(w))s.classList.add('active-sentence');
+      });
+      if(span)span.classList.add('active-word');
       showSelBar(sentence,e.clientX,e.clientY);
     }
+  });
+}
+function clearPdfHighlights(tl){
+  (tl||document).querySelectorAll('.active-word,.active-sentence').forEach(function(s){
+    s.classList.remove('active-word','active-sentence');
   });
 }
 
@@ -2760,11 +2798,12 @@ function selBarCopy(){
    Any text selection in #area triggers the floating bar.
    Click outside closes everything. */
 document.addEventListener('mousedown',function(e){
-  /* Click outside sel-bar & wp → close both */
+  /* Click outside sel-bar & wp → close everything */
   if(!e.target.closest('#sel-bar')&&!e.target.closest('#wp')&&!e.target.closest('#sp')){
     hideSelBar();
-    if(Q('wp').style.display==='block')closeTT();
-    if(Q('mini-pop').style.display==='block')closeMini();
+    clearPdfHighlights(document);
+    if(Q('wp')?.style.display==='block')closeTT();
+    if(Q('mini-pop')?.style.display==='block')closeMini();
   }
 });
 document.addEventListener('mouseup',function(e){
