@@ -1106,22 +1106,55 @@ body.dp .hl-overlay{mix-blend-mode:screen;opacity:.2}
 .hl-overlay[data-hcolor="orange"]{background:#fb923c}
 .hl-overlay[data-hcolor="red"]{background:#f87171}
 
-/* Pinned translations */
+/* Pinned translations — always visible */
 .pin-tag{
   position:absolute;z-index:8;pointer-events:auto;
-  font-family:var(--sans);font-size:9px;font-weight:600;
-  color:rgba(26,58,242,.9);background:rgba(26,58,242,.08);
-  border:1px solid rgba(26,58,242,.15);
-  border-radius:4px;padding:1px 5px;
+  font-family:var(--sans);font-weight:600;
   white-space:nowrap;cursor:default;
   direction:rtl;
-  animation:xrayIn .15s ease;
+  animation:pinPop .2s cubic-bezier(.34,1.5,.64,1);
+  display:flex;flex-direction:column;align-items:center;
+  transform:translateX(-50%);
 }
-.pin-tag .pin-x{
-  display:inline-block;margin-right:3px;cursor:pointer;
-  opacity:.4;font-size:8px;
+@keyframes pinPop{from{opacity:0;transform:translateX(-50%) scale(.8) translateY(4px)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.pin-line{
+  width:1px;height:6px;
+  background:linear-gradient(180deg,rgba(26,58,242,.4),rgba(26,58,242,.15));
+  flex-shrink:0;
 }
-.pin-tag .pin-x:hover{opacity:1;color:var(--err)}
+.pin-body{
+  font-size:10px;
+  color:rgba(26,58,242,.95);
+  background:rgba(26,58,242,.06);
+  border:1px solid rgba(26,58,242,.18);
+  border-radius:6px;padding:2px 8px;
+  box-shadow:0 1px 4px rgba(26,58,242,.08);
+  display:flex;align-items:center;gap:4px;
+  transition:all .15s;
+}
+.pin-body:hover{
+  background:rgba(26,58,242,.12);
+  border-color:rgba(26,58,242,.3);
+  box-shadow:0 2px 8px rgba(26,58,242,.15);
+}
+.pin-word{
+  font-size:8px;color:rgba(26,58,242,.5);
+  font-family:var(--serif);direction:ltr;
+  border-left:1px solid rgba(26,58,242,.15);
+  padding-left:5px;margin-left:2px;
+}
+.pin-x{
+  cursor:pointer;opacity:0;font-size:9px;
+  margin-right:-2px;transition:opacity .1s;
+  color:var(--text4);width:14px;height:14px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+}
+.pin-body:hover .pin-x{opacity:.6}
+.pin-x:hover{opacity:1!important;color:var(--err);background:rgba(204,32,32,.1)}
+
+/* Pin visibility toggle */
+body.pins-hidden .pin-tag{display:none!important}
 
 /* Study view */
 body.study-mode .pw{opacity:.3;transition:opacity .3s}
@@ -1404,6 +1437,9 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
       افزودن به فلش‌کارت
     </button>
+    <button id="wp-pin" onclick="xrPinWord()" style="display:none;width:100%;height:34px;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--sans);margin-top:6px;transition:all .12s">
+      📌 پین روی متن
+    </button>
   </div>
 </div>
 
@@ -1480,6 +1516,9 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
   <div class="ink-sep"></div>
   <button class="ink-btn" id="ink-eraser" onclick="inkToggleEraser()" title="پاک‌کن">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 10l7-7M7 3l3 3M2 11h9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button class="ink-btn" id="ink-pins-toggle" onclick="inkTogglePins()" title="نمایش/مخفی پین‌ها">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v4M4 5h5l-.5 3H4.5L4 5zM5 8v3.5M8 8v3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
   <button class="ink-btn" id="ink-study" onclick="inkToggleStudy()" title="حالت مرور">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5s2.5-4 5.5-4 5.5 4 5.5 4-2.5 4-5.5 4S1 6.5 1 6.5z" stroke="currentColor" stroke-width="1.2"/><circle cx="6.5" cy="6.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
@@ -2119,6 +2158,13 @@ function fillTT(d,word){
     addBtn.className='';
   }
   sho('wp-add');
+  /* Show pin button */
+  var wpPin=Q('wp-pin');
+  if(wpPin){wpPin.style.display='flex';
+    if(_inkPins.some(function(p){return p.word.toLowerCase()===(d.word||word).toLowerCase();}))
+      wpPin.innerHTML='✓ پین شده';
+    else wpPin.innerHTML='📌 پین روی متن';
+  }
 
   // drag
   makeDraggable(Q('wp'),Q('wp-dh'));
@@ -3603,34 +3649,46 @@ document.addEventListener('mouseup',function(e){
   toast('🖍️ هایلایت شد');
 });
 
-/* Pin translation from X-Ray */
+/* Pin translation — works from X-Ray card or any lookup */
 function xrPinWord(){
-  if(!_xrWord||!_xrData)return;
-  var span=_xrLastSpan||document.querySelector('.gw.active-word');
-  if(!span)return;
+  var word=_xrWord||curWord;
+  var fa=_xrData?.meaning_fa||curData?.meaning_fa;
+  if(!word||!fa)return;
+  /* Find the span in the text */
+  var span=_xrLastSpan||document.querySelector('.ptl span.gw[data-word="'+word+'"]')||document.querySelector('.gw[data-word="'+word+'"]');
+  if(!span){toast('کلمه پیدا نشد');return;}
+  /* Check if already pinned */
+  if(_inkPins.some(function(p){return p.word.toLowerCase()===word.toLowerCase();})){toast('قبلاً پین شده');return;}
   var pw=span.closest('.pw');if(!pw)return;
   var pwRect=pw.getBoundingClientRect();
   var sr=span.getBoundingClientRect();
   var x=sr.left-pwRect.left+sr.width/2;
-  var y=sr.bottom-pwRect.top+2;
+  var y=sr.bottom-pwRect.top;
   var pn=parseInt(pw.dataset.page||0);
   var pinId='pin_'+Date.now();
-  /* Create pin element */
+  _createPinEl(pw,pinId,word,fa,x,y);
+  _inkPins.push({id:pinId,pageNum:pn,word:word,fa:fa,x:x,y:y});
+  _saveInkData();
+  pw.classList.add('has-ink');
+  toast('📌 «'+word+'» پین شد');
+}
+function _createPinEl(pw,pinId,word,fa,x,y){
   var pin=document.createElement('div');
   pin.className='pin-tag';pin.dataset.pinid=pinId;
   pin.style.left=x+'px';pin.style.top=y+'px';
-  pin.style.transform='translateX(-50%)';
-  pin.innerHTML=(_xrData.meaning_fa||'')+'<span class="pin-x" onclick="inkRemovePin(\''+pinId+'\',this)">✕</span>';
+  pin.innerHTML='<div class="pin-line"></div><div class="pin-body">'+fa+'<span class="pin-word">'+word+'</span><span class="pin-x" onclick="inkRemovePin(\''+pinId+'\',this)">✕</span></div>';
   pw.appendChild(pin);
-  _inkPins.push({id:pinId,pageNum:pn,word:_xrWord,fa:_xrData.meaning_fa||'',x:x,y:y});
-  _saveInkData();
-  pw.classList.add('has-ink');
-  toast('📌 معنی پین شد');
 }
 function inkRemovePin(pinId,el){
   el.closest('.pin-tag')?.remove();
   _inkPins=_inkPins.filter(function(p){return p.id!==pinId;});
   _saveInkData();
+  toast('پین حذف شد');
+}
+function inkTogglePins(){
+  var hidden=document.body.classList.toggle('pins-hidden');
+  Q('ink-pins-toggle')?.classList.toggle('active',!hidden);
+  toast(hidden?'پین‌ها مخفی شدن':'پین‌ها نمایش داده شدن');
 }
 
 /* Add pin button to X-Ray card */
@@ -3685,12 +3743,7 @@ function _renderSavedInk(){
   _inkPins.forEach(function(p){
     var pw=document.querySelector('[data-page="'+p.pageNum+'"]');
     if(!pw)return;
-    var pin=document.createElement('div');
-    pin.className='pin-tag';pin.dataset.pinid=p.id;
-    pin.style.left=p.x+'px';pin.style.top=p.y+'px';
-    pin.style.transform='translateX(-50%)';
-    pin.innerHTML=p.fa+'<span class="pin-x" onclick="inkRemovePin(\''+p.id+'\',this)">✕</span>';
-    pw.appendChild(pin);
+    _createPinEl(pw,p.id,p.word,p.fa,p.x,p.y);
     pw.classList.add('has-ink');
   });
 }
