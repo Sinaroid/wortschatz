@@ -461,14 +461,8 @@ body.xray .gw.level-above::after{content:'';position:absolute;bottom:-2px;left:5
 .ink-btn.active{background:var(--blue-a);color:var(--blue)}
 .ink-btn.study-on{background:rgba(251,191,36,.15);color:#fbbf24}
 
-/* ═══ PIN SIDEBAR ═══ */
-#pin-sidebar{position:fixed;top:var(--topbar-h);right:0;bottom:0;width:220px;background:var(--surface);border-left:1px solid var(--line);overflow-y:auto;z-index:60;display:none;flex-direction:column;transition:transform var(--dur-normal) var(--ease-out)}
-#pin-sidebar.visible{display:flex}
-#pin-sidebar-head{padding:var(--sp-3) var(--sp-4) var(--sp-2);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-#pin-sidebar-head h3{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--text4);text-transform:uppercase;display:flex;align-items:center;gap:5px}
-#pin-count{font-size:9px;font-weight:700;background:var(--blue-a);color:var(--blue);padding:1px 6px;border-radius:var(--rd-full)}
-#pin-list{flex:1;overflow-y:auto;padding:var(--sp-1) 0}
-#pin-empty{padding:var(--sp-5) var(--sp-3);font-size:var(--fs-xs);color:var(--text4);text-align:center;line-height:1.9}
+/* Pin sidebar merged into RSB */
+#pin-sidebar{display:none!important}
 .pin-item{padding:var(--sp-2) var(--sp-3);border-bottom:1px solid var(--line);cursor:pointer;transition:background var(--dur-fast);direction:ltr}
 .pin-item:hover{background:var(--surface2)}
 .pin-item-word{font-family:var(--serif);font-size:var(--fs-md);font-weight:600;color:var(--text);line-height:1.2;display:flex;align-items:center;justify-content:space-between}
@@ -566,8 +560,7 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
   #area{padding-bottom:calc(80px + var(--bottombar-h) + var(--safe-b))}
   /* Stats becomes bottom sheet */
   #stats{top:auto;bottom:calc(var(--bottombar-h) + var(--safe-b));right:0;left:0;width:100%;border-radius:var(--rd-lg) var(--rd-lg) 0 0;border:none;border-top:1px solid var(--line2)}
-  /* Pin sidebar becomes bottom sheet */
-  #pin-sidebar{top:auto;bottom:calc(var(--bottombar-h) + var(--safe-b));right:0;left:0;width:100%;height:50vh;border-left:none;border-top:1px solid var(--line2);border-radius:var(--rd-lg) var(--rd-lg) 0 0}
+  /* Pin sidebar merged into RSB */
   /* History narrower */
   #hist-panel{width:280px}
   /* Toast above bottom bar */
@@ -746,38 +739,32 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
     </div>
     <div id="rsb">
       <div id="rsb-top">
-        <h3>لغات ذخیره‌شده</h3>
-        <span id="rsb-cnt">0</span>
-        <button id="rsb-toggle" onclick="toggleRsb()" title="بستن/باز کردن">
+        <div style="display:flex;gap:0;flex:1">
+          <button class="sidebar-tab active" id="tab-words" onclick="switchSidebarTab('words')" style="flex:1;padding:8px 0;font-size:10px;font-weight:700;color:var(--blue);background:none;border:none;border-bottom:2px solid var(--blue);cursor:pointer;font-family:var(--sans);transition:all .15s">📚 لغات <span id="rsb-cnt" style="font-size:9px;background:var(--blue-a);color:var(--blue);padding:1px 5px;border-radius:10px">0</span></button>
+          <button class="sidebar-tab" id="tab-pins" onclick="switchSidebarTab('pins')" style="flex:1;padding:8px 0;font-size:10px;font-weight:700;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--sans);transition:all .15s">📌 پین <span id="pin-count" style="font-size:9px;background:var(--surface2);color:var(--text3);padding:1px 5px;border-radius:10px">0</span></button>
+        </div>
+        <button id="rsb-toggle" onclick="toggleRsb()" title="بستن" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text3);cursor:pointer;border-radius:6px;flex-shrink:0">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2.5L4.5 6l3 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
       <div id="rsb-list">
         <div id="rsb-empty">هنوز لغتی ذخیره نشده<br><span style="font-size:9px;opacity:.45">روی هر کلمه کلیک کن</span></div>
       </div>
+      <div id="pin-list" style="display:none;flex:1;overflow-y:auto;padding:4px 0">
+        <div id="pin-empty" style="padding:20px 12px;font-size:11px;color:var(--text4);text-align:center;line-height:1.9">هنوز پینی نداری</div>
+      </div>
       <div id="rsb-collapsed-label">لغات</div>
     </div>
   </div>
 </div>
 
-<!-- ═══ PIN SIDEBAR ═══ -->
-<div id="pin-sidebar">
-  <div id="pin-sidebar-head">
-    <h3>📌 یادداشت‌ها <span id="pin-count">0</span></h3>
-    <button onclick="togglePinSidebar()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;border-radius:5px;width:24px;height:24px;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">×</button>
-  </div>
-  <div id="pin-list">
-    <div id="pin-empty">هنوز هیچ کلمه‌ای پین نشده<br><span style="font-size:9px;opacity:.5">توی X-Ray روی کلمه کلیک کن</span></div>
-  </div>
-</div>
+<!-- pin-sidebar merged into rsb --><div id="pin-sidebar" hidden></div>
 
 <!-- ═══ INK TOOLBAR ═══ -->
 <div id="ink-bar">
   <div class="ink-color active" data-color="yellow" onclick="inkSelectColor(this)" title="مرور"></div>
   <div class="ink-color" data-color="green" onclick="inkSelectColor(this)" title="یاد گرفتم"></div>
-  <div class="ink-color" data-color="blue" onclick="inkSelectColor(this)" title="گرامر"></div>
-  <div class="ink-color" data-color="orange" onclick="inkSelectColor(this)" title="سخت"></div>
-  <div class="ink-color" data-color="red" onclick="inkSelectColor(this)" title="حفظی"></div>
+  <div class="ink-color" data-color="red" onclick="inkSelectColor(this)" title="مهم"></div>
   <div class="ink-sep"></div>
   <button class="ink-btn" id="ink-eraser" onclick="inkToggleEraser()" title="پاک‌کن">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 10l7-7M7 3l3 3M2 11h9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -845,7 +832,7 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
     <svg viewBox="0 0 20 20" fill="none"><path d="M4 16L14 6l2 2-10 10H4V16z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     <span>هایلایت</span>
   </button>
-  <button class="mob-btn" onclick="togglePinSidebar()" id="mob-pins">
+  <button class="mob-btn" onclick="toggleRsb();switchSidebarTab('pins')" id="mob-pins">
     <svg viewBox="0 0 20 20" fill="none"><path d="M10 2v6M6.5 8h7l-.5 4h-6L6.5 8zM8 12v5M12 12v5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span>پین</span>
   </button>
@@ -855,16 +842,8 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
   </button>
 </div>
 
-<!-- ═══ LEGACY HIDDEN (JS compatibility) ═══ -->
-<div id="phrase-tip" style="display:none"></div>
-<div id="phrase-bar" style="display:none">
-  <div id="phrase-preview"></div>
-  <div id="phrase-controls"><button id="phrase-clear"></button><span id="phrase-hint"></span><button id="phrase-go"></button></div>
-</div>
-<div id="mini-pop" style="display:none">
-  <div id="mini-word"><div id="mini-w"></div><div id="mini-word-sub"></div></div>
-  <div id="mini-acts"></div><div id="mini-ctx"></div>
-</div>
+<!-- Legacy hidden (JS refs only) -->
+<div id="phrase-tip" hidden></div><div id="phrase-bar" hidden><div id="phrase-preview"></div><div id="phrase-controls"><button id="phrase-clear"></button><span id="phrase-hint"></span><button id="phrase-go"></button></div></div><div id="mini-pop" hidden><div id="mini-word"><div id="mini-w"></div><div id="mini-word-sub"></div></div><div id="mini-acts"></div><div id="mini-ctx"></div></div>
 
 <!-- ═══ WORD PANEL ═══ -->
 <div id="wp" class="panel" style="direction:rtl">
@@ -3283,6 +3262,113 @@ fillTT=function(d,word){
 /* ══ OVERFLOW MENU ══ */
 function toggleOverflow(){var m=Q('overflow-menu'),o=Q('overflow-overlay');if(m.classList.contains('visible')){closeOverflow();}else{m.classList.add('visible');o.style.display='block';}}
 function closeOverflow(){Q('overflow-menu').classList.remove('visible');Q('overflow-overlay').style.display='none';}
+
+/* ══ SIDEBAR TABS (words / pins) ══ */
+function switchSidebarTab(tab){
+  var wordsList=Q('rsb-list'),pinsList=Q('pin-list');
+  var tabW=Q('tab-words'),tabP=Q('tab-pins');
+  if(tab==='words'){
+    if(wordsList)wordsList.style.display='';
+    if(pinsList)pinsList.style.display='none';
+    if(tabW){tabW.style.color='var(--blue)';tabW.style.borderBottomColor='var(--blue)';}
+    if(tabP){tabP.style.color='var(--text3)';tabP.style.borderBottomColor='transparent';}
+  }else{
+    if(wordsList)wordsList.style.display='none';
+    if(pinsList)pinsList.style.display='';
+    if(tabP){tabP.style.color='var(--blue)';tabP.style.borderBottomColor='var(--blue)';}
+    if(tabW){tabW.style.color='var(--text3)';tabW.style.borderBottomColor='transparent';}
+  }
+}
+/* Override togglePinSidebar to switch tab instead */
+togglePinSidebar=function(){
+  var rsb=Q('rsb');
+  if(rsb?.classList.contains('collapsed')){toggleRsb();}
+  switchSidebarTab('pins');
+};
+
+/* ══ PINCH-TO-ZOOM (mobile) ══ */
+(function(){
+  var _pinchStartDist=0,_pinchStartScale=0,_pinching=false;
+  var areaEl=null;
+  function getDist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);}
+  document.addEventListener('touchstart',function(e){
+    if(e.touches.length===2){
+      areaEl=Q('area');if(!areaEl)return;
+      _pinching=true;_pinchStartDist=getDist(e.touches);_pinchStartScale=scale;
+      e.preventDefault();
+    }
+  },{passive:false});
+  document.addEventListener('touchmove',function(e){
+    if(!_pinching||e.touches.length!==2)return;
+    e.preventDefault();
+    var dist=getDist(e.touches);
+    var ratio=dist/_pinchStartDist;
+    var newScale=Math.max(.5,Math.min(3.5,_pinchStartScale*ratio));
+    /* Live preview: transform the area */
+    if(areaEl)areaEl.style.transform='scale('+(newScale/scale)+')';
+  },{passive:false});
+  document.addEventListener('touchend',function(e){
+    if(!_pinching)return;_pinching=false;
+    if(!areaEl)return;
+    areaEl.style.transform='';
+    /* Apply zoom */
+    var finalRatio=parseFloat(areaEl.style.transform.replace(/[^0-9.]/g,''))||1;
+    /* Recalculate based on last touch */
+    if(e.changedTouches.length>0){
+      var newScale=Math.max(.5,Math.min(3.5,scale));
+      if(Math.abs(newScale-scale)>0.05)zoom(newScale-scale);
+    }
+  });
+})();
+
+/* ══ CTRL+SCROLL ZOOM (desktop) ══ */
+document.addEventListener('wheel',function(e){
+  if(!e.ctrlKey&&!e.metaKey)return;
+  var target=e.target.closest('#area');
+  if(!target)return;
+  e.preventDefault();
+  var delta=e.deltaY>0?-0.1:0.1;
+  zoom(delta);
+},{passive:false});
+
+/* ══ LAZY PDF RENDERING ══ */
+var _lazyRendered=new Set();
+var _lazyObserver=null;
+function setupLazyRender(){
+  if(!('IntersectionObserver' in window))return;
+  _lazyObserver=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting)return;
+      var pg=parseInt(en.target.dataset.page||0);
+      if(!pg||_lazyRendered.has(pg))return;
+      _lazyRendered.add(pg);
+      _renderPage(pg,en.target);
+    });
+  },{rootMargin:'200px 0px',threshold:0.01});
+}
+function _renderPage(pg,wrap){
+  if(!pdfDoc)return;
+  pdfDoc.getPage(pg).then(function(page){
+    var aW=Q('area').clientWidth-40;
+    var vp0=page.getViewport({scale:1});
+    var s=Math.min(scale,aW/vp0.width);
+    var vp=page.getViewport({scale:s});
+    var dpr=Math.min(devicePixelRatio||1,2);
+    wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
+    var cv=wrap.querySelector('.pdf-c');
+    if(!cv){cv=document.createElement('canvas');cv.className='pdf-c';wrap.insertBefore(cv,wrap.firstChild);}
+    cv.style.width=vp.width+'px';cv.style.height=vp.height+'px';
+    cv.width=Math.floor(vp.width*dpr);cv.height=Math.floor(vp.height*dpr);
+    var ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+    var hlc=wrap.querySelector('.hl-c');
+    if(!hlc){hlc=document.createElement('canvas');hlc.className='hl-c';hlc.style.cssText='position:absolute;top:0;left:0;pointer-events:none;width:'+vp.width+'px;height:'+vp.height+'px';hlc.width=Math.floor(vp.width*dpr);hlc.height=Math.floor(vp.height*dpr);wrap.appendChild(hlc);}
+    var tl=wrap.querySelector('.ptl');
+    if(!tl){tl=document.createElement('div');tl.className='ptl';tl.style.width=vp.width+'px';tl.style.height=vp.height+'px';wrap.appendChild(tl);}
+    page.render({canvasContext:ctx,viewport:vp}).promise.then(function(){
+      page.getTextContent({includeMarkedContent:false}).then(function(tc){buildTL(tc,vp,wrap,pg,tl);});
+    });
+  });
+}
 
 </script>
 </body>
