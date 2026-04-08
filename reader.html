@@ -377,13 +377,143 @@ canvas.pdf-c{display:block;pointer-events:none}
   white-space:pre;transform-origin:0% 0%;cursor:pointer;
 }
 .ptl{user-select:none;-webkit-user-select:none}
-.ptl span.gw.done{background:rgba(31,122,63,.18);border-radius:2px}
-.ptl span.gw.active-word{
-  background:rgba(26,58,242,.22);border-radius:2px;
-  outline:1.5px solid rgba(26,58,242,.45);
+.ptl span.gw.done{background:rgba(31,122,63,.15);border-radius:2px}
+
+/* ════════ X-RAY MODE ════════ */
+body.xray .ptl span.gw{cursor:pointer}
+body.xray .ptl span.gw:hover{background:rgba(26,58,242,.12)!important;border-radius:2px}
+
+/* Furigana ghost translation */
+.xr-ghost{
+  position:absolute;pointer-events:none;z-index:10;
+  font-family:var(--sans);font-weight:500;
+  color:rgba(26,58,242,.85);text-align:center;
+  white-space:nowrap;direction:rtl;
+  opacity:0;transition:opacity .15s ease;
+  text-shadow:0 0 8px rgba(26,58,242,.2);
 }
-.ptl span.gw.active-sentence{
-  background:rgba(26,58,242,.12);border-radius:2px;
+.xr-ghost.visible{opacity:1}
+body:not(.xray) .xr-ghost{display:none!important}
+
+/* X-Ray indicator */
+#xray-badge{
+  position:fixed;top:calc(var(--top) + 8px);left:50%;
+  transform:translateX(-50%);
+  background:rgba(26,58,242,.9);color:#fff;
+  font-size:10px;font-weight:700;font-family:var(--sans);
+  padding:4px 14px;border-radius:20px;
+  display:none;z-index:200;
+  letter-spacing:.5px;
+  box-shadow:0 2px 12px rgba(26,58,242,.4);
+  animation:xrayIn .15s ease;
+}
+@keyframes xrayIn{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%)}}
+body.xray #xray-badge{display:block}
+
+/* Locked word card */
+#xr-card{
+  position:fixed;z-index:996;
+  background:var(--surface);
+  border:1px solid var(--line2);
+  border-radius:14px;
+  box-shadow:0 4px 24px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.3);
+  display:none;direction:rtl;width:280px;max-width:calc(100vw - 20px);
+  overflow:hidden;
+  animation:panIn .15s cubic-bezier(.34,1.5,.64,1);
+}
+#xr-card.visible{display:block}
+#xr-card-head{
+  padding:10px 14px 8px;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg,rgba(26,58,242,.04),transparent);
+}
+#xr-card-word{
+  font-family:var(--serif);font-size:22px;
+  color:var(--text);direction:ltr;flex:1;
+  letter-spacing:-.3px;line-height:1.2;
+}
+#xr-card-speak{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface2);border:1px solid var(--line);
+  border-radius:8px;cursor:pointer;color:var(--text3);
+  transition:all .1s;
+}
+#xr-card-speak:hover{background:var(--surface3);color:var(--text)}
+#xr-card-close{
+  width:24px;height:24px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;color:var(--text4);
+  cursor:pointer;border-radius:6px;transition:all .1s;
+}
+#xr-card-close:hover{background:var(--surface2);color:var(--text)}
+#xr-card-body{padding:10px 14px 14px}
+#xr-card-fa{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.4}
+#xr-card-meta{font-size:10px;color:var(--text3);margin-bottom:8px;display:flex;flex-wrap:wrap;gap:4px}
+.xr-badge{
+  font-size:9px;font-weight:700;padding:2px 7px;
+  border-radius:8px;letter-spacing:.4px;
+}
+.xr-badge.type{background:var(--surface2);color:var(--text3);border:1px solid var(--line)}
+.xr-badge.level{background:var(--blue-a);color:var(--blue);border:1px solid rgba(26,58,242,.15)}
+#xr-card-ex{
+  font-size:12px;color:var(--text2);
+  padding:8px 10px;background:var(--bg);
+  border-radius:8px;direction:ltr;font-style:italic;
+  line-height:1.7;font-family:var(--serif);
+  border:1px solid var(--line);margin-bottom:10px;
+}
+#xr-card-add{
+  width:100%;height:36px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--blue);color:#fff;border:none;border-radius:10px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  font-family:var(--sans);transition:all .14s;
+}
+#xr-card-add:hover{background:var(--blue2);transform:translateY(-1px)}
+#xr-card-add.saved{background:var(--green)}
+
+/* Sentence translation bar */
+#xr-sentence{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(17,17,20,.95);backdrop-filter:blur(16px);
+  border-top:1px solid var(--line2);
+  padding:10px 20px;z-index:200;
+  display:none;direction:rtl;
+  animation:slideUp .18s ease;
+}
+#xr-sentence.visible{display:flex;align-items:center;gap:12px}
+#xr-sentence-text{
+  flex:1;font-size:13px;color:var(--text);
+  line-height:1.6;min-width:0;
+}
+#xr-sentence-text .de{
+  direction:ltr;font-family:var(--serif);
+  font-style:italic;color:var(--text2);
+  font-size:12px;margin-top:4px;display:block;
+}
+#xr-sentence-close{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface2);border:1px solid var(--line);
+  border-radius:8px;cursor:pointer;color:var(--text3);
+  transition:all .1s;
+}
+#xr-sentence-close:hover{background:var(--surface3);color:var(--text)}
+
+/* Level dots (in X-Ray) */
+body.xray .gw.level-at::after{
+  content:'';position:absolute;bottom:-2px;left:50%;
+  transform:translateX(-50%);
+  width:3px;height:3px;border-radius:50%;
+  background:var(--blue);
+}
+body.xray .gw.level-above::after{
+  content:'';position:absolute;bottom:-2px;left:50%;
+  transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;
+  background:#e89020;box-shadow:0 0 4px rgba(232,144,32,.4);
 }
 /* removed old hover neighbor styles */
 .ptl span.sh{background:rgba(255,196,0,.3);border-radius:1px}
@@ -929,30 +1059,7 @@ body.phrase-mode #phrase-tip{display:none!important}
   #stats{right:0;width:190px}
 }
 
-/* ════════ FLOATING ACTION BAR (drag-select) ════════ */
-#sel-bar{
-  position:fixed;z-index:996;
-  display:none;align-items:center;gap:3px;
-  background:var(--surface);border:1px solid var(--line2);
-  border-radius:12px;padding:4px 5px;
-  box-shadow:0 4px 20px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.3);
-  animation:miniIn .12s cubic-bezier(.34,1.5,.64,1);
-  direction:rtl;
-}
-#sel-bar.visible{display:flex}
-.sb-btn{
-  display:flex;align-items:center;gap:5px;
-  padding:6px 12px;height:32px;
-  background:none;border:none;border-radius:8px;
-  font-size:11px;font-weight:600;font-family:var(--sans);
-  color:var(--text2);cursor:pointer;transition:all .1s;
-  white-space:nowrap;
-}
-.sb-btn:hover{background:var(--surface2);color:var(--text)}
-.sb-btn.primary{background:var(--blue);color:#fff}
-.sb-btn.primary:hover{background:var(--blue2)}
-.sb-btn svg{flex-shrink:0;width:12px;height:12px}
-.sb-sep{width:1px;height:18px;background:var(--line);flex-shrink:0}
+/* sel-bar removed — replaced by X-Ray mode */
 
 /* ════════ FOCUS MODE ════════ */
 body.focus-mode #topbar,
@@ -1055,6 +1162,9 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
     </button>
     <button class="ib" id="btn-stats" onclick="toggleStats()" title="آمار">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 10V7.5M4.5 10V5M7.5 10V6.5M10.5 10V2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </button>
+    <button class="ib" id="btn-xray" onclick="toggleXray()" title="X-Ray (Space نگه‌دار)">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6" cy="6" r="3" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
     </button>
     <button class="ib" id="btn-focus" onclick="toggleFocus()" title="حالت فوکوس (F11)">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 4V1h3M8 1h3v3M11 8v3H8M4 11H1V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1287,20 +1397,33 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
   </div>
 </div>
 
-<!-- Floating selection action bar -->
-<div id="sel-bar">
-  <button class="sb-btn primary" id="sb-translate" onclick="selBarTranslate()">
-    <svg viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="white" stroke-width="1.2"/><path d="M8.5 8.5l2 2" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
-    ترجمه
-  </button>
-  <div class="sb-sep"></div>
-  <button class="sb-btn" id="sb-speak" onclick="selBarSpeak()">
-    <svg viewBox="0 0 12 12" fill="none"><path d="M2 4h2l2.5-2.5v9L4 8H2V4z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M8 3.5a3 3 0 010 5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
-    تلفظ
-  </button>
-  <button class="sb-btn" id="sb-copy" onclick="selBarCopy()">
-    <svg viewBox="0 0 12 12" fill="none"><rect x="1.5" y="3.5" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M4 3.5V2.5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H9" stroke="currentColor" stroke-width="1.1"/></svg>
-    کپی
+<!-- X-Ray badge -->
+<div id="xray-badge">⚡ X-RAY · Space ول کن برای خروج</div>
+
+<!-- X-Ray locked card -->
+<div id="xr-card">
+  <div id="xr-card-head">
+    <div id="xr-card-word"></div>
+    <button id="xr-card-speak" onclick="xrSpeak()" title="تلفظ">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 4.5h2l3-3v10L4 8.5H2v-4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 4a3 3 0 010 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+    <button id="xr-card-close" onclick="xrCloseCard()">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div id="xr-card-body">
+    <div id="xr-card-fa"></div>
+    <div id="xr-card-meta"></div>
+    <div id="xr-card-ex" style="display:none"></div>
+    <button id="xr-card-add" onclick="xrAddWord()">+ افزودن به فلش‌کارت</button>
+  </div>
+</div>
+
+<!-- X-Ray sentence bar -->
+<div id="xr-sentence">
+  <div id="xr-sentence-text"></div>
+  <button id="xr-sentence-close" onclick="xrCloseSentence()">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
   </button>
 </div>
 
@@ -1592,7 +1715,8 @@ document.addEventListener('drop',e=>{
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='f'){e.preventDefault();toggleSearch();}
   if(e.key==='Escape'){
-    if(Q('sel-bar')?.classList.contains('visible')){hideSelBar();return;}
+    if(_xrLocked){xrCloseCard();return;}
+    if(_xrayOn){xrayDisable();return;}
     if(_phraseMode){cancelPhraseMode();return;}
     if(searchOn)toggleSearch();else{closeTT();closeSel();}
   }
@@ -2755,70 +2879,261 @@ function getSentenceAround(span,container){
 }
 
 /* ══════════════════════════════════════════
-   NEW: FLOATING SELECTION BAR
+   X-RAY MODE ENGINE
 ══════════════════════════════════════════ */
-var _selText='';
-function showSelBar(text,cx,cy){
-  _selText=text;
-  var bar=Q('sel-bar');if(!bar)return;
-  bar.classList.add('visible');
-  var bw=bar.offsetWidth||220,bh=bar.offsetHeight||40;
-  var left=cx-bw/2,top=cy-bh-14;
-  if(left<6)left=6;if(left+bw>innerWidth-6)left=innerWidth-bw-6;
-  if(top<54)top=cy+14;
-  bar.style.left=left+'px';bar.style.top=top+'px';
+var _xrayOn=false,_xrLocked=false,_xrWord=null,_xrData=null;
+var _xrGhost=null,_xrLastSpan=null;
+
+/* Toggle X-Ray mode */
+function xrayEnable(){
+  if(_xrayOn)return;_xrayOn=true;
+  document.body.classList.add('xray');
 }
-function hideSelBar(){
-  var bar=Q('sel-bar');if(bar)bar.classList.remove('visible');
-  _selText='';
-}
-function selBarTranslate(){
-  var txt=_selText||window.getSelection()?.toString()?.trim()||'';
-  hideSelBar();window.getSelection()?.removeAllRanges();
-  if(!txt||txt.length<2)return;
-  curWord=txt;curData=null;
-  showLoading(txt,{clientX:innerWidth/2,clientY:200});
-  if(txt.includes(' '))doSearchPhrase(txt,innerWidth/2,200);
-  else doSearch(txt);
-}
-function selBarSpeak(){
-  var txt=_selText||window.getSelection()?.toString()?.trim()||'';
-  if(!txt)return;
-  speakText(txt);
-  toast('🔊 در حال تلفظ…');
-}
-function selBarCopy(){
-  var txt=_selText||window.getSelection()?.toString()?.trim()||'';
-  hideSelBar();window.getSelection()?.removeAllRanges();
-  if(!txt)return;
-  navigator.clipboard.writeText(txt).then(()=>toast('✓ کپی شد')).catch(()=>toast('کپی انجام نشد'));
+function xrayDisable(){
+  if(!_xrayOn)return;_xrayOn=false;
+  document.body.classList.remove('xray');
+  xrClearGhost();
+  if(!_xrLocked)xrCloseCard();
+  xrCloseSentence();
 }
 
-/* ══ UNIFIED SELECTION HANDLER ══
-   Any text selection in #area triggers the floating bar.
-   Click outside closes everything. */
-document.addEventListener('mousedown',function(e){
-  /* Click outside sel-bar & wp → close everything */
-  if(!e.target.closest('#sel-bar')&&!e.target.closest('#wp')&&!e.target.closest('#sp')){
-    hideSelBar();
-    clearPdfHighlights(document);
-    if(Q('wp')?.style.display==='block')closeTT();
-    if(Q('mini-pop')?.style.display==='block')closeMini();
+/* Space hold = X-Ray */
+document.addEventListener('keydown',function(e){
+  if(e.code==='Space'&&!e.repeat&&document.activeElement===document.body&&pdfDoc){
+    e.preventDefault();xrayEnable();
   }
 });
-document.addEventListener('mouseup',function(e){
-  /* Skip if clicking on UI elements */
-  if(e.target.closest('#sel-bar')||e.target.closest('#wp')||e.target.closest('#topbar'))return;
-  var cx=e.clientX,cy=e.clientY;
-  setTimeout(function(){
-    var sel=window.getSelection();
-    var txt=(sel?.toString()||'').trim().replace(/\s+/g,' ');
-    if(txt.length>=2&&/[a-zA-ZäöüÄÖÜß]{2,}/.test(txt)){
-      var node=sel?.anchorNode;
-      var inArea=node&&(node.closest?.('#area')||node.parentElement?.closest?.('#area'));
-      if(inArea)showSelBar(txt,cx,cy);
+document.addEventListener('keyup',function(e){
+  if(e.code==='Space'){xrayDisable();}
+});
+
+/* X-Ray button in toolbar */
+function toggleXray(){
+  if(_xrayOn)xrayDisable();else xrayEnable();
+}
+
+/* Ghost furigana translation */
+function xrClearGhost(){
+  document.querySelectorAll('.xr-ghost').forEach(function(g){g.remove();});
+  _xrLastSpan=null;
+}
+
+function xrShowGhost(span,word){
+  if(span===_xrLastSpan)return;
+  xrClearGhost();_xrLastSpan=span;
+  /* Quick lookup from cache or saved words */
+  var cached=_xrCache[word.toLowerCase()];
+  if(cached){
+    _createGhostEl(span,cached);
+  }else{
+    /* Async lookup */
+    _xrQuickLookup(word).then(function(fa){
+      if(fa&&_xrLastSpan===span)_createGhostEl(span,fa);
+    });
+  }
+}
+function _createGhostEl(span,text){
+  var r=span.getBoundingClientRect();
+  var area2=Q('area');if(!area2)return;
+  var areaR=area2.getBoundingClientRect();
+  var ghost=document.createElement('div');
+  ghost.className='xr-ghost';
+  ghost.textContent=text;
+  ghost.style.fontSize=Math.max(9,Math.min(12,r.height*.55))+'px';
+  ghost.style.left=(r.left+r.width/2)+'px';
+  ghost.style.top=(r.bottom+2)+'px';
+  ghost.style.transform='translateX(-50%)';
+  document.body.appendChild(ghost);
+  requestAnimationFrame(function(){ghost.classList.add('visible');});
+  _xrGhost=ghost;
+}
+
+/* Quick translation cache */
+var _xrCache={};
+async function _xrQuickLookup(word){
+  var lower=word.toLowerCase();
+  if(_xrCache[lower])return _xrCache[lower];
+  /* Check saved words first */
+  var found=saved.find(function(w){return w.de&&w.de.toLowerCase()===lower;});
+  if(found&&found.fa){_xrCache[lower]=found.fa;return found.fa;}
+  /* Fast API call */
+  try{
+    var prompt='ترجمه فارسی یک کلمه: "'+word+'" — فقط معنی فارسی، بدون توضیح، حداکثر ۳ کلمه.';
+    var headers={'Content-Type':'application/json'};
+    if(sbUser&&sbUser.id)headers['x-user-id']=sbUser.id;
+    var res=await fetch('/api',{method:'POST',headers:headers,body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:50,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)return null;
+    var raw=await res.text();
+    var d=null;
+    try{d=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*?\}/);if(m)try{d=JSON.parse(m[0]);}catch(e2){}}
+    if(d?.content?.[0]?.text){
+      var fa=d.content[0].text.trim().replace(/["\n]/g,'');
+      if(fa.length>0&&fa.length<30){_xrCache[lower]=fa;return fa;}
     }
-  },120);
+    return null;
+  }catch(e){return null;}
+}
+
+/* Hover handler for X-Ray mode */
+document.addEventListener('mousemove',function(e){
+  if(!_xrayOn||_xrLocked)return;
+  var span=e.target.closest?.('.gw');
+  if(!span){
+    if(_xrLastSpan)xrClearGhost();
+    return;
+  }
+  var word=span.dataset.word||extractWord(span.textContent);
+  if(word&&word.length>=2)xrShowGhost(span,word);
+});
+
+/* Click in X-Ray = lock card */
+document.addEventListener('click',function(e){
+  if(!_xrayOn)return;
+  /* Close card if clicking outside */
+  if(_xrLocked&&!e.target.closest('#xr-card')){
+    xrCloseCard();_xrLocked=false;
+    return;
+  }
+  var span=e.target.closest?.('.gw');
+  if(!span)return;
+  e.preventDefault();e.stopPropagation();
+  var word=getClickWord(span,e)||span.dataset.word;
+  if(!word||word.length<2)return;
+  xrClearGhost();
+  _xrLocked=true;_xrWord=word;_xrData=null;
+  /* Show loading card */
+  Q('xr-card-word').textContent=word;
+  Q('xr-card-fa').textContent='در حال جستجو…';
+  Q('xr-card-meta').innerHTML='';
+  Q('xr-card-ex').style.display='none';
+  Q('xr-card-add').textContent='+ افزودن به فلش‌کارت';
+  Q('xr-card-add').className='';
+  if(savedSet.has(word.toLowerCase())){
+    Q('xr-card-add').textContent='✓ ذخیره شده';
+    Q('xr-card-add').className='saved';
+  }
+  var card=Q('xr-card');
+  card.classList.add('visible');
+  /* Position near click */
+  var cl=e.clientX+16,ct=e.clientY-20;
+  if(cl+290>innerWidth)cl=e.clientX-296;
+  if(ct+200>innerHeight)ct=innerHeight-210;
+  if(ct<56)ct=56;
+  card.style.left=Math.max(6,cl)+'px';card.style.top=Math.max(56,ct)+'px';
+  /* Search */
+  _xrSearch(word);
+},true);
+
+async function _xrSearch(word){
+  try{
+    var res=await callSearch(word);
+    if(!res){
+      for(var alt of getAlts(word)){res=await callSearch(alt);if(res)break;}
+    }
+    if(res&&_xrWord===word)_xrFillCard(res,word);
+    else if(_xrWord===word){Q('xr-card-fa').textContent='پیدا نشد';}
+  }catch(e){
+    if(_xrWord===word)Q('xr-card-fa').textContent=e.message||'خطا';
+  }
+}
+
+function _xrFillCard(d,word){
+  _xrData=d;
+  Q('xr-card-word').textContent=d.word||word;
+  Q('xr-card-fa').textContent=d.meaning_fa||'';
+  /* Cache it */
+  if(d.meaning_fa)_xrCache[(d.word||word).toLowerCase()]=d.meaning_fa;
+  /* Meta badges */
+  var meta=Q('xr-card-meta');meta.innerHTML='';
+  if(d.type){var b=document.createElement('span');b.className='xr-badge type';b.textContent=d.type;meta.appendChild(b);}
+  if(d.article){var b2=document.createElement('span');b2.className='xr-badge level';b2.textContent=d.article;meta.appendChild(b2);}
+  if(d.level){var b3=document.createElement('span');b3.className='xr-badge level';b3.textContent=d.level;meta.appendChild(b3);}
+  /* Example */
+  var ex=Q('xr-card-ex');
+  if(d.examples?.[0]?.de){
+    ex.innerHTML=d.examples[0].de+(d.examples[0].fa?'<div style="font-size:10px;color:var(--text3);margin-top:4px;font-style:normal;font-family:var(--sans);direction:rtl">'+d.examples[0].fa+'</div>':'');
+    ex.style.display='block';
+  }else ex.style.display='none';
+  /* Add button */
+  if(savedSet.has((d.word||word).toLowerCase())){
+    Q('xr-card-add').textContent='✓ ذخیره شده';Q('xr-card-add').className='saved';
+  }
+}
+
+function xrCloseCard(){
+  Q('xr-card').classList.remove('visible');
+  _xrLocked=false;_xrWord=null;_xrData=null;
+}
+function xrSpeak(){
+  var word=_xrWord||Q('xr-card-word')?.textContent||'';
+  if(word)speakText(word);
+}
+function xrAddWord(){
+  if(!_xrData||!_xrWord)return;
+  var word=_xrData.word||_xrWord;
+  if(savedSet.has(word.toLowerCase())){
+    Q('xr-card-add').textContent='✓ ذخیره شده';Q('xr-card-add').className='saved';return;
+  }
+  savedSet.add(word.toLowerCase());
+  var entry={de:word,fa:_xrData.meaning_fa||'',ex:_xrData.examples?.[0]?.de||'',article:_xrData.article||'',level:_xrData.level||''};
+  saved.push(entry);addToSidebar(word,_xrData);updateSaveBtn();
+  /* Highlight in text */
+  document.querySelectorAll('.gw').forEach(function(s){
+    if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.add('done');
+  });
+  /* Save */
+  try{var ls=JSON.parse(localStorage.getItem('ws_words')||'[]');ls.push(entry);localStorage.setItem('ws_words',JSON.stringify(ls));}catch(e){}
+  if(sbUser)dbSave(word,_xrData);
+  markDirty();showSaveIndicator();
+  Q('xr-card-add').textContent='✓ ذخیره شد!';Q('xr-card-add').className='saved';
+  toast('✓ «'+word+'» ذخیره شد');
+}
+
+/* Shift+hover = sentence mode */
+document.addEventListener('mousemove',function(e){
+  if(!_xrayOn||!e.shiftKey)return;
+  var span=e.target.closest?.('.gw');
+  if(!span)return;
+  var pn=parseInt(span.dataset.pg||0);
+  var word=span.dataset.word||'';
+  if(!word||!pn)return;
+  var sentence=getPdfSentence(pn,word);
+  if(sentence&&sentence.length>3){
+    xrShowSentence(sentence);
+  }
+});
+function xrShowSentence(sentence){
+  var el=Q('xr-sentence');
+  Q('xr-sentence-text').innerHTML='<span class="de">'+sentence+'</span><div style="margin-top:6px;font-size:11px;color:var(--text3)">⏳ در حال ترجمه…</div>';
+  el.classList.add('visible');
+  /* Translate */
+  _xrTranslateSentence(sentence);
+}
+async function _xrTranslateSentence(sentence){
+  try{
+    var level=localStorage.getItem('ws_level')||'B1';
+    var prompt='این جمله آلمانی رو برای یه فارسی‌زبان '+level+' ترجمه کن:\n"'+sentence+'"\n\nفقط ترجمه فارسی، بدون توضیح. حداکثر ۲ جمله.';
+    var headers={'Content-Type':'application/json'};
+    if(sbUser&&sbUser.id)headers['x-user-id']=sbUser.id;
+    var res=await fetch('/api',{method:'POST',headers:headers,body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:150,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var raw=await res.text();
+    var d=null;
+    try{d=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*?\}/);if(m)try{d=JSON.parse(m[0]);}catch(e2){}}
+    var fa=d?.content?.[0]?.text?.trim()||'ترجمه ناموفق';
+    Q('xr-sentence-text').innerHTML=fa+'<span class="de">'+sentence+'</span>';
+  }catch(e){
+    Q('xr-sentence-text').innerHTML='خطا: '+e.message+'<span class="de">'+sentence+'</span>';
+  }
+}
+function xrCloseSentence(){Q('xr-sentence').classList.remove('visible');}
+
+/* Close on Escape */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if(_xrLocked){xrCloseCard();return;}
+    if(_xrayOn){xrayDisable();return;}
+  }
 });
 
 /* ══════════════════════════════════════════
