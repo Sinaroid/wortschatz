@@ -1059,7 +1059,77 @@ body.phrase-mode #phrase-tip{display:none!important}
   #stats{right:0;width:190px}
 }
 
-/* sel-bar removed — replaced by X-Ray mode */
+/* ════════ SMART INK TOOLBAR ════════ */
+#ink-bar{
+  position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%);
+  display:none;align-items:center;gap:4px;
+  background:rgba(17,17,20,.94);backdrop-filter:blur(16px);
+  border:1px solid var(--line2);border-radius:28px;
+  padding:5px 8px;z-index:300;
+  animation:toastIn .2s ease;
+  box-shadow:0 4px 24px rgba(0,0,0,.5);
+}
+#ink-bar.visible{display:flex}
+.ink-color{
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid transparent;cursor:pointer;
+  transition:all .12s;flex-shrink:0;
+  position:relative;
+}
+.ink-color:hover{transform:scale(1.15)}
+.ink-color.active{border-color:#fff;transform:scale(1.2);box-shadow:0 0 8px rgba(255,255,255,.3)}
+.ink-color[data-color="yellow"]{background:#fbbf24}
+.ink-color[data-color="green"]{background:#34d399}
+.ink-color[data-color="blue"]{background:#60a5fa}
+.ink-color[data-color="orange"]{background:#fb923c}
+.ink-color[data-color="red"]{background:#f87171}
+.ink-sep{width:1px;height:20px;background:var(--line);flex-shrink:0;margin:0 2px}
+.ink-btn{
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;border-radius:50%;
+  color:var(--text3);cursor:pointer;transition:all .1s;flex-shrink:0;
+}
+.ink-btn:hover{background:var(--surface2);color:var(--text)}
+.ink-btn.active{background:var(--blue-a);color:var(--blue)}
+.ink-btn.study-on{background:rgba(251,191,36,.15);color:#fbbf24}
+
+/* Highlight overlays on PDF */
+.hl-overlay{
+  position:absolute;pointer-events:none;border-radius:2px;
+  mix-blend-mode:multiply;opacity:.35;z-index:4;
+}
+body.dp .hl-overlay{mix-blend-mode:screen;opacity:.2}
+.hl-overlay[data-hcolor="yellow"]{background:#fbbf24}
+.hl-overlay[data-hcolor="green"]{background:#34d399}
+.hl-overlay[data-hcolor="blue"]{background:#60a5fa}
+.hl-overlay[data-hcolor="orange"]{background:#fb923c}
+.hl-overlay[data-hcolor="red"]{background:#f87171}
+
+/* Pinned translations */
+.pin-tag{
+  position:absolute;z-index:8;pointer-events:auto;
+  font-family:var(--sans);font-size:9px;font-weight:600;
+  color:rgba(26,58,242,.9);background:rgba(26,58,242,.08);
+  border:1px solid rgba(26,58,242,.15);
+  border-radius:4px;padding:1px 5px;
+  white-space:nowrap;cursor:default;
+  direction:rtl;
+  animation:xrayIn .15s ease;
+}
+.pin-tag .pin-x{
+  display:inline-block;margin-right:3px;cursor:pointer;
+  opacity:.4;font-size:8px;
+}
+.pin-tag .pin-x:hover{opacity:1;color:var(--err)}
+
+/* Study view */
+body.study-mode .pw{opacity:.3;transition:opacity .3s}
+body.study-mode .pw .hl-overlay{opacity:.5}
+body.study-mode .pw:has(.hl-overlay){opacity:1}
+body.study-mode .pw:has(.pin-tag){opacity:1}
+/* fallback for browsers without :has */
+body.study-mode .pw.has-ink{opacity:1}
 
 /* ════════ FOCUS MODE ════════ */
 body.focus-mode #topbar,
@@ -1162,6 +1232,9 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
     </button>
     <button class="ib" id="btn-stats" onclick="toggleStats()" title="آمار">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 10V7.5M4.5 10V5M7.5 10V6.5M10.5 10V2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </button>
+    <button class="ib" id="btn-ink" onclick="inkToggle()" title="هایلایتر 🖍️">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 9.5L9 3l1.5 1.5-6.5 6.5H2.5V9.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.5 4.5l1.5 1.5" stroke="currentColor" stroke-width="1.2"/></svg>
     </button>
     <button class="ib" id="btn-xray" onclick="toggleXray()" title="X-Ray (Space نگه‌دار)">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6" cy="6" r="3" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
@@ -1395,6 +1468,26 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
     </button>
     <button class="exp-cancel" onclick="hidePanel('exp-modal')">انصراف</button>
   </div>
+</div>
+
+<!-- Smart Ink toolbar -->
+<div id="ink-bar">
+  <div class="ink-color active" data-color="yellow" onclick="inkSelectColor(this)" title="🟡 مرور کنم"></div>
+  <div class="ink-color" data-color="green" onclick="inkSelectColor(this)" title="🟢 یاد گرفتم"></div>
+  <div class="ink-color" data-color="blue" onclick="inkSelectColor(this)" title="🔵 گرامر مهم"></div>
+  <div class="ink-color" data-color="orange" onclick="inkSelectColor(this)" title="🟠 سخته"></div>
+  <div class="ink-color" data-color="red" onclick="inkSelectColor(this)" title="🔴 حفظ کنم"></div>
+  <div class="ink-sep"></div>
+  <button class="ink-btn" id="ink-eraser" onclick="inkToggleEraser()" title="پاک‌کن">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 10l7-7M7 3l3 3M2 11h9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button class="ink-btn" id="ink-study" onclick="inkToggleStudy()" title="حالت مرور">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5s2.5-4 5.5-4 5.5 4 5.5 4-2.5 4-5.5 4S1 6.5 1 6.5z" stroke="currentColor" stroke-width="1.2"/><circle cx="6.5" cy="6.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+  </button>
+  <div class="ink-sep"></div>
+  <button class="ink-btn" onclick="inkClose()" title="بستن">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+  </button>
 </div>
 
 <!-- X-Ray badge -->
@@ -3380,7 +3473,246 @@ function _renderWordsInto(p,text,pageNum){
   });
 }
 
-/* Drop handler updated in main section above */
+/* ══════════════════════════════════════════
+   SMART INK ENGINE
+══════════════════════════════════════════ */
+var _inkOn=false,_inkColor='yellow',_inkEraser=false,_inkStudy=false;
+var _inkHighlights=[]; /* {id,pageNum,rects:[{x,y,w,h}],color,text} */
+var _inkPins=[]; /* {id,pageNum,word,fa,x,y} */
+
+/* Toggle ink toolbar */
+function inkToggle(){
+  _inkOn=!_inkOn;
+  Q('ink-bar').classList.toggle('visible',_inkOn);
+  Q('btn-ink')?.classList.toggle('on',_inkOn);
+  if(_inkOn)_enableInkMode();else _disableInkMode();
+}
+function inkClose(){_inkOn=false;Q('ink-bar').classList.remove('visible');Q('btn-ink')?.classList.remove('on');_disableInkMode();}
+
+function inkSelectColor(el){
+  document.querySelectorAll('.ink-color').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active');
+  _inkColor=el.dataset.color;
+  _inkEraser=false;Q('ink-eraser')?.classList.remove('active');
+}
+function inkToggleEraser(){
+  _inkEraser=!_inkEraser;
+  Q('ink-eraser')?.classList.toggle('active',_inkEraser);
+  if(_inkEraser)document.querySelectorAll('.ink-color').forEach(function(c){c.classList.remove('active');});
+}
+function inkToggleStudy(){
+  _inkStudy=!_inkStudy;
+  document.body.classList.toggle('study-mode',_inkStudy);
+  Q('ink-study')?.classList.toggle('study-on',_inkStudy);
+  /* Mark pages that have highlights */
+  document.querySelectorAll('.pw').forEach(function(pw){
+    if(pw.querySelector('.hl-overlay,.pin-tag'))pw.classList.add('has-ink');
+    else pw.classList.remove('has-ink');
+  });
+}
+
+/* Enable ink mode: make text layer clickable for highlighting */
+var _inkDrag=false,_inkStartSpan=null,_inkPageNum=0;
+function _enableInkMode(){
+  document.querySelectorAll('.ptl').forEach(function(tl){
+    tl.style.cursor=_inkEraser?'crosshair':'text';
+    tl.dataset.inkReady='1';
+  });
+}
+function _disableInkMode(){
+  document.querySelectorAll('.ptl').forEach(function(tl){
+    tl.style.cursor='pointer';
+    tl.dataset.inkReady='';
+  });
+}
+
+/* Ink mouse handlers */
+document.addEventListener('mousedown',function(e){
+  if(!_inkOn)return;
+  var tl=e.target.closest('.ptl');
+  if(!tl||!tl.dataset.inkReady)return;
+  var span=e.target.closest('.gw');
+  if(!span)return;
+  _inkDrag=true;_inkStartSpan=span;
+  _inkPageNum=parseInt(span.dataset.pg||tl.closest('.pw')?.dataset.page||0);
+  span.classList.add('ink-selecting');
+  e.preventDefault();
+});
+document.addEventListener('mousemove',function(e){
+  if(!_inkDrag||!_inkOn)return;
+  var span=e.target.closest?.('.gw');
+  if(span&&span.closest('.ptl')){
+    /* Mark spans in selection range */
+    var tl=span.closest('.ptl');
+    var allGw=Array.from(tl.querySelectorAll('.gw'));
+    var si=allGw.indexOf(_inkStartSpan),ei=allGw.indexOf(span);
+    if(si<0||ei<0)return;
+    if(si>ei){var tmp=si;si=ei;ei=tmp;}
+    allGw.forEach(function(s,i){
+      s.classList.toggle('ink-selecting',i>=si&&i<=ei);
+    });
+  }
+});
+document.addEventListener('mouseup',function(e){
+  if(!_inkDrag||!_inkOn){_inkDrag=false;return;}
+  _inkDrag=false;
+  var selected=document.querySelectorAll('.ink-selecting');
+  if(!selected.length){_inkStartSpan=null;return;}
+  if(_inkEraser){
+    /* Remove highlights that overlap with selected spans */
+    selected.forEach(function(s){
+      var pw=s.closest('.pw');
+      if(pw){
+        pw.querySelectorAll('.hl-overlay').forEach(function(hl){
+          var hr=hl.getBoundingClientRect(),sr=s.getBoundingClientRect();
+          if(hr.left<sr.right&&hr.right>sr.left&&hr.top<sr.bottom&&hr.bottom>sr.top){
+            var hid2=hl.dataset.hlid;
+            hl.remove();
+            _inkHighlights=_inkHighlights.filter(function(h){return h.id!==hid2;});
+          }
+        });
+      }
+    });
+    selected.forEach(function(s){s.classList.remove('ink-selecting');});
+    _saveInkData();
+    toast('پاک شد');
+    return;
+  }
+  /* Create highlight overlay for each selected span */
+  var pw=selected[0].closest('.pw');
+  if(!pw)return;
+  var pwRect=pw.getBoundingClientRect();
+  var hlId='hl_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  var rects=[];var textParts=[];
+  selected.forEach(function(s){
+    var sr=s.getBoundingClientRect();
+    var rx=sr.left-pwRect.left,ry=sr.top-pwRect.top;
+    rects.push({x:rx,y:ry,w:sr.width,h:sr.height});
+    textParts.push(s.dataset.word||s.textContent.trim());
+    /* Create overlay element */
+    var ov=document.createElement('div');
+    ov.className='hl-overlay';ov.dataset.hcolor=_inkColor;ov.dataset.hlid=hlId;
+    ov.style.cssText='left:'+rx+'px;top:'+ry+'px;width:'+sr.width+'px;height:'+sr.height+'px';
+    pw.appendChild(ov);
+    s.classList.remove('ink-selecting');
+  });
+  _inkHighlights.push({id:hlId,pageNum:_inkPageNum,rects:rects,color:_inkColor,text:textParts.join(' ')});
+  _saveInkData();
+  _inkStartSpan=null;
+  pw.classList.add('has-ink');
+  toast('🖍️ هایلایت شد');
+});
+
+/* Pin translation from X-Ray */
+function xrPinWord(){
+  if(!_xrWord||!_xrData)return;
+  var span=_xrLastSpan||document.querySelector('.gw.active-word');
+  if(!span)return;
+  var pw=span.closest('.pw');if(!pw)return;
+  var pwRect=pw.getBoundingClientRect();
+  var sr=span.getBoundingClientRect();
+  var x=sr.left-pwRect.left+sr.width/2;
+  var y=sr.bottom-pwRect.top+2;
+  var pn=parseInt(pw.dataset.page||0);
+  var pinId='pin_'+Date.now();
+  /* Create pin element */
+  var pin=document.createElement('div');
+  pin.className='pin-tag';pin.dataset.pinid=pinId;
+  pin.style.left=x+'px';pin.style.top=y+'px';
+  pin.style.transform='translateX(-50%)';
+  pin.innerHTML=(_xrData.meaning_fa||'')+'<span class="pin-x" onclick="inkRemovePin(\''+pinId+'\',this)">✕</span>';
+  pw.appendChild(pin);
+  _inkPins.push({id:pinId,pageNum:pn,word:_xrWord,fa:_xrData.meaning_fa||'',x:x,y:y});
+  _saveInkData();
+  pw.classList.add('has-ink');
+  toast('📌 معنی پین شد');
+}
+function inkRemovePin(pinId,el){
+  el.closest('.pin-tag')?.remove();
+  _inkPins=_inkPins.filter(function(p){return p.id!==pinId;});
+  _saveInkData();
+}
+
+/* Add pin button to X-Ray card */
+var _origXrFillCard=_xrFillCard;
+_xrFillCard=function(d,word){
+  _origXrFillCard(d,word);
+  /* Add pin button if not exists */
+  var body=Q('xr-card-body');
+  var oldPin=body.querySelector('.xr-pin-btn');if(oldPin)oldPin.remove();
+  var btn=document.createElement('button');
+  btn.className='xr-pin-btn';
+  btn.style.cssText='width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--sans);transition:all .12s;margin-top:6px';
+  btn.innerHTML='📌 پین کردن معنی روی متن';
+  btn.addEventListener('click',xrPinWord);
+  btn.addEventListener('mouseover',function(){this.style.borderColor='rgba(26,58,242,.4)';this.style.color='var(--blue)';});
+  btn.addEventListener('mouseout',function(){this.style.borderColor='var(--line)';this.style.color='var(--text2)';});
+  body.appendChild(btn);
+};
+
+/* Save/Load ink data */
+function _saveInkData(){
+  if(!curDocKey)return;
+  var data={highlights:_inkHighlights,pins:_inkPins};
+  try{localStorage.setItem('ws_ink_'+curDocKey,JSON.stringify(data));}catch(e){}
+  markDirty();
+}
+function _loadInkData(){
+  if(!curDocKey)return;
+  try{
+    var raw=localStorage.getItem('ws_ink_'+curDocKey);
+    if(!raw)return;
+    var data=JSON.parse(raw);
+    _inkHighlights=data.highlights||[];
+    _inkPins=data.pins||[];
+    _renderSavedInk();
+  }catch(e){}
+}
+function _renderSavedInk(){
+  /* Render saved highlights */
+  _inkHighlights.forEach(function(hl){
+    var pw=document.querySelector('[data-page="'+hl.pageNum+'"]');
+    if(!pw)return;
+    hl.rects.forEach(function(r){
+      var ov=document.createElement('div');
+      ov.className='hl-overlay';ov.dataset.hcolor=hl.color;ov.dataset.hlid=hl.id;
+      ov.style.cssText='left:'+r.x+'px;top:'+r.y+'px;width:'+r.w+'px;height:'+r.h+'px';
+      pw.appendChild(ov);
+    });
+    pw.classList.add('has-ink');
+  });
+  /* Render saved pins */
+  _inkPins.forEach(function(p){
+    var pw=document.querySelector('[data-page="'+p.pageNum+'"]');
+    if(!pw)return;
+    var pin=document.createElement('div');
+    pin.className='pin-tag';pin.dataset.pinid=p.id;
+    pin.style.left=p.x+'px';pin.style.top=p.y+'px';
+    pin.style.transform='translateX(-50%)';
+    pin.innerHTML=p.fa+'<span class="pin-x" onclick="inkRemovePin(\''+p.id+'\',this)">✕</span>';
+    pw.appendChild(pin);
+    pw.classList.add('has-ink');
+  });
+}
+
+/* Load ink after PDF renders */
+var _origRenderAllEnd=null;
+(function(){
+  var origNext=null;
+  /* Patch: load ink data after session is applied */
+  var origStartAutoSave=startAutoSave;
+  startAutoSave=function(){
+    origStartAutoSave();
+    setTimeout(_loadInkData,800);
+  };
+})();
+
+/* CSS for ink-selecting state */
+(function(){
+  var style=document.createElement('style');
+  style.textContent='.ink-selecting{background:rgba(26,58,242,.2)!important;border-radius:2px}';
+  document.head.appendChild(style);
+})();
 
 /* Patch updateNav to also update focus mode nav */
 var _origUpdateNav=updateNav;
