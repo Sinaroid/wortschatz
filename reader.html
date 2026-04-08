@@ -209,13 +209,17 @@ canvas.pdf-c{display:block;pointer-events:none}
 .hl-c{position:absolute;top:0;left:0;pointer-events:none}
 .ptl{position:absolute;top:0;left:0;overflow:hidden;line-height:1;pointer-events:all;user-select:none;-webkit-user-select:none}
 .ptl span,.ptl br{color:transparent;position:absolute;white-space:pre;transform-origin:0% 0%;cursor:pointer}
+.ptl span.gw:hover{background:rgba(26,58,242,.1)!important}
+.ptl span.gw.sel{background:rgba(26,58,242,.2)!important;outline:1.5px solid rgba(26,58,242,.35)}
 .pg-n{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--text4);font-variant-numeric:tabular-nums}
 .bm{position:absolute;top:0;right:-3px;width:3px;height:28px;background:var(--blue);border-radius:0 0 2px 2px}
 body.dp .pw{background:#111;filter:invert(1) hue-rotate(180deg)}
 body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 
 /* ═══ WORD HIGHLIGHTS ═══ */
-.gw{border-radius:2px;padding:0 1px;position:relative}
+.gw{border-radius:2px;padding:0 1px;position:relative;cursor:pointer;transition:background var(--dur-fast)}
+.gw:hover{background:rgba(26,58,242,.08)}
+.gw.sel{background:rgba(26,58,242,.18);outline:1.5px solid rgba(26,58,242,.4);border-radius:2px}
 .gw.done{background:rgba(31,122,63,.15);border-bottom:2px solid rgba(31,122,63,.35)}
 .gw.pinned{border-bottom:2px solid rgba(26,58,242,.5);background:rgba(26,58,242,.06)}
 .gw.hl-yellow{background:rgba(251,191,36,.3)!important;border-radius:2px}
@@ -1785,27 +1789,20 @@ function attachTL(tl,pn){
     if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
   });
 
-  /* Single click — find exact word, show action bar */
-  var _clickTimer=null;
+  /* Single click — directly open word meaning panel */
   tl.addEventListener('click',function(e){
-    /* Wait to distinguish single vs double click */
-    if(_clickTimer){clearTimeout(_clickTimer);_clickTimer=null;return;}
-    _clickTimer=setTimeout(function(){
-      _clickTimer=null;
-      clearPdfHighlights(tl);
-      var span=e.target.closest('.gw');
-      var word=span?getClickWord(span,e):null;
-      if(!word||word.length<2)return;
-      span.classList.add('active-word');
-      showSelBar(word,e.clientX,e.clientY);
-    },220);
+    var span=e.target.closest('.gw');if(!span)return;
+    e.stopPropagation();
+    /* In ink mode, don't open word panel */
+    if(_inkOn)return;
+    var word=getClickWord(span,e);
+    if(!word||word.length<2)return;
+    _wordClick(span,e);
   });
 
-  /* Double-click — select full sentence */
+  /* Double-click — translate full sentence */
   tl.addEventListener('dblclick',function(e){
     e.preventDefault();
-    if(_clickTimer){clearTimeout(_clickTimer);_clickTimer=null;}
-    clearPdfHighlights(tl);
     var span=e.target.closest('.gw');
     var word=span?span.dataset.word||extractWord(span.textContent):null;
     if(!word)return;
@@ -2330,6 +2327,9 @@ function renderSample(s){
           span.className='gw';span.dataset.word=clean;span.textContent=w;
           span.style.color='var(--page-ink)';
           if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
+          span.style.cursor='pointer';
+          span.addEventListener('click',function(ev){ev.stopPropagation();_wordClick(span,ev);});
+          span.addEventListener('dblclick',function(ev){_wordDblClick(span,ev,p);});
           p.appendChild(span);
         }else p.appendChild(document.createTextNode(w));
       });
@@ -2882,6 +2882,44 @@ function renderEpubChapters(chapters,bookTitle){
   });
 }
 
+/* ══ UNIVERSAL WORD CLICK — works everywhere ══ */
+/* ══ CLOSE PANELS ON CLICK OUTSIDE ══ */
+document.addEventListener('mousedown',function(e){
+  var t=e.target;
+  if(!t.closest('#wp')&&!t.closest('#xr-card')&&!t.closest('.gw')&&!t.closest('#ink-bar')&&!t.closest('#overflow-menu')){
+    if(Q('wp')?.style.display==='block')closeTT();
+    if(Q('xr-card')?.classList.contains('visible'))xrCloseCard();
+    document.querySelectorAll('.gw.sel').forEach(function(s){s.classList.remove('sel');});
+  }
+  if(!t.closest('#overflow-menu')&&!t.closest('#btn-overflow'))closeOverflow();
+});
+
+function _wordClick(span,e){
+  var word=span.dataset.word||extractWord(span.textContent);
+  if(!word||word.length<2)return;
+  /* Clear old selection */
+  document.querySelectorAll('.gw.sel').forEach(function(s){s.classList.remove('sel');});
+  span.classList.add('sel');
+  /* If same word panel is open, close it */
+  if(curWord===word&&Q('wp').style.display==='block'){closeTT();return;}
+  /* Open word panel */
+  curWord=word;curData=null;
+  closeMini();
+  showLoading(word,e||{clientX:innerWidth/2,clientY:200},span);
+  doSearch(word);
+}
+function _wordDblClick(span,e,container){
+  e.preventDefault();e.stopPropagation();
+  var word=span.dataset.word||extractWord(span.textContent);
+  var pn=parseInt(span.dataset.pg||span.closest('.pw')?.dataset.page||0);
+  var sentence=pn&&pageItems[pn]?getPdfSentence(pn,word):getSentenceAround(span,container||span.closest('p'));
+  if(sentence&&sentence.length>3){
+    curWord=sentence;curData=null;
+    showLoading(sentence,e||{clientX:innerWidth/2,clientY:200});
+    doSearchPhrase(sentence,e.clientX||innerWidth/2,e.clientY||200);
+  }
+}
+
 /* Shared: render clickable words into a paragraph element */
 function _renderWordsInto(p,text,pageNum){
   text.split(/(\s+)/).forEach(function(w){
@@ -2889,8 +2927,10 @@ function _renderWordsInto(p,text,pageNum){
     if(clean.length>=2){
       var span=document.createElement('span');
       span.className='gw';span.dataset.word=clean;span.textContent=w;
-      span.style.color='var(--page-ink)';
+      span.style.color='var(--page-ink)';span.style.cursor='pointer';
       if(savedSet.has(clean.toLowerCase()))span.classList.add('done');
+      span.addEventListener('click',function(e){e.stopPropagation();_wordClick(span,e);});
+      span.addEventListener('dblclick',function(e){_wordDblClick(span,e,p);});
       p.appendChild(span);
     }else{
       p.appendChild(document.createTextNode(w));
