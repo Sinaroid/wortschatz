@@ -2171,52 +2171,21 @@ function confirmPhrase(){
 })();
 
 function attachTL(tl,pn){
-  /* Split multi-word spans into individual word spans */
-  const origSpans=Array.from(tl.querySelectorAll('span'));
-  origSpans.forEach(function(span){
-    var raw=span.textContent||'';
+  /* Mark word spans — do NOT split, keep original positioning intact */
+  tl.querySelectorAll('span').forEach(function(span){
+    var raw=(span.textContent||'').trim();
     if(raw.length<2)return;
     if(!/[a-zA-ZäöüÄÖÜß]{2,}/.test(raw))return;
-    /* Split into word tokens and non-word tokens */
-    var parts=raw.split(/(\b[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df\-]{2,}\b)/g);
-    if(parts.length<=1){
-      /* Single word span — just mark it */
-      span.classList.add('gw');span.dataset.word=extractWord(raw);span.dataset.pg=pn;
-      if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
-      return;
-    }
-    /* Multiple tokens — split into individual spans */
-    var frag=document.createDocumentFragment();
-    var style=span.style.cssText;
-    var isFirst=true;
-    parts.forEach(function(part){
-      if(!part)return;
-      var isWord=/^[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df\-]{2,}$/.test(part);
-      if(isWord){
-        var ws=document.createElement('span');
-        ws.textContent=part;
-        if(isFirst){ws.style.cssText=style;isFirst=false;}
-        else{ws.style.position='absolute';ws.style.color='transparent';}
-        ws.classList.add('gw');ws.dataset.word=extractWord(part);ws.dataset.pg=pn;
-        if(savedSet.has(ws.dataset.word.toLowerCase()))ws.classList.add('done');
-        frag.appendChild(ws);
-      }else{
-        var ts=document.createElement('span');
-        ts.textContent=part;
-        if(isFirst){ts.style.cssText=style;isFirst=false;}
-        else{ts.style.position='absolute';ts.style.color='transparent';}
-        frag.appendChild(ts);
-      }
-    });
-    span.replaceWith(frag);
+    span.classList.add('gw');span.dataset.word=extractWord(raw);span.dataset.pg=pn;
+    if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
   });
 
-  /* Click — directly open word panel (skip mini-popup) */
+  /* Click — get exact word at click position, open word panel directly */
   tl.addEventListener('click',function(e){
     var span=e.target.closest('.gw');if(!span)return;e.stopPropagation();
-    hideSelBar();
-    var word=span.dataset.word||extractWord(span.textContent);
-    if(!word||word.length<2)return;
+    if(_phraseMode){_togglePhrase(span);return;}
+    _hidePT();hideSelBar();
+    var word=getClickWord(span,e);if(!word||word.length<2)return;
     tl.querySelectorAll('.gw.sel').forEach(function(el){el.classList.remove('sel');});
     span.classList.add('sel');
     if(curWord===word&&Q('wp').style.display==='block'){closeTT();return;}
@@ -2224,7 +2193,7 @@ function attachTL(tl,pn){
     closeMini();showLoading(word,e,span);doSearch(word);
   });
 
-  /* Hover — show subtle highlight, no tooltip delay */
+  /* Hover — subtle highlight */
   tl.addEventListener('mouseover',function(e){
     var span=e.target.closest('.gw');
     if(!span)return;
@@ -2235,10 +2204,11 @@ function attachTL(tl,pn){
     if(_hSpan)_hSpan.classList.remove('hov-main');_hSpan=null;
   });
 
-  /* Double-click — select sentence */
+  /* Double-click — select full sentence from PDF page data */
   tl.addEventListener('dblclick',function(e){
     var span=e.target.closest('.gw');if(!span)return;e.preventDefault();e.stopPropagation();
-    var sentence=getSentenceAround(span,tl);
+    var word=span.dataset.word||extractWord(span.textContent);
+    var sentence=getPdfSentence(pn,word);
     if(sentence&&sentence.length>2){
       showSelBar(sentence,e.clientX,e.clientY);
     }
@@ -2771,33 +2741,53 @@ function renderSample(s){
 /* ══════════════════════════════════════════
    NEW: SENTENCE DETECTION
 ══════════════════════════════════════════ */
+/* For PDF pages — extract sentence from pageItems data (reliable) */
+function getPdfSentence(pn,targetWord){
+  var pd=pageItems[pn];if(!pd)return '';
+  /* Collect all text from the page with spaces */
+  var fullText='';
+  pd.items.forEach(function(item){
+    if(!item.str)return;
+    var s=item.str;
+    if(fullText.length>0&&!/^\s/.test(s)&&!/\s$/.test(fullText))fullText+=' ';
+    fullText+=s;
+  });
+  /* Find the target word */
+  var wordLower=targetWord.toLowerCase();
+  var re=new RegExp('\\b'+targetWord.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
+  var match=re.exec(fullText);
+  if(!match)return '';
+  var charIdx=match.index;
+  /* Find sentence boundaries */
+  var sStart=0;
+  for(var i=charIdx-1;i>=0;i--){
+    if(/[.!?;]/.test(fullText[i])&&i<charIdx-1){sStart=i+1;break;}
+  }
+  var sEnd=fullText.length;
+  for(var j=charIdx;j<fullText.length;j++){
+    if(/[.!?]/.test(fullText[j])){sEnd=j+1;break;}
+  }
+  return fullText.slice(sStart,sEnd).trim();
+}
+
+/* For sample/EPUB/TXT pages — extract sentence from DOM (normal flow text) */
 function getSentenceAround(span,container){
-  /* Collect full text from all child nodes (including text nodes for spaces) */
+  /* Collect full text from all child nodes including text nodes */
   var walker=document.createTreeWalker(container,NodeFilter.SHOW_TEXT,null,false);
   var fullText='';
   while(walker.nextNode()){fullText+=walker.currentNode.textContent;}
-  /* Find the clicked word's position in fullText */
+  if(!fullText)return '';
+  /* Find the clicked word */
   var word=span.dataset.word||span.textContent.trim();
-  var spanText=span.textContent||'';
-  /* Build positions for lookup */
-  var allNodes=Array.from(container.childNodes);
-  var charIdx=-1,pos=0;
-  function walkNode(node){
-    if(charIdx>=0)return;
-    if(node===span){charIdx=pos;return;}
-    if(node.nodeType===3){pos+=node.textContent.length;return;}
-    if(node.childNodes)Array.from(node.childNodes).forEach(walkNode);
-    else pos+=(node.textContent||'').length;
-  }
-  walkNode(container);
-  if(charIdx<0){/* fallback */charIdx=fullText.indexOf(spanText);}
-  if(charIdx<0)return '';
-  /* Find sentence start (look back for . ! ? or start of text) */
+  var re=new RegExp('\\b'+word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
+  var match=re.exec(fullText);
+  if(!match)return '';
+  var charIdx=match.index;
+  /* Find sentence boundaries */
   var sStart=0;
   for(var i=charIdx-1;i>=0;i--){
-    if(/[.!?]/.test(fullText[i])){sStart=i+1;break;}
+    if(/[.!?;]/.test(fullText[i])&&i<charIdx-1){sStart=i+1;break;}
   }
-  /* Find sentence end */
   var sEnd=fullText.length;
   for(var j=charIdx;j<fullText.length;j++){
     if(/[.!?]/.test(fullText[j])){sEnd=j+1;break;}
@@ -2846,23 +2836,30 @@ function selBarCopy(){
 }
 
 /* Drag-to-select: detect text selection and show action bar */
+var _isDragging=false,_dragStartX=0,_dragStartY=0;
+document.addEventListener('mousedown',function(e){
+  if(!e.target.closest('#sel-bar'))hideSelBar();
+  _isDragging=false;_dragStartX=e.clientX;_dragStartY=e.clientY;
+});
+document.addEventListener('mousemove',function(e){
+  if(Math.abs(e.clientX-_dragStartX)>8||Math.abs(e.clientY-_dragStartY)>8)_isDragging=true;
+});
 document.addEventListener('mouseup',function(e){
-  /* Small delay to let selection finalize */
+  if(!_isDragging)return;/* Only on drag, not click */
+  var cx=e.clientX,cy=e.clientY;
   setTimeout(function(){
     var sel=window.getSelection();
     var txt=(sel?.toString()||'').trim();
+    /* Clean up PDF invisible text artifacts */
+    txt=txt.replace(/\s+/g,' ').trim();
     if(txt.length>=3&&/[a-zA-ZäöüÄÖÜß]{2,}/.test(txt)){
-      /* Only trigger inside reader area */
       var node=sel?.anchorNode;
-      if(node&&(node.closest?.('#area')||node.parentElement?.closest?.('#area'))){
-        showSelBar(txt,e.clientX,e.clientY);
+      var inArea=node&&(node.closest?.('#area')||node.parentElement?.closest?.('#area'));
+      if(inArea){
+        showSelBar(txt,cx,cy);
       }
     }
-  },100);
-});
-/* Hide bar on click outside */
-document.addEventListener('mousedown',function(e){
-  if(!e.target.closest('#sel-bar'))hideSelBar();
+  },150);
 });
 
 /* ══════════════════════════════════════════
