@@ -1106,55 +1106,92 @@ body.dp .hl-overlay{mix-blend-mode:screen;opacity:.2}
 .hl-overlay[data-hcolor="orange"]{background:#fb923c}
 .hl-overlay[data-hcolor="red"]{background:#f87171}
 
-/* Pinned translations — always visible */
-.pin-tag{
-  position:absolute;z-index:8;pointer-events:auto;
-  font-family:var(--sans);font-weight:600;
-  white-space:nowrap;cursor:default;
-  direction:rtl;
-  animation:pinPop .2s cubic-bezier(.34,1.5,.64,1);
-  display:flex;flex-direction:column;align-items:center;
-  transform:translateX(-50%);
+/* ════════ PINS: SIDEBAR MARGIN NOTES ════════ */
+#pin-sidebar{
+  position:fixed;top:var(--top);right:0;bottom:0;
+  width:200px;background:var(--surface);
+  border-left:1px solid var(--line);
+  overflow-y:auto;z-index:60;
+  display:none;flex-direction:column;
+  transition:transform .22s cubic-bezier(.4,0,.2,1);
 }
-@keyframes pinPop{from{opacity:0;transform:translateX(-50%) scale(.8) translateY(4px)}to{opacity:1;transform:translateX(-50%) scale(1)}}
-.pin-line{
-  width:1px;height:6px;
-  background:linear-gradient(180deg,rgba(26,58,242,.4),rgba(26,58,242,.15));
+#pin-sidebar.visible{display:flex}
+#pin-sidebar-head{
+  padding:10px 12px 8px;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
   flex-shrink:0;
 }
-.pin-body{
-  font-size:10px;
-  color:rgba(26,58,242,.95);
-  background:rgba(26,58,242,.06);
-  border:1px solid rgba(26,58,242,.18);
-  border-radius:6px;padding:2px 8px;
-  box-shadow:0 1px 4px rgba(26,58,242,.08);
-  display:flex;align-items:center;gap:4px;
-  transition:all .15s;
+#pin-sidebar-head h3{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  color:var(--text4);text-transform:uppercase;
+  display:flex;align-items:center;gap:5px;
 }
-.pin-body:hover{
-  background:rgba(26,58,242,.12);
-  border-color:rgba(26,58,242,.3);
-  box-shadow:0 2px 8px rgba(26,58,242,.15);
+#pin-count{
+  font-size:9px;font-weight:700;
+  background:var(--blue-a);color:var(--blue);
+  padding:1px 6px;border-radius:8px;
 }
-.pin-word{
-  font-size:8px;color:rgba(26,58,242,.5);
-  font-family:var(--serif);direction:ltr;
-  border-left:1px solid rgba(26,58,242,.15);
-  padding-left:5px;margin-left:2px;
+#pin-list{flex:1;overflow-y:auto;padding:4px 0}
+#pin-list::-webkit-scrollbar{width:3px}
+#pin-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+#pin-empty{
+  padding:20px 12px;font-size:11px;
+  color:var(--text4);text-align:center;line-height:1.9;
 }
-.pin-x{
-  cursor:pointer;opacity:0;font-size:9px;
-  margin-right:-2px;transition:opacity .1s;
-  color:var(--text4);width:14px;height:14px;
+.pin-item{
+  padding:8px 12px;
+  border-bottom:1px solid rgba(39,39,47,.5);
+  cursor:pointer;transition:background .1s;
+  direction:ltr;
+}
+.pin-item:hover{background:var(--surface2)}
+.pin-item-word{
+  font-family:var(--serif);font-size:13px;font-weight:600;
+  color:var(--text);line-height:1.2;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pin-item-fa{
+  font-family:var(--sans);font-size:10px;
+  color:var(--blue);margin-top:3px;direction:rtl;
+}
+.pin-item-page{
+  font-size:8px;color:var(--text4);margin-top:2px;
+}
+.pin-item-del{
+  background:none;border:none;color:var(--text4);
+  cursor:pointer;font-size:12px;opacity:0;transition:opacity .1s;
+  padding:0;width:18px;height:18px;
   display:flex;align-items:center;justify-content:center;
-  border-radius:50%;
+  border-radius:4px;
 }
-.pin-body:hover .pin-x{opacity:.6}
-.pin-x:hover{opacity:1!important;color:var(--err);background:rgba(204,32,32,.1)}
+.pin-item:hover .pin-item-del{opacity:.5}
+.pin-item-del:hover{opacity:1!important;color:var(--err);background:rgba(204,32,32,.1)}
+
+/* Pinned word underline on PDF */
+.ptl span.gw.pinned{
+  border-bottom:2px solid rgba(26,58,242,.5);
+  background:rgba(26,58,242,.06);
+  border-radius:1px;
+}
+.gw.pinned{
+  border-bottom:2px solid rgba(26,58,242,.5);
+  background:rgba(26,58,242,.06);
+  border-radius:1px;
+}
 
 /* Pin visibility toggle */
-body.pins-hidden .pin-tag{display:none!important}
+body.pins-hidden .gw.pinned{border-bottom:none;background:none}
+
+/* Mobile: pin sidebar as bottom sheet */
+@media(max-width:768px){
+  #pin-sidebar{
+    top:auto;bottom:0;right:0;left:0;
+    width:100%;height:45vh;max-height:50vh;
+    border-left:none;border-top:1px solid var(--line2);
+    border-radius:16px 16px 0 0;
+  }
+}
 
 /* Study view */
 body.study-mode .pw{opacity:.3;transition:opacity .3s}
@@ -1503,6 +1540,17 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
       <div><div class="exp-title">JSON</div><div class="exp-sub">فرمت Wortschatz</div></div>
     </button>
     <button class="exp-cancel" onclick="hidePanel('exp-modal')">انصراف</button>
+  </div>
+</div>
+
+<!-- Pin sidebar -->
+<div id="pin-sidebar">
+  <div id="pin-sidebar-head">
+    <h3>📌 یادداشت‌ها <span id="pin-count">0</span></h3>
+    <button onclick="togglePinSidebar()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;border-radius:5px;width:22px;height:22px;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">×</button>
+  </div>
+  <div id="pin-list">
+    <div id="pin-empty">هنوز هیچ کلمه‌ای پین نشده<br><span style="font-size:9px;opacity:.5">توی X-Ray روی کلمه کلیک کن و 📌 بزن</span></div>
   </div>
 </div>
 
@@ -2160,10 +2208,12 @@ function fillTT(d,word){
   sho('wp-add');
   /* Show pin button */
   var wpPin=Q('wp-pin');
-  if(wpPin){wpPin.style.display='flex';
-    if(_inkPins.some(function(p){return p.word.toLowerCase()===(d.word||word).toLowerCase();}))
-      wpPin.innerHTML='✓ پین شده';
-    else wpPin.innerHTML='📌 پین روی متن';
+  if(wpPin){
+    wpPin.style.display='flex';
+    var isPinned2=_inkPins.some(function(p){return p.word.toLowerCase()===(d.word||word).toLowerCase();});
+    wpPin.innerHTML=isPinned2?'✓ پین شده':'📌 پین روی متن';
+    if(isPinned2)wpPin.style.color='var(--green)';
+    else wpPin.style.color='';
   }
 
   // drag
@@ -3649,62 +3699,104 @@ document.addEventListener('mouseup',function(e){
   toast('🖍️ هایلایت شد');
 });
 
-/* Pin translation — works from X-Ray card or any lookup */
+/* ══ PIN SYSTEM — SIDEBAR MARGIN NOTES ══ */
 function xrPinWord(){
   var word=_xrWord||curWord;
   var fa=_xrData?.meaning_fa||curData?.meaning_fa;
   if(!word||!fa)return;
-  /* Find the span in the text */
-  var span=_xrLastSpan||document.querySelector('.ptl span.gw[data-word="'+word+'"]')||document.querySelector('.gw[data-word="'+word+'"]');
-  if(!span){toast('کلمه پیدا نشد');return;}
-  /* Check if already pinned */
   if(_inkPins.some(function(p){return p.word.toLowerCase()===word.toLowerCase();})){toast('قبلاً پین شده');return;}
-  var pw=span.closest('.pw');if(!pw)return;
-  var pwRect=pw.getBoundingClientRect();
-  var sr=span.getBoundingClientRect();
-  var x=sr.left-pwRect.left+sr.width/2;
-  var y=sr.bottom-pwRect.top;
-  var pn=parseInt(pw.dataset.page||0);
+  /* Find page number */
+  var span=_xrLastSpan||document.querySelector('.gw[data-word="'+word+'"]');
+  var pn=span?parseInt(span.dataset.pg||span.closest('.pw')?.dataset.page||curPage):curPage;
   var pinId='pin_'+Date.now();
-  _createPinEl(pw,pinId,word,fa,x,y);
-  _inkPins.push({id:pinId,pageNum:pn,word:word,fa:fa,x:x,y:y});
+  var article=_xrData?.article||curData?.article||'';
+  var level=_xrData?.level||curData?.level||'';
+  _inkPins.push({id:pinId,pageNum:pn,word:word,fa:fa,article:article,level:level});
+  /* Mark word in text */
+  _markPinnedWords();
+  /* Add to sidebar */
+  _renderPinList();
   _saveInkData();
-  pw.classList.add('has-ink');
   toast('📌 «'+word+'» پین شد');
+  /* Show sidebar briefly */
+  if(!Q('pin-sidebar').classList.contains('visible'))togglePinSidebar();
 }
-function _createPinEl(pw,pinId,word,fa,x,y){
-  var pin=document.createElement('div');
-  pin.className='pin-tag';pin.dataset.pinid=pinId;
-  pin.style.left=x+'px';pin.style.top=y+'px';
-  pin.innerHTML='<div class="pin-line"></div><div class="pin-body">'+fa+'<span class="pin-word">'+word+'</span><span class="pin-x" onclick="inkRemovePin(\''+pinId+'\',this)">✕</span></div>';
-  pw.appendChild(pin);
-}
-function inkRemovePin(pinId,el){
-  el.closest('.pin-tag')?.remove();
+function inkRemovePin(pinId){
+  var pin=_inkPins.find(function(p){return p.id===pinId;});
   _inkPins=_inkPins.filter(function(p){return p.id!==pinId;});
+  /* Unmark word */
+  if(pin){
+    document.querySelectorAll('.gw.pinned').forEach(function(s){
+      if((s.dataset.word||'').toLowerCase()===pin.word.toLowerCase()){
+        /* Check if any other pin has this word */
+        if(!_inkPins.some(function(p){return p.word.toLowerCase()===pin.word.toLowerCase();}))
+          s.classList.remove('pinned');
+      }
+    });
+  }
+  _renderPinList();
   _saveInkData();
   toast('پین حذف شد');
 }
-function inkTogglePins(){
-  var hidden=document.body.classList.toggle('pins-hidden');
-  Q('ink-pins-toggle')?.classList.toggle('active',!hidden);
-  toast(hidden?'پین‌ها مخفی شدن':'پین‌ها نمایش داده شدن');
+function _markPinnedWords(){
+  var pinnedWords=_inkPins.map(function(p){return p.word.toLowerCase();});
+  document.querySelectorAll('.gw').forEach(function(s){
+    var w=(s.dataset.word||'').toLowerCase();
+    s.classList.toggle('pinned',pinnedWords.includes(w));
+  });
 }
+function _renderPinList(){
+  var list=Q('pin-list');
+  var count=Q('pin-count');
+  if(count)count.textContent=_inkPins.length;
+  if(!_inkPins.length){
+    list.innerHTML='<div id="pin-empty">هنوز هیچ کلمه‌ای پین نشده<br><span style="font-size:9px;opacity:.5">توی X-Ray روی کلمه کلیک کن و 📌 بزن</span></div>';
+    return;
+  }
+  list.innerHTML='';
+  _inkPins.forEach(function(p){
+    var item=document.createElement('div');
+    item.className='pin-item';
+    item.innerHTML='<div class="pin-item-word"><span>'+(p.article?p.article+' ':'')+p.word+'</span><button class="pin-item-del" onclick="event.stopPropagation();inkRemovePin(\''+p.id+'\')">✕</button></div><div class="pin-item-fa">'+p.fa+'</div><div class="pin-item-page">صفحه '+p.pageNum+(p.level?' · '+p.level:'')+'</div>';
+    item.addEventListener('click',function(){
+      /* Jump to page */
+      var el=document.querySelector('[data-page="'+p.pageNum+'"]');
+      if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+      /* Flash the word */
+      document.querySelectorAll('.gw').forEach(function(s){
+        if((s.dataset.word||'').toLowerCase()===p.word.toLowerCase()){
+          s.style.transition='background .15s';
+          s.style.background='rgba(26,58,242,.3)';
+          setTimeout(function(){s.style.background='';},1500);
+        }
+      });
+    });
+    list.appendChild(item);
+  });
+}
+function togglePinSidebar(){
+  var sb=Q('pin-sidebar');
+  sb.classList.toggle('visible');
+  Q('ink-pins-toggle')?.classList.toggle('active',sb.classList.contains('visible'));
+}
+function inkTogglePins(){togglePinSidebar();}
 
 /* Add pin button to X-Ray card */
 var _origXrFillCard=_xrFillCard;
 _xrFillCard=function(d,word){
   _origXrFillCard(d,word);
-  /* Add pin button if not exists */
   var body=Q('xr-card-body');
   var oldPin=body.querySelector('.xr-pin-btn');if(oldPin)oldPin.remove();
+  var isPinned=_inkPins.some(function(p){return p.word.toLowerCase()===(d.word||word).toLowerCase();});
   var btn=document.createElement('button');
   btn.className='xr-pin-btn';
   btn.style.cssText='width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--surface2);border:1px solid var(--line);border-radius:8px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:var(--sans);transition:all .12s;margin-top:6px';
-  btn.innerHTML='📌 پین کردن معنی روی متن';
-  btn.addEventListener('click',xrPinWord);
-  btn.addEventListener('mouseover',function(){this.style.borderColor='rgba(26,58,242,.4)';this.style.color='var(--blue)';});
-  btn.addEventListener('mouseout',function(){this.style.borderColor='var(--line)';this.style.color='var(--text2)';});
+  btn.innerHTML=isPinned?'✓ پین شده':'📌 پین کردن';
+  if(!isPinned){
+    btn.addEventListener('click',function(){xrPinWord();btn.innerHTML='✓ پین شده';btn.style.color='var(--green)';});
+    btn.addEventListener('mouseover',function(){this.style.borderColor='rgba(26,58,242,.4)';this.style.color='var(--blue)';});
+    btn.addEventListener('mouseout',function(){this.style.borderColor='var(--line)';this.style.color='var(--text2)';});
+  }else{btn.style.color='var(--green)';}
   body.appendChild(btn);
 };
 
@@ -3739,13 +3831,9 @@ function _renderSavedInk(){
     });
     pw.classList.add('has-ink');
   });
-  /* Render saved pins */
-  _inkPins.forEach(function(p){
-    var pw=document.querySelector('[data-page="'+p.pageNum+'"]');
-    if(!pw)return;
-    _createPinEl(pw,p.id,p.word,p.fa,p.x,p.y);
-    pw.classList.add('has-ink');
-  });
+  /* Render saved pins: mark words + populate sidebar */
+  _markPinnedWords();
+  _renderPinList();
 }
 
 /* Load ink after PDF renders */
