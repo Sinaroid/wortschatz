@@ -220,7 +220,30 @@ body.dp canvas.pdf-c{filter:invert(1) hue-rotate(180deg)}
 .gw{border-radius:2px;padding:0 1px;position:relative;cursor:pointer;transition:background var(--dur-fast)}
 .gw:hover{background:rgba(26,58,242,.08)}
 .gw.sel{background:rgba(26,58,242,.18);outline:1.5px solid rgba(26,58,242,.4);border-radius:2px}
-.gw.done{background:rgba(31,122,63,.15);border-bottom:2px solid rgba(31,122,63,.35)}
+.gw.done{background:rgba(31,122,63,.1);border-bottom:2px solid rgba(31,122,63,.3)}
+/* Inline meaning annotation — shows Farsi below the word */
+.gw.has-fa{position:relative}
+.gw.has-fa::after{
+  content:attr(data-fa);
+  position:absolute;top:100%;left:50%;
+  transform:translateX(-50%);
+  font-size:8px;font-family:var(--sans);font-weight:500;font-style:normal;
+  color:rgba(26,58,242,.7);white-space:nowrap;
+  pointer-events:none;direction:rtl;line-height:1;
+  padding-top:1px;
+}
+.ptl span.gw.has-fa::after{
+  content:attr(data-fa);
+  position:absolute;top:100%;left:50%;
+  transform:translateX(-50%);
+  font-size:max(7px, calc(var(--scale-factor, 1) * 5px));
+  font-family:var(--sans);font-weight:500;font-style:normal;
+  color:rgba(26,58,242,.75);white-space:nowrap;
+  pointer-events:none;direction:rtl;line-height:1;
+}
+/* Toggle off */
+body.hide-meanings .gw.has-fa::after,
+body.hide-meanings .ptl span.gw.has-fa::after{display:none}
 .gw.pinned{border-bottom:2px solid rgba(26,58,242,.5);background:rgba(26,58,242,.06)}
 .gw.hl-yellow{background:rgba(251,191,36,.3)!important;border-radius:2px}
 .gw.hl-green{background:rgba(52,211,153,.3)!important;border-radius:2px}
@@ -671,6 +694,10 @@ body.dp .txt-page{background:#111;filter:invert(1) hue-rotate(180deg)}
     <button class="menu-item" id="btn-stats" onclick="toggleStats();closeOverflow()">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 13V9.5M5.5 13V6.5M9 13V8M12.5 13V3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       آمار خواندن
+    </button>
+    <button class="menu-item" onclick="toggleMeanings();closeOverflow()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      نمایش/مخفی معانی
     </button>
     <button class="menu-item" id="btn-export" onclick="showExport();closeOverflow()">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 5l3-3 3 3M3 13h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1617,10 +1644,16 @@ function addWord(){
   wordPages[word]={page:curPage};
   addToSidebar(word,curData||entry);
   updateSaveBtn();
-  // update done state در متن
+  // update done state + inline meaning در متن
+  var fa=curData?.meaning_fa||entry.fa||'';
   document.querySelectorAll('.ptl span.gw,.gw').forEach(s=>{
-    if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.add('done');
+    if((s.dataset.word||'').toLowerCase()===word.toLowerCase()){
+      s.classList.add('done');
+      if(fa){s.dataset.fa=fa;s.classList.add('has-fa');}
+    }
   });
+  // Save meaning mapping for reload
+  _saveFaMappings();
   // reHL
   Object.keys(pageItems).forEach(pg=>{
     const wrap=document.querySelector(`[data-page="${pg}"]`);if(wrap)reHL(parseInt(pg),wrap);
@@ -2646,10 +2679,15 @@ function xrAddWord(){
   savedSet.add(word.toLowerCase());
   var entry={de:word,fa:_xrData.meaning_fa||'',ex:_xrData.examples?.[0]?.de||'',article:_xrData.article||'',level:_xrData.level||''};
   saved.push(entry);addToSidebar(word,_xrData);updateSaveBtn();
-  /* Highlight in text */
+  /* Highlight in text + inline meaning */
+  var fa=_xrData.meaning_fa||'';
   document.querySelectorAll('.gw').forEach(function(s){
-    if((s.dataset.word||'').toLowerCase()===word.toLowerCase())s.classList.add('done');
+    if((s.dataset.word||'').toLowerCase()===word.toLowerCase()){
+      s.classList.add('done');
+      if(fa){s.dataset.fa=fa;s.classList.add('has-fa');}
+    }
   });
+  _saveFaMappings();
   /* Save */
   try{var ls=JSON.parse(localStorage.getItem('ws_words')||'[]');ls.push(entry);localStorage.setItem('ws_words',JSON.stringify(ls));}catch(e){}
   if(sbUser)dbSave(word,_xrData);
@@ -3323,6 +3361,42 @@ fillTT=function(d,word){
 /* ══ OVERFLOW MENU ══ */
 function toggleOverflow(){var m=Q('overflow-menu'),o=Q('overflow-overlay');if(m.classList.contains('visible')){closeOverflow();}else{m.classList.add('visible');o.style.display='block';}}
 function closeOverflow(){Q('overflow-menu').classList.remove('visible');Q('overflow-overlay').style.display='none';}
+
+/* ══ INLINE MEANING PERSISTENCE ══ */
+function _saveFaMappings(){
+  if(!curDocKey)return;
+  var map={};
+  document.querySelectorAll('.gw.has-fa').forEach(function(s){
+    var w=(s.dataset.word||'').toLowerCase();
+    if(w&&s.dataset.fa)map[w]=s.dataset.fa;
+  });
+  /* Also include from saved words */
+  saved.forEach(function(e){if(e.de&&e.fa)map[e.de.toLowerCase()]=e.fa;});
+  try{localStorage.setItem('ws_fa_'+curDocKey,JSON.stringify(map));}catch(e){}
+}
+function _loadFaMappings(){
+  if(!curDocKey)return;
+  var map={};
+  /* From doc-specific storage */
+  try{var raw=localStorage.getItem('ws_fa_'+curDocKey);if(raw)map=JSON.parse(raw);}catch(e){}
+  /* Also from global saved words */
+  try{
+    var words=JSON.parse(localStorage.getItem('ws_words')||'[]');
+    words.forEach(function(w){if(w.de&&w.fa)map[w.de.toLowerCase()]=w.fa;});
+  }catch(e){}
+  if(!Object.keys(map).length)return;
+  document.querySelectorAll('.gw').forEach(function(s){
+    var w=(s.dataset.word||'').toLowerCase();
+    if(map[w]){s.dataset.fa=map[w];s.classList.add('has-fa','done');}
+  });
+}
+function toggleMeanings(){
+  document.body.classList.toggle('hide-meanings');
+  toast(document.body.classList.contains('hide-meanings')?'معانی مخفی شد':'معانی نمایش داده شد');
+}
+/* Load meanings after render */
+var _origStartAutoSave2=startAutoSave;
+startAutoSave=function(){_origStartAutoSave2();setTimeout(_loadFaMappings,1000);};
 
 /* ══ SIDEBAR TABS (words / pins) ══ */
 function switchSidebarTab(tab){
