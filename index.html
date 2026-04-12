@@ -1843,21 +1843,6 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <div class="mi-name">شنیداری</div>
       <div class="mi-desc">گوش بده · تایپ کن</div>
     </div>
-    <div class="mi-card new" onclick="introPickMode('speed')">
-      <div class="mi-icon">⚡</div>
-      <div class="mi-name">سرعتی</div>
-      <div class="mi-desc">۶۰ ثانیه · امتیاز بگیر</div>
-    </div>
-    <div class="mi-card new" onclick="introPickMode('match')">
-      <div class="mi-icon">🧩</div>
-      <div class="mi-name">جورچین</div>
-      <div class="mi-desc">جفت‌ها رو پیدا کن</div>
-    </div>
-    <div class="mi-card new" onclick="introPickMode('fill')">
-      <div class="mi-icon">✍️</div>
-      <div class="mi-name">جای خالی</div>
-      <div class="mi-desc">جمله رو کامل کن</div>
-    </div>
     <div class="mi-card new" onclick="introPickMode('survival')" style="grid-column:1/-1">
       <div class="mi-icon">💀</div>
       <div class="mi-name">بقای کلمات</div>
@@ -2577,12 +2562,12 @@ function updateFreeBanner(){
   const left=FREE_LIMIT-used;
 
   if(left<=0){
-    // تموم شد — upgrade modal
     showUpgrade();
-  } else if(left===2){
-    showToast('⚠ فقط ۲ جستجو امروز مونده',2800,'warn');
-  } else if(left===1){
-    showToast('🔴 آخرین جستجوی امروز!',2800,'warn');
+    if(b){b.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3M7 9.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>جستجوی امروز تموم شد — <a onclick="showUpgrade()">Pro بگیر ←</a></span>';b.className='free-banner warn';b.style.display='flex';}
+  } else if(left<=3){
+    if(b){b.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3M7 9.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>فقط <b>'+left+'</b> جستجو مونده — <a onclick="showUpgrade()">Pro نامحدود ←</a></span>';b.className='free-banner warn';b.style.display='flex';}
+  } else {
+    if(b)b.style.display='none';
   }
   updateDrawerPlan();
 }
@@ -3225,6 +3210,8 @@ function updateStats(){
     const smartDeck=buildSmartDeck();
     lbl.textContent=due.length>0?`مرور ${smartDeck.length} کارت`:`سشن ${smartDeck.length} کارتی`;
   }
+  // sync daily goal
+  updateDailyGoal();
 }
 function logReview(){
   const today=new Date().toDateString();
@@ -3281,7 +3268,7 @@ async function doSearch(){
         e2.className='s-msg err';e2.style.display='flex';
       }
     } else {
-      setMsg(fa,'err');
+      setMsg(fa+' <button onclick="doSearch()" style="margin-right:8px;padding:3px 10px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:var(--sans);font-size:11px;font-weight:600">تلاش دوباره ↻</button>','err');
     }
     if(type==='auth'){showGate();}
   }
@@ -5976,20 +5963,38 @@ sesRate=async function(good){
 setTimeout(updateDailyGoal,500);
 
 /* ══ VERB CONJUGATION ══ */
-function showConjugation(verb){
+var _conjCache={};
+async function showConjugation(verb){
   const conj=Q('#conj-wrap');
   if(!conj)return;
   if(conj.classList.contains('open')){conj.classList.remove('open');return;}
-  // Generate conjugation using known patterns
-  const stem=verb.replace(/(en|n)$/,'');
-  const forms=[
-    ['ich',stem+'e'],['du',stem+'st'],['er/sie/es',stem+'t'],
-    ['wir',verb],['ihr',stem+'t'],['sie/Sie',verb]
-  ];
-  let html='<table class="conj-table"><tr><th>Pronomen</th><th>Präsens</th></tr>';
-  forms.forEach(f=>html+='<tr><td>'+f[0]+'</td><td>'+f[1]+'</td></tr>');
-  html+='</table>';
-  conj.innerHTML=html;conj.classList.add('open');
+  /* Check cache */
+  if(_conjCache[verb]){conj.innerHTML=_conjCache[verb];conj.classList.add('open');return;}
+  /* Show loading */
+  conj.innerHTML='<div style="text-align:center;padding:12px;color:var(--ink3);font-size:12px"><span style="display:inline-block;width:12px;height:12px;border:2px solid var(--bg3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-left:6px"></span> در حال ساخت…</div>';
+  conj.classList.add('open');
+  try{
+    const raw=await ai('صرف فعل آلمانی "'+verb+'" در زمان Präsens.\nفقط JSON: {"ich":"","du":"","er":"","wir":"","ihr":"","sie":""}\nبدون توضیح.',200);
+    const m=raw.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('parse');
+    const d=JSON.parse(m[0]);
+    let html='<table class="conj-table"><tr><th>Pronomen</th><th>Präsens</th></tr>';
+    [['ich',d.ich],['du',d.du],['er/sie/es',d.er],['wir',d.wir],['ihr',d.ihr],['sie/Sie',d.sie]].forEach(f=>{
+      html+='<tr><td>'+f[0]+'</td><td>'+f[1]+'</td></tr>';
+    });
+    html+='</table>';
+    _conjCache[verb]=html;
+    conj.innerHTML=html;
+  }catch(e){
+    /* Fallback: simple rule-based */
+    const stem=verb.replace(/(en|n)$/,'');
+    let html='<table class="conj-table"><tr><th>Pronomen</th><th>Präsens</th></tr>';
+    [['ich',stem+'e'],['du',stem+'st'],['er/sie/es',stem+'t'],['wir',verb],['ihr',stem+'t'],['sie/Sie',verb]].forEach(f=>{
+      html+='<tr><td>'+f[0]+'</td><td>'+f[1]+'</td></tr>';
+    });
+    html+='</table><div style="font-size:9px;color:var(--ink3);margin-top:4px">⚠ ممکنه نادقیق باشه</div>';
+    conj.innerHTML=html;
+  }
 }
 
 /* ══ WEAK WORDS AUTO-FOCUS ══ */
