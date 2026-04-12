@@ -1337,6 +1337,60 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
 
+/* ═══════════════════════════════════
+   NEW FEATURES
+═══════════════════════════════════ */
+/* Quiz mode (4 choices) */
+.quiz-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px;width:100%;max-width:460px}
+.quiz-opt{padding:14px 12px;border:1.5px solid var(--bg3);border-radius:var(--r3);background:var(--card);font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .15s;font-family:var(--sans);text-align:center;line-height:1.5;min-height:52px;display:flex;align-items:center;justify-content:center}
+.quiz-opt:hover{border-color:var(--accent);background:var(--abl)}
+.quiz-opt.correct{border-color:var(--ok);background:var(--okbg);color:var(--ok);font-weight:700}
+.quiz-opt.wrong{border-color:var(--err);background:var(--errbg);color:var(--err)}
+.quiz-opt:disabled{cursor:default;opacity:.7}
+.quiz-word{font-family:var(--serif);font-size:28px;color:var(--ink);text-align:center;padding:32px 16px 8px;direction:ltr}
+.quiz-hint{font-size:11px;color:var(--ink3);text-align:center;margin-bottom:16px}
+.quiz-result{font-size:14px;font-weight:600;text-align:center;padding:8px;min-height:36px}
+.quiz-result.g{color:var(--ok)}.quiz-result.b{color:var(--err)}
+/* Session mode toggle */
+.ses-mode-toggle{display:flex;gap:4px;padding:4px;background:var(--bg2);border-radius:var(--r2);margin:0 auto 12px}
+.ses-mode-btn{padding:6px 14px;border:none;border-radius:8px;font-size:11px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:var(--sans);transition:all .15s;background:transparent}
+.ses-mode-btn.active{background:var(--card);color:var(--ink);box-shadow:var(--sh1)}
+
+/* Daily goal */
+.daily-goal{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);margin-bottom:12px}
+.dg-ring{position:relative;width:44px;height:44px;flex-shrink:0}
+.dg-ring svg{transform:rotate(-90deg)}
+.dg-ring .ring-bg2{fill:none;stroke:var(--bg3);stroke-width:3.5}
+.dg-ring .ring-fg{fill:none;stroke:var(--accent);stroke-width:3.5;stroke-linecap:round;transition:stroke-dashoffset .6s}
+.dg-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent)}
+.dg-info{flex:1}
+.dg-title{font-size:12px;font-weight:600;color:var(--ink)}
+.dg-sub{font-size:10px;color:var(--ink3);margin-top:2px}
+
+/* Conjugation table */
+.conj-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px;direction:ltr}
+.conj-table th{text-align:right;color:var(--ink3);font-weight:500;padding:5px 8px;border-bottom:1px solid var(--bg3)}
+.conj-table td{padding:5px 8px;color:var(--ink);font-family:var(--serif);border-bottom:1px solid var(--bg2)}
+.conj-toggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--accent);cursor:pointer;font-weight:600;margin-top:6px;padding:4px 0}
+.conj-toggle:hover{text-decoration:underline}
+.conj-wrap{display:none;margin-top:4px;padding:8px;background:var(--bg);border-radius:var(--r2);border:1px solid var(--bg3)}
+.conj-wrap.open{display:block;animation:down .2s var(--ease)}
+
+/* Listening mode */
+.listen-prompt{font-size:14px;color:var(--ink2);text-align:center;padding:12px 0}
+.listen-play{width:64px;height:64px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto;cursor:pointer;transition:all .15s;border:none;font-size:24px}
+.listen-play:hover{background:var(--accent2);transform:scale(1.05)}
+.listen-play.playing{animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.listen-input{width:100%;max-width:300px;margin:16px auto 0;display:block;padding:10px 14px;border:1.5px solid var(--bg3);border-radius:var(--r2);font-size:15px;font-family:var(--serif);color:var(--ink);background:var(--card);text-align:center;direction:ltr;outline:none;transition:border-color .15s}
+.listen-input:focus{border-color:var(--accent)}
+.listen-input.correct{border-color:var(--ok);background:var(--okbg)}
+.listen-input.wrong{border-color:var(--err);background:var(--errbg)}
+
+/* Weak words badge in stats */
+.weak-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;background:var(--errbg);color:var(--err);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.weak-badge:hover{background:rgba(204,32,32,.15)}
+
 </style>
 </head>
 <body>
@@ -1617,6 +1671,29 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
 
   <div class="ses-body" id="ses-body">
+    <!-- Mode toggle -->
+    <div class="ses-mode-toggle">
+      <button class="ses-mode-btn active" id="mode-flip" onclick="setSesMode('flip')">فلش‌کارت</button>
+      <button class="ses-mode-btn" id="mode-quiz" onclick="setSesMode('quiz')">۴ گزینه</button>
+      <button class="ses-mode-btn" id="mode-listen" onclick="setSesMode('listen')">شنیداری</button>
+    </div>
+    <!-- Quiz mode body -->
+    <div id="quiz-body" style="display:none;flex-direction:column;align-items:center;flex:1;width:100%">
+      <div class="quiz-word" id="quiz-word"></div>
+      <div class="quiz-hint">معنی درست رو انتخاب کن</div>
+      <div class="quiz-grid" id="quiz-grid"></div>
+      <div class="quiz-result" id="quiz-result"></div>
+    </div>
+    <!-- Listen mode body -->
+    <div id="listen-body" style="display:none;flex-direction:column;align-items:center;flex:1;width:100%;justify-content:center;gap:12px">
+      <div class="listen-prompt">گوش بده و کلمه رو تایپ کن</div>
+      <button class="listen-play" id="listen-play" onclick="listenPlayWord()">🔊</button>
+      <input class="listen-input" id="listen-inp" placeholder="بنویس…" onkeydown="if(event.key==='Enter')listenCheck()" autocomplete="off" dir="ltr">
+      <div class="quiz-result" id="listen-result"></div>
+      <button class="btn btn-p" id="listen-next" onclick="listenNext()" style="display:none">بعدی →</button>
+    </div>
+    <!-- Flashcard mode body (original) -->
+    <div id="flip-body">
     <div class="card-scene" onclick="sesFlip()">
       <div class="card-wrap" id="card-wrap">
         <div class="card-face card-front">
@@ -1632,6 +1709,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       </div>
     </div>
     <div class="swipe-row"><span>← بلد نبودم</span><span>بلد بودم →</span></div>
+    </div><!-- /flip-body -->
     <div class="ses-acts">
       <button class="sa bad" onclick="sesRate(false)">
         <span class="sa-ic">✗</span><span>بلد نبودم</span><span class="sa-next">دوباره میاد</span>
@@ -1707,6 +1785,11 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
     </div>
 
+    <!-- Daily goal -->
+    <div class="daily-goal" id="daily-goal">
+      <div class="dg-ring"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct">0%</div></div>
+      <div class="dg-info"><div class="dg-title" id="dg-title">هدف امروز: <b>0</b> از <b>5</b> لغت</div><div class="dg-sub" id="dg-sub">لغت جدید یاد بگیر یا مرور کن</div></div>
+    </div>
     <div id="free-banner" style="display:none"></div>
     <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
       <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
@@ -1750,9 +1833,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
       <!-- اسم لغت -->
       <div class="res-word-block">
-        <div class="res-art-word">
+        <div class="res-art-word" style="display:flex;align-items:center;gap:8px">
           <span class="res-art" id="res-art"></span>
           <span class="res-word" id="res-word"></span>
+          <button onclick="speakWord(curWord?.word||Q('#res-word')?.textContent||'')" style="width:32px;height:32px;border:1px solid var(--bg3);border-radius:8px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);transition:all .15s;flex-shrink:0" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--bg3)';this.style.color='var(--ink3)'" title="تلفظ">🔊</button>
         </div>
         <div class="res-principal" id="res-principal"></div>
         <div class="res-plural" id="res-plural"></div>
@@ -1767,6 +1851,11 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
         <div class="res-usage-line" id="res-usage-line"></div>
         <div class="res-example" id="res-example"></div>
         <div class="res-tip-line" id="res-tip-line"></div>
+        <!-- Conjugation (for verbs) -->
+        <div id="res-conj" style="display:none">
+          <span class="conj-toggle" onclick="showConjugation(curWord?.word||'')">📝 صرف فعل ▾</span>
+          <div class="conj-wrap" id="conj-wrap"></div>
+        </div>
       </div>
 
       <div class="res-divider"></div>
@@ -3078,6 +3167,13 @@ function renderWord(d){
   const tipEl = Q('#res-tip-line');
   if(!nul(d.grammar_tip)){ tipEl.textContent=d.grammar_tip; tipEl.style.display=''; }
   else tipEl.style.display='none';
+
+  /* ─ Conjugation (verbs only) ─ */
+  const conjEl=Q('#res-conj');const conjWrap=Q('#conj-wrap');
+  if(conjEl){
+    if(d.type&&d.type.toLowerCase()==='verb'){conjEl.style.display='';if(conjWrap)conjWrap.classList.remove('open');}
+    else conjEl.style.display='none';
+  }
 
   /* ─ Badges ─ */
   const lvlEl=Q('#res-level'),typEl=Q('#res-type');
@@ -4995,4 +5091,217 @@ window.addEventListener('unhandledrejection', e => {
   if(m.includes('supabase') || m.includes('postgrest') || m.includes('fetch') && !m.includes('api')) return;
   console.warn('[Wortschatz] unhandled:', err.message);
 });
+
+/* ═══════════════════════════════════════════════
+   NEW FEATURES: Quiz, Listen, Daily Goal, etc.
+═══════════════════════════════════════════════ */
+
+/* ══ SESSION MODE TOGGLE ══ */
+let sesMode='flip'; // flip | quiz | listen
+function setSesMode(mode){
+  sesMode=mode;
+  document.querySelectorAll('.ses-mode-btn').forEach(b=>b.classList.remove('active'));
+  Q('#mode-'+mode)?.classList.add('active');
+  Q('#flip-body').style.display=mode==='flip'?'':'none';
+  Q('#quiz-body').style.display=mode==='quiz'?'flex':'none';
+  Q('#listen-body').style.display=mode==='listen'?'flex':'none';
+  const acts=document.querySelector('.ses-acts');
+  if(acts)acts.style.display=mode==='flip'?'':'none';
+  if(mode==='quiz')showQuiz();
+  if(mode==='listen')showListen();
+}
+
+/* ══ QUIZ MODE (4 choices) ══ */
+function showQuiz(){
+  if(sesI>=sesDeck.length){sesSummary();return;}
+  const w=sesDeck[sesI];
+  Q('#quiz-word').textContent=w.de;
+  Q('#quiz-result').textContent='';Q('#quiz-result').className='quiz-result';
+  // Build 4 options: 1 correct + 3 random
+  const correct=w.fa;
+  const others=words.filter(x=>x.fa&&x.fa!==correct&&x.de!==w.de).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.fa);
+  while(others.length<3)others.push(['کتاب','خانه','دوست','کار','مدرسه','غذا','آب','شهر'][Math.floor(Math.random()*8)]);
+  const opts=[correct,...others].sort(()=>Math.random()-.5);
+  const grid=Q('#quiz-grid');grid.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');btn.className='quiz-opt';btn.textContent=opt;
+    btn.addEventListener('click',function(){
+      grid.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=true;});
+      if(opt===correct){
+        btn.classList.add('correct');
+        Q('#quiz-result').textContent='✓ آفرین!';Q('#quiz-result').className='quiz-result g';
+        sesRate(true);
+        setTimeout(()=>{if(sesMode==='quiz')showQuiz();},1000);
+      }else{
+        btn.classList.add('wrong');
+        grid.querySelectorAll('.quiz-opt').forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+        Q('#quiz-result').textContent='✗ جواب: '+correct;Q('#quiz-result').className='quiz-result b';
+        sesRate(false);
+        setTimeout(()=>{if(sesMode==='quiz')showQuiz();},1500);
+      }
+    });
+    grid.appendChild(btn);
+  });
+  // Auto-play pronunciation
+  speakWord(w.de);
+}
+
+/* ══ LISTENING MODE ══ */
+function showListen(){
+  if(sesI>=sesDeck.length){sesSummary();return;}
+  const w=sesDeck[sesI];
+  Q('#listen-inp').value='';Q('#listen-inp').className='listen-input';
+  Q('#listen-result').textContent='';Q('#listen-result').className='quiz-result';
+  Q('#listen-next').style.display='none';
+  Q('#listen-inp').focus();
+  setTimeout(()=>speakWord(w.de),300);
+}
+function listenPlayWord(){
+  if(sesI>=sesDeck.length)return;
+  speakWord(sesDeck[sesI].de);
+  Q('#listen-play').classList.add('playing');
+  setTimeout(()=>Q('#listen-play').classList.remove('playing'),1200);
+}
+function listenCheck(){
+  const w=sesDeck[sesI];
+  const inp=Q('#listen-inp').value.trim().toLowerCase();
+  const correct=w.de.toLowerCase();
+  if(inp===correct){
+    Q('#listen-inp').className='listen-input correct';
+    Q('#listen-result').textContent='✓ '+w.de+' = '+w.fa;Q('#listen-result').className='quiz-result g';
+    sesRate(true);
+    Q('#listen-next').style.display='inline-flex';
+  }else{
+    Q('#listen-inp').className='listen-input wrong';
+    Q('#listen-result').textContent='✗ جواب: '+w.de+' ('+w.fa+')';Q('#listen-result').className='quiz-result b';
+    sesRate(false);
+    Q('#listen-next').style.display='inline-flex';
+  }
+}
+function listenNext(){
+  if(sesMode==='listen')showListen();
+}
+
+/* ══ AUDIO PRONUNCIATION ══ */
+function speakWord(word){
+  if(!word)return;
+  const u=new SpeechSynthesisUtterance(word);
+  u.lang=targetLang==='en'?'en-US':'de-DE';u.rate=0.85;
+  window.speechSynthesis?.cancel();window.speechSynthesis?.speak(u);
+}
+// Auto-play on card show (patch showCard)
+const _origShowCard=showCard;
+showCard=function(){
+  _origShowCard();
+  if(sesI<sesDeck.length){
+    const w=sesDeck[sesI];
+    setTimeout(()=>speakWord(w.de),200);
+  }
+};
+
+/* ══ DAILY GOAL ══ */
+const DAILY_GOAL=5;
+function updateDailyGoal(){
+  const today=new Date().toDateString();
+  const key='ws_daily_'+today;
+  let count=parseInt(localStorage.getItem(key)||'0');
+  const pct=Math.min(100,Math.round(count/DAILY_GOAL*100));
+  const fill=Q('#dg-fill');if(fill){const c=113.1;fill.style.strokeDashoffset=c-(c*pct/100);}
+  const pctEl=Q('#dg-pct');if(pctEl)pctEl.textContent=pct+'%';
+  const title=Q('#dg-title');if(title)title.innerHTML='هدف امروز: <b>'+count+'</b> از <b>'+DAILY_GOAL+'</b>';
+  const sub=Q('#dg-sub');
+  if(sub){
+    if(count>=DAILY_GOAL)sub.textContent='🎉 هدف امروز رو رسیدی!';
+    else if(count>0)sub.textContent=(DAILY_GOAL-count)+' تا دیگه مونده!';
+    else sub.textContent='لغت جدید یاد بگیر یا مرور کن';
+  }
+}
+function incrementDaily(){
+  const today=new Date().toDateString();
+  const key='ws_daily_'+today;
+  let count=parseInt(localStorage.getItem(key)||'0');
+  count++;localStorage.setItem(key,String(count));
+  updateDailyGoal();
+  if(count===DAILY_GOAL)showToast('🎉 هدف روزانه تکمیل شد!',3000);
+}
+// Patch addWord to increment daily
+const _origAddWord=addWord;
+addWord=async function(){
+  const before=saved.length;
+  await _origAddWord();
+  if(saved.length>before)incrementDaily();
+};
+// Patch sesRate to increment daily on review
+const _origSesRate=sesRate;
+sesRate=async function(good){
+  await _origSesRate(good);
+  incrementDaily();
+  if(sesMode==='quiz')return; // quiz handles its own flow
+  if(sesMode==='listen')return;
+};
+setTimeout(updateDailyGoal,500);
+
+/* ══ VERB CONJUGATION ══ */
+function showConjugation(verb){
+  const conj=Q('#conj-wrap');
+  if(!conj)return;
+  if(conj.classList.contains('open')){conj.classList.remove('open');return;}
+  // Generate conjugation using known patterns
+  const stem=verb.replace(/(en|n)$/,'');
+  const forms=[
+    ['ich',stem+'e'],['du',stem+'st'],['er/sie/es',stem+'t'],
+    ['wir',verb],['ihr',stem+'t'],['sie/Sie',verb]
+  ];
+  let html='<table class="conj-table"><tr><th>Pronomen</th><th>Präsens</th></tr>';
+  forms.forEach(f=>html+='<tr><td>'+f[0]+'</td><td>'+f[1]+'</td></tr>');
+  html+='</table>';
+  conj.innerHTML=html;conj.classList.add('open');
+}
+
+/* ══ WEAK WORDS AUTO-FOCUS ══ */
+function getWeakWords(){
+  return words.filter(w=>w.score<0||(w.easiness&&w.easiness<1.8)).sort((a,b)=>(a.score||0)-(b.score||0));
+}
+function showWeakWords(){
+  const weak=getWeakWords();
+  if(!weak.length){showToast('هیچ کلمه ضعیفی نداری! 💪');return;}
+  sesDeck=weak.slice(0,10).map(w=>({...w,_type:'weak'}));
+  sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();
+  startSession();
+}
+
+/* ══ BETTER PROGRESS STATS ══ */
+function getWeeklyStats(){
+  const stats=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const key=d.toDateString();
+    const daily=parseInt(localStorage.getItem('ws_daily_'+key)||'0');
+    stats.push({day:['یک','دو','سه','چها','پنج','جمعه','شنبه'][d.getDay()],count:daily,date:key});
+  }
+  return stats;
+}
+
+/* ══ KEYBOARD SHORTCUTS IN SESSION ══ */
+document.addEventListener('keydown',function(e){
+  if(!Q('#session')?.classList.contains('open'))return;
+  if(Q('#ses-body')?.style.display==='none')return;
+  if(sesMode==='listen'&&document.activeElement===Q('#listen-inp'))return;
+  if(e.code==='Space'){e.preventDefault();if(sesMode==='flip')sesFlip();}
+  if(e.key==='ArrowRight'&&sesMode==='flip')sesRate(true);
+  if(e.key==='ArrowLeft'&&sesMode==='flip')sesRate(false);
+});
+
+/* ══ CONFUSING PAIRS DATA ══ */
+const CONFUSING_PAIRS=[
+  {a:'kennen',b:'wissen',tip:'kennen = شناختن (آشنا بودن)، wissen = دانستن (اطلاعات)'},
+  {a:'seit',b:'seid',tip:'seit = از (زمان)، seid = هستید (فعل sein)'},
+  {a:'als',b:'wenn',tip:'als = وقتی (گذشته یکبار)، wenn = هروقت/اگر'},
+  {a:'stehen',b:'stellen',tip:'stehen = ایستاده بودن، stellen = گذاشتن (عمودی)'},
+  {a:'liegen',b:'legen',tip:'liegen = دراز کشیده بودن، legen = گذاشتن (افقی)'},
+  {a:'bringen',b:'mitbringen',tip:'bringen = آوردن، mitbringen = با خود آوردن'},
+  {a:'fahren',b:'gehen',tip:'fahren = رفتن (با وسیله)، gehen = رفتن (پیاده)'},
+  {a:'machen',b:'tun',tip:'machen = ساختن/انجام دادن، tun = انجام دادن (عمومی‌تر)'}
+];
+
 </script>
