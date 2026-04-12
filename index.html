@@ -1391,6 +1391,104 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .weak-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;background:var(--errbg);color:var(--err);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
 .weak-badge:hover{background:rgba(204,32,32,.15)}
 
+/* ═══════════════════════════════════
+   MODE SELECTOR SCREEN
+═══════════════════════════════════ */
+#ses-intro{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#ses-intro.open{display:flex!important;animation:fade .22s var(--ease)}
+.mi-head{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s5);flex-shrink:0}
+.mi-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:var(--ink3);transition:all .15s}
+.mi-close:hover{background:var(--bg2);color:var(--ink)}
+.mi-stats{font-size:12px;font-weight:600;color:var(--ink3)}
+.mi-hero{text-align:center;padding:var(--s5) var(--s5) var(--s4)}
+.mi-emoji{font-size:44px;margin-bottom:var(--s2)}
+.mi-title{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:var(--s1)}
+.mi-sub{font-size:13px;color:var(--ink2);line-height:1.7}
+.mi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 var(--s5) var(--s5);max-width:460px;margin:0 auto;width:100%}
+.mi-card{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:20px 12px 16px;background:var(--card);
+  border:1.5px solid var(--bg3);border-radius:var(--r4);
+  cursor:pointer;transition:all .18s;text-align:center;
+  position:relative;overflow:hidden;
+}
+.mi-card::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,58,242,.03),transparent);opacity:0;transition:opacity .18s}
+.mi-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--sh2)}
+.mi-card:hover::before{opacity:1}
+.mi-card:active{transform:translateY(0);box-shadow:var(--sh1)}
+.mi-icon{font-size:28px;line-height:1}
+.mi-name{font-size:13px;font-weight:700;color:var(--ink)}
+.mi-desc{font-size:10px;color:var(--ink3);line-height:1.4}
+.mi-card.new::after{content:'جدید';position:absolute;top:8px;left:8px;font-size:8px;font-weight:700;color:#fff;background:var(--accent);padding:2px 6px;border-radius:8px;letter-spacing:.3px}
+.mi-weak{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s5);margin:0 var(--s5) var(--s5);background:var(--errbg);border:1px solid rgba(204,32,32,.12);border-radius:var(--r3);cursor:pointer;transition:all .15s}
+.mi-weak:hover{background:rgba(204,32,32,.1)}
+.mi-weak-icon{font-size:20px}
+.mi-weak-text{flex:1}
+.mi-weak-title{font-size:12px;font-weight:600;color:var(--err)}
+.mi-weak-sub{font-size:10px;color:var(--ink3)}
+
+/* ═══════════════════════════════════
+   SPEED ROUND
+═══════════════════════════════════ */
+#speed-body{display:none;flex-direction:column;align-items:center;flex:1;width:100%;padding:var(--s4)}
+.speed-hud{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:460px;margin-bottom:var(--s4)}
+.speed-score{font-size:32px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.speed-combo{font-size:13px;font-weight:700;color:var(--accent);opacity:0;transition:opacity .15s}
+.speed-combo.show{opacity:1}
+.speed-timer-bar{width:100%;max-width:460px;height:6px;background:var(--bg3);border-radius:3px;margin-bottom:var(--s8);overflow:hidden}
+.speed-timer-fill{height:100%;background:linear-gradient(90deg,var(--err),var(--warn),var(--ok));border-radius:3px;transition:width .1s linear}
+.speed-word{font-family:var(--serif);font-size:36px;color:var(--ink);text-align:center;margin-bottom:var(--s2);direction:ltr}
+.speed-meaning{font-size:14px;color:var(--ink2);text-align:center;margin-bottom:var(--s6);min-height:22px}
+.speed-acts{display:flex;gap:var(--s4);width:100%;max-width:300px}
+.speed-btn{flex:1;height:56px;border-radius:var(--r3);font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;border:2px solid transparent}
+.speed-btn.bad{background:var(--errbg);color:var(--err);border-color:rgba(204,32,32,.15)}
+.speed-btn.bad:hover{background:rgba(204,32,32,.15)}
+.speed-btn.good{background:var(--okbg);color:var(--ok);border-color:rgba(18,110,53,.15)}
+.speed-btn.good:hover{background:rgba(18,110,53,.15)}
+.speed-end{text-align:center;padding:var(--s8)}
+.speed-final{font-size:48px;font-weight:700;color:var(--accent);margin-bottom:var(--s2)}
+.speed-best{font-size:13px;color:var(--ink3)}
+
+/* ═══════════════════════════════════
+   MATCH PAIRS
+═══════════════════════════════════ */
+#match-body{display:none;flex-direction:column;align-items:center;flex:1;width:100%;padding:var(--s4)}
+.match-hud{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;margin-bottom:var(--s4);font-size:13px;font-weight:600;color:var(--ink3)}
+.match-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:400px}
+.match-card{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  background:var(--accent);color:#fff;border-radius:var(--r3);
+  font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .2s;text-align:center;padding:6px;
+  line-height:1.3;word-break:break-word;
+  perspective:600px;position:relative;
+}
+.match-card.face-down{background:var(--accent);color:transparent}
+.match-card.face-down::after{content:'?';color:#fff;font-size:20px;position:absolute}
+.match-card.face-up{background:var(--card);color:var(--ink);border:1.5px solid var(--bg3)}
+.match-card.face-up.de{font-family:var(--serif);font-size:13px;direction:ltr}
+.match-card.face-up.fa{font-size:11px}
+.match-card.matched{background:var(--okbg);border-color:var(--ok);color:var(--ok);transform:scale(.92);opacity:.6;pointer-events:none}
+.match-card.wrong{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* ═══════════════════════════════════
+   FILL THE GAP
+═══════════════════════════════════ */
+#fill-body{display:none;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;padding:var(--s5)}
+.fill-sentence{font-family:var(--serif);font-size:20px;color:var(--ink);text-align:center;line-height:2;direction:ltr;margin-bottom:var(--s6);max-width:400px}
+.fill-blank{display:inline-block;min-width:80px;border-bottom:3px solid var(--accent);color:var(--accent);font-weight:700;padding:0 4px;margin:0 4px}
+.fill-blank.correct{border-color:var(--ok);color:var(--ok)}
+.fill-blank.wrong{border-color:var(--err);color:var(--err)}
+.fill-hint{font-size:12px;color:var(--ink3);text-align:center;margin-bottom:var(--s4)}
+.fill-opts{display:flex;gap:var(--s2);flex-wrap:wrap;justify-content:center;max-width:400px}
+.fill-opt{padding:10px 20px;background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r3);font-family:var(--serif);font-size:15px;color:var(--ink);cursor:pointer;transition:all .15s;direction:ltr}
+.fill-opt:hover{border-color:var(--accent);background:var(--abl)}
+.fill-opt.correct{border-color:var(--ok);background:var(--okbg);color:var(--ok);font-weight:700}
+.fill-opt.wrong{border-color:var(--err);background:var(--errbg);color:var(--err)}
+.fill-opt:disabled{cursor:default;opacity:.7}
+.fill-counter{font-size:12px;color:var(--ink3);margin-top:var(--s4)}
+
 </style>
 </head>
 <body>
@@ -1646,13 +1744,54 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 <!-- Word Packs Section -->
 <!-- Session -->
 <!-- Session Intro -->
-<div id="ses-intro" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:var(--s8) var(--s6);text-align:center">
-  <div style="font-size:48px;margin-bottom:var(--s5)" id="intro-emoji">🧠</div>
-  <div style="font-family:var(--sans);font-size:24px;font-weight:700;margin-bottom:var(--s3)" id="intro-title">وقت مرور!</div>
-  <div style="font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:var(--s6)" id="intro-sub"></div>
-  <div style="display:flex;gap:var(--s3);width:100%;max-width:320px;flex-direction:column">
-    <button class="btn btn-p btn-full" style="font-size:16px;padding:16px" onclick="introStart()">شروع مرور →</button>
-    <button class="btn btn-full" onclick="introClose()">بعداً</button>
+<div id="ses-intro">
+  <div class="mi-head">
+    <button class="mi-close" onclick="introClose()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    <div class="mi-stats" id="mi-stats"></div>
+  </div>
+  <div class="mi-hero">
+    <div class="mi-emoji" id="intro-emoji">🧠</div>
+    <div class="mi-title" id="intro-title">آماده مروری؟</div>
+    <div class="mi-sub" id="intro-sub"></div>
+  </div>
+  <div class="mi-grid">
+    <div class="mi-card" onclick="introPickMode('flip')">
+      <div class="mi-icon">📇</div>
+      <div class="mi-name">فلش‌کارت</div>
+      <div class="mi-desc">ببین · فکر کن · جواب</div>
+    </div>
+    <div class="mi-card" onclick="introPickMode('quiz')">
+      <div class="mi-icon">🎯</div>
+      <div class="mi-name">۴ گزینه</div>
+      <div class="mi-desc">معنی درست رو پیدا کن</div>
+    </div>
+    <div class="mi-card" onclick="introPickMode('listen')">
+      <div class="mi-icon">🎧</div>
+      <div class="mi-name">شنیداری</div>
+      <div class="mi-desc">گوش بده · تایپ کن</div>
+    </div>
+    <div class="mi-card new" onclick="introPickMode('speed')">
+      <div class="mi-icon">⚡</div>
+      <div class="mi-name">سرعتی</div>
+      <div class="mi-desc">۶۰ ثانیه · امتیاز بگیر</div>
+    </div>
+    <div class="mi-card new" onclick="introPickMode('match')">
+      <div class="mi-icon">🧩</div>
+      <div class="mi-name">جورچین</div>
+      <div class="mi-desc">جفت‌ها رو پیدا کن</div>
+    </div>
+    <div class="mi-card new" onclick="introPickMode('fill')">
+      <div class="mi-icon">✍️</div>
+      <div class="mi-name">جای خالی</div>
+      <div class="mi-desc">جمله رو کامل کن</div>
+    </div>
+  </div>
+  <div class="mi-weak" id="mi-weak" style="display:none" onclick="introPickMode('weak')">
+    <div class="mi-weak-icon">🔥</div>
+    <div class="mi-weak-text">
+      <div class="mi-weak-title" id="mi-weak-title">کلمات ضعیف</div>
+      <div class="mi-weak-sub">مرور ویژه کلماتی که اشتباه زدی</div>
+    </div>
   </div>
 </div>
 
@@ -1671,20 +1810,14 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
 
   <div class="ses-body" id="ses-body">
-    <!-- Mode toggle -->
-    <div class="ses-mode-toggle">
-      <button class="ses-mode-btn active" id="mode-flip" onclick="setSesMode('flip')">فلش‌کارت</button>
-      <button class="ses-mode-btn" id="mode-quiz" onclick="setSesMode('quiz')">۴ گزینه</button>
-      <button class="ses-mode-btn" id="mode-listen" onclick="setSesMode('listen')">شنیداری</button>
-    </div>
-    <!-- Quiz mode body -->
+    <!-- Quiz mode -->
     <div id="quiz-body" style="display:none;flex-direction:column;align-items:center;flex:1;width:100%">
       <div class="quiz-word" id="quiz-word"></div>
       <div class="quiz-hint">معنی درست رو انتخاب کن</div>
       <div class="quiz-grid" id="quiz-grid"></div>
       <div class="quiz-result" id="quiz-result"></div>
     </div>
-    <!-- Listen mode body -->
+    <!-- Listen mode -->
     <div id="listen-body" style="display:none;flex-direction:column;align-items:center;flex:1;width:100%;justify-content:center;gap:12px">
       <div class="listen-prompt">گوش بده و کلمه رو تایپ کن</div>
       <button class="listen-play" id="listen-play" onclick="listenPlayWord()">🔊</button>
@@ -1692,7 +1825,39 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <div class="quiz-result" id="listen-result"></div>
       <button class="btn btn-p" id="listen-next" onclick="listenNext()" style="display:none">بعدی →</button>
     </div>
-    <!-- Flashcard mode body (original) -->
+    <!-- Speed round -->
+    <div id="speed-body">
+      <div class="speed-hud">
+        <div class="speed-score" id="speed-score">0</div>
+        <div class="speed-combo" id="speed-combo">×2 COMBO 🔥</div>
+        <div style="font-size:24px" id="speed-timer-num">60</div>
+      </div>
+      <div class="speed-timer-bar"><div class="speed-timer-fill" id="speed-timer-fill" style="width:100%"></div></div>
+      <div class="speed-word" id="speed-word"></div>
+      <div class="speed-meaning" id="speed-meaning"></div>
+      <div class="speed-acts">
+        <button class="speed-btn bad" onclick="speedRate(false)">✗</button>
+        <button class="speed-btn good" onclick="speedRate(true)">✓</button>
+      </div>
+    </div>
+    <!-- Match pairs -->
+    <div id="match-body">
+      <div class="match-hud">
+        <span>حرکات: <b id="match-moves">0</b></span>
+        <span>⏱ <b id="match-time">0:00</b></span>
+        <span>جفت: <b id="match-found">0</b>/<b id="match-total">6</b></span>
+      </div>
+      <div class="match-grid" id="match-grid"></div>
+    </div>
+    <!-- Fill the gap -->
+    <div id="fill-body">
+      <div class="fill-sentence" id="fill-sentence"></div>
+      <div class="fill-hint">کلمه درست رو انتخاب کن</div>
+      <div class="fill-opts" id="fill-opts"></div>
+      <div class="quiz-result" id="fill-result"></div>
+      <div class="fill-counter" id="fill-counter"></div>
+    </div>
+    <!-- Flashcard mode (original) -->
     <div id="flip-body">
     <div class="card-scene" onclick="sesFlip()">
       <div class="card-wrap" id="card-wrap">
@@ -5096,19 +5261,244 @@ window.addEventListener('unhandledrejection', e => {
    NEW FEATURES: Quiz, Listen, Daily Goal, etc.
 ═══════════════════════════════════════════════ */
 
-/* ══ SESSION MODE TOGGLE ══ */
-let sesMode='flip'; // flip | quiz | listen
-function setSesMode(mode){
+/* ══ SESSION MODE ══ */
+let sesMode='flip'; // flip|quiz|listen|speed|match|fill
+
+/* Mode selector from intro screen */
+function introPickMode(mode){
+  if(mode==='weak'){
+    const weak=getWeakWords();
+    if(!weak.length){showToast('کلمه ضعیفی نداری! 💪');return;}
+    sesDeck=weak.slice(0,10).map(w=>({...w,_type:'weak'}));
+    sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();
+    mode='flip';
+  }
   sesMode=mode;
-  document.querySelectorAll('.ses-mode-btn').forEach(b=>b.classList.remove('active'));
-  Q('#mode-'+mode)?.classList.add('active');
-  Q('#flip-body').style.display=mode==='flip'?'':'none';
-  Q('#quiz-body').style.display=mode==='quiz'?'flex':'none';
-  Q('#listen-body').style.display=mode==='listen'?'flex':'none';
+  Q('#ses-intro').style.display='none';Q('#ses-intro').classList.remove('open');
+  _showModeBody(mode);
+  startSession();
+  if(mode==='speed')startSpeed();
+  else if(mode==='match')startMatch();
+  else if(mode==='fill')startFill();
+  else if(mode==='quiz')showQuiz();
+  else if(mode==='listen')showListen();
+}
+
+function _showModeBody(mode){
+  ['flip-body','quiz-body','listen-body','speed-body','match-body','fill-body'].forEach(id=>{
+    const el=Q('#'+id);if(el)el.style.display='none';
+  });
+  const target=Q('#'+mode+'-body');if(target)target.style.display='flex';
   const acts=document.querySelector('.ses-acts');
   if(acts)acts.style.display=mode==='flip'?'':'none';
-  if(mode==='quiz')showQuiz();
-  if(mode==='listen')showListen();
+  /* Hide progress bar for match game */
+  const prog=document.querySelector('.ses-prog');
+  if(prog)prog.style.display=(mode==='match')?'none':'';
+}
+
+/* Override showIntro to populate new selector */
+showIntro=function(){
+  const now=new Date();
+  const due=sesDeck.filter(w=>w._type==='due').length;
+  const newW=sesDeck.filter(w=>w._type==='new').length;
+  const total=sesDeck.length;
+  const h=now.getHours();
+  Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
+  Q('#intro-title').textContent=h<12?'صبح بخیر!':h<17?'آماده مروری؟':h<21?'عصر بخیر!':'شب بخیر!';
+  let sub='';
+  if(due>0)sub+='<b style="color:var(--accent)">'+due+' کارت</b> برای مرور ';
+  if(newW>0)sub+=(due>0?'و ':'')+' <b>'+newW+'</b> جدید ';
+  Q('#intro-sub').innerHTML=sub||'آماده یادگیری!';
+  Q('#mi-stats').textContent=total+' کارت';
+  /* Show weak words button */
+  const weak=getWeakWords();
+  const weakEl=Q('#mi-weak');
+  if(weakEl){
+    if(weak.length>0){weakEl.style.display='flex';Q('#mi-weak-title').textContent=weak.length+' کلمه ضعیف';}
+    else weakEl.style.display='none';
+  }
+  Q('#ses-intro').style.display='';Q('#ses-intro').classList.add('open');
+};
+
+/* Keep old setSesMode for compatibility */
+function setSesMode(mode){sesMode=mode;_showModeBody(mode);if(mode==='quiz')showQuiz();if(mode==='listen')showListen();if(mode==='speed')startSpeed();if(mode==='match')startMatch();if(mode==='fill')startFill();}
+
+/* ══ SPEED ROUND ══ */
+let speedTimer=null,speedTime=60,speedScore=0,speedStreak=0,speedCombo=1,speedI=0;
+function startSpeed(){
+  speedTime=60;speedScore=0;speedStreak=0;speedCombo=1;speedI=0;
+  Q('#speed-score').textContent='0';
+  Q('#speed-combo').classList.remove('show');
+  Q('#speed-timer-fill').style.width='100%';
+  Q('#speed-timer-num').textContent='60';
+  speedShowWord();
+  clearInterval(speedTimer);
+  speedTimer=setInterval(()=>{
+    speedTime--;
+    Q('#speed-timer-num').textContent=speedTime;
+    Q('#speed-timer-fill').style.width=Math.round(speedTime/60*100)+'%';
+    if(speedTime<=0){clearInterval(speedTimer);speedEnd();}
+  },1000);
+}
+function speedShowWord(){
+  if(speedI>=sesDeck.length)speedI=0; // loop
+  const w=sesDeck[speedI];
+  Q('#speed-word').textContent=w.de;
+  Q('#speed-meaning').textContent='';
+  speakWord(w.de);
+}
+function speedRate(good){
+  if(speedTime<=0)return;
+  const w=sesDeck[speedI];
+  if(good){
+    speedStreak++;speedScore+=10*speedCombo;
+    if(speedStreak>=5&&speedCombo<4){speedCombo*=2;Q('#speed-combo').textContent='×'+speedCombo+' COMBO 🔥';Q('#speed-combo').classList.add('show');}
+    Q('#speed-meaning').textContent='✓ '+w.fa;Q('#speed-meaning').style.color='var(--ok)';
+  }else{
+    speedStreak=0;speedCombo=1;Q('#speed-combo').classList.remove('show');
+    Q('#speed-meaning').textContent='✗ '+w.fa;Q('#speed-meaning').style.color='var(--err)';
+  }
+  Q('#speed-score').textContent=speedScore;
+  sesRate(good);
+  speedI++;
+  setTimeout(speedShowWord,400);
+}
+function speedEnd(){
+  const best=parseInt(localStorage.getItem('ws_speed_best')||'0');
+  if(speedScore>best)localStorage.setItem('ws_speed_best',String(speedScore));
+  Q('#speed-body').innerHTML='<div class="speed-end"><div class="speed-final">'+speedScore+'</div><div style="font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px">امتیاز</div><div class="speed-best">رکورد: '+Math.max(speedScore,best)+'</div><button class="btn btn-p" style="margin-top:20px" onclick="sesClose(true)">بستن</button></div>';
+}
+
+/* ══ MATCH PAIRS ══ */
+let matchCards=[],matchFlipped=[],matchMoves=0,matchFound=0,matchTotal=0,matchTimerI=null,matchSec=0;
+function startMatch(){
+  matchMoves=0;matchFound=0;matchSec=0;
+  const pairs=sesDeck.slice(0,6);matchTotal=pairs.length;
+  Q('#match-total').textContent=matchTotal;Q('#match-found').textContent='0';Q('#match-moves').textContent='0';Q('#match-time').textContent='0:00';
+  /* Build cards: each pair = 1 DE + 1 FA */
+  matchCards=[];
+  pairs.forEach((w,i)=>{
+    matchCards.push({id:i,type:'de',text:w.de,pairId:i});
+    matchCards.push({id:i,type:'fa',text:w.fa,pairId:i});
+  });
+  /* Shuffle */
+  for(let i=matchCards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[matchCards[i],matchCards[j]]=[matchCards[j],matchCards[i]];}
+  matchFlipped=[];
+  renderMatchGrid();
+  clearInterval(matchTimerI);
+  matchTimerI=setInterval(()=>{matchSec++;const m=Math.floor(matchSec/60),s=matchSec%60;Q('#match-time').textContent=m+':'+(s<10?'0':'')+s;},1000);
+}
+function renderMatchGrid(){
+  const grid=Q('#match-grid');grid.innerHTML='';
+  /* Adjust columns based on card count */
+  grid.style.gridTemplateColumns=matchCards.length<=8?'repeat(4,1fr)':'repeat(4,1fr)';
+  matchCards.forEach((c,idx)=>{
+    const el=document.createElement('div');
+    el.className='match-card face-down';
+    el.dataset.idx=idx;
+    el.addEventListener('click',()=>matchFlip(idx));
+    grid.appendChild(el);
+  });
+}
+function matchFlip(idx){
+  const grid=Q('#match-grid');
+  const els=grid.querySelectorAll('.match-card');
+  const el=els[idx];
+  if(!el||el.classList.contains('face-up')||el.classList.contains('matched'))return;
+  if(matchFlipped.length>=2)return;
+  /* Flip up */
+  const c=matchCards[idx];
+  el.classList.remove('face-down');el.classList.add('face-up',c.type);
+  el.textContent=c.text;
+  matchFlipped.push({idx,card:c,el});
+  if(matchFlipped.length===2){
+    matchMoves++;Q('#match-moves').textContent=matchMoves;
+    const [a,b]=matchFlipped;
+    if(a.card.pairId===b.card.pairId&&a.card.type!==b.card.type){
+      /* Match! */
+      setTimeout(()=>{a.el.classList.add('matched');b.el.classList.add('matched');matchFlipped=[];matchFound++;Q('#match-found').textContent=matchFound;
+        if(matchFound>=matchTotal){clearInterval(matchTimerI);matchEnd();}
+      },400);
+    }else{
+      /* No match */
+      a.el.classList.add('wrong');b.el.classList.add('wrong');
+      setTimeout(()=>{a.el.classList.remove('face-up','de','fa','wrong');a.el.classList.add('face-down');a.el.textContent='';b.el.classList.remove('face-up','de','fa','wrong');b.el.classList.add('face-down');b.el.textContent='';matchFlipped=[];},800);
+    }
+  }
+}
+function matchEnd(){
+  const grid=Q('#match-grid');
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:32px 0"><div style="font-size:48px;margin-bottom:12px">🎉</div><div style="font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px">آفرین!</div><div style="font-size:14px;color:var(--ink2)">'+matchMoves+' حرکت · '+Math.floor(matchSec/60)+':'+((matchSec%60)<10?'0':'')+(matchSec%60)+'</div><button class="btn btn-p" style="margin-top:20px" onclick="sesClose(true)">بستن</button></div>';
+}
+
+/* ══ FILL THE GAP ══ */
+let fillI=0,fillDeck=[],fillGood=0,fillBad=0;
+function startFill(){
+  fillI=0;fillGood=0;fillBad=0;
+  /* Build deck from words that have examples */
+  fillDeck=sesDeck.filter(w=>w.ex&&w.ex.length>5).slice(0,10);
+  if(fillDeck.length<3){
+    /* Not enough examples, use word-meaning pairs */
+    fillDeck=sesDeck.slice(0,10);
+  }
+  showFillCard();
+}
+function showFillCard(){
+  if(fillI>=fillDeck.length){fillEnd();return;}
+  const w=fillDeck[fillI];
+  Q('#fill-result').textContent='';Q('#fill-result').className='quiz-result';
+  Q('#fill-counter').textContent=(fillI+1)+' / '+fillDeck.length;
+  /* Update session progress */
+  const pct=Math.round(fillI/fillDeck.length*100);
+  Q('#ses-fill').style.width=pct+'%';
+  Q('#ses-cnt').textContent=(fillI+1)+'/'+fillDeck.length;
+  if(w.ex&&w.ex.length>5){
+    /* Has example sentence — blank out the word */
+    const sentence=w.ex.replace(new RegExp(w.de.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'____');
+    Q('#fill-sentence').innerHTML=sentence.replace('____','<span class="fill-blank" id="fill-blank">____</span>');
+    /* 3 options */
+    const correct=w.de;
+    const others=words.filter(x=>x.de!==correct&&x.de).sort(()=>Math.random()-.5).slice(0,2).map(x=>x.de);
+    while(others.length<2)others.push(['Haus','Arbeit','Tag','Buch','Wort'][Math.floor(Math.random()*5)]);
+    const opts=[correct,...others].sort(()=>Math.random()-.5);
+    renderFillOpts(opts,correct);
+  }else{
+    /* No example — show meaning, pick the word */
+    Q('#fill-sentence').innerHTML='معنی: <span style="color:var(--accent);font-weight:700">'+w.fa+'</span>';
+    const correct=w.de;
+    const others=words.filter(x=>x.de!==correct).sort(()=>Math.random()-.5).slice(0,2).map(x=>x.de);
+    while(others.length<2)others.push(['Haus','Arbeit','Tag'][Math.floor(Math.random()*3)]);
+    const opts=[correct,...others].sort(()=>Math.random()-.5);
+    renderFillOpts(opts,correct);
+  }
+  speakWord(w.de);
+}
+function renderFillOpts(opts,correct){
+  const container=Q('#fill-opts');container.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');btn.className='fill-opt';btn.textContent=opt;
+    btn.addEventListener('click',function(){
+      container.querySelectorAll('.fill-opt').forEach(b=>b.disabled=true);
+      const blank=Q('#fill-blank');
+      if(opt===correct){
+        btn.classList.add('correct');if(blank){blank.textContent=correct;blank.classList.add('correct');}
+        Q('#fill-result').textContent='✓ آفرین!';Q('#fill-result').className='quiz-result g';
+        fillGood++;sesRate(true);
+      }else{
+        btn.classList.add('wrong');if(blank){blank.textContent=correct;blank.classList.add('wrong');}
+        container.querySelectorAll('.fill-opt').forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+        Q('#fill-result').textContent='✗ جواب: '+correct;Q('#fill-result').className='quiz-result b';
+        fillBad++;sesRate(false);
+      }
+      fillI++;
+      setTimeout(showFillCard,1200);
+    });
+    container.appendChild(btn);
+  });
+}
+function fillEnd(){
+  const pct=Math.round(fillGood/(fillGood+fillBad||1)*100);
+  Q('#fill-body').innerHTML='<div style="text-align:center;padding:32px"><div style="font-size:48px;margin-bottom:12px">'+(pct>=80?'🏆':pct>=50?'🌟':'📚')+'</div><div style="font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px">'+pct+'% درست</div><div style="font-size:14px;color:var(--ink2)">'+fillGood+' درست · '+fillBad+' غلط</div><button class="btn btn-p" style="margin-top:20px" onclick="sesClose(true)">بستن</button></div>';
 }
 
 /* ══ QUIZ MODE (4 choices) ══ */
