@@ -1489,6 +1489,62 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .fill-opt:disabled{cursor:default;opacity:.7}
 .fill-counter{font-size:12px;color:var(--ink3);margin-top:var(--s4)}
 
+/* ═══════════════════════════════════
+   WORD SURVIVAL GAME
+═══════════════════════════════════ */
+#survival-body{display:none;flex-direction:column;align-items:center;flex:1;width:100%;padding:var(--s3) var(--s4);gap:0}
+.sv-hud{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;margin-bottom:var(--s4)}
+.sv-hearts{display:flex;gap:4px;font-size:20px}
+.sv-hearts .heart{transition:all .2s}
+.sv-hearts .heart.lost{opacity:.2;transform:scale(.8)}
+.sv-score-wrap{text-align:left}
+.sv-score{font-size:24px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.sv-streak{font-size:11px;font-weight:700;color:var(--accent);opacity:0;transition:opacity .15s;margin-top:2px}
+.sv-streak.show{opacity:1}
+.sv-prompt{text-align:center;margin-bottom:var(--s3)}
+.sv-meaning{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:var(--s1)}
+.sv-hint{font-size:11px;color:var(--ink3)}
+.sv-word-display{display:flex;gap:4px;justify-content:center;margin-bottom:var(--s3);min-height:48px;flex-wrap:wrap;direction:ltr}
+.sv-letter{
+  width:36px;height:44px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:22px;font-weight:600;
+  border:2px solid var(--bg3);border-radius:var(--r2);
+  background:var(--card);color:var(--ink);
+  transition:all .15s;
+}
+.sv-letter.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--abl)}
+.sv-letter.correct{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+.sv-letter.wrong{border-color:var(--err);background:var(--errbg);color:var(--err);animation:shake .3s ease}
+.sv-letter.empty{border-style:dashed;color:transparent}
+.sv-timer{width:100%;max-width:400px;height:5px;background:var(--bg3);border-radius:3px;margin-bottom:var(--s4);overflow:hidden}
+.sv-timer-fill{height:100%;border-radius:3px;transition:width .1s linear;background:var(--ok)}
+.sv-timer-fill.warn{background:var(--warn)}
+.sv-timer-fill.danger{background:var(--err)}
+.sv-keyboard{display:flex;flex-direction:column;gap:5px;width:100%;max-width:400px;direction:ltr}
+.sv-kb-row{display:flex;gap:4px;justify-content:center}
+.sv-key{
+  min-width:30px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r2);
+  font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;
+  transition:all .1s;font-family:var(--serif);
+  padding:0 2px;flex:1;max-width:42px;
+}
+.sv-key:hover{background:var(--bg2);border-color:var(--accent)}
+.sv-key:active{transform:scale(.95);background:var(--abl)}
+.sv-key.special{background:var(--abl);color:var(--accent);border-color:rgba(26,58,242,.2);font-size:13px}
+.sv-key.wide{flex:1.5;max-width:60px;font-size:12px}
+.sv-key.used-correct{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.sv-key.used-wrong{background:var(--errbg);border-color:var(--err);color:var(--err);opacity:.5}
+/* Game over */
+.sv-gameover{text-align:center;padding:var(--s8);animation:up .4s var(--spring)}
+.sv-go-score{font-size:56px;font-weight:700;color:var(--accent);margin-bottom:var(--s1)}
+.sv-go-label{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:var(--s3)}
+.sv-go-best{font-size:13px;color:var(--ink3);margin-bottom:var(--s1)}
+.sv-go-words{font-size:12px;color:var(--ink3)}
+.sv-go-btns{display:flex;gap:var(--s3);justify-content:center;margin-top:var(--s6)}
+/* Correct word flash */
+.sv-correct-flash{font-size:14px;color:var(--ok);font-weight:600;text-align:center;min-height:24px;margin-bottom:var(--s2)}
+
 </style>
 </head>
 <body>
@@ -1785,6 +1841,11 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <div class="mi-name">جای خالی</div>
       <div class="mi-desc">جمله رو کامل کن</div>
     </div>
+    <div class="mi-card new" onclick="introPickMode('survival')" style="grid-column:1/-1">
+      <div class="mi-icon">💀</div>
+      <div class="mi-name">بقای کلمات</div>
+      <div class="mi-desc">۳ جون · تایپ کن · هر اشتباه = ۱ جون · رکورد بزن!</div>
+    </div>
   </div>
   <div class="mi-weak" id="mi-weak" style="display:none" onclick="introPickMode('weak')">
     <div class="mi-weak-icon">🔥</div>
@@ -1848,6 +1909,21 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
         <span>جفت: <b id="match-found">0</b>/<b id="match-total">6</b></span>
       </div>
       <div class="match-grid" id="match-grid"></div>
+    </div>
+    <!-- Word Survival -->
+    <div id="survival-body">
+      <div class="sv-hud">
+        <div class="sv-hearts" id="sv-hearts"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div>
+        <div class="sv-score-wrap"><div class="sv-score" id="sv-score">0</div><div class="sv-streak" id="sv-streak">🔥×3</div></div>
+      </div>
+      <div class="sv-prompt">
+        <div class="sv-meaning" id="sv-meaning"></div>
+        <div class="sv-hint" id="sv-type-hint"></div>
+      </div>
+      <div class="sv-word-display" id="sv-word-display"></div>
+      <div class="sv-correct-flash" id="sv-flash"></div>
+      <div class="sv-timer"><div class="sv-timer-fill" id="sv-timer-fill"></div></div>
+      <div class="sv-keyboard" id="sv-keyboard"></div>
     </div>
     <!-- Fill the gap -->
     <div id="fill-body">
@@ -5282,10 +5358,11 @@ function introPickMode(mode){
   else if(mode==='fill')startFill();
   else if(mode==='quiz')showQuiz();
   else if(mode==='listen')showListen();
+  else if(mode==='survival')startSurvival();
 }
 
 function _showModeBody(mode){
-  ['flip-body','quiz-body','listen-body','speed-body','match-body','fill-body'].forEach(id=>{
+  ['flip-body','quiz-body','listen-body','speed-body','match-body','fill-body','survival-body'].forEach(id=>{
     const el=Q('#'+id);if(el)el.style.display='none';
   });
   const target=Q('#'+mode+'-body');if(target)target.style.display='flex';
@@ -5501,6 +5578,203 @@ function fillEnd(){
   Q('#fill-body').innerHTML='<div style="text-align:center;padding:32px"><div style="font-size:48px;margin-bottom:12px">'+(pct>=80?'🏆':pct>=50?'🌟':'📚')+'</div><div style="font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px">'+pct+'% درست</div><div style="font-size:14px;color:var(--ink2)">'+fillGood+' درست · '+fillBad+' غلط</div><button class="btn btn-p" style="margin-top:20px" onclick="sesClose(true)">بستن</button></div>';
 }
 
+/* ══ WORD SURVIVAL GAME ══ */
+let svLives=3,svScore=0,svStreak=0,svI=0,svTimer=null,svTimeLeft=0,svMaxTime=8;
+let svWord='',svTyped='',svDeck=[],svWordsCorrect=0;
+const SV_KEYS=[
+  ['q','w','e','r','t','z','u','i','o','p','ü'],
+  ['a','s','d','f','g','h','j','k','l','ö','ä'],
+  ['⌫','y','x','c','v','b','n','m','ß','✓']
+];
+
+function startSurvival(){
+  svLives=3;svScore=0;svStreak=0;svI=0;svWordsCorrect=0;svTyped='';
+  svMaxTime=8;
+  svDeck=[...sesDeck].sort(()=>Math.random()-.5);
+  if(svDeck.length<3){showToast('حداقل ۳ لغت لازمه');sesClose(true);return;}
+  Q('#sv-score').textContent='0';
+  Q('#sv-streak').classList.remove('show');
+  _svRenderHearts();
+  _svBuildKeyboard();
+  _svNextWord();
+}
+
+function _svRenderHearts(){
+  const h=Q('#sv-hearts');
+  h.innerHTML='';
+  for(let i=0;i<3;i++){
+    const s=document.createElement('span');
+    s.className='heart'+(i>=svLives?' lost':'');
+    s.textContent='❤️';
+    h.appendChild(s);
+  }
+}
+
+function _svBuildKeyboard(){
+  const kb=Q('#sv-keyboard');kb.innerHTML='';
+  SV_KEYS.forEach(row=>{
+    const r=document.createElement('div');r.className='sv-kb-row';
+    row.forEach(key=>{
+      const k=document.createElement('button');
+      k.className='sv-key'+(key==='⌫'||key==='✓'?' wide':'')+(key==='ä'||key==='ö'||key==='ü'||key==='ß'?' special':'');
+      k.textContent=key;
+      k.dataset.key=key;
+      k.addEventListener('click',()=>_svKeyPress(key));
+      r.appendChild(k);
+    });
+    kb.appendChild(r);
+  });
+}
+
+function _svNextWord(){
+  if(svI>=svDeck.length)svI=0; // loop
+  if(svLives<=0){_svGameOver();return;}
+  const w=svDeck[svI];
+  svWord=w.de.toLowerCase();
+  svTyped='';
+  Q('#sv-meaning').textContent=w.fa;
+  Q('#sv-type-hint').textContent=w.article?(w.article+' …'):(w.level||'');
+  Q('#sv-flash').textContent='';
+  _svRenderWord();
+  _svResetKeys();
+  _svStartTimer();
+}
+
+function _svRenderWord(){
+  const d=Q('#sv-word-display');d.innerHTML='';
+  for(let i=0;i<svWord.length;i++){
+    const l=document.createElement('div');l.className='sv-letter';
+    if(i<svTyped.length){
+      l.textContent=svTyped[i];
+      l.classList.add(svTyped[i]===svWord[i]?'correct':'wrong');
+    }else{
+      l.textContent='';l.classList.add('empty');
+      if(i===svTyped.length)l.classList.add('active');
+    }
+    d.appendChild(l);
+  }
+}
+
+function _svResetKeys(){
+  document.querySelectorAll('.sv-key').forEach(k=>{
+    k.classList.remove('used-correct','used-wrong');k.disabled=false;
+  });
+}
+
+function _svStartTimer(){
+  clearInterval(svTimer);
+  svTimeLeft=svMaxTime*10; // tenths of seconds
+  const fill=Q('#sv-timer-fill');
+  fill.style.width='100%';
+  fill.className='sv-timer-fill';
+  svTimer=setInterval(()=>{
+    svTimeLeft--;
+    const pct=Math.round(svTimeLeft/(svMaxTime*10)*100);
+    fill.style.width=pct+'%';
+    if(pct<30)fill.className='sv-timer-fill danger';
+    else if(pct<60)fill.className='sv-timer-fill warn';
+    else fill.className='sv-timer-fill';
+    if(svTimeLeft<=0){clearInterval(svTimer);_svTimeout();}
+  },100);
+}
+
+function _svKeyPress(key){
+  if(svLives<=0)return;
+  if(key==='⌫'){
+    if(svTyped.length>0){svTyped=svTyped.slice(0,-1);_svRenderWord();}
+    return;
+  }
+  if(key==='✓'){
+    _svSubmit();return;
+  }
+  if(svTyped.length>=svWord.length)return;
+  svTyped+=key.toLowerCase();
+  _svRenderWord();
+  /* Auto-submit when all letters typed */
+  if(svTyped.length===svWord.length){
+    setTimeout(_svSubmit,200);
+  }
+}
+
+function _svSubmit(){
+  clearInterval(svTimer);
+  if(svTyped===svWord){
+    /* Correct! */
+    svStreak++;
+    const mult=svStreak>=10?4:svStreak>=5?3:svStreak>=3?2:1;
+    const pts=10*mult;
+    svScore+=pts;svWordsCorrect++;
+    Q('#sv-score').textContent=svScore;
+    if(mult>1){Q('#sv-streak').textContent='🔥×'+mult;Q('#sv-streak').classList.add('show');}
+    Q('#sv-flash').textContent='✓ +'+pts;Q('#sv-flash').style.color='var(--ok)';
+    /* Mark all letters correct */
+    document.querySelectorAll('.sv-letter').forEach(l=>l.classList.add('correct'));
+    sesRate(true);
+    svI++;
+    /* Increase difficulty */
+    if(svWordsCorrect%5===0&&svMaxTime>4)svMaxTime-=0.5;
+    setTimeout(_svNextWord,600);
+  }else{
+    /* Wrong */
+    svLives--;svStreak=0;
+    Q('#sv-streak').classList.remove('show');
+    _svRenderHearts();
+    Q('#sv-flash').textContent='✗ '+svDeck[svI].de;Q('#sv-flash').style.color='var(--err)';
+    /* Show correct word */
+    const d=Q('#sv-word-display');d.innerHTML='';
+    for(let i=0;i<svWord.length;i++){
+      const l=document.createElement('div');l.className='sv-letter';
+      l.textContent=svWord[i];
+      if(i<svTyped.length&&svTyped[i]===svWord[i])l.classList.add('correct');
+      else l.classList.add('wrong');
+      d.appendChild(l);
+    }
+    sesRate(false);
+    svI++;
+    setTimeout(_svNextWord,1200);
+  }
+}
+
+function _svTimeout(){
+  svLives--;svStreak=0;
+  Q('#sv-streak').classList.remove('show');
+  _svRenderHearts();
+  Q('#sv-flash').textContent='⏱ '+svDeck[svI].de;Q('#sv-flash').style.color='var(--warn)';
+  /* Show correct answer */
+  const d=Q('#sv-word-display');d.innerHTML='';
+  for(let i=0;i<svWord.length;i++){
+    const l=document.createElement('div');l.className='sv-letter wrong';l.textContent=svWord[i];d.appendChild(l);
+  }
+  sesRate(false);
+  svI++;
+  setTimeout(_svNextWord,1200);
+}
+
+function _svGameOver(){
+  clearInterval(svTimer);
+  const best=parseInt(localStorage.getItem('ws_sv_best')||'0');
+  const isNew=svScore>best;
+  if(isNew)localStorage.setItem('ws_sv_best',String(svScore));
+  Q('#survival-body').innerHTML='<div class="sv-gameover"><div style="font-size:48px;margin-bottom:12px">💀</div><div class="sv-go-score">'+svScore+'</div><div class="sv-go-label">'+(isNew?'🏆 رکورد جدید!':'امتیاز نهایی')+'</div><div class="sv-go-best">بهترین: '+Math.max(svScore,best)+'</div><div class="sv-go-words">'+svWordsCorrect+' کلمه درست از '+svI+'</div><div class="sv-go-btns"><button class="btn btn-p" onclick="_svRestart()">دوباره 🔄</button><button class="btn" onclick="sesClose(true)">بستن</button></div></div>';
+}
+
+function _svRestart(){
+  /* Rebuild HTML */
+  Q('#survival-body').innerHTML='<div class="sv-hud"><div class="sv-hearts" id="sv-hearts"></div><div class="sv-score-wrap"><div class="sv-score" id="sv-score">0</div><div class="sv-streak" id="sv-streak"></div></div></div><div class="sv-prompt"><div class="sv-meaning" id="sv-meaning"></div><div class="sv-hint" id="sv-type-hint"></div></div><div class="sv-word-display" id="sv-word-display"></div><div class="sv-correct-flash" id="sv-flash"></div><div class="sv-timer"><div class="sv-timer-fill" id="sv-timer-fill"></div></div><div class="sv-keyboard" id="sv-keyboard"></div>';
+  startSurvival();
+}
+
+/* Physical keyboard support for survival */
+document.addEventListener('keydown',function(e){
+  if(sesMode!=='survival')return;
+  if(!Q('#session')?.classList.contains('open'))return;
+  if(svLives<=0)return;
+  if(e.key==='Backspace'){e.preventDefault();_svKeyPress('⌫');return;}
+  if(e.key==='Enter'){e.preventDefault();_svKeyPress('✓');return;}
+  const k=e.key.toLowerCase();
+  if(/^[a-zäöüß]$/.test(k)){e.preventDefault();_svKeyPress(k);}
+});
+
 /* ══ QUIZ MODE (4 choices) ══ */
 function showQuiz(){
   if(sesI>=sesDeck.length){sesSummary();return;}
@@ -5583,6 +5857,8 @@ function speakWord(word){
 const _origShowCard=showCard;
 showCard=function(){
   _origShowCard();
+  /* No auto-play in survival mode */
+  if(sesMode==='survival')return;
   if(sesI<sesDeck.length){
     const w=sesDeck[sesI];
     setTimeout(()=>speakWord(w.de),200);
