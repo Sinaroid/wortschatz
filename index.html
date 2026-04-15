@@ -5605,6 +5605,8 @@ function startSurvival(){
   svMaxTime=8;svHistory=[];
   svDeck=[...sesDeck].sort(()=>Math.random()-.5);
   if(svDeck.length<3){showToast('حداقل ۳ لغت لازمه');sesClose(true);return;}
+  /* Always rebuild HTML in case it was replaced by game over screen */
+  Q('#survival-body').innerHTML='<div class="sv-hud"><div class="sv-hearts" id="sv-hearts"></div><div class="sv-score-wrap"><div class="sv-score" id="sv-score">0</div><div class="sv-streak" id="sv-streak"></div></div></div><div class="sv-prompt"><div class="sv-meaning" id="sv-meaning"></div><div class="sv-hint" id="sv-type-hint"></div></div><div class="sv-word-display" id="sv-word-display"></div><div class="sv-correct-flash" id="sv-flash"></div><div class="sv-timer"><div class="sv-timer-fill" id="sv-timer-fill"></div></div><div class="sv-keyboard" id="sv-keyboard"></div>';
   Q('#sv-score').textContent='0';
   Q('#sv-streak').classList.remove('show');
   _svRenderHearts();
@@ -5821,11 +5823,7 @@ function _svGameOver(){
   Q('#survival-body').innerHTML='<div class="sv-gameover"><div style="font-size:48px;margin-bottom:8px">'+(isNew?'🏆':'💀')+'</div><div class="sv-go-score">'+svScore+'</div><div class="sv-go-label">'+(isNew?'رکورد جدید!':'امتیاز نهایی')+'</div><div class="sv-go-best">🏅 بهترین: '+Math.max(svScore,best)+' · Level '+svLevel+'</div><div class="sv-go-words">'+svWordsCorrect+' درست از '+svHistory.length+'</div>'+histHtml+'<div class="sv-go-btns"><button class="btn btn-p" onclick="_svRestart()">دوباره 🔄</button><button class="btn" onclick="sesClose(true)">بستن</button></div></div>';
 }
 
-function _svRestart(){
-  /* Rebuild HTML */
-  Q('#survival-body').innerHTML='<div class="sv-hud"><div class="sv-hearts" id="sv-hearts"></div><div class="sv-score-wrap"><div class="sv-score" id="sv-score">0</div><div class="sv-streak" id="sv-streak"></div></div></div><div class="sv-prompt"><div class="sv-meaning" id="sv-meaning"></div><div class="sv-hint" id="sv-type-hint"></div></div><div class="sv-word-display" id="sv-word-display"></div><div class="sv-correct-flash" id="sv-flash"></div><div class="sv-timer"><div class="sv-timer-fill" id="sv-timer-fill"></div></div><div class="sv-keyboard" id="sv-keyboard"></div>';
-  startSurvival();
-}
+function _svRestart(){startSurvival();}
 
 /* Physical keyboard support for survival */
 document.addEventListener('keydown',function(e){
