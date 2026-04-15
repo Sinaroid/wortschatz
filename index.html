@@ -5917,9 +5917,9 @@ function speakWord(word){
 // Auto-play on card show (patch showCard)
 const _origShowCard=showCard;
 showCard=function(){
+  /* Skip flashcard rendering in non-flip modes */
+  if(sesMode&&sesMode!=='flip')return;
   _origShowCard();
-  /* No auto-play in survival mode */
-  if(sesMode==='survival')return;
   if(sesI<sesDeck.length){
     const w=sesDeck[sesI];
     setTimeout(()=>speakWord(w.de),200);
