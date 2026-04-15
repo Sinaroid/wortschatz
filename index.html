@@ -345,8 +345,13 @@ body.offline .topbar{top:36px}
 .ses-fill{height:100%;background:var(--accent);transition:width .4s var(--ease)}
 .ses-body{
   flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:var(--s4) var(--s5) var(--s5);gap:var(--s4);overflow:hidden;
+  justify-content:center;padding:var(--s4) var(--s5) var(--s5);gap:var(--s3);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
+/* Survival/quiz/listen need full width + scrollable */
+#survival-body,#quiz-body,#listen-body,#fill-body{justify-content:flex-start!important;padding-top:var(--s4)}
+/* Flip body needs to be flex column for proper card+swipe layout */
+#flip-body{display:flex;flex-direction:column;align-items:center;gap:var(--s3);width:100%;max-width:460px}
 /* ═══ FLASHCARD — CLEAN ═══ */
 .card-scene{
   width:100%;max-width:440px;cursor:pointer;user-select:none;
@@ -354,21 +359,18 @@ body.offline .topbar{top:36px}
 }
 .card-wrap{
   position:relative;transition:transform .55s cubic-bezier(.4,0,.2,1);
-  transform-style:preserve-3d;width:100%;
+  transform-style:preserve-3d;width:100%;min-height:240px;
 }
 .card-wrap.flip{transform:rotateY(180deg)}
 .card-face{
+  position:absolute;inset:0;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   border-radius:var(--r4);border:1px solid var(--bg3);
-  min-height:240px;padding:var(--s5);
+  padding:var(--s5);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:var(--s3);box-shadow:var(--sh2);
-  position:relative;background:var(--card);
+  gap:var(--s3);box-shadow:var(--sh2);background:var(--card);
 }
-.card-back{
-  background:var(--card);transform:rotateY(180deg);
-  position:absolute;inset:0;
-}
+.card-back{transform:rotateY(180deg)}
 /* Type badge floating top */
 .c-type{
   position:absolute;top:14px;right:14px;
