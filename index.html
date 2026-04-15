@@ -345,49 +345,99 @@ body.offline .topbar{top:36px}
 .ses-fill{height:100%;background:var(--accent);transition:width .4s var(--ease)}
 .ses-body{
   flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:var(--s5);gap:var(--s4);overflow:hidden;
+  justify-content:center;padding:var(--s4) var(--s5) var(--s5);gap:var(--s4);overflow:hidden;
 }
-.card-scene{perspective:1200px;width:100%;max-width:460px;cursor:pointer;user-select:none}
-.card-wrap{position:relative;transition:transform .48s var(--ease);transform-style:preserve-3d}
+/* ═══ FLASHCARD — CLEAN ═══ */
+.card-scene{
+  width:100%;max-width:440px;cursor:pointer;user-select:none;
+  perspective:1400px;
+}
+.card-wrap{
+  position:relative;transition:transform .55s cubic-bezier(.4,0,.2,1);
+  transform-style:preserve-3d;width:100%;
+}
 .card-wrap.flip{transform:rotateY(180deg)}
 .card-face{
-  backface-visibility:hidden;border-radius:var(--r4);border:1px solid var(--bg3);
-  min-height:210px;padding:var(--s8) var(--s6);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:var(--s3);box-shadow:var(--sh1);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:var(--r4);border:1px solid var(--bg3);
+  min-height:240px;padding:var(--s5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:var(--s3);box-shadow:var(--sh2);
+  position:relative;background:var(--card);
 }
-.card-front{background:var(--card)}
-.card-back{background:var(--accent);transform:rotateY(180deg);border-color:transparent}
-.c-hint{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4)}
-.card-back .c-hint{color:rgba(255,255,255,.4)}
+.card-back{
+  background:var(--card);transform:rotateY(180deg);
+  position:absolute;inset:0;
+}
+/* Type badge floating top */
+.c-type{
+  position:absolute;top:14px;right:14px;
+  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;
+  background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3);
+  display:none;
+}
+.c-type.show{display:inline-block}
+.c-type.due{background:rgba(204,32,32,.08);color:var(--err);border-color:rgba(204,32,32,.15)}
+.c-type.new{background:var(--abl);color:var(--accent);border-color:rgba(26,58,242,.15)}
+.c-type.weak{background:rgba(168,72,0,.08);color:var(--warn);border-color:rgba(168,72,0,.15)}
+/* Hints */
+.c-hint{
+  font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);
+  display:flex;align-items:center;gap:5px;font-weight:600;
+}
+.c-hint::before{content:'';display:inline-block;width:14px;height:1px;background:currentColor;opacity:.3}
+.c-hint::after{content:'';display:inline-block;width:14px;height:1px;background:currentColor;opacity:.3}
+/* Word + meaning */
 .c-word{
-  font-family:var(--serif);font-size:clamp(30px,8vw,46px);font-weight:600;
-  color:var(--ink);direction:ltr;line-height:1;letter-spacing:-1.5px;text-align:center;
+  font-family:var(--serif);font-size:clamp(30px,7vw,42px);font-weight:600;
+  color:var(--ink);direction:ltr;line-height:1.1;letter-spacing:-1px;text-align:center;
 }
-.c-mean{font-size:clamp(18px,5vw,26px);font-weight:600;color:#fff;text-align:center;line-height:1.2}
+.c-mean{
+  font-size:clamp(20px,5vw,26px);font-weight:600;color:var(--accent);
+  text-align:center;line-height:1.3;
+}
 .c-sent{
-  font-family:var(--serif);font-style:italic;font-size:12px;
-  color:rgba(255,255,255,.55);text-align:center;direction:ltr;max-width:300px;line-height:1.6;
+  font-family:var(--serif);font-style:italic;font-size:13px;
+  color:var(--ink3);text-align:center;direction:ltr;max-width:320px;line-height:1.7;
+  padding:8px 12px;background:var(--bg);border-radius:var(--r2);
+  border-right:2px solid var(--abl);margin-top:4px;
 }
-.swipe-row{display:flex;justify-content:space-between;font-size:11px;color:var(--ink4);width:100%;max-width:460px;padding:0 var(--s1)}
-.ses-acts{display:flex;gap:var(--s3);width:100%;max-width:460px;flex-shrink:0}
+.c-sent:empty{display:none}
+/* Swipe hint with icons */
+.swipe-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;color:var(--ink4);font-weight:600;
+  width:100%;max-width:440px;padding:0 var(--s2);letter-spacing:.3px;
+}
+/* Action buttons — uniform 56px */
+.ses-acts{
+  display:flex;gap:var(--s2);width:100%;max-width:440px;flex-shrink:0;
+  align-items:stretch;
+}
 .sa{
-  flex:1;padding:12px var(--s3);border-radius:var(--r3);border:1.5px solid var(--bg3);
-  background:var(--card);font-size:13px;font-weight:600;cursor:pointer;
-  transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--sans);
+  flex:1;height:56px;padding:0 var(--s3);border-radius:var(--r3);
+  border:1.5px solid var(--bg3);background:var(--card);
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--sans);position:relative;
 }
 .sa:active{transform:scale(.97)}
-.sa-ic{font-size:22px;transition:transform .2s var(--spring);line-height:1}
-.sa-next{font-size:10px;color:var(--ink3);font-weight:400}
+.sa-ic{font-size:18px;line-height:1;transition:transform .2s var(--spring)}
+.sa-next{font-size:9px;color:var(--ink4);font-weight:500;position:absolute;bottom:5px;left:50%;transform:translateX(-50%)}
+.sa.bad{color:var(--err)}
 .sa.bad:hover{border-color:var(--err);background:var(--errbg)}
-.sa.bad:hover .sa-ic{transform:scale(1.25) rotate(-8deg)}
+.sa.bad:hover .sa-ic{transform:scale(1.2) rotate(-8deg)}
+.sa.good{color:var(--ok)}
 .sa.good:hover{border-color:var(--ok);background:var(--okbg)}
-.sa.good:hover .sa-ic{transform:scale(1.25) rotate(8deg)}
+.sa.good:hover .sa-ic{transform:scale(1.2) rotate(8deg)}
 .flip-btn{
-  width:40px;height:40px;align-self:center;flex:none;border-radius:50%;
-  border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink3);font-size:17px;
+  width:56px;height:56px;flex:none;border-radius:var(--r3);
+  border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink3);font-size:20px;
   display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;
 }
-.flip-btn:hover{background:var(--bg3);color:var(--ink)}
+.flip-btn:hover{background:var(--abl);color:var(--accent);border-color:var(--abl)}
+.flip-btn:active{transform:scale(.95) rotate(180deg)}
 .ses-end{
   flex:1;display:none;flex-direction:column;align-items:center;
   justify-content:center;padding:var(--s8) var(--s5);text-align:center;gap:var(--s5);
@@ -1955,31 +2005,35 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="quiz-result" id="fill-result"></div>
       <div class="fill-counter" id="fill-counter"></div>
     </div>
-    <!-- Flashcard mode (original) -->
+    <!-- Flashcard mode -->
     <div id="flip-body">
-    <div class="card-scene" onclick="sesFlip()">
-      <div class="card-wrap" id="card-wrap">
-        <div class="card-face card-front">
-          <span class="c-type" id="c-type"></span>
-          <span class="c-hint">برای دیدن معنی کلیک کن</span>
-          <span class="c-word" id="ses-word"></span>
-        </div>
-        <div class="card-face card-back">
-          <span class="c-hint">معنی</span>
-          <span class="c-mean" id="ses-mean"></span>
-          <span class="c-sent" id="ses-sent"></span>
+      <div class="card-scene" onclick="sesFlip()">
+        <div class="card-wrap" id="card-wrap">
+          <div class="card-face card-front">
+            <span class="c-type" id="c-type"></span>
+            <span class="c-hint">برای معنی کلیک کن</span>
+            <span class="c-word" id="ses-word"></span>
+          </div>
+          <div class="card-face card-back">
+            <span class="c-hint">معنی</span>
+            <span class="c-mean" id="ses-mean"></span>
+            <span class="c-sent" id="ses-sent"></span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="swipe-row"><span>← بلد نبودم</span><span>بلد بودم →</span></div>
+      <div class="swipe-row">
+        <span>✗ بلد نبودم</span>
+        <span>↺ برگردون</span>
+        <span>بلد بودم ✓</span>
+      </div>
     </div><!-- /flip-body -->
     <div class="ses-acts">
-      <button class="sa bad" onclick="sesRate(false)">
-        <span class="sa-ic">✗</span><span>بلد نبودم</span><span class="sa-next">دوباره میاد</span>
+      <button class="sa bad" onclick="sesRate(false)" aria-label="بلد نبودم">
+        <span class="sa-ic">✗</span><span>بلد نبودم</span>
       </button>
-      <button class="flip-btn" onclick="sesFlip()">↺</button>
-      <button class="sa good" onclick="sesRate(true)">
-        <span class="sa-ic">✓</span><span>بلد بودم</span><span class="sa-next" id="ses-next">فردا</span>
+      <button class="flip-btn" onclick="sesFlip()" aria-label="برگرداندن کارت">↺</button>
+      <button class="sa good" onclick="sesRate(true)" aria-label="بلد بودم">
+        <span class="sa-ic">✓</span><span>بلد بودم</span>
       </button>
     </div>
   </div>
