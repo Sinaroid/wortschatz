@@ -417,17 +417,17 @@ body.offline .topbar{top:36px}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s2) 0 var(--s2);animation:up .4s var(--ease) both}
+.hero{padding:var(--s2) 0 var(--s3);animation:up .4s var(--ease) both}
 .hero-eye{
-  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-  color:var(--accent);margin-bottom:var(--s3);opacity:.8;
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:var(--s1);opacity:.8;
 }
 .hero h1{
-  font-family:var(--sans);font-size:clamp(28px,7vw,40px);font-weight:700;
-  color:var(--ink);line-height:1.15;letter-spacing:0;margin-bottom:var(--s2);
+  font-family:var(--sans);font-size:clamp(22px,5.5vw,28px);font-weight:700;
+  color:var(--ink);line-height:1.25;letter-spacing:0;margin-bottom:var(--s1);
 }
-.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.75}
-.hero p{font-size:13px;color:var(--ink3);line-height:1.6}
+.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.7}
+.hero p{font-size:12px;color:var(--ink3);line-height:1.6}
 
 /* ═══════════════════════════════════
    SEARCH
@@ -1145,7 +1145,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
 /* ─── RESPONSIVE ─────────────────── */
 @media(max-width:480px){
-  .hero h1{font-size:30px}
+  .hero h1{font-size:22px}
   .res-word{font-size:32px}
   .c-word{font-size:32px}
   .res-head{padding:var(--s4) var(--s4) var(--s3)}
@@ -1336,6 +1336,26 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .lp-step.active{display:block;animation:fadeUp .3s var(--ease)}
 .lp-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);display:inline-block;transition:all .3s}
 .lp-dot.active{background:var(--accent);transform:scale(1.3)}
+
+/* ═══════════════════════════════════
+   ACCESSIBILITY & POLISH
+═══════════════════════════════════ */
+/* Focus states */
+button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;border-radius:6px;
+}
+/* Min touch target 44px on mobile */
+@media(max-width:768px){
+  .nav-item{min-height:56px}
+  button,.btn,a[onclick]{min-height:44px}
+  /* Exclude small inline buttons */
+  .fn,.s-btn,.btn-ic,.sv-key,.quiz-opt,.fill-opt,.mi-close,
+  .drw-action-btn,.ses-mode-btn,#rsb-toggle,#hist-close,.hi-del,
+  .wi-del,.ink-btn,.ink-color,.close,.mini-btn{min-height:auto}
+}
+/* Language toggle more prominent */
+#home-lang-badge{box-shadow:var(--sh1)}
+#home-lang-badge:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
 
 /* ═══════════════════════════════════
    NEW FEATURES
@@ -2024,15 +2044,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
   <div class="pane on" id="pane-home">
     <div class="hero">
       <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">لغت یاد بگیر،<br><em>نه حفظ کنی</em></h1>
-      <p id="hero-sub">لغت، جمله یا اصطلاح — فارسی، آلمانی یا انگلیسی</p>
+      <h1 id="hero-title">لغت یاد بگیر، <em>نه حفظ کنی</em></h1>
+      <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
     </div>
 
-    <!-- Daily goal -->
-    <div class="daily-goal" id="daily-goal">
-      <div class="dg-ring"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct">0%</div></div>
-      <div class="dg-info"><div class="dg-title" id="dg-title">هدف امروز: <b>0</b> از <b>5</b> لغت</div><div class="dg-sub" id="dg-sub">لغت جدید یاد بگیر یا مرور کن</div></div>
-    </div>
     <div id="free-banner" style="display:none"></div>
     <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
       <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
@@ -2063,7 +2078,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
         placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
       <div class="ac-drop" id="ac-drop"></div>
-      <button class="s-btn" id="s-btn" onclick="doSearch()">
+      <button class="s-btn" id="s-btn" onclick="doSearch()" aria-label="جستجو">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
@@ -2164,9 +2179,12 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     <div class="sum-card" id="sum-card">
       <div class="sum-header">
         <div class="sum-title">پیشرفت تو</div>
-        <div class="sum-streak">
-          🔥 <span id="sn-streak">0</span> روز
-        </div>
+        <div class="sum-streak">🔥 <span id="sn-streak">0</span> روز</div>
+      </div>
+      <!-- Unified daily goal + numbers -->
+      <div style="display:flex;align-items:center;gap:14px;padding:8px 0 10px;border-bottom:1px solid var(--bg2);margin-bottom:10px">
+        <div class="dg-ring" style="margin:0"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct">0%</div></div>
+        <div style="flex:1"><div class="dg-title" id="dg-title">هدف امروز: <b>0</b> از <b>5</b></div><div class="dg-sub" id="dg-sub">لغت جدید یاد بگیر یا مرور کن</div></div>
       </div>
       <div class="sum-nums">
         <div class="sum-nb">
@@ -2185,8 +2203,8 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       </div>
       <div class="sum-dots" id="sum-dots"></div>
       <div class="sum-acts">
-        <button class="sum-review" onclick="sesOpenSmart()"><span id="review-lbl">شروع مرور</span> →</button>
-        <button class="sum-all" onclick="sesOpen()">همه لغات</button>
+        <button class="sum-review" onclick="sesOpenSmart()" aria-label="شروع جلسه مرور"><span id="review-lbl">شروع مرور</span> →</button>
+        <button class="sum-all" onclick="sesOpen()" aria-label="مرور همه لغات">همه لغات</button>
       </div>
     </div>
 
@@ -2203,7 +2221,13 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Home empty state -->
     <div id="home-empty">
-      <div class="hint" style="padding:var(--s2) 0 calc(var(--nav-h) + var(--s4))">
+      <div style="text-align:center;padding:var(--s5) 0 var(--s3)">
+        <div style="font-size:36px;margin-bottom:var(--s2)">🌱</div>
+        <div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:var(--s1)">شروع کن!</div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:var(--s4);line-height:1.7">یه لغت آلمانی، انگلیسی یا فارسی سرچ کن<br>تا اولین کارتت رو بسازی</div>
+      </div>
+      <div class="hint" style="padding:0 0 calc(var(--nav-h) + var(--s4))">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--ink4);text-transform:uppercase;margin-bottom:8px;text-align:center">پیشنهادها</div>
         <div class="hint-chips" id="home-empty-chips"></div>
       </div>
     </div>
@@ -2247,7 +2271,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
 <!-- Bottom nav -->
 <nav class="bottom-nav">
-  <button class="nav-item on" id="t-home" onclick="go('home')">
+  <button class="nav-item on" id="t-home" onclick="go('home')" aria-label="خانه">
     <div class="nav-dot" id="nd-home"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
@@ -2255,7 +2279,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </svg>
     <span class="nav-label">خانه</span>
   </button>
-  <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
+  <button class="nav-item" id="t-cards" onclick="sesOpenSmart()" aria-label="مرور کارت‌ها">
     <div class="nav-dot" id="nd-cards"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <rect x="3" y="6" width="14" height="11" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
@@ -2263,7 +2287,7 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
     </svg>
     <span class="nav-label">کارت‌ها</span>
   </button>
-  <button class="nav-item" id="t-list" onclick="go('list')">
+  <button class="nav-item" id="t-list" onclick="go('list')" aria-label="لیست لغات">
     <div class="nav-dot" id="nd-list"></div>
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
