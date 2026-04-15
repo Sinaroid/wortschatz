@@ -1723,10 +1723,10 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
     <!-- Language Toggle -->
     <div class="drw-lang-toggle">
-      <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle();updatePackPresets()">
+      <button class="drw-lang-opt active" id="btn-lang-de" onclick="setTargetLang('de');drawerUpdateLangToggle()">
         🇩🇪 آلمانی
       </button>
-      <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle();updatePackPresets()">
+      <button class="drw-lang-opt" id="btn-lang-en" onclick="setTargetLang('en');drawerUpdateLangToggle()">
         🇬🇧 انگلیسی
       </button>
     </div>
@@ -2241,65 +2241,6 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 
 
   <!-- PACKS -->
-  <div id="pane-packs" class="pane" style="padding-top:0">
-
-  <!-- Header -->
-  <div style="padding:12px 16px 10px;border-bottom:1px solid var(--bg3);margin-bottom:12px">
-    <div style="font-family:var(--sans);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px">📦 جعبه لغت‌ها</div>
-    <div style="font-size:12px;color:var(--ink3)">مجموعه‌های آماده برای یادگیری سریع‌تر</div>
-  </div>
-
-  <!-- Pack Grid -->
-  <div id="packs-grid-container" style="padding:0 12px;margin-bottom:var(--s5)"></div>
-
-
-  <!-- AI Pack Section -->
-  <div style="padding:0 12px var(--s8)">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✨</div>
-      <div>
-        <div style="font-size:15px;font-weight:700;color:var(--ink)">ساخت Pack با AI</div>
-        <div style="font-size:11px;color:var(--ink3)">از کتاب، سریال یا هر موضوعی</div>
-      </div>
-      <div style="margin-right:auto;font-size:10px;background:var(--abl);color:var(--accent);padding:3px 8px;border-radius:20px;font-weight:600">Pro</div>
-    </div>
-
-    <!-- Book Presets -->
-    <div style="margin-bottom:var(--s4)">
-      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600" id="pack-presets-label">📚 کتاب‌های محبوب آلمانی:</div>
-      <div style="display:flex;flex-wrap:wrap;gap:var(--s2)" id="pack-presets-wrap">
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Nicos Weg سطح A1')">Nicos Weg A1</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Menschen A1 آلمانی')">Menschen A1</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Schritte Plus A2')">Schritte Plus A2</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Sicher B1 آلمانی')">Sicher B1</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('کتاب Aspekte B2 آلمانی')">Aspekte B2</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('سریال Dark آلمانی')">Dark 🎬</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات پزشکی آلمانی')">پزشکی 🏥</button>
-        <button class="ai-preset-btn" onclick="setAIPackPreset('لغات حقوقی آلمانی')">حقوق ⚖️</button>
-      </div>
-    </div>
-
-    <!-- Custom Input -->
-    <div style="background:var(--bg2);border-radius:var(--r3);padding:var(--s4);border:1px solid var(--bg3)">
-      <div style="font-size:11px;color:var(--ink3);margin-bottom:var(--s2);font-weight:600">یا خودت بنویس:</div>
-      <div style="display:flex;gap:var(--s2)">
-        <input class="inp" id="ai-pack-tab-inp" placeholder="مثلاً: Sicher B2، لغات فوتبال، محیط زیست..." style="margin:0;flex:1;font-size:13px">
-        <button class="btn btn-p" onclick="generateAIPackTab()" id="ai-pack-tab-btn" style="white-space:nowrap;padding:0 var(--s4)">
-          <span id="ai-pack-btn-txt">ساخت ✨</span>
-        </button>
-      </div>
-      <div id="ai-pack-tab-err" style="font-size:11px;color:var(--err);margin-top:var(--s2);min-height:14px"></div>
-    </div>
-
-    <!-- Result -->
-    <div id="ai-pack-tab-result" style="margin-top:var(--s4)"></div>
-
-  </div>
-
-
-  </div>
 
 
 </div><!-- .app -->
@@ -2313,16 +2254,6 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
       <path d="M7 18v-6h6v6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
     </svg>
     <span class="nav-label">خانه</span>
-  </button>
-  <button class="nav-item" id="t-packs" onclick="go('packs')">
-    <div class="nav-dot" id="nd-packs"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-      <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-    </svg>
-    <span class="nav-label">جعبه‌ها</span>
   </button>
   <button class="nav-item" id="t-cards" onclick="sesOpenSmart()">
     <div class="nav-dot" id="nd-cards"></div>
@@ -3005,7 +2936,7 @@ function setTargetLang(lang){
   // Clear word cache when switching language
   Object.keys(localStorage).filter(k=>k.startsWith('wc_')).forEach(k=>localStorage.removeItem(k));
   showToast(lang==='de' ? '🇩🇪 زبان هدف: آلمانی' : '🇬🇧 زبان هدف: انگلیسی');
-  if(Q('#pane-packs')?.classList.contains('on')) renderPackGrid();
+  /* packs removed */
   if(Q('#pane-list')?.classList.contains('on')) renderList();
   updateBadges(); updateStats();
   const inp = Q('#s-inp');
@@ -3042,8 +2973,6 @@ function updateLangUI(){
     : 'لغت، جمله یا اصطلاح — فارسی، انگلیسی یا آلمانی';
   // Drawer lang toggle
   drawerUpdateLangToggle();
-  // Pack presets
-  updatePackPresets();
   // Home empty chips
   updateHomeEmptyChips();
 }
@@ -3129,7 +3058,7 @@ function setThemeIc(d){
    NAV
 ══════════════════════════════ */
 function go(t){
-  ['home','list','packs'].forEach(id=>{
+  ['home','list'].forEach(id=>{
     const pane=Q('#pane-'+id);
     if(pane) pane.classList.toggle('on',id===t);
     const tab=Q('#t-'+id);
@@ -3138,7 +3067,6 @@ function go(t){
   Q('#t-cards').classList.remove('on');
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='list') renderList();
-  if(t==='packs') renderPackGrid();
 }
 function updateBadges(){
   const has=filteredWords().length>0;
