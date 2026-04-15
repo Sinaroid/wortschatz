@@ -3466,6 +3466,8 @@ async function addWord(){
   words.unshift(w);updateBadges();updateStats();saveCache();
   const btn=Q('#add-btn');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='add-btn done';
   if(navigator.onLine)dbAdd(w).catch(()=>{});
+  /* Increment daily goal */
+  if(typeof incrementDaily==='function')incrementDaily();
 }
 
 async function searchPhrase(q){
@@ -3835,7 +3837,10 @@ async function sesRate(good){
   }
 
   if(good) sesGood++; else sesBad++;
-  sesI++; showCard();
+  sesI++;
+  /* Daily goal tracking */
+  if(typeof incrementDaily==='function')incrementDaily();
+  if(sesMode==='flip')showCard();
 }
 
 function sesAgain(){
@@ -5951,22 +5956,7 @@ function incrementDaily(){
   updateDailyGoal();
   if(count===DAILY_GOAL)showToast('🎉 هدف روزانه تکمیل شد!',3000);
 }
-// Patch addWord to increment daily
-const _origAddWord=addWord;
-addWord=async function(){
-  const before=(typeof words!=='undefined'?words.length:0);
-  await _origAddWord();
-  const after=(typeof words!=='undefined'?words.length:0);
-  if(after>before)incrementDaily();
-};
-// Patch sesRate to increment daily on review
-const _origSesRate=sesRate;
-sesRate=async function(good){
-  await _origSesRate(good);
-  incrementDaily();
-  if(sesMode==='quiz')return; // quiz handles its own flow
-  if(sesMode==='listen')return;
-};
+// addWord and sesRate patches integrated directly into their functions
 setTimeout(updateDailyGoal,500);
 
 /* ══ VERB CONJUGATION ══ */
