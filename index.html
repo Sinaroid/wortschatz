@@ -5954,9 +5954,10 @@ function incrementDaily(){
 // Patch addWord to increment daily
 const _origAddWord=addWord;
 addWord=async function(){
-  const before=saved.length;
+  const before=(typeof words!=='undefined'?words.length:0);
   await _origAddWord();
-  if(saved.length>before)incrementDaily();
+  const after=(typeof words!=='undefined'?words.length:0);
+  if(after>before)incrementDaily();
 };
 // Patch sesRate to increment daily on review
 const _origSesRate=sesRate;
