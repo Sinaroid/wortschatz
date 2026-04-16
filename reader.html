@@ -1229,11 +1229,6 @@ function speak(){const w=curWord||Q('wp-word').textContent.replace(/^(der|die|da
 /* ═══ TEXT LAYER ═══ */
 function buildTL(tc,vp,wrap,pn,tl){
   pageItems[pn]={items:tc.items,vp};
-  tl.addEventListener('click',e=>{
-    if(e.target?.classList.contains('gw'))return;
-    const cv=wrap.querySelector('.pdf-c');if(!cv)return;
-    const r=cv.getBoundingClientRect();hitTest(e.clientX-r.left,e.clientY-r.top,pn,wrap,e);
-  });
   try{
     pdfjsLib.renderTextLayer({textContentSource:tc,container:tl,viewport:vp,textDivs:[],textDivProperties:new WeakMap(),isOffscreenCanvasSupported:false}).promise.then(()=>attachTL(tl,pn)).catch(()=>manualTL(tc,vp,tl,pn));
   }catch(e){manualTL(tc,vp,tl,pn);}
@@ -1246,15 +1241,38 @@ function attachTL(tl,pn){
     span.classList.add('gw');span.dataset.word=extractWord(raw);span.dataset.pg=pn;
     if(savedSet.has(span.dataset.word.toLowerCase()))span.classList.add('done');
   });
-  tl.addEventListener('click',e=>{
-    const span=e.target.closest('.gw');if(!span)return;e.stopPropagation();
-    const word=getClickWord(span,e);if(!word||word.length<2)return;
-    document.querySelectorAll('.gw.sel').forEach(el=>el.classList.remove('sel'));
-    span.classList.add('sel');
-    if(curWord===word&&Q('wp').classList.contains('open')){closeWp();return;}
-    curWord=word;curData=null;showWp(word,e,span);doSearch(word);
-  });
 }
+function manualTL(tc,vp,tl,pn){tc.items.forEach(item=>{if(!item.str?.trim())return;const tx=pdfjsLib.Util.transform(vp.transform,item.transform);const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);if(fs<3)return;mc.font=fs+'px sans-serif';const pW=(item.width||0)*vp.scale;const mW=mc.measureText(item.str).width||1;const sx=pW>0?pW/mW:1;const span=document.createElement('span');span.textContent=item.str;span.style.cssText='left:'+tx[4]+'px;top:'+(vp.height-tx[5]-fs)+'px;font-size:'+fs+'px;transform:scaleX('+sx+')';tl.appendChild(span);});attachTL(tl,pn);}
+
+/* ═══ UNIFIED CLICK HANDLER (event delegation on #area) ═══
+   Works for ALL pages, regardless of render state. */
+(function setupAreaClickHandler(){
+  const area=Q('area');if(!area||area._clickAttached)return;
+  area._clickAttached=true;
+  area.addEventListener('click',e=>{
+    const wrap=e.target.closest('.pw');if(!wrap)return;
+    const pn=parseInt(wrap.dataset.page||0);if(!pn)return;
+    /* Try .gw span first */
+    const span=e.target.closest('.gw');
+    if(span){
+      e.stopPropagation();
+      const word=getClickWord(span,e);
+      if(!word||word.length<2)return;
+      document.querySelectorAll('.gw.sel').forEach(el=>el.classList.remove('sel'));
+      span.classList.add('sel');
+      if(curWord===word&&Q('wp').classList.contains('open')){closeWp();return;}
+      curWord=word;curData=null;showWp(word,e,span);doSearch(word);
+      return;
+    }
+    /* Fallback: hit-test using pageItems data */
+    const pd=pageItems[pn];if(!pd)return;
+    const cv=wrap.querySelector('.pdf-c');if(!cv)return;
+    const r=cv.getBoundingClientRect();
+    hitTest(e.clientX-r.left,e.clientY-r.top,pn,wrap,e);
+  });
+})();
+/* Re-setup if area replaced */
+new MutationObserver(()=>{const area=Q('area');if(area&&!area._clickAttached){area._clickAttached=true;}}).observe(document.body,{childList:true,subtree:false});
 function manualTL(tc,vp,tl,pn){tc.items.forEach(item=>{if(!item.str?.trim())return;const tx=pdfjsLib.Util.transform(vp.transform,item.transform);const fs=Math.sqrt(tx[0]*tx[0]+tx[1]*tx[1]);if(fs<3)return;mc.font=fs+'px sans-serif';const pW=(item.width||0)*vp.scale;const mW=mc.measureText(item.str).width||1;const sx=pW>0?pW/mW:1;const span=document.createElement('span');span.textContent=item.str;span.style.cssText='left:'+tx[4]+'px;top:'+(vp.height-tx[5]-fs)+'px;font-size:'+fs+'px;transform:scaleX('+sx+')';tl.appendChild(span);});attachTL(tl,pn);}
 
 function getClickWord(span,e){const text=span.textContent||'';const words=text.match(/[a-zA-Z\u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df\-]{2,}/g)||[];if(!words.length)return null;if(words.length===1)return extractWord(words[0]);try{let range=null;if(document.caretRangeFromPoint)range=document.caretRangeFromPoint(e.clientX,e.clientY);else if(document.caretPositionFromPoint){const p=document.caretPositionFromPoint(e.clientX,e.clientY);if(p){range=document.createRange();range.setStart(p.offsetNode,p.offset);}}if(range?.startContainer?.nodeType===3){const w=wordAtOffset(range.startContainer.textContent,range.startOffset);if(w&&w.length>=2)return extractWord(w);}}catch(ex){}return extractWord(words[0]);}
