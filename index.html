@@ -440,6 +440,36 @@ body.offline .topbar{top:36px}
 }
 .flip-btn:hover{background:var(--abl);color:var(--accent);border-color:var(--abl)}
 .flip-btn:active{transform:scale(.95) rotate(180deg)}
+
+/* ═══ FSRS 4-button rating ═══ */
+.fsrs-acts{
+  display:none;gap:6px;width:100%;max-width:440px;flex-shrink:0;
+  grid-template-columns:repeat(4,1fr);
+}
+.fsrs-acts.show{display:grid}
+.ses-acts.hidden{display:none}
+.fs-btn{
+  height:60px;padding:6px 4px;border-radius:var(--r3);
+  border:1.5px solid var(--bg3);background:var(--card);
+  font-family:var(--sans);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transition:all .15s;position:relative;
+}
+.fs-btn:active{transform:scale(.96)}
+.fs-btn-ic{font-size:18px;line-height:1}
+.fs-btn-lbl{font-size:11px;font-weight:700}
+.fs-btn-int{font-size:9px;opacity:.65;font-variant-numeric:tabular-nums;margin-top:1px}
+.fs-btn.again{color:var(--err)}
+.fs-btn.again:hover{border-color:var(--err);background:var(--errbg)}
+.fs-btn.hard{color:var(--warn)}
+.fs-btn.hard:hover{border-color:var(--warn);background:var(--warnbg)}
+.fs-btn.good{color:var(--ok)}
+.fs-btn.good:hover{border-color:var(--ok);background:var(--okbg)}
+.fs-btn.easy{color:var(--accent)}
+.fs-btn.easy:hover{border-color:var(--accent);background:var(--abl)}
+
+/* Hide swipe hint when 4-button mode active */
+body.fsrs-mode .swipe-row{display:none}
 .ses-end{
   flex:1;display:none;flex-direction:column;align-items:center;
   justify-content:center;padding:var(--s8) var(--s5);text-align:center;gap:var(--s5);
@@ -2029,13 +2059,31 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         <span>بلد بودم ✓</span>
       </div>
     </div><!-- /flip-body -->
-    <div class="ses-acts">
+    <div class="ses-acts" id="ses-acts-2btn">
       <button class="sa bad" onclick="sesRate(false)" aria-label="بلد نبودم">
         <span class="sa-ic">✗</span><span>بلد نبودم</span>
       </button>
       <button class="flip-btn" onclick="sesFlip()" aria-label="برگرداندن کارت">↺</button>
       <button class="sa good" onclick="sesRate(true)" aria-label="بلد بودم">
         <span class="sa-ic">✓</span><span>بلد بودم</span>
+      </button>
+    </div>
+    <div class="fsrs-acts" id="ses-acts-4btn">
+      <button class="fs-btn again" onclick="sesRate(1)" aria-label="فراموش کردم">
+        <span class="fs-btn-ic">✗</span><span class="fs-btn-lbl">فراموش</span>
+        <span class="fs-btn-int" id="fs-int-1">&lt;1m</span>
+      </button>
+      <button class="fs-btn hard" onclick="sesRate(2)" aria-label="سخت بود">
+        <span class="fs-btn-ic">😓</span><span class="fs-btn-lbl">سخت</span>
+        <span class="fs-btn-int" id="fs-int-2">1d</span>
+      </button>
+      <button class="fs-btn good" onclick="sesRate(3)" aria-label="خوب">
+        <span class="fs-btn-ic">✓</span><span class="fs-btn-lbl">خوب</span>
+        <span class="fs-btn-int" id="fs-int-3">3d</span>
+      </button>
+      <button class="fs-btn easy" onclick="sesRate(4)" aria-label="راحت بود">
+        <span class="fs-btn-ic">⚡</span><span class="fs-btn-lbl">راحت</span>
+        <span class="fs-btn-int" id="fs-int-4">7d</span>
       </button>
     </div>
   </div>
@@ -3782,6 +3830,10 @@ function showCard(){
   Q('#ses-mean').textContent = w.fa;
   Q('#ses-sent').textContent = w.ex || '';
   Q('#card-wrap').classList.remove('flip');
+  /* Reset rating buttons to 2-button (pre-flip) state */
+  const a2=Q('#ses-acts-2btn'),a4=Q('#ses-acts-4btn');
+  if(a2&&a4){a2.classList.remove('hidden');a4.classList.remove('show');}
+  document.body.classList.remove('fsrs-mode');
 
   // type badge
   const typeEl = Q('#c-type');
@@ -3800,31 +3852,127 @@ function showCard(){
   if(stats.new) parts.push(stats.new+' جدید');
   Q('#ses-sub').textContent = parts.join(' · ');
 
-  // next interval preview
+  // next interval preview (legacy element, may not exist)
   const o = words.find(x=>x.de===w.de);
   const nextD = o ? Math.max(1, Math.round((o.interval||1)*(o.easiness||2.5))) : 1;
-  Q('#ses-next').textContent = nextD > 1 ? nextD+' روز' : 'فردا';
+  const _sn=Q('#ses-next');if(_sn)_sn.textContent = nextD > 1 ? nextD+' روز' : 'فردا';
   const _an=Q('#again-n'); if(_an) _an.classList.remove('show');
 }
 
-function sesFlip(){ Q('#card-wrap').classList.toggle('flip'); }
+function sesFlip(){
+  const wrap=Q('#card-wrap');
+  wrap.classList.toggle('flip');
+  /* Show 4-button rating when flipped, 2-button when not */
+  const isFlipped=wrap.classList.contains('flip');
+  const a2=Q('#ses-acts-2btn'),a4=Q('#ses-acts-4btn');
+  if(a2&&a4){
+    if(isFlipped){
+      a2.classList.add('hidden');a4.classList.add('show');
+      document.body.classList.add('fsrs-mode');
+      _updateFsrsIntervals();
+    }else{
+      a2.classList.remove('hidden');a4.classList.remove('show');
+      document.body.classList.remove('fsrs-mode');
+    }
+  }
+}
+/* Preview next interval for each rating */
+function _updateFsrsIntervals(){
+  const w=sesDeck[sesI];if(!w)return;
+  const o=words.find(x=>x.de===w.de);if(!o)return;
+  fsrsMigrate(o);
+  const now=new Date(),last=o.reviewed_at?new Date(o.reviewed_at):now;
+  const elapsed=Math.max((now-last)/86400000,0);
+  const r=fsrsRetrievability(elapsed,o.stability);
+  const isFirst=o.seen===0||!o.reviewed_at;
+  for(let rating=1;rating<=4;rating++){
+    let newS;
+    if(isFirst)newS=fsrsInitStability(rating);
+    else{
+      const d=fsrsNextDifficulty(o.difficulty,rating);
+      newS=fsrsNextStability(o.stability,d,r,rating);
+    }
+    const days=fsrsInterval(newS);
+    const label=days<1?'<1d':days<30?days+'d':days<365?Math.round(days/30)+'m':Math.round(days/365)+'y';
+    const el=Q('#fs-int-'+rating);if(el)el.textContent=label;
+  }
+}
 
-async function sesRate(good){
+/* ═══════════════════════════════════
+   FSRS-4.5 — مدرن‌ترین الگوریتم SRS
+   اقتباس از FSRS Anki
+═══════════════════════════════════ */
+const FSRS_W=[0.4,0.6,2.4,5.8,4.93,0.94,0.86,0.01,1.49,0.14,0.94,2.18,0.05,0.34,1.26,0.29,2.61];
+const FSRS_TARGET=0.9;       /* هدف retention 90% */
+const FSRS_MAX_INTERVAL=365; /* حداکثر ۱ سال */
+const FSRS_DECAY=-0.5, FSRS_FACTOR=19/81;
+
+function fsrsRetrievability(elapsedDays,stability){
+  return Math.pow(1+FSRS_FACTOR*elapsedDays/Math.max(stability,0.01),FSRS_DECAY);
+}
+function fsrsInitStability(rating){
+  return Math.max(FSRS_W[rating-1],0.1);
+}
+function fsrsInitDifficulty(rating){
+  return Math.min(Math.max(FSRS_W[4]-(rating-3)*FSRS_W[5],1),10);
+}
+function fsrsNextDifficulty(d,rating){
+  const next=d+FSRS_W[6]*(rating-3);
+  /* Mean reversion toward initial difficulty of Good */
+  const mean=FSRS_W[7]*FSRS_W[4]+(1-FSRS_W[7])*next;
+  return Math.min(Math.max(mean,1),10);
+}
+function fsrsNextStability(s,d,r,rating){
+  if(rating===1){
+    /* Failed — reset-like */
+    return FSRS_W[11]*Math.pow(d,-FSRS_W[12])*(Math.pow(s+1,FSRS_W[13])-1)*Math.exp(FSRS_W[14]*(1-r));
+  }
+  /* Success — extend stability */
+  const hard=rating===2?FSRS_W[15]:1;
+  const easy=rating===4?FSRS_W[16]:1;
+  return s*(1+Math.exp(FSRS_W[8])*(11-d)*Math.pow(s,-FSRS_W[9])*(Math.exp(FSRS_W[10]*(1-r))-1)*hard*easy);
+}
+function fsrsInterval(stability){
+  const days=stability*(Math.pow(FSRS_TARGET,1/FSRS_DECAY)-1)/FSRS_FACTOR;
+  return Math.max(1,Math.min(FSRS_MAX_INTERVAL,Math.round(days)));
+}
+/* Migrate old easiness/interval → stability/difficulty */
+function fsrsMigrate(o){
+  if(o.stability!=null&&o.difficulty!=null)return; /* already migrated */
+  o.stability=Math.max(o.interval||1,0.5);
+  o.difficulty=Math.min(Math.max((2.8-(o.easiness||2.5))*5+3,1),10);
+}
+
+async function sesRate(ratingOrGood){
   const w = sesDeck[sesI];
   const o = words.find(x=>x.de===w.de);
+  /* Convert binary good/bad to 4-level rating: false=1 (Again), true=3 (Good) */
+  const rating = (typeof ratingOrGood==='boolean') ? (ratingOrGood?3:1) : ratingOrGood;
+  const good = rating>=2;
   if(o){
-    const q = good ? 5 : 1;
-    o.easiness = Math.max(1.3, Math.min(2.8, o.easiness + (0.1 - (5-q)*(0.08+(5-q)*0.02))));
-    if(!good) o.interval = 1;
-    else if(o.seen===0) o.interval = 1;
-    else if(o.seen===1) o.interval = 3;
-    else if(o.seen===2) o.interval = 7;
-    else o.interval = Math.round(o.interval * o.easiness);
-    o.interval = Math.max(1, Math.min(30, o.interval)); // حداکثر ۳۰ روز
-    const next = new Date(); next.setDate(next.getDate()+o.interval);
-    o.next_review = next.toISOString(); o.reviewed_at = new Date().toISOString();
-    o.score += good ? 1 : -1; o.seen++;
-    logReview(); saveCache(); if(navigator.onLine) dbUpd(o).catch(()=>{});
+    fsrsMigrate(o);
+    const now=new Date();
+    const last=o.reviewed_at?new Date(o.reviewed_at):now;
+    const elapsed=Math.max((now-last)/86400000,0);
+    const r=fsrsRetrievability(elapsed,o.stability);
+    /* Update difficulty + stability */
+    if(o.seen===0||!o.reviewed_at){
+      /* First review */
+      o.stability=fsrsInitStability(rating);
+      o.difficulty=fsrsInitDifficulty(rating);
+    }else{
+      o.difficulty=fsrsNextDifficulty(o.difficulty,rating);
+      o.stability=fsrsNextStability(o.stability,o.difficulty,r,rating);
+    }
+    /* Calculate next interval */
+    o.interval=fsrsInterval(o.stability);
+    /* Keep easiness as approximation for legacy UI */
+    o.easiness=Math.max(1.3,Math.min(2.8,2.8-(o.difficulty-3)/5));
+    /* Update dates + stats */
+    const next=new Date();next.setDate(next.getDate()+o.interval);
+    o.next_review=next.toISOString();o.reviewed_at=now.toISOString();
+    o.score+=good?1:-1;o.seen++;
+    logReview();saveCache();if(navigator.onLine)dbUpd(o).catch(()=>{});
   }
 
   if(!good && !sesRepeat.has(w.de)){
