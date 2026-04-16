@@ -873,9 +873,10 @@ async function buildPlaceholders(){
     wrap.style.background='var(--surface)';wrap.style.opacity='0.4';
     if(bookmarks.has(n)){const bm=document.createElement('div');bm.className='bm';wrap.appendChild(bm);}
     const lbl=document.createElement('div');lbl.className='pg-n';lbl.textContent=n;wrap.appendChild(lbl);
-    /* Add subtle loading indicator */
+    /* Add subtle loading indicator (pointer-events:none so it never blocks clicks) */
     const ph=document.createElement('div');
-    ph.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;font-weight:500';
+    ph.className='ph-loading';
+    ph.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;font-weight:500;pointer-events:none';
     ph.textContent='ص '+n;
     wrap.appendChild(ph);
     area.appendChild(wrap);
@@ -938,8 +939,8 @@ function renderPage(n){
     /* Update wrap dimensions to actual */
     wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
     wrap.classList.remove('placeholder');wrap.style.opacity='';wrap.style.background='';
-    /* Remove placeholder loading text */
-    const phText=wrap.querySelector('div:not(.bm):not(.pg-n)');if(phText&&!phText.classList.contains('ptl')&&!phText.classList.contains('hl-c')&&phText.tagName==='DIV'&&phText.children.length===0)phText.remove();
+    /* Remove placeholder loading text by class — reliable */
+    wrap.querySelectorAll('.ph-loading').forEach(el=>el.remove());
     /* Create canvas */
     const cv=document.createElement('canvas');cv.className='pdf-c';
     cv.style.width=vp.width+'px';cv.style.height=vp.height+'px';
@@ -987,7 +988,7 @@ function unrenderPage(n){
   wrap.classList.add('placeholder');wrap.style.opacity='0.4';wrap.style.background='var(--surface)';
   if(!wrap.querySelector('.ph-loading')){
     const ph=document.createElement('div');ph.className='ph-loading';
-    ph.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;font-weight:500';
+    ph.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;font-weight:500;pointer-events:none';
     ph.textContent='ص '+n;wrap.appendChild(ph);
   }
   delete pageItems[n];
