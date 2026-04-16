@@ -803,70 +803,217 @@ document.addEventListener('mousedown',e=>{
 });
 
 /* ═══ LOAD PDF ═══ */
+/* ═══ PDF.js options (CMaps for non-Latin fonts) ═══ */
+const PDF_OPTS={
+  cMapUrl:'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+  cMapPacked:true,
+  standardFontDataUrl:'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/',
+};
+
 function loadFile(file){
   if(!file)return;
-  isSample=false;curSample=null;pageItems={};
+  isSample=false;curSample=null;pageItems={};pageRendered={};
   saved=[];savedSet=new Set();bookmarks=new Set();rotation=0;
+  scannedWarned=false;hasTextContent=null;
   Q('words-list').innerHTML='<div id="words-empty"><span class="icon">💾</span>هنوز لغتی ذخیره نشده</div>';
   updateSaveBtn();
   setProgress(10);showLoad(file.name);
   curDocKey=makeDocKey(file.name);
   const fr=new FileReader();
   fr.onload=e=>{
-    pdfjsLib.getDocument({data:e.target.result}).promise.then(doc=>{
+    pdfjsLib.getDocument({data:e.target.result,...PDF_OPTS}).promise.then(doc=>{
       pdfDoc=doc;totalPages=doc.numPages;curPage=1;
       setTitle(file.name.replace(/\.pdf$/i,''));
       showReader();
-      renderAll(()=>{hideLoad();applySession(curDocKey);startAutoSave();});
+      buildPlaceholders().then(()=>{
+        hideLoad();applySession(curDocKey);startAutoSave();
+        /* Trigger initial render of visible pages */
+        setTimeout(checkVisiblePages,100);
+      });
       if(sbUser)uploadPDF(file,curDocKey).then(p=>{if(p)saveToHistory(curDocKey,file.name.replace(/\.pdf$/i,''),{lastPage:curPage,totalPages,savedWords:saved.length,cloudStored:true});});
-    }).catch(err=>{toast('خطا: '+err.message);setProgress(0);hideLoad();});
+    }).catch(err=>{
+      const msg=String(err?.message||err||'');
+      let userMsg='خطا در باز کردن PDF';
+      if(err?.name==='PasswordException'||/password/i.test(msg))userMsg='این PDF رمز داره — قابل باز کردن نیست';
+      else if(err?.name==='InvalidPDFException'||/invalid pdf/i.test(msg))userMsg='این فایل PDF معتبر نیست یا خراب شده';
+      else if(/missing pdf/i.test(msg))userMsg='فایل ناقصه';
+      else if(/cannot open/i.test(msg)||/network/i.test(msg))userMsg='مشکل اتصال یا دسترسی';
+      else if(msg)userMsg='خطا: '+msg.substring(0,80);
+      toast(userMsg,3500);setProgress(0);hideLoad();
+    });
   };
   fr.readAsArrayBuffer(file);
 }
 
-/* ═══ RENDER PAGES ═══ */
-function renderAll(onDone){
-  const area=Q('area');
-  area.innerHTML='';pageItems={};
-  let done=0;
-  function next(n){
-    if(n>totalPages){setProgress(100);setTimeout(()=>setProgress(0),700);onDone&&onDone();return;}
-    pdfDoc.getPage(n).then(page=>{
-      const aW=area.clientWidth-40;
-      const vp0=page.getViewport({scale:1,rotation});
-      const s=Math.min(scale*1.8,aW/vp0.width);
-      const vp=page.getViewport({scale:s,rotation});
-      const dpr=Math.min(devicePixelRatio||1,2);
-      const wrap=document.createElement('div');wrap.className='pw';wrap.dataset.page=n;
-      wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
-      if(bookmarks.has(n)){const bm=document.createElement('div');bm.className='bm';wrap.appendChild(bm);}
-      const cv=document.createElement('canvas');cv.className='pdf-c';
-      cv.style.width=vp.width+'px';cv.style.height=vp.height+'px';
-      cv.width=Math.floor(vp.width*dpr);cv.height=Math.floor(vp.height*dpr);
-      const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);wrap.appendChild(cv);
-      const hlc=document.createElement('canvas');hlc.className='hl-c';
-      hlc.style.cssText='position:absolute;top:0;left:0;pointer-events:none;width:'+vp.width+'px;height:'+vp.height+'px';
-      hlc.width=Math.floor(vp.width*dpr);hlc.height=Math.floor(vp.height*dpr);wrap.appendChild(hlc);
-      const tl=document.createElement('div');tl.className='ptl';
-      tl.style.width=vp.width+'px';tl.style.height=vp.height+'px';wrap.appendChild(tl);
-      const lbl=document.createElement('div');lbl.className='pg-n';lbl.textContent=n;wrap.appendChild(lbl);
-      area.appendChild(wrap);
-      page.render({canvasContext:ctx,viewport:vp}).promise.then(()=>{
-        done++;const pct=Math.round(done/totalPages*85)+10;setProgress(pct);updateLoad(pct);
-        page.getTextContent({includeMarkedContent:false}).then(tc=>{buildTL(tc,vp,wrap,n,tl);next(n+1);});
-      }).catch(()=>next(n+1));
-    });
+/* ═══ LAZY RENDERING ═══
+   Phase 1: Build empty placeholders with correct dimensions
+   Phase 2: Render only pages near viewport (IntersectionObserver)
+   Phase 3: Cleanup canvases of pages far from viewport
+═══════════════════════════════════════════════════════════ */
+let pageRendered={};        /* {pageNum: true} - which pages are currently rendered */
+let pageObserver=null;
+let scannedWarned=false;
+let hasTextContent=null;    /* null=unknown, true=has text, false=image-only */
+const RENDER_BUFFER=2;      /* pages above/below to pre-render */
+const KEEP_BUFFER=5;        /* pages above/below to keep in memory */
+
+async function buildPlaceholders(){
+  const area=Q('area');area.innerHTML='';
+  const aW=area.clientWidth-40;
+  /* Get first page to use as size estimate */
+  const firstPage=await pdfDoc.getPage(1);
+  const vp0=firstPage.getViewport({scale:1,rotation});
+  const s=Math.min(scale*1.8,aW/vp0.width);
+  const estVp=firstPage.getViewport({scale:s,rotation});
+  /* Create placeholders for all pages */
+  for(let n=1;n<=totalPages;n++){
+    const wrap=document.createElement('div');
+    wrap.className='pw placeholder';wrap.dataset.page=n;
+    wrap.style.width=estVp.width+'px';wrap.style.height=estVp.height+'px';
+    wrap.style.background='var(--surface)';wrap.style.opacity='0.4';
+    if(bookmarks.has(n)){const bm=document.createElement('div');bm.className='bm';wrap.appendChild(bm);}
+    const lbl=document.createElement('div');lbl.className='pg-n';lbl.textContent=n;wrap.appendChild(lbl);
+    /* Add subtle loading indicator */
+    const ph=document.createElement('div');
+    ph.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;font-weight:500';
+    ph.textContent='ص '+n;
+    wrap.appendChild(ph);
+    area.appendChild(wrap);
   }
-  next(1);
   updateNav();updateZoom();
-  /* Intersection observer for curPage */
-  if('IntersectionObserver' in window){
-    const obs=new IntersectionObserver(entries=>{
-      let best=null,br=0;entries.forEach(en=>{if(en.intersectionRatio>br){br=en.intersectionRatio;best=en.target;}});
-      if(best){const pg=parseInt(best.dataset.page||0);if(pg&&pg!==curPage){curPage=pg;updateNav();markDirty();}}
-    },{threshold:[0.3,0.6,0.9]});
-    setTimeout(()=>{document.querySelectorAll('.pw').forEach(w=>obs.observe(w));},300);
+  setProgress(100);setTimeout(()=>setProgress(0),500);
+  /* Setup IntersectionObserver for lazy render */
+  setupPageObserver();
+}
+
+function setupPageObserver(){
+  if(pageObserver)pageObserver.disconnect();
+  if(!('IntersectionObserver' in window))return;
+  pageObserver=new IntersectionObserver(entries=>{
+    /* Update curPage based on most visible */
+    let best=null,br=0;
+    entries.forEach(en=>{if(en.intersectionRatio>br){br=en.intersectionRatio;best=en.target;}});
+    if(best){
+      const pg=parseInt(best.dataset.page||0);
+      if(pg&&pg!==curPage){curPage=pg;updateNav();markDirty();}
+    }
+    /* Render visible + buffer */
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        const pg=parseInt(en.target.dataset.page||0);
+        for(let i=Math.max(1,pg-RENDER_BUFFER);i<=Math.min(totalPages,pg+RENDER_BUFFER);i++){
+          renderPage(i);
+        }
+      }
+    });
+    /* Cleanup far pages */
+    cleanupFarPages();
+  },{rootMargin:'400px 0px',threshold:[0.1,0.5,0.9]});
+  document.querySelectorAll('.pw').forEach(w=>pageObserver.observe(w));
+}
+
+function checkVisiblePages(){
+  /* Manually trigger render for currently visible pages */
+  const area=Q('area'),top=area.scrollTop,bot=top+area.clientHeight;
+  document.querySelectorAll('.pw').forEach(wrap=>{
+    const o=wrap.offsetTop,h=wrap.offsetHeight;
+    if(o+h>top-400&&o<bot+400){
+      const pg=parseInt(wrap.dataset.page||0);
+      if(pg)for(let i=Math.max(1,pg-RENDER_BUFFER);i<=Math.min(totalPages,pg+RENDER_BUFFER);i++)renderPage(i);
+    }
+  });
+}
+
+function renderPage(n){
+  if(pageRendered[n])return;
+  pageRendered[n]=true;
+  const wrap=document.querySelector('[data-page="'+n+'"]');
+  if(!wrap)return;
+  pdfDoc.getPage(n).then(page=>{
+    const aW=Q('area').clientWidth-40;
+    const vp0=page.getViewport({scale:1,rotation});
+    const s=Math.min(scale*1.8,aW/vp0.width);
+    const vp=page.getViewport({scale:s,rotation});
+    const dpr=Math.min(devicePixelRatio||1,2);
+    /* Update wrap dimensions to actual */
+    wrap.style.width=vp.width+'px';wrap.style.height=vp.height+'px';
+    wrap.classList.remove('placeholder');wrap.style.opacity='';wrap.style.background='';
+    /* Remove placeholder loading text */
+    const phText=wrap.querySelector('div:not(.bm):not(.pg-n)');if(phText&&!phText.classList.contains('ptl')&&!phText.classList.contains('hl-c')&&phText.tagName==='DIV'&&phText.children.length===0)phText.remove();
+    /* Create canvas */
+    const cv=document.createElement('canvas');cv.className='pdf-c';
+    cv.style.width=vp.width+'px';cv.style.height=vp.height+'px';
+    cv.width=Math.floor(vp.width*dpr);cv.height=Math.floor(vp.height*dpr);
+    const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+    wrap.insertBefore(cv,wrap.firstChild);
+    /* Highlight canvas */
+    const hlc=document.createElement('canvas');hlc.className='hl-c';
+    hlc.style.cssText='position:absolute;top:0;left:0;pointer-events:none;width:'+vp.width+'px;height:'+vp.height+'px';
+    hlc.width=Math.floor(vp.width*dpr);hlc.height=Math.floor(vp.height*dpr);
+    wrap.appendChild(hlc);
+    /* Text layer */
+    const tl=document.createElement('div');tl.className='ptl';
+    tl.style.width=vp.width+'px';tl.style.height=vp.height+'px';
+    wrap.appendChild(tl);
+    /* Render */
+    page.render({canvasContext:ctx,viewport:vp}).promise.then(()=>{
+      page.getTextContent({includeMarkedContent:false}).then(tc=>{
+        buildTL(tc,vp,wrap,n,tl);
+        /* Detect scanned PDF after first 3 pages */
+        if(n<=3&&hasTextContent===null){
+          const hasText=tc.items&&tc.items.some(i=>i.str&&i.str.trim().length>0);
+          if(n===3||hasText){
+            if(hasText)hasTextContent=true;
+            else if(n===3&&!hasText&&!scannedWarned){
+              hasTextContent=false;scannedWarned=true;
+              toast('⚠ این PDF فقط تصویره — کلیک روی کلمه کار نمیکنه',4500);
+            }
+          }
+        }
+      });
+    }).catch(e=>{pageRendered[n]=false;});
+  }).catch(e=>{pageRendered[n]=false;});
+}
+
+function unrenderPage(n){
+  if(!pageRendered[n])return;
+  const wrap=document.querySelector('[data-page="'+n+'"]');
+  if(!wrap)return;
+  /* Remove canvases and text layer to free memory, keep wrapper for scrolling */
+  const cv=wrap.querySelector('.pdf-c');if(cv)cv.remove();
+  const hlc=wrap.querySelector('.hl-c');if(hlc)hlc.remove();
+  const tl=wrap.querySelector('.ptl');if(tl)tl.remove();
+  /* Restore placeholder look */
+  wrap.classList.add('placeholder');wrap.style.opacity='0.4';wrap.style.background='var(--surface)';
+  if(!wrap.querySelector('.ph-loading')){
+    const ph=document.createElement('div');ph.className='ph-loading';
+    ph.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;font-weight:500';
+    ph.textContent='ص '+n;wrap.appendChild(ph);
   }
+  delete pageItems[n];
+  pageRendered[n]=false;
+}
+
+function cleanupFarPages(){
+  const keepFrom=Math.max(1,curPage-KEEP_BUFFER);
+  const keepTo=Math.min(totalPages,curPage+KEEP_BUFFER);
+  Object.keys(pageRendered).forEach(p=>{
+    const n=parseInt(p);
+    if(pageRendered[n]&&(n<keepFrom||n>keepTo))unrenderPage(n);
+  });
+}
+
+/* Listen for scroll to trigger lazy loading */
+document.addEventListener('scroll',e=>{
+  if(e.target.id==='area'||e.target===document)checkVisiblePages();
+},true);
+
+/* Legacy renderAll wrapper for compat with zoom/rotate */
+function renderAll(onDone){
+  pageRendered={};pageItems={};
+  buildPlaceholders().then(()=>{
+    setTimeout(()=>{checkVisiblePages();onDone&&onDone();},150);
+  });
 }
 
 /* ═══ NAV ═══ */
