@@ -2781,45 +2781,80 @@ function classifyError(e){
   return {fa: e.message||'خطای ناشناخته — دوباره امتحان کن', type:'unknown'};
 }
 
+/* ═══ CLAUDE MODEL FALLBACK CHAIN ═══
+   Models are tried in order. First success is cached for 1 hour.
+   When a model is deprecated, auto-fallback to next. */
+const CLAUDE_MODELS=[
+  'claude-haiku-4-5-20251001',
+  'claude-haiku-4-5',
+  'claude-sonnet-4-5-20250929',
+  'claude-sonnet-4-5',
+  'claude-3-5-haiku-20241022',
+  'claude-3-5-sonnet-20241022'
+];
+function getCachedModel(){
+  try{const c=JSON.parse(localStorage.getItem('ws_model_cache')||'{}');if(c.model&&c.ts&&Date.now()-c.ts<3600000)return c.model;}catch(e){}
+  return null;
+}
+function cacheModel(m){try{localStorage.setItem('ws_model_cache',JSON.stringify({model:m,ts:Date.now()}));}catch(e){}}
+
 async function ai(prompt,tokens=900){
   const headers={'Content-Type':'application/json'};
   if(currentUser?.id) headers['x-user-id']=currentUser.id;
 
-  // Timeout after 20s
-  const ctrl = new AbortController();
-  const timeout = setTimeout(()=>ctrl.abort(), 20000);
+  /* Try cached model first, then fallback chain */
+  const cached=getCachedModel();
+  const toTry=cached?[cached,...CLAUDE_MODELS.filter(m=>m!==cached)]:CLAUDE_MODELS;
 
-  let r;
-  try{
-    r = await fetch('/api',{method:'POST',headers,signal:ctrl.signal,
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
-  } catch(e){
+  let lastErr=null;
+  for(const model of toTry){
+    const ctrl=new AbortController();
+    const timeout=setTimeout(()=>ctrl.abort(),20000);
+    let r;
+    try{
+      r=await fetch('/api',{method:'POST',headers,signal:ctrl.signal,
+        body:JSON.stringify({model,max_tokens:tokens,messages:[{role:'user',content:prompt}]})});
+    }catch(e){
+      clearTimeout(timeout);
+      lastErr=new Error(e.name==='AbortError'?'timeout':'اتصال به سرور');
+      continue;
+    }
     clearTimeout(timeout);
-    throw new Error(e.name==='AbortError' ? 'timeout' : 'failed to fetch');
+
+    /* 429 = rate limit — show properly, don't retry */
+    if(r.status===429){
+      const d=await r.json().catch(()=>({}));
+      userSearchCount=FREE_LIMIT;updateFreeBanner();
+      const hours=d.reset_hours||24;
+      throw new Error(d.message||`جستجوی امروز تموم شد. ${hours} ساعت دیگه reset میشه`);
+    }
+
+    /* 400/404 = model likely deprecated, try next */
+    if(r.status===400||r.status===404){
+      try{const d=await r.json();lastErr=new Error(d.error||'HTTP '+r.status);}catch(e){lastErr=new Error('HTTP '+r.status);}
+      continue;
+    }
+
+    if(!r.ok){lastErr=new Error('HTTP '+r.status);continue;}
+
+    let d;try{d=await r.json();}catch(e){lastErr=new Error('parse error');continue;}
+    if(d.error){lastErr=new Error(d.error);continue;}
+
+    /* Success! Cache this model */
+    cacheModel(model);
+
+    const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
+    if(used>0){userSearchCount=used;updateFreeBanner();}
+    const rem=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
+    if(rem===3)showToast('⚠ فقط ۳ جستجو مونده',2800,'warn');
+    else if(rem===0)showToast('جستجوی رایگان تموم شد 😔',3000,'warn');
+
+    const txt=d.content?.map(b=>b.text||'').join('').trim();
+    if(!txt){lastErr=new Error('empty response');continue;}
+    return txt;
   }
-  clearTimeout(timeout);
-
-  if(r.status===429){
-    const d=await r.json().catch(()=>({}));
-    userSearchCount=FREE_LIMIT; updateFreeBanner();
-    const hours=d.reset_hours||24;
-    throw new Error(d.message||`جستجوی امروز تموم شد. ${hours} ساعت دیگه reset میشه`);
-  }
-  if(!r.ok) throw new Error('HTTP '+r.status);
-
-  let d;
-  try{ d=await r.json(); } catch(e){ throw new Error('parse error'); }
-  if(d.error) throw new Error(d.error);
-
-  const used=parseInt(r.headers.get('X-RateLimit-Used')||'0');
-  if(used>0){userSearchCount=used;updateFreeBanner();}
-  const rem=parseInt(r.headers.get('X-RateLimit-Remaining')||'99');
-  if(rem===3) showToast('⚠ فقط ۳ جستجو مونده',2800,'warn');
-  else if(rem===0) showToast('جستجوی رایگان تموم شد 😔',3000,'warn');
-
-  const txt = d.content?.map(b=>b.text||'').join('').trim();
-  if(!txt) throw new Error('empty response');
-  return txt;
+  /* All models failed — throw helpful message */
+  throw lastErr||new Error('دسترسی به AI در دسترس نیست');
 }
 
 /* ══════════════════════════════

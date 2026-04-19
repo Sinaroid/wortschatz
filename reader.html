@@ -1176,16 +1176,31 @@ async function callSearch(word){
   const prompt='ورودی: "'+word+'"\nزبان: '+(isDE?'آلمانی':'انگلیسی')+' — سطح '+level+' — هدف: '+gt+'\nفقط JSON خالص:\n'+schema;
   return _api(prompt,600);
 }
+/* Model fallback chain for long-term stability */
+const CLAUDE_MODELS=['claude-haiku-4-5-20251001','claude-haiku-4-5','claude-sonnet-4-5-20250929','claude-sonnet-4-5','claude-3-5-haiku-20241022','claude-3-5-sonnet-20241022'];
+function getCachedModel(){try{const c=JSON.parse(localStorage.getItem('ws_model_cache')||'{}');if(c.model&&c.ts&&Date.now()-c.ts<3600000)return c.model;}catch(e){}return null;}
+function cacheModel(m){try{localStorage.setItem('ws_model_cache',JSON.stringify({model:m,ts:Date.now()}));}catch(e){}}
+
 async function _api(prompt,tokens){
   const headers={'Content-Type':'application/json'};if(sbUser?.id)headers['x-user-id']=sbUser.id;
-  let res;try{res=await fetch('/api',{method:'POST',headers,body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:tokens,messages:[{role:'user',content:prompt}]})});}catch(e){throw new Error('اتصال');}
-  if(res.status===429)throw new Error('محدودیت');if(!res.ok)throw new Error('HTTP '+res.status);
-  const txt=await res.text();
-  try{
-    const clean=txt.replace(/```json|```/g,'').trim();let d=JSON.parse(clean);
-    if(d.content&&Array.isArray(d.content)){const tb=d.content.find(c=>c.type==='text');if(tb){const m=(tb.text||'').replace(/```json|```/g,'').trim().match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);}}
-    return d.meaning_fa?d:null;
-  }catch(e){const m=txt.match(/\{[\s\S]*?\}/);if(m)try{const d=JSON.parse(m[0]);return d.meaning_fa?d:null;}catch(e2){}return null;}
+  const cached=getCachedModel();
+  const toTry=cached?[cached,...CLAUDE_MODELS.filter(m=>m!==cached)]:CLAUDE_MODELS;
+  let lastErr=null;
+  for(const model of toTry){
+    let res;
+    try{res=await fetch('/api',{method:'POST',headers,body:JSON.stringify({model,max_tokens:tokens,messages:[{role:'user',content:prompt}]})});}catch(e){lastErr=new Error('اتصال');continue;}
+    if(res.status===429)throw new Error('محدودیت روزانه');
+    if(res.status===400||res.status===404){lastErr=new Error('HTTP '+res.status);continue;}
+    if(!res.ok){lastErr=new Error('HTTP '+res.status);continue;}
+    const txt=await res.text();
+    cacheModel(model);
+    try{
+      const clean=txt.replace(/```json|```/g,'').trim();let d=JSON.parse(clean);
+      if(d.content&&Array.isArray(d.content)){const tb=d.content.find(c=>c.type==='text');if(tb){const m=(tb.text||'').replace(/```json|```/g,'').trim().match(/\{[\s\S]*\}/);if(m)d=JSON.parse(m[0]);}}
+      return d.meaning_fa?d:null;
+    }catch(e){const m=txt.match(/\{[\s\S]*?\}/);if(m)try{const d=JSON.parse(m[0]);return d.meaning_fa?d:null;}catch(e2){}return null;}
+  }
+  throw lastErr||new Error('دسترسی به AI در دسترس نیست');
 }
 function getAlts(word){const a=[];const f=word.replace(/ae/g,'ä').replace(/oe/g,'ö').replace(/ue/g,'ü').replace(/ss/g,'ß');if(f!==word)a.push(f);if(word[0]===word[0].toLowerCase())a.push(word[0].toUpperCase()+word.slice(1));return a;}
 
