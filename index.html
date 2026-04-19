@@ -1664,6 +1664,129 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 /* Hint letter */
 .sv-letter.hint{color:var(--ink3)!important;border-style:solid!important;border-color:var(--bg3)!important}
 
+/* ═══════════════════════════════════
+   DAILY SOURCE SYSTEM
+═══════════════════════════════════ */
+/* Morning prompt modal */
+#src-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  display:none;align-items:center;justify-content:center;
+  z-index:1100;backdrop-filter:blur(6px);
+  animation:fade .18s ease;
+}
+#src-modal.open{display:flex}
+#src-box{
+  background:var(--card);border:1px solid var(--bg3);
+  border-radius:var(--r5);width:360px;max-width:calc(100vw - 24px);
+  padding:var(--s6) var(--s5) var(--s5);direction:rtl;
+  box-shadow:var(--sh3);
+  animation:popIn .22s var(--spring);
+}
+.src-greet{text-align:center;margin-bottom:var(--s5)}
+.src-greet-emoji{font-size:40px;margin-bottom:var(--s2);line-height:1}
+.src-greet-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:var(--s1)}
+.src-greet-sub{font-size:12px;color:var(--ink3)}
+.src-options{display:flex;flex-direction:column;gap:8px;margin-bottom:var(--s3)}
+.src-opt{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 14px;background:var(--bg2);
+  border:1.5px solid transparent;border-radius:var(--r3);
+  cursor:pointer;transition:all .15s;font-family:var(--sans);
+  text-align:right;width:100%;
+}
+.src-opt:hover{background:var(--bg3);border-color:var(--bg4)}
+.src-opt.primary{background:var(--abl);border-color:rgba(26,58,242,.25)}
+.src-opt.primary:hover{background:var(--aglow);border-color:var(--accent)}
+.src-opt-icon{font-size:22px;flex-shrink:0;line-height:1}
+.src-opt-body{flex:1;min-width:0}
+.src-opt-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.src-opt.primary .src-opt-title{color:var(--accent)}
+.src-opt-sub{font-size:11px;color:var(--ink3)}
+.src-opt-arrow{font-size:12px;color:var(--ink3);flex-shrink:0}
+.src-opt:hover .src-opt-arrow{color:var(--accent)}
+/* Recent sources row */
+.src-recent-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--s3)}
+.src-recent{
+  flex:1;min-width:100px;padding:10px 10px;
+  background:var(--card);border:1.5px solid var(--bg3);border-radius:var(--r2);
+  cursor:pointer;text-align:center;transition:all .12s;
+  font-family:var(--sans);
+}
+.src-recent:hover{border-color:var(--accent);background:var(--abl)}
+.src-recent-emoji{font-size:18px;display:block;margin-bottom:3px}
+.src-recent-name{font-size:11px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* New source input */
+#src-new-wrap{display:none;margin-top:var(--s3)}
+#src-new-wrap.open{display:block}
+#src-new-inp{
+  width:100%;padding:11px 14px;background:var(--bg2);border:1.5px solid var(--bg3);
+  border-radius:var(--r2);font-size:14px;color:var(--ink);font-family:var(--sans);
+  outline:none;transition:border-color .15s;
+}
+#src-new-inp:focus{border-color:var(--accent);background:var(--card)}
+.src-type-row{display:flex;gap:4px;margin-top:8px}
+.src-type{
+  flex:1;padding:6px 0;font-size:10px;font-weight:600;
+  background:var(--bg2);border:1px solid var(--bg3);border-radius:6px;
+  color:var(--ink3);cursor:pointer;transition:all .12s;font-family:var(--sans);
+}
+.src-type.active{background:var(--abl);border-color:var(--accent);color:var(--accent)}
+#src-save-btn{
+  width:100%;margin-top:10px;padding:12px;
+  background:var(--accent);color:#fff;border-radius:var(--r2);
+  font-size:13px;font-weight:700;font-family:var(--sans);
+  transition:background .15s;
+}
+#src-save-btn:hover{background:var(--accent2)}
+.src-skip{
+  width:100%;margin-top:var(--s2);padding:10px;
+  font-size:11px;color:var(--ink3);font-family:var(--sans);
+  transition:color .1s;
+}
+.src-skip:hover{color:var(--ink)}
+
+/* Active source banner */
+#src-banner{
+  display:none;align-items:center;gap:8px;
+  padding:8px 12px;margin-bottom:10px;
+  background:var(--abl);border:1px solid rgba(26,58,242,.2);
+  border-radius:var(--r2);font-size:11px;
+  animation:slideUp .2s ease;
+}
+#src-banner.show{display:flex}
+.src-banner-icon{font-size:14px;flex-shrink:0}
+.src-banner-text{flex:1;min-width:0;color:var(--accent);font-weight:600}
+.src-banner-text .stats{font-size:10px;color:var(--ink3);font-weight:400;margin-right:4px}
+.src-banner-act{
+  display:flex;align-items:center;gap:3px;padding:3px 8px;
+  background:var(--card);border:1px solid var(--bg3);border-radius:10px;
+  font-size:10px;font-weight:600;color:var(--ink3);
+  cursor:pointer;transition:all .12s;font-family:var(--sans);
+}
+.src-banner-act:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Sources library page */
+.src-lib-grid{display:flex;flex-direction:column;gap:8px;padding:0 2px}
+.src-card{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 14px;background:var(--card);
+  border:1px solid var(--bg3);border-radius:var(--r3);
+  cursor:pointer;transition:all .15s;
+}
+.src-card:hover{border-color:var(--accent)}
+.src-card.active{background:var(--abl);border-color:rgba(26,58,242,.3)}
+.src-card-icon{font-size:32px;flex-shrink:0;line-height:1}
+.src-card-body{flex:1;min-width:0}
+.src-card-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-card-meta{font-size:10px;color:var(--ink3)}
+.src-card-prog{width:100%;height:4px;background:var(--bg3);border-radius:2px;margin-top:6px;overflow:hidden}
+.src-card-prog-fill{height:100%;background:var(--accent);transition:width .4s}
+.src-card-badge{
+  font-size:9px;font-weight:700;padding:2px 6px;
+  border-radius:10px;flex-shrink:0;
+}
+.src-card-badge.active{background:var(--ok);color:#fff}
+.src-card-badge.done{background:var(--ok);color:#fff}
 </style>
 </head>
 <body>
@@ -1912,6 +2035,42 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
   </div>
 </div>
 
+<!-- Daily Source Modal -->
+<div id="src-modal" onclick="if(event.target===this)srcSkip()">
+  <div id="src-box">
+    <div class="src-greet">
+      <div class="src-greet-emoji" id="src-greet-emoji">☀️</div>
+      <div class="src-greet-title" id="src-greet-title">صبح بخیر!</div>
+      <div class="src-greet-sub">امروز چی میخونی؟</div>
+    </div>
+    <div class="src-options" id="src-continue-wrap">
+      <!-- Populated by JS: continue yesterday's source -->
+    </div>
+    <div class="src-recent-row" id="src-recent-wrap">
+      <!-- Populated: recent 3 sources -->
+    </div>
+    <button class="src-opt" onclick="srcShowNew()" id="src-new-btn">
+      <span class="src-opt-icon">➕</span>
+      <div class="src-opt-body">
+        <div class="src-opt-title">منبع جدید</div>
+        <div class="src-opt-sub">کتاب، مقاله، پادکست...</div>
+      </div>
+      <span class="src-opt-arrow">›</span>
+    </button>
+    <div id="src-new-wrap">
+      <input id="src-new-inp" placeholder="مثلاً: Sicher B2.1 یا مقاله BBC" onkeydown="if(event.key==='Enter')srcSave()">
+      <div class="src-type-row">
+        <button class="src-type active" data-type="book" onclick="srcPickType(this)">📕 کتاب</button>
+        <button class="src-type" data-type="article" onclick="srcPickType(this)">📰 مقاله</button>
+        <button class="src-type" data-type="podcast" onclick="srcPickType(this)">🎧 پادکست</button>
+        <button class="src-type" data-type="other" onclick="srcPickType(this)">📌 سایر</button>
+      </div>
+      <button id="src-save-btn" onclick="srcSave()">ذخیره و شروع</button>
+    </div>
+    <button class="src-skip" onclick="srcSkip()">فعلاً فقط مرور — بعداً انتخاب میکنم</button>
+  </div>
+</div>
+
 
 
 
@@ -2152,6 +2311,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
     </div>
 
+    <!-- Active source banner -->
+    <div id="src-banner">
+      <span class="src-banner-icon" id="src-banner-icon">📕</span>
+      <div class="src-banner-text">
+        <span id="src-banner-name">—</span>
+        <span class="stats" id="src-banner-stats"></span>
+      </div>
+      <button class="src-banner-act" onclick="changeSource()" aria-label="تغییر منبع">تغییر ↻</button>
+    </div>
     <div id="free-banner" style="display:none"></div>
     <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
       <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
@@ -2463,6 +2631,135 @@ const BETA_LIMIT = 500;
    STATE
 ══════════════════════════════ */
 let words=[], curWord=null, curPhrase=null;
+
+/* ═══════════════════════════════════════════════
+   DAILY SOURCE SYSTEM
+═══════════════════════════════════════════════ */
+let sources=[];   /* [{id, name, type, firstUsed, lastUsed, active, wordCount}] */
+let activeSrcId=null;
+let srcNewType='book';
+try{sources=JSON.parse(localStorage.getItem('ws_sources')||'[]');}catch(e){sources=[];}
+try{activeSrcId=localStorage.getItem('ws_active_src')||null;}catch(e){}
+
+function saveSources(){try{localStorage.setItem('ws_sources',JSON.stringify(sources));}catch(e){}if(activeSrcId)localStorage.setItem('ws_active_src',activeSrcId);else localStorage.removeItem('ws_active_src');}
+function getActiveSource(){return activeSrcId?sources.find(s=>s.id===activeSrcId):null;}
+function _srcId(){return 'src_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function _srcEmoji(type){return {book:'📕',article:'📰',podcast:'🎧',other:'📌'}[type]||'📚';}
+function _today(){return new Date().toISOString().slice(0,10);}
+
+/* Check if we need to prompt user for today's source */
+function checkDailySource(){
+  const lastPrompt=localStorage.getItem('ws_src_prompted');
+  const today=_today();
+  if(lastPrompt===today)return; /* Already prompted today */
+  /* If session was on the fly for >2 minutes, show prompt */
+  setTimeout(()=>{
+    if(!Q('#gate').classList.contains('open'))showSourcePrompt();
+  },1500);
+}
+
+function showSourcePrompt(){
+  /* Build greeting based on time */
+  const h=new Date().getHours();
+  const greet=h<12?{e:'☀️',t:'صبح بخیر!'}:h<17?{e:'🌤️',t:'وقت مطالعه!'}:h<21?{e:'🌆',t:'عصر بخیر!'}:{e:'🌙',t:'شب بخیر!'};
+  Q('#src-greet-emoji').textContent=greet.e;
+  Q('#src-greet-title').textContent=greet.t;
+  /* Continue yesterday's source */
+  const cont=Q('#src-continue-wrap');cont.innerHTML='';
+  const yesterdayName=localStorage.getItem('ws_active_src_name');
+  if(activeSrcId){
+    const s=getActiveSource();
+    if(s){
+      const btn=document.createElement('button');btn.className='src-opt primary';
+      btn.innerHTML='<span class="src-opt-icon">'+_srcEmoji(s.type)+'</span><div class="src-opt-body"><div class="src-opt-title">ادامه '+s.name+'</div><div class="src-opt-sub">'+(s.wordCount||0)+' لغت · از '+(s.firstUsed||'').slice(5)+'</div></div><span class="src-opt-arrow">←</span>';
+      btn.onclick=()=>srcContinue(s.id);
+      cont.appendChild(btn);
+    }
+  }
+  /* Recent 3 sources (not the active one) */
+  const recent=sources.filter(s=>s.id!==activeSrcId).sort((a,b)=>new Date(b.lastUsed||0)-new Date(a.lastUsed||0)).slice(0,3);
+  const recWrap=Q('#src-recent-wrap');recWrap.innerHTML='';
+  if(recent.length){
+    recent.forEach(s=>{
+      const btn=document.createElement('button');btn.className='src-recent';
+      btn.innerHTML='<span class="src-recent-emoji">'+_srcEmoji(s.type)+'</span><div class="src-recent-name">'+s.name+'</div>';
+      btn.onclick=()=>srcContinue(s.id);
+      recWrap.appendChild(btn);
+    });
+  }
+  /* Reset new form */
+  Q('#src-new-wrap').classList.remove('open');
+  Q('#src-new-inp').value='';
+  document.querySelectorAll('.src-type').forEach(t=>t.classList.toggle('active',t.dataset.type==='book'));
+  srcNewType='book';
+  Q('#src-modal').classList.add('open');
+}
+
+function srcShowNew(){
+  Q('#src-new-wrap').classList.add('open');
+  setTimeout(()=>Q('#src-new-inp').focus(),100);
+}
+function srcPickType(btn){
+  document.querySelectorAll('.src-type').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');srcNewType=btn.dataset.type;
+}
+function srcSave(){
+  const name=Q('#src-new-inp').value.trim();
+  if(!name||name.length<2){Q('#src-new-inp').focus();return;}
+  const today=_today();
+  const src={id:_srcId(),name,type:srcNewType,firstUsed:today,lastUsed:today,wordCount:0};
+  sources.unshift(src);
+  activeSrcId=src.id;
+  localStorage.setItem('ws_active_src_name',src.name);
+  localStorage.setItem('ws_src_prompted',today);
+  saveSources();
+  Q('#src-modal').classList.remove('open');
+  updateSrcBanner();
+  if(typeof showToast==='function')showToast('📕 شروع '+src.name);
+}
+function srcContinue(id){
+  const src=sources.find(s=>s.id===id);
+  if(!src)return;
+  activeSrcId=id;
+  src.lastUsed=_today();
+  localStorage.setItem('ws_active_src_name',src.name);
+  localStorage.setItem('ws_src_prompted',_today());
+  saveSources();
+  Q('#src-modal').classList.remove('open');
+  updateSrcBanner();
+  if(typeof showToast==='function')showToast('📖 ادامه '+src.name);
+}
+function srcSkip(){
+  localStorage.setItem('ws_src_prompted',_today());
+  Q('#src-modal').classList.remove('open');
+}
+function changeSource(){showSourcePrompt();}
+
+function updateSrcBanner(){
+  const banner=Q('#src-banner');if(!banner)return;
+  const src=getActiveSource();
+  if(!src){banner.classList.remove('show');return;}
+  Q('#src-banner-icon').textContent=_srcEmoji(src.type);
+  Q('#src-banner-name').textContent=src.name;
+  const todayWords=words.filter(w=>w.source_id===src.id&&w.source_day===_today()).length;
+  Q('#src-banner-stats').textContent=todayWords>0?'(امروز '+todayWords+' لغت)':(src.wordCount?'('+src.wordCount+' لغت)':'');
+  banner.classList.add('show');
+}
+
+/* Auto-tag words with active source */
+function tagWordWithSource(w){
+  if(!activeSrcId)return;
+  const src=getActiveSource();if(!src)return;
+  w.source_id=src.id;
+  w.source_name=src.name;
+  w.source_day=_today();
+  /* Update source stats */
+  src.wordCount=(src.wordCount||0)+1;
+  src.lastUsed=_today();
+  saveSources();
+  updateSrcBanner();
+}
+
 let acSel=-1, editIdx=-1, listSort='new';
 let sesDeck=[], sesI=0, sesGood=0, sesBad=0, sesRepN=0;
 let sesRepeat=new Set();
@@ -3034,6 +3331,7 @@ async function init(){
     await dbLoad();
     await loadProfile();
     setTimeout(checkReminder,2500);
+    updateSrcBanner();checkDailySource();
   } else {
     showGate();
   }
@@ -3046,6 +3344,7 @@ async function init(){
       await dbLoad();
       await loadProfile();
       if(!currentUser) setTimeout(checkReminder,2500);
+      updateSrcBanner();checkDailySource();
     } else if(event==='SIGNED_OUT'){
       currentUser=null; words=[]; userSearchCount=0; userPlan='free';
       setUserUI(null); updateBadges(); updateStats(); showGate();
@@ -3546,6 +3845,8 @@ async function addWord(){
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
   const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  /* Auto-tag with active source */
+  if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
   const btn=Q('#add-btn');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='add-btn done';
   if(navigator.onLine)dbAdd(w).catch(()=>{});
@@ -3635,9 +3936,11 @@ async function addPhrase(){
   const de=curPhrase.original;
   if(words.some(w=>w.de===de))return;
   const w={de,fa:curPhrase.meaning_fa,ex:curPhrase.example_de&&curPhrase.example_de!=='null'?curPhrase.example_de:'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString()};
+  if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
   const btn=Q('#ph-add');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='ph-add done';
   if(navigator.onLine)dbAdd(w).catch(()=>{});
+  if(typeof incrementDaily==='function')incrementDaily();
 }
 
 /* ══════════════════════════════
@@ -3749,10 +4052,18 @@ function buildSmartDeck(){
     }
   };
 
-  add(due);                         // priority 1 — همه سررسیدها
-  add(fresh, MAX_NEW);              // priority 2 — حداکثر MAX_NEW لغت جدید
-  add(weak);                        // priority 3 — ضعیف‌ها
-  add(rest);                        // priority 4 — بقیه
+  /* Priority boost: words from active source go first within each category */
+  const actSrcId=activeSrcId;
+  const sortBySrc=(arr)=>{
+    if(!actSrcId)return arr;
+    const fromSrc=arr.filter(w=>w.source_id===actSrcId);
+    const other=arr.filter(w=>w.source_id!==actSrcId);
+    return [...fromSrc,...other];
+  };
+  add(sortBySrc(due));              // priority 1 — سررسیدها (منبع فعال اول)
+  add(sortBySrc(fresh), MAX_NEW);   // priority 2 — جدید (منبع فعال اول)
+  add(sortBySrc(weak));              // priority 3 — ضعیف‌ها (منبع فعال اول)
+  add(sortBySrc(rest));              // priority 4 — بقیه (منبع فعال اول)
 
   // tag هر کارت برای نمایش badge
   deck.forEach(w => {
