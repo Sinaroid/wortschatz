@@ -2138,6 +2138,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
     <div class="mi-title" id="intro-title">آماده مروری؟</div>
     <div class="mi-sub" id="intro-sub"></div>
   </div>
+  <!-- Source filter for review -->
+  <div id="mi-src-filter" style="padding:0 var(--s5) var(--s3)">
+    <div style="font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;text-align:center">از کدوم منبع؟</div>
+    <div class="src-chips" id="mi-src-chips" style="justify-content:center;flex-wrap:wrap"></div>
+  </div>
   <div class="mi-grid">
     <div class="mi-card" onclick="introPickMode('flip')">
       <div class="mi-icon">📇</div>
@@ -4171,24 +4176,96 @@ function sesOpen(){
   sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
   startSession();
 }
+let introSrcFilter=null; /* null=all, source_id, or '__none__' */
+let introFullDeck=[];    /* Backup of original deck before filtering */
+
 function showIntro(){
+  /* Backup original deck */
+  introFullDeck=sesDeck.slice();
+  /* Default filter: if active source has cards, use it; else show all */
+  introSrcFilter=null;
+  if(activeSrcId){
+    const count=introFullDeck.filter(w=>w.source_id===activeSrcId).length;
+    if(count>=3)introSrcFilter=activeSrcId;
+  }
+  /* Apply filter */
+  _applyIntroFilter();
+  /* Render chips */
+  _renderIntroSrcChips();
+  /* Time-based greeting */
   const now=new Date();
-  const due=sesDeck.filter(w=>w._type==='due').length;
-  const newW=sesDeck.filter(w=>w._type==='new').length;
-  const total=sesDeck.length;
-  // Set emoji and title based on time
   const h=now.getHours();
-  const greet = h<12?'صبح بخیر ☀️':h<17?'وقت مرور 🧠':h<21?'عصر بخیر 🌤':'شب بخیر 🌙';
+  const greet=h<12?'صبح بخیر ☀️':h<17?'وقت مرور 🧠':h<21?'عصر بخیر 🌤':'شب بخیر 🌙';
   const intro=Q('#ses-intro');
   Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
   Q('#intro-title').textContent=greet;
-  let sub='';
-  if(due>0) sub+=`<b style="color:var(--accent)">${due} کارت</b> برای مرور `;
-  if(newW>0) sub+=(due>0?'و ':'')+`<b>${newW} لغت</b> جدید `;
-  sub+=`داری — جمعاً <b>${total} کارت</b>`;
-  Q('#intro-sub').innerHTML=sub;
+  _renderIntroStats();
   intro.style.display='flex';
   intro.classList.add('open');
+}
+function _applyIntroFilter(){
+  if(!introSrcFilter){sesDeck=introFullDeck.slice();return;}
+  /* Rebuild from ALL filtered words (not just smart deck) for this source */
+  const now=new Date();
+  let pool=filteredWords();
+  if(introSrcFilter==='__none__')pool=pool.filter(w=>!w.source_id);
+  else pool=pool.filter(w=>w.source_id===introSrcFilter);
+  /* Sort: due → new → rest */
+  const due=pool.filter(w=>w.seen>0&&new Date(w.next_review||0)<=now).sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
+  const fresh=pool.filter(w=>w.seen===0);
+  const rest=pool.filter(w=>w.seen>0&&new Date(w.next_review||0)>now).sort((a,b)=>(a.easiness||2.5)-(b.easiness||2.5));
+  const combined=[...due,...fresh,...rest].slice(0,typeof SESSION_SIZE!=='undefined'?SESSION_SIZE:15);
+  sesDeck=combined.map(w=>{
+    const isDue=new Date(w.next_review||0)<=now;
+    const isNew=w.seen===0;
+    const isWeak=w.score<0||(w.easiness||2.5)<2.0;
+    return {...w,_type:isDue?'due':isNew?'new':isWeak?'weak':'rev'};
+  });
+}
+function _renderIntroStats(){
+  const due=sesDeck.filter(w=>w._type==='due').length;
+  const newW=sesDeck.filter(w=>w._type==='new').length;
+  const total=sesDeck.length;
+  let sub='';
+  if(total===0)sub='<span style="color:var(--ink3)">هیچ کارتی برای این منبع نیست</span>';
+  else{
+    if(due>0)sub+='<b style="color:var(--accent)">'+due+' کارت</b> برای مرور ';
+    if(newW>0)sub+=(due>0?'و ':'')+'<b>'+newW+'</b> جدید ';
+    sub+='— جمعاً <b>'+total+'</b>';
+  }
+  Q('#intro-sub').innerHTML=sub;
+  const ms=Q('#mi-stats');if(ms)ms.textContent=total+' کارت';
+  /* Weak words shortcut */
+  if(typeof getWeakWords==='function'){
+    const weak=getWeakWords();const weakEl=Q('#mi-weak');
+    if(weakEl){
+      if(weak.length>0){weakEl.style.display='flex';const wt=Q('#mi-weak-title');if(wt)wt.textContent=weak.length+' کلمه ضعیف';}
+      else weakEl.style.display='none';
+    }
+  }
+  /* Disable mode cards if empty */
+  document.querySelectorAll('.mi-card').forEach(c=>{c.style.opacity=total===0?'0.4':'';c.style.pointerEvents=total===0?'none':'';});
+}
+function _renderIntroSrcChips(){
+  const wrap=Q('#mi-src-chips');if(!wrap)return;
+  /* Count each source across ALL filtered words (not just deck) */
+  const fw=filteredWords();
+  const counts={};
+  fw.forEach(w=>{const k=w.source_id||'__none__';counts[k]=(counts[k]||0)+1;});
+  const chips=[{id:null,name:'همه',icon:'📚',count:fw.length}];
+  sources.forEach(s=>{const c=counts[s.id]||0;if(c>0)chips.push({id:s.id,name:s.name,icon:_srcEmoji(s.type),count:c});});
+  if(counts['__none__']>0)chips.push({id:'__none__',name:'متفرقه',icon:'📌',count:counts['__none__']});
+  /* Hide if only "all" exists (no sources) */
+  if(chips.length<=1){Q('#mi-src-filter').style.display='none';return;}
+  Q('#mi-src-filter').style.display='';
+  wrap.innerHTML='';
+  chips.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='src-chip'+(introSrcFilter===c.id?' active':'');
+    btn.innerHTML='<span>'+c.icon+'</span><span>'+c.name+'</span><span class="src-chip-count">'+c.count+'</span>';
+    btn.onclick=()=>{introSrcFilter=c.id;_applyIntroFilter();_renderIntroStats();_renderIntroSrcChips();};
+    wrap.appendChild(btn);
+  });
 }
 function introStart(){
   Q('#ses-intro').style.display='none';
@@ -6035,30 +6112,7 @@ function _showModeBody(mode){
   if(prog)prog.style.display=(mode==='match')?'none':'';
 }
 
-/* Override showIntro to populate new selector */
-showIntro=function(){
-  const now=new Date();
-  const due=sesDeck.filter(w=>w._type==='due').length;
-  const newW=sesDeck.filter(w=>w._type==='new').length;
-  const total=sesDeck.length;
-  const h=now.getHours();
-  Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
-  Q('#intro-title').textContent=h<12?'صبح بخیر!':h<17?'آماده مروری؟':h<21?'عصر بخیر!':'شب بخیر!';
-  let sub='';
-  if(due>0)sub+='<b style="color:var(--accent)">'+due+' کارت</b> برای مرور ';
-  if(newW>0)sub+=(due>0?'و ':'')+' <b>'+newW+'</b> جدید ';
-  Q('#intro-sub').innerHTML=sub||'آماده یادگیری!';
-  Q('#mi-stats').textContent=total+' کارت';
-  /* Show weak words button */
-  const weak=getWeakWords();
-  const weakEl=Q('#mi-weak');
-  if(weakEl){
-    if(weak.length>0){weakEl.style.display='flex';Q('#mi-weak-title').textContent=weak.length+' کلمه ضعیف';}
-    else weakEl.style.display='none';
-  }
-  Q('#ses-intro').style.display='';Q('#ses-intro').classList.add('open');
-};
-
+/* (showIntro override removed — real one at line 4182 has source filter logic) */
 /* Keep old setSesMode for compatibility */
 function setSesMode(mode){sesMode=mode;_showModeBody(mode);if(mode==='quiz')showQuiz();if(mode==='listen')showListen();if(mode==='speed')startSpeed();if(mode==='match')startMatch();if(mode==='fill')startFill();}
 
