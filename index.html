@@ -1787,6 +1787,56 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 }
 .src-card-badge.active{background:var(--ok);color:#fff}
 .src-card-badge.done{background:var(--ok);color:#fff}
+
+/* Source filter chips on list */
+.src-chips{
+  display:flex;gap:6px;overflow-x:auto;padding:4px 2px 8px;
+  margin-bottom:8px;scrollbar-width:none;
+}
+.src-chips::-webkit-scrollbar{display:none}
+.src-chip{
+  display:flex;align-items:center;gap:5px;flex-shrink:0;
+  padding:6px 12px;background:var(--card);border:1px solid var(--bg3);
+  border-radius:20px;font-size:12px;font-weight:500;color:var(--ink2);
+  cursor:pointer;transition:all .15s;font-family:var(--sans);white-space:nowrap;
+}
+.src-chip:hover{border-color:var(--accent);color:var(--ink)}
+.src-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.src-chip-count{font-size:10px;opacity:.75;font-weight:600}
+.src-chip.active .src-chip-count{opacity:.9}
+
+/* Source badge on word row */
+.wr-src{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:10px;color:var(--ink3);font-weight:500;
+  margin-right:6px;
+}
+.wr-src-icon{font-size:11px;line-height:1}
+
+/* Active filter header */
+#src-filter-head{
+  display:none;padding:12px 14px;margin-bottom:10px;
+  background:var(--abl);border:1px solid rgba(26,58,242,.2);
+  border-radius:var(--r3);
+  animation:slideUp .2s ease;
+}
+#src-filter-head.show{display:block}
+.sfh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sfh-title{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--accent)}
+.sfh-clear{font-size:10px;font-weight:600;color:var(--ink3);background:var(--card);border:1px solid var(--bg3);border-radius:12px;padding:3px 9px;font-family:var(--sans);transition:all .12s}
+.sfh-clear:hover{color:var(--ink);border-color:var(--accent)}
+.sfh-stats{font-size:11px;color:var(--ink3);margin-bottom:6px}
+.sfh-bar{width:100%;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.sfh-bar-fill{height:100%;background:var(--accent);transition:width .4s var(--ease)}
+.sfh-actions{display:flex;gap:6px}
+.sfh-btn{
+  flex:1;padding:8px 10px;background:var(--card);border:1px solid var(--bg3);
+  border-radius:var(--r2);font-size:11px;font-weight:600;color:var(--ink);
+  cursor:pointer;transition:all .12s;font-family:var(--sans);
+}
+.sfh-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sfh-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sfh-btn.primary:hover{background:var(--accent2);color:#fff}
 </style>
 </head>
 <body>
@@ -2517,6 +2567,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         <button class="due-btn" onclick="sesOpenDue()">شروع مرور ←</button>
       </div>
       <div class="due-chips" id="due-chips"></div>
+    </div>
+    <!-- Source filter chips -->
+    <div class="src-chips" id="src-chips"></div>
+    <!-- Active filter header -->
+    <div id="src-filter-head">
+      <div class="sfh-top">
+        <div class="sfh-title"><span id="sfh-icon">📕</span><span id="sfh-name">—</span></div>
+        <button class="sfh-clear" onclick="setSrcFilter(null)">× حذف فیلتر</button>
+      </div>
+      <div class="sfh-stats" id="sfh-stats">0 از 0 یاد گرفته</div>
+      <div class="sfh-bar"><div class="sfh-bar-fill" id="sfh-bar-fill"></div></div>
+      <div class="sfh-actions">
+        <button class="sfh-btn primary" onclick="sesOpenSourceFilter()">▶ مرور این منبع</button>
+        <button class="sfh-btn" onclick="markSourceDone()" id="sfh-done-btn">✓ تکمیل شد</button>
+      </div>
     </div>
     <div class="sort-tabs">
       <button class="sort-tab on" id="st-new"   onclick="setSort('new')">جدیدترین</button>
@@ -4462,6 +4527,79 @@ function setSort(s){
   ['new','due','weak','best','alpha'].forEach(id=>Q('#st-'+id).classList.toggle('on',id===s));
   renderList();
 }
+let listSrcFilter=null; /* null = all, or source_id (string or '__none__' for untagged) */
+function setSrcFilter(id){
+  listSrcFilter=id;
+  renderList();
+  /* Scroll to top of list */
+  Q('#pane-list')?.scrollTo({top:0,behavior:'smooth'});
+}
+function sesOpenSourceFilter(){
+  /* Open review session filtered to this source */
+  if(!listSrcFilter||listSrcFilter==='__none__'){sesOpenSmart();return;}
+  const fw=filteredWords().filter(w=>w.source_id===listSrcFilter);
+  if(!fw.length){showToast('لغتی برای مرور نیست');return;}
+  sesDeck=fw.slice(0,20).map(w=>({...w,_type:w.seen===0?'new':'rev'}));
+  sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();
+  if(typeof showIntro==='function')showIntro();
+  else if(typeof startSession==='function')startSession();
+}
+function markSourceDone(){
+  if(!listSrcFilter||listSrcFilter==='__none__')return;
+  const src=sources.find(s=>s.id===listSrcFilter);
+  if(!src)return;
+  src.done=true;src.doneAt=_today();
+  /* If this was active source, clear it */
+  if(activeSrcId===src.id){activeSrcId=null;localStorage.removeItem('ws_active_src_name');}
+  saveSources();
+  updateSrcBanner();
+  showToast('✓ '+src.name+' تکمیل شد!',2800);
+  setSrcFilter(null);
+}
+function renderSrcChips(){
+  const wrap=Q('#src-chips');if(!wrap)return;
+  const fw=filteredWords();
+  /* Count words by source */
+  const counts={};
+  fw.forEach(w=>{const k=w.source_id||'__none__';counts[k]=(counts[k]||0)+1;});
+  /* Build chips: All + each source with count > 0 + untagged */
+  const chips=[];
+  chips.push({id:null,name:'همه',icon:'📚',count:fw.length});
+  sources.forEach(s=>{
+    const c=counts[s.id]||0;
+    if(c>0||s.id===activeSrcId){
+      chips.push({id:s.id,name:s.name,icon:_srcEmoji(s.type),count:c});
+    }
+  });
+  if(counts['__none__']>0)chips.push({id:'__none__',name:'متفرقه',icon:'📌',count:counts['__none__']});
+  /* Render */
+  wrap.innerHTML='';
+  chips.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='src-chip'+(listSrcFilter===c.id?' active':'');
+    btn.innerHTML='<span>'+c.icon+'</span><span>'+c.name+'</span><span class="src-chip-count">'+c.count+'</span>';
+    btn.onclick=()=>setSrcFilter(c.id);
+    wrap.appendChild(btn);
+  });
+}
+function renderSrcFilterHead(){
+  const head=Q('#src-filter-head');if(!head)return;
+  if(!listSrcFilter||listSrcFilter==='__none__'){head.classList.remove('show');return;}
+  const src=sources.find(s=>s.id===listSrcFilter);
+  if(!src){head.classList.remove('show');return;}
+  const fw=filteredWords().filter(w=>w.source_id===src.id);
+  const now=new Date();
+  const learned=fw.filter(w=>w.seen>0&&(w.interval||0)>3).length;
+  Q('#sfh-icon').textContent=_srcEmoji(src.type);
+  Q('#sfh-name').textContent=src.name;
+  Q('#sfh-stats').textContent=learned+' یاد گرفته از '+fw.length+' لغت'+(src.done?' · ✓ تکمیل شده':'');
+  const pct=fw.length?Math.round(learned/fw.length*100):0;
+  Q('#sfh-bar-fill').style.width=pct+'%';
+  Q('#sfh-done-btn').textContent=src.done?'✓ تکمیل شده':'✓ تکمیل شد';
+  Q('#sfh-done-btn').disabled=src.done;
+  head.classList.add('show');
+}
+
 function renderList(){
   const el=Q('#wlist');
   const fw=filteredWords();
@@ -4506,8 +4644,14 @@ function renderList(){
     Q('#due-chips').innerHTML=due.slice(0,8).map(w=>`<span class="due-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`).join('');
   } else banner.classList.remove('show');
 
+  /* Render source chips + filter head */
+  renderSrcChips();
+  renderSrcFilterHead();
   const q=(Q('#list-q')?.value||'').trim().toLowerCase();
   let sorted=[...fw];
+  /* Apply source filter */
+  if(listSrcFilter==='__none__')sorted=sorted.filter(w=>!w.source_id);
+  else if(listSrcFilter)sorted=sorted.filter(w=>w.source_id===listSrcFilter);
   if(listSort==='due')sorted=sorted.sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
   else if(listSort==='weak')sorted=sorted.sort((a,b)=>a.score-b.score);
   else if(listSort==='best')sorted=sorted.sort((a,b)=>b.score-a.score);
@@ -4537,6 +4681,12 @@ function renderList(){
 
   el.innerHTML=filtered.map(w=>{
     const i=words.indexOf(w);
+    /* Source badge */
+    let srcBadge='';
+    if(w.source_id){
+      const s=sources.find(x=>x.id===w.source_id);
+      if(s)srcBadge='<span class="wr-src"><span class="wr-src-icon">'+_srcEmoji(s.type)+'</span>'+s.name+'</span>';
+    }
     return `<div class="word-row2" onclick="wordDetail(${i})">
       <div class="wr2-main">
         <div class="wr2-top">
@@ -4547,6 +4697,7 @@ function renderList(){
           <span class="wr2-fa">${hl(w.fa)}</span>
           <div class="wr2-dots">${progressDots(w)}</div>
         </div>
+        ${srcBadge?'<div style="margin-top:4px">'+srcBadge+'</div>':''}
       </div>
       <div class="wr2-actions" onclick="event.stopPropagation()">
         <button class="btn-ic" onclick="editOpen(${i})">
