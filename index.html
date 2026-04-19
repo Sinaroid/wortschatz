@@ -516,11 +516,20 @@ body.fsrs-mode .swipe-row{display:none}
 ═══════════════════════════════════ */
 .s-wrap{position:relative;margin-bottom:var(--s2);animation:up .35s .06s var(--ease) both;z-index:50}
 .s-field{
-  width:100%;padding:13px var(--s5) 13px 56px;border-radius:var(--r6);
+  width:100%;padding:13px 64px 13px 56px;border-radius:var(--r6);
   border:1.5px solid var(--bg3);background:var(--card);color:var(--ink);
   font-family:var(--sans);font-size:15px;outline:none;transition:all .2s;
   -webkit-appearance:none;box-shadow:var(--sh1);
 }
+.s-lang{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;gap:3px;height:38px;padding:0 10px;
+  background:var(--bg2);border:1px solid transparent;border-radius:20px;
+  font-size:13px;font-weight:600;color:var(--ink2);
+  cursor:pointer;transition:all .15s;font-family:var(--sans);z-index:2;
+}
+.s-lang:hover{background:var(--bg3);border-color:var(--bg4)}
+.s-lang svg{opacity:.5}
 .s-field:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--aglow),var(--sh1)}
 .s-field::placeholder{color:var(--ink4)}
 .s-btn{
@@ -2061,6 +2070,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
           پاک کردن لغات
         </button>
       </div>
+      <a href="/reader" class="drw-action-btn" style="justify-content:center;gap:8px;color:var(--accent);text-decoration:none">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        📖 کتاب‌خوان PDF
+      </a>
       <button class="drw-action-btn" style="justify-content:center;gap:8px;color:var(--accent);border-color:var(--abl);background:var(--abl)" onclick="window.open('https://t.me/cinuxx','_blank')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.467l-2.95-.924c-.64-.203-.654-.64.136-.954l11.57-4.461c.537-.194 1.006.131.968.093z"/></svg>
         ارتباط با ما در تلگرام
@@ -2360,56 +2373,48 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 
   <!-- HOME -->
   <div class="pane on" id="pane-home">
-    <div class="hero">
-      <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">لغت یاد بگیر، <em>نه حفظ کنی</em></h1>
-      <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
-    </div>
-
-    <!-- Active source banner -->
+    <!-- Active source banner (compact, at top) -->
     <div id="src-banner">
       <span class="src-banner-icon" id="src-banner-icon">📕</span>
       <div class="src-banner-text">
         <span id="src-banner-name">—</span>
         <span class="stats" id="src-banner-stats"></span>
       </div>
-      <button class="src-banner-act" onclick="changeSource()" aria-label="تغییر منبع">تغییر ↻</button>
+      <button class="src-banner-act" onclick="changeSource()" aria-label="تغییر منبع">↻</button>
     </div>
     <div id="free-banner" style="display:none"></div>
-    <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
-      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
-        <span id="home-lang-flag">🇩🇪</span>
-        <span id="home-lang-label">آلمانی</span>
-        <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <!-- Language popover (positioned below s-lang button) -->
+    <div id="lang-popover" style="display:none;position:absolute;top:50px;right:6px;background:var(--card);border:1px solid var(--bg3);border-radius:12px;box-shadow:var(--sh3);padding:5px;z-index:999;min-width:150px;animation:popIn .16s var(--spring)">
+      <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .12s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+        <span style="font-size:16px">🇩🇪</span><span>آلمانی</span>
+        <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
       </button>
-      <!-- Lang mini popover -->
-      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
-        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇩🇪</span>
-          <span>آلمانی</span>
-          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
-        </button>
-        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇬🇧</span>
-          <div style="display:flex;flex-direction:column;align-items:flex-start">
-            <span>انگلیسی</span>
-            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
-          </div>
-          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
-        </button>
-      </div>
+      <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .12s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+        <span style="font-size:16px">🇬🇧</span><span>انگلیسی</span>
+        <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+      </button>
+    </div>
+    <!-- Hidden old lang badge (still needed by updateLangUI) -->
+    <div style="display:none">
+      <span id="home-lang-flag">🇩🇪</span><span id="home-lang-label">آلمانی</span><span id="home-lang-sublabel"></span>
+      <span id="lang-badge-chevron"></span>
+      <span id="hero-label"></span><span id="hero-title"></span><span id="hero-sub"></span>
     </div>
     <div class="s-wrap">
+      <!-- Integrated language button (right side, RTL = start) -->
+      <button class="s-lang" onclick="langPopoverToggle(event)" aria-label="زبان">
+        <span id="s-lang-flag">🇩🇪</span>
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <input class="s-field" id="s-inp"
-        placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
+        placeholder="لغت، جمله یا اصطلاح..."
         oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
       <div class="ac-drop" id="ac-drop"></div>
       <button class="s-btn" id="s-btn" onclick="doSearch()" aria-label="جستجو">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-    <div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
+    <div class="search-tip" id="search-tip" style="display:none"></div>
     <div class="s-msg" id="s-msg"></div>
 
     <!-- Word result -->
@@ -2502,49 +2507,35 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
     </div>
 
-    <!-- Stats card -->
-    <div class="sum-card" id="sum-card">
-      <div class="sum-header">
-        <div class="sum-title">پیشرفت تو</div>
-        <div class="sum-streak">🔥 <span id="sn-streak">0</span> روز</div>
-      </div>
-      <!-- Unified daily goal + numbers -->
-      <div style="display:flex;align-items:center;gap:14px;padding:8px 0 10px;border-bottom:1px solid var(--bg2);margin-bottom:10px">
-        <div class="dg-ring" style="margin:0"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct">0%</div></div>
-        <div style="flex:1"><div class="dg-title" id="dg-title">هدف امروز: <b>0</b> از <b>5</b></div><div class="dg-sub" id="dg-sub">لغت جدید یاد بگیر یا مرور کن</div></div>
-      </div>
-      <div class="sum-nums">
-        <div class="sum-nb">
-          <div class="sum-n" id="sn-total">0</div>
-          <div class="sum-l">کل لغت</div>
-          <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:2px;display:none"></div>
+    <!-- Compact progress bar (single line) -->
+    <div class="sum-card" id="sum-card" style="padding:12px 14px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <!-- Daily goal ring -->
+        <div class="dg-ring" style="margin:0;flex-shrink:0"><svg width="38" height="38" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct" style="font-size:10px">0%</div></div>
+        <!-- Info -->
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span id="dg-title" style="font-size:12px;font-weight:600;color:var(--ink)">هدف: <b>0/5</b></span>
+            <span style="font-size:11px;color:var(--ink3)">· 🔥 <span id="sn-streak">0</span></span>
+          </div>
+          <div style="font-size:10px;color:var(--ink3);margin-top:2px">
+            <span id="sn-due">0</span> دیر · <span id="sn-learned">0</span> یاد گرفته · <span id="sn-total">0</span> کل
+          </div>
         </div>
-        <div class="sum-nb ok">
-          <div class="sum-n" id="sn-learned">0</div>
-          <div class="sum-l">یاد گرفتم</div>
-        </div>
-        <div class="sum-nb warn" id="sn-due-wrap">
-          <div class="sum-n" id="sn-due">0</div>
-          <div class="sum-l">برای مرور</div>
-        </div>
+        <!-- Review CTA -->
+        <button class="sum-review" onclick="sesOpenSmart()" aria-label="شروع مرور" style="padding:8px 14px;font-size:12px;height:auto;border-radius:20px;flex-shrink:0">
+          <span id="review-lbl">مرور</span> ←
+        </button>
       </div>
-      <div class="sum-dots" id="sum-dots"></div>
-      <div class="sum-acts">
-        <button class="sum-review" onclick="sesOpenSmart()" aria-label="شروع جلسه مرور"><span id="review-lbl">شروع مرور</span> →</button>
-        <button class="sum-all" onclick="sesOpen()" aria-label="مرور همه لغات">همه لغات</button>
+      <!-- Hidden legacy elements (kept for updateStats) -->
+      <div style="display:none">
+        <span id="sn-lang-split"></span>
+        <div id="sum-dots"></div>
+        <span id="dg-sub"></span>
+        <button onclick="sesOpen()"><span>همه لغات</span></button>
       </div>
     </div>
-
-    <a href="/reader" id="reader-card" style="display:none;text-decoration:none;background:var(--card);border:1.5px solid var(--abl);border-radius:var(--r3);padding:14px 16px;align-items:center;gap:12px;margin-bottom:var(--s3)">
-      <div style="width:36px;height:36px;background:var(--abl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="var(--accent)" stroke-width="1.5"/><path d="M12 3v4h4" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10h6M7 13h4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:700;color:var(--ink);font-family:var(--sans)">کتاب‌خوان آلمانی</div>
-        <div style="font-size:11px;color:var(--ink3);margin-top:2px">PDF باز کن — روی کلمه کلیک کن — معنی بگیر</div>
-      </div>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2L8 6l-4 4" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
+    <a href="/reader" id="reader-card" style="display:none"></a>
 
     <!-- Home empty state -->
     <div id="home-empty">
@@ -3484,6 +3475,9 @@ function updateLangUI(){
   const label = document.getElementById('home-lang-label');
   if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
   if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
+  // Search integrated lang flag
+  const sFlag = document.getElementById('s-lang-flag');
+  if(sFlag) sFlag.textContent = isDE ? '🇩🇪' : '🇬🇧';
   // Hero texts
   const heroLabel = document.getElementById('hero-label');
   const heroTitle = document.getElementById('hero-title');
