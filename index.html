@@ -1123,6 +1123,12 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .filt-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .filt-chip.on b{background:rgba(255,255,255,.22);color:#fff}
 .filt-chip.zero{opacity:.4}
+/* Source chips inside the unified filter row */
+.filt-chip.src-kind{background:var(--bg2);border-color:var(--bg3)}
+.filt-chip.src-kind.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filt-divider{display:inline-block;width:1px;align-self:stretch;background:var(--bg3);margin:0 4px;flex-shrink:0}
+#src-chips-inline{display:inline-flex;gap:6px;align-items:center;flex-shrink:0}
+.filt-row.more-filters{padding-bottom:4px}
 .filt-summary{
   display:none;align-items:center;justify-content:space-between;gap:10px;
   background:var(--abl);border:1px solid rgba(26,58,242,.15);
@@ -1436,9 +1442,9 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 }
 .word-row2:hover{border-color:var(--ink4);transform:translateX(-2px)}
 .word-row2:active{transform:scale(.99);background:var(--bg2)}
-/* Status stripe on right edge (RTL) */
+/* Status stripe on LEFT edge (final color — trails user's reading in RTL) */
 .word-row2::before{
-  content:'';position:absolute;right:0;top:0;bottom:0;width:3px;
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
   background:var(--bg3);transition:background .2s;
 }
 .word-row2.st-new::before{background:var(--accent)}
@@ -2694,38 +2700,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="list-title">لیست لغات</div>
       <span class="list-count" id="list-count"></span>
     </div>
-    <div class="due-banner" id="due-banner">
-      <div class="due-head">
-        <div class="due-label">⏰ نیاز به مرور</div>
-        <button class="due-btn" onclick="sesOpenDue()">شروع مرور ←</button>
-      </div>
-      <div class="due-chips" id="due-chips"></div>
-    </div>
-    <!-- Source filter chips -->
-    <div class="src-chips" id="src-chips"></div>
-    <!-- Active filter header -->
-    <div id="src-filter-head">
-      <div class="sfh-top">
-        <div class="sfh-title"><span id="sfh-icon">📕</span><span id="sfh-name">—</span></div>
-        <button class="sfh-clear" onclick="setSrcFilter(null)">× حذف فیلتر</button>
-      </div>
-      <div class="sfh-stats" id="sfh-stats">0 از 0 یاد گرفته</div>
-      <div class="sfh-bar"><div class="sfh-bar-fill" id="sfh-bar-fill"></div></div>
-      <div class="sfh-actions">
-        <button class="sfh-btn primary" onclick="sesOpenSourceFilter()">▶ مرور این منبع</button>
-        <button class="sfh-btn" onclick="markSourceDone()" id="sfh-done-btn">✓ تکمیل شد</button>
-      </div>
-    </div>
-    <!-- Status filter row -->
+    <!-- Unified filter row: status chips + source chips, horizontally scrollable -->
     <div class="filt-row" id="filt-status">
       <button class="filt-chip on" data-status="all"       onclick="setStatusFilter('all')">همه <b id="ct-all">0</b></button>
       <button class="filt-chip"    data-status="due"       onclick="setStatusFilter('due')">⏰ دیر شده <b id="ct-due">0</b></button>
       <button class="filt-chip"    data-status="new"       onclick="setStatusFilter('new')">جدید <b id="ct-new">0</b></button>
       <button class="filt-chip"    data-status="learning"  onclick="setStatusFilter('learning')">در حال <b id="ct-learning">0</b></button>
       <button class="filt-chip"    data-status="mastered"  onclick="setStatusFilter('mastered')">✓ مسلط <b id="ct-mastered">0</b></button>
+      <span class="filt-divider"></span>
+      <span id="src-chips-inline"></span>
+      <button class="filt-chip sm" id="more-filt-btn" onclick="toggleMoreFilters()" title="فیلترهای بیشتر">⚙</button>
     </div>
-    <!-- Type filter row -->
-    <div class="filt-row" id="filt-type">
+    <!-- Collapsible extra filters -->
+    <div class="filt-row more-filters" id="filt-type" style="display:none">
+      <span style="font-size:10px;color:var(--ink3);align-self:center;padding:0 8px;font-family:var(--sans)">نوع:</span>
       <button class="filt-chip on sm" data-type="all"    onclick="setTypeFilter('all')">همه</button>
       <button class="filt-chip sm"    data-type="word"   onclick="setTypeFilter('word')">📝 لغت</button>
       <button class="filt-chip sm"    data-type="phrase" onclick="setTypeFilter('phrase')">💬 اصطلاح</button>
@@ -2735,6 +2723,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <span id="filt-summary-txt">—</span>
       <button onclick="clearAllFilters()">× پاک همه</button>
     </div>
+    <!-- Hidden legacy elements (kept for JS refs) -->
+    <div class="src-chips" id="src-chips" style="display:none"></div>
+    <div id="src-filter-head" style="display:none"></div>
+    <div class="due-banner" id="due-banner" style="display:none"><div id="due-chips"></div></div>
     <!-- Search + Sort -->
     <div class="list-ctrl-row">
       <div class="list-s-wrap" style="flex:1">
@@ -4931,14 +4923,13 @@ function markSourceDone(){
   setSrcFilter(null);
 }
 function renderSrcChips(){
-  const wrap=Q('#src-chips');if(!wrap)return;
+  const wrap=Q('#src-chips-inline');if(!wrap)return;
   const fw=filteredWords();
   /* Count words by source */
   const counts={};
   fw.forEach(w=>{const k=w.source_id||'__none__';counts[k]=(counts[k]||0)+1;});
-  /* Build chips: All + each source with count > 0 + untagged */
+  /* Only show sources that have words — skip "All" since status chips cover it */
   const chips=[];
-  chips.push({id:null,name:'همه',icon:'📚',count:fw.length});
   sources.forEach(s=>{
     const c=counts[s.id]||0;
     if(c>0||s.id===activeSrcId){
@@ -4946,15 +4937,24 @@ function renderSrcChips(){
     }
   });
   if(counts['__none__']>0)chips.push({id:'__none__',name:'متفرقه',icon:'📌',count:counts['__none__']});
-  /* Render */
+  /* Render as filter-chips style */
   wrap.innerHTML='';
+  if(chips.length===0)return;
   chips.forEach(c=>{
     const btn=document.createElement('button');
-    btn.className='src-chip'+(listSrcFilter===c.id?' active':'');
-    btn.innerHTML='<span>'+c.icon+'</span><span>'+c.name+'</span><span class="src-chip-count">'+c.count+'</span>';
-    btn.onclick=()=>setSrcFilter(c.id);
+    btn.className='filt-chip src-kind sm'+(listSrcFilter===c.id?' on':'');
+    btn.innerHTML='<span style="font-size:11px">'+c.icon+'</span>'+c.name+' <b>'+c.count+'</b>';
+    btn.onclick=()=>setSrcFilter(listSrcFilter===c.id?null:c.id);
     wrap.appendChild(btn);
   });
+}
+function toggleMoreFilters(){
+  const row=document.getElementById('filt-type');
+  if(!row)return;
+  const isOpen=row.style.display==='flex';
+  row.style.display=isOpen?'none':'flex';
+  const btn=document.getElementById('more-filt-btn');
+  if(btn)btn.classList.toggle('on',!isOpen);
 }
 function renderSrcFilterHead(){
   const head=Q('#src-filter-head');if(!head)return;
@@ -5008,19 +5008,12 @@ function renderList(){
         ).map(w=>`<span class="hint-chip" onclick="navTo('home');setTimeout(()=>qs('${w}'),300)">${w}</span>`).join('')}
       </div>
     </div>`;
-    Q('#list-count').textContent='';Q('#due-banner').classList.remove('show');return;
+    Q('#list-count').textContent='';return;
   }
   const now=new Date();
-  const due=fw.filter(w=>new Date(w.next_review||0)<=now);
-  const banner=Q('#due-banner');
-  if(due.length){
-    banner.classList.add('show');
-    Q('#due-chips').innerHTML=due.slice(0,8).map(w=>`<span class="due-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`).join('');
-  } else banner.classList.remove('show');
 
-  /* Render source chips + filter head */
+  /* Render source chips (inline inside unified filter row) */
   renderSrcChips();
-  renderSrcFilterHead();
 
   /* ─ Update status filter counts (on ALL fw, before any filter) ─ */
   const counts={all:fw.length,new:0,due:0,learning:0,mastered:0};
@@ -5162,8 +5155,9 @@ function renderList(){
     </div>`;
   }
 
-  /* Group by date ONLY when sort=new and no search (to keep focus on results when searching) */
-  if(listSort==='new' && !q){
+  /* Group by date ONLY when sort=new and no filters active (pure chronological view) */
+  const noFiltersActive=!q && listStatusFilter==='all' && listTypeFilter==='all' && !listSrcFilter;
+  if(listSort==='new' && noFiltersActive){
     const groups={today:[],yesterday:[],week:[],month:[],older:[]};
     filtered.forEach(w=>{groups[bucketOf(w)].push(w);});
     let html='';
