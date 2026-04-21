@@ -499,17 +499,24 @@ body.fsrs-mode .swipe-row{display:none}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s2) 0 var(--s3);animation:up .4s var(--ease) both}
-.hero-eye{
-  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  color:var(--accent);margin-bottom:var(--s1);opacity:.8;
-}
+.hero{padding:var(--s3) 0 var(--s2);animation:up .4s var(--ease) both;display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.hero-txt{flex:1;min-width:0}
+.hero-eye{display:none}
 .hero h1{
-  font-family:var(--sans);font-size:clamp(22px,5.5vw,28px);font-weight:700;
-  color:var(--ink);line-height:1.25;letter-spacing:0;margin-bottom:var(--s1);
+  font-family:var(--sans);font-size:clamp(18px,4.5vw,22px);font-weight:700;
+  color:var(--ink);line-height:1.25;letter-spacing:0;margin-bottom:2px;
 }
-.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.7}
-.hero p{font-size:12px;color:var(--ink3);line-height:1.6}
+.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.6}
+.hero p{font-size:11px;color:var(--ink3);line-height:1.4}
+/* Inline lang chip in hero */
+.hero-lang{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--abl);color:var(--accent);border:none;
+  border-radius:20px;padding:5px 10px 5px 8px;
+  font-size:11px;font-weight:600;cursor:pointer;
+  font-family:var(--sans);transition:background .2s;flex-shrink:0;
+}
+.hero-lang:hover{background:var(--bg2)}
 
 /* ═══════════════════════════════════
    SEARCH
@@ -747,66 +754,57 @@ body.fsrs-mode .swipe-row{display:none}
    STATS CARD
 ═══════════════════════════════════ */
 .sum-card{
-  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
-  padding:var(--s5);margin-top:var(--s3);margin-bottom:0;box-shadow:var(--sh1);
+  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
+  padding:12px 14px;margin-top:var(--s3);margin-bottom:0;box-shadow:var(--sh1);
   display:none;animation:up .35s .15s var(--ease) both;overflow:hidden;position:relative;
 }
 .sum-card.show{display:block}
 
-/* header row */
-.sum-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:var(--s4);
-}
+/* top row: goal ring + title + streak all inline */
+.sum-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sum-top .dg-ring{margin:0;flex-shrink:0}
+.sum-top-body{flex:1;min-width:0}
 .sum-title{
-  font-size:13px;font-weight:600;color:var(--ink2);letter-spacing:.2px;font-family:var(--sans);
+  font-size:12px;font-weight:600;color:var(--ink);font-family:var(--sans);
+  display:flex;align-items:center;gap:6px;line-height:1.2;
 }
 .sum-streak{
-  display:flex;align-items:center;gap:5px;
-  font-size:12px;font-weight:700;color:var(--warn);
-  background:var(--warnbg);border-radius:20px;padding:4px 10px;
+  font-size:10px;font-weight:700;color:var(--warn);
+  background:var(--warnbg);border-radius:10px;padding:1px 7px;
 }
+.sum-subgoal{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.3}
+.sum-subgoal b{color:var(--ink2);font-weight:700}
 
-/* stats row — 3 items */
+/* inline stats — compact chips */
 .sum-nums{
-  display:grid;grid-template-columns:1fr 1fr 1fr;
-  gap:var(--s2);margin-bottom:var(--s4);
+  display:flex;gap:6px;margin-bottom:10px;
 }
 .sum-nb{
-  background:var(--bg2);border:1px solid var(--bg3);
-  border-radius:var(--r3);padding:var(--s3) var(--s2);
+  flex:1;background:var(--bg2);border:1px solid var(--bg3);
+  border-radius:var(--r2);padding:6px 8px;
   text-align:center;transition:background .15s;
 }
 .sum-nb:hover{background:var(--bg3)}
 .sum-n{
-  font-size:26px;font-weight:700;color:var(--ink);
-  line-height:1;margin-bottom:3px;
+  font-size:16px;font-weight:700;color:var(--ink);
+  line-height:1;margin-bottom:2px;
   font-variant-numeric:tabular-nums;
 }
 .sum-nb.ok .sum-n{color:var(--ok)}
 .sum-nb.warn .sum-n{color:var(--accent)}
-.sum-l{font-size:10px;color:var(--ink3);font-weight:400;letter-spacing:.2px}
+.sum-l{font-size:9px;color:var(--ink3);font-weight:400;letter-spacing:.2px}
 
-/* dots */
-.sum-dots{display:flex;gap:4px;align-items:flex-end;margin-bottom:var(--s4)}
-.sd{display:flex;flex-direction:column;align-items:center;gap:3px}
-.sd-c{width:7px;height:7px;border-radius:50%;background:var(--bg3);transition:all .3s}
-.sd-c.done{background:var(--accent);box-shadow:0 0 0 2px var(--abl)}
-.sd-c.today{background:var(--accent);transform:scale(1.4);box-shadow:0 0 0 2px var(--aglow)}
-.sd-l{font-size:8px;color:var(--ink4)}
-.sd-l.t{color:var(--accent);font-weight:700}
-
-/* action buttons */
-.sum-acts{display:flex;gap:var(--s2)}
+/* action buttons — compact */
+.sum-acts{display:flex;gap:6px}
 .sum-review{
   flex:1;display:flex;align-items:center;justify-content:center;gap:var(--s2);
-  padding:12px var(--s4);border-radius:var(--r2);background:var(--accent);color:#fff;
-  border:none;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;
+  padding:9px var(--s3);border-radius:var(--r2);background:var(--accent);color:#fff;
+  border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;
 }
 .sum-review:hover{background:var(--accent2);transform:translateY(-1px)}
 .sum-all{
-  padding:12px var(--s4);border-radius:var(--r2);border:1.5px solid var(--bg3);
-  background:var(--bg2);color:var(--ink2);font-size:13px;font-weight:500;
+  padding:9px 12px;border-radius:var(--r2);border:1px solid var(--bg3);
+  background:var(--bg2);color:var(--ink2);font-size:12px;font-weight:500;
   cursor:pointer;transition:all .18s;font-family:var(--sans);white-space:nowrap;
 }
 .sum-all:hover{background:var(--bg3);color:var(--ink)}
@@ -1664,6 +1662,52 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 /* Hint letter */
 .sv-letter.hint{color:var(--ink3)!important;border-style:solid!important;border-color:var(--bg3)!important}
 
+/* Word result tags (reflexive/separable/register) */
+.wr-tag{
+  display:inline-flex;align-items:center;
+  font-size:9px;font-weight:700;letter-spacing:.5px;
+  padding:2px 7px;border-radius:10px;
+  font-family:var(--sans);
+}
+.wr-tag.reflexive{background:rgba(120,80,255,.12);color:#7b5cff;border:1px solid rgba(120,80,255,.25)}
+.wr-tag.separable{background:rgba(0,160,130,.1);color:#00a082;border:1px solid rgba(0,160,130,.25)}
+.wr-tag.register{background:var(--bg2);color:var(--ink2);border:1px solid var(--bg3)}
+
+/* Unsaved searches reminder panel */
+#unsaved-panel{
+  display:none;margin-top:var(--s3);margin-bottom:var(--s3);
+  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
+  padding:12px 14px;
+  animation:slideUp .2s ease;
+}
+#unsaved-panel.show{display:block}
+.uns-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.uns-title{font-size:11px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:5px}
+.uns-count{font-size:9px;font-weight:700;background:var(--warn);color:#fff;padding:1px 6px;border-radius:8px}
+.uns-clear{font-size:10px;color:var(--ink3);padding:2px 8px;border-radius:8px;font-family:var(--sans);transition:all .1s}
+.uns-clear:hover{color:var(--ink);background:var(--bg2)}
+.uns-list{display:flex;flex-direction:column;gap:4px}
+.uns-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;background:var(--bg2);border-radius:var(--r2);
+  font-family:var(--sans);
+}
+.uns-item-word{flex:1;min-width:0;font-size:13px;color:var(--ink);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--serif)}
+.uns-item-time{font-size:9px;color:var(--ink3);flex-shrink:0}
+.uns-item-add{
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  background:var(--accent);color:#fff;border-radius:50%;
+  cursor:pointer;transition:all .15s;flex-shrink:0;font-size:14px;
+}
+.uns-item-add:hover{background:var(--accent2);transform:scale(1.08)}
+
+/* Add button pulse animation */
+@keyframes addPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(26,58,242,.4)}
+  50%{box-shadow:0 0 0 8px rgba(26,58,242,0)}
+}
+#add-btn.pulse{animation:addPulse 1.5s ease infinite}
+
 /* ═══════════════════════════════════
    DAILY SOURCE SYSTEM
 ═══════════════════════════════════ */
@@ -2159,6 +2203,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="mi-name">شنیداری</div>
       <div class="mi-desc">گوش بده · تایپ کن</div>
     </div>
+    <div class="mi-card" onclick="introPickMode('speed')">
+      <div class="mi-icon">⚡</div>
+      <div class="mi-name">سرعتی</div>
+      <div class="mi-desc">۶۰ ثانیه · امتیاز بگیر</div>
+    </div>
+    <div class="mi-card" onclick="introPickMode('match')">
+      <div class="mi-icon">🧩</div>
+      <div class="mi-name">جورچین</div>
+      <div class="mi-desc">جفت‌ها رو پیدا کن</div>
+    </div>
+    <div class="mi-card" onclick="introPickMode('fill')">
+      <div class="mi-icon">✍️</div>
+      <div class="mi-name">جای خالی</div>
+      <div class="mi-desc">کلمه درست رو انتخاب کن</div>
+    </div>
     <div class="mi-card new" onclick="introPickMode('survival')" style="grid-column:1/-1">
       <div class="mi-icon">💀</div>
       <div class="mi-name">بقای کلمات</div>
@@ -2360,10 +2419,30 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 
   <!-- HOME -->
   <div class="pane on" id="pane-home">
-    <div class="hero">
-      <div class="hero-eye" id="hero-label">دستیار یادگیری آلمانی</div>
-      <h1 id="hero-title">لغت یاد بگیر، <em>نه حفظ کنی</em></h1>
-      <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
+    <div class="hero" style="position:relative">
+      <div class="hero-txt">
+        <h1 id="hero-title">لغت یاد بگیر، <em>نه حفظ کنی</em></h1>
+        <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
+      </div>
+      <button class="hero-lang" onclick="langPopoverToggle(event)" id="home-lang-badge" title="زبان">
+        <span id="home-lang-flag">🇩🇪</span>
+        <span id="home-lang-label">DE</span>
+        <span id="home-lang-sublabel" style="display:none"></span>
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" style="opacity:.5" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <!-- Lang mini popover -->
+      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:180px;animation:popIn .18s var(--spring)">
+        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇩🇪</span>
+          <span>آلمانی</span>
+          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+        </button>
+        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px">🇬🇧</span>
+          <span>انگلیسی</span>
+          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+        </button>
+      </div>
     </div>
 
     <!-- Active source banner -->
@@ -2376,30 +2455,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <button class="src-banner-act" onclick="changeSource()" aria-label="تغییر منبع">تغییر ↻</button>
     </div>
     <div id="free-banner" style="display:none"></div>
-    <div style="display:flex;align-items:center;margin-bottom:10px;position:relative">
-      <button onclick="langPopoverToggle(event)" id="home-lang-badge" style="display:inline-flex;align-items:center;gap:5px;background:var(--abl);color:var(--accent);border:none;border-radius:20px;padding:5px 12px 5px 8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .2s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--abl)'" title="زبان یادگیری رو انتخاب کن">
-        <span id="home-lang-flag">🇩🇪</span>
-        <span id="home-lang-label">آلمانی</span>
-        <span style="font-size:10px;opacity:.6;font-weight:400" id="home-lang-sublabel">زبان هدف</span>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.5;transition:transform .2s" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <!-- Lang mini popover -->
-      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:160px;animation:popIn .18s var(--spring)">
-        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇩🇪</span>
-          <span>آلمانی</span>
-          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
-        </button>
-        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇬🇧</span>
-          <div style="display:flex;flex-direction:column;align-items:flex-start">
-            <span>انگلیسی</span>
-            <span style="font-size:10px;color:var(--ink3);margin-top:1px">یادگیری لغت انگلیسی با AI</span>
-          </div>
-          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
-        </button>
-      </div>
-    </div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
         placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
@@ -2504,20 +2559,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 
     <!-- Stats card -->
     <div class="sum-card" id="sum-card">
-      <div class="sum-header">
-        <div class="sum-title">پیشرفت تو</div>
-        <div class="sum-streak">🔥 <span id="sn-streak">0</span> روز</div>
-      </div>
-      <!-- Unified daily goal + numbers -->
-      <div style="display:flex;align-items:center;gap:14px;padding:8px 0 10px;border-bottom:1px solid var(--bg2);margin-bottom:10px">
-        <div class="dg-ring" style="margin:0"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct">0%</div></div>
-        <div style="flex:1"><div class="dg-title" id="dg-title">هدف امروز: <b>0</b> از <b>5</b></div><div class="dg-sub" id="dg-sub">لغت جدید یاد بگیر یا مرور کن</div></div>
+      <div class="sum-top">
+        <div class="dg-ring"><svg width="36" height="36" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct" style="font-size:9px">0%</div></div>
+        <div class="sum-top-body">
+          <div class="sum-title">پیشرفت تو <span class="sum-streak">🔥 <span id="sn-streak">0</span></span></div>
+          <div class="sum-subgoal" id="dg-title">هدف: <b>0</b>/<b>5</b></div>
+        </div>
       </div>
       <div class="sum-nums">
         <div class="sum-nb">
           <div class="sum-n" id="sn-total">0</div>
-          <div class="sum-l">کل لغت</div>
-          <div id="sn-lang-split" style="font-size:9px;color:var(--ink4);margin-top:2px;display:none"></div>
+          <div class="sum-l">کل</div>
+          <div id="sn-lang-split" style="display:none"></div>
         </div>
         <div class="sum-nb ok">
           <div class="sum-n" id="sn-learned">0</div>
@@ -2525,28 +2578,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         </div>
         <div class="sum-nb warn" id="sn-due-wrap">
           <div class="sum-n" id="sn-due">0</div>
-          <div class="sum-l">برای مرور</div>
+          <div class="sum-l">مرور</div>
         </div>
       </div>
-      <div class="sum-dots" id="sum-dots"></div>
       <div class="sum-acts">
         <button class="sum-review" onclick="sesOpenSmart()" aria-label="شروع جلسه مرور"><span id="review-lbl">شروع مرور</span> →</button>
-        <button class="sum-all" onclick="sesOpen()" aria-label="مرور همه لغات">همه لغات</button>
+        <button class="sum-all" onclick="sesOpen()" aria-label="مرور همه لغات">همه</button>
       </div>
     </div>
 
-    <a href="/reader" id="reader-card" style="display:none;text-decoration:none;background:var(--card);border:1.5px solid var(--abl);border-radius:var(--r3);padding:14px 16px;align-items:center;gap:12px;margin-bottom:var(--s3)">
-      <div style="width:36px;height:36px;background:var(--abl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M5 3h7l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="var(--accent)" stroke-width="1.5"/><path d="M12 3v4h4" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10h6M7 13h4" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:700;color:var(--ink);font-family:var(--sans)">کتاب‌خوان آلمانی</div>
-        <div style="font-size:11px;color:var(--ink3);margin-top:2px">PDF باز کن — روی کلمه کلیک کن — معنی بگیر</div>
-      </div>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2L8 6l-4 4" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
-
-    <!-- Home empty state -->
+<!-- Home empty state -->
     <div id="home-empty">
       <div style="text-align:center;padding:var(--s5) 0 var(--s3)">
         <div style="font-size:36px;margin-bottom:var(--s2)">🌱</div>
@@ -3483,7 +3524,7 @@ function updateLangUI(){
   const flag = document.getElementById('home-lang-flag');
   const label = document.getElementById('home-lang-label');
   if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
-  if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
+  if(label) label.textContent = isDE ? 'DE' : 'EN';
   // Hero texts
   const heroLabel = document.getElementById('hero-label');
   const heroTitle = document.getElementById('hero-title');
@@ -3622,7 +3663,6 @@ function updateStats(){
   }
   card.classList.add('show');
   if(homeEmpty) homeEmpty.classList.remove('show');
-  var _rc=document.getElementById('reader-card');if(_rc)_rc.style.display='flex';
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
@@ -3657,13 +3697,15 @@ function updateStats(){
   // dots
   const dn=['ی','د','س','چ','پ','ج','ش'];
   const dotsEl=Q('#sum-dots');
-  let html='';
-  for(let i=6;i>=0;i--){
-    const day=new Date();day.setDate(day.getDate()-i);
-    const isT=i===0,done=!!all[day.toDateString()];
-    html+=`<div class="sd"><div class="sd-c ${isT?'today':done?'done':''}"></div><div class="sd-l${isT?' t':''}">${isT?'▲':dn[day.getDay()]}</div></div>`;
+  if(dotsEl){
+    let html='';
+    for(let i=6;i>=0;i--){
+      const day=new Date();day.setDate(day.getDate()-i);
+      const isT=i===0,done=!!all[day.toDateString()];
+      html+=`<div class="sd"><div class="sd-c ${isT?'today':done?'done':''}"></div><div class="sd-l${isT?' t':''}">${isT?'▲':dn[day.getDay()]}</div></div>`;
+    }
+    dotsEl.innerHTML=html;
   }
-  dotsEl.innerHTML=html;
   // review button
   const lbl=Q('#review-lbl');
   if(lbl){
@@ -3772,8 +3814,8 @@ async function searchWord(q){
 
   const isDE = targetLang === 'de';
   const schema = isDE
-    ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","usage_pattern":"الگوی استفاده مثل sich engagieren fur+Akk یا null","preposition":"حرف اضافه مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"نکته گرامری مهم یا null","priority":{"score":3,"reason":"چرا مهمه"}}'
-    : '{"word":"word without article","corrected_from":"null or original word","article":"null (English has no grammatical gender)","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs only: past tense and past participle e.g. go – went – gone","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"important grammar note or null","priority":{"score":3,"reason":"why important"}}';
+    ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","reflexive":"akkusativ/dativ/null — فقط برای Verb: اگه sich + Akk → akkusativ، اگه sich + Dat → dativ، وگرنه null","separable":"true/false/null — فقط برای Verb: trennbar یا untrennbar",  "register":"formal/informal/umgangssprache/null — ثبت زبانی",  "frequency":"common/medium/rare — روزمرگی","komposita":"اگه کلمه مرکبه اجزاش با + مثل Arbeits+platz، وگرنه null","usage_pattern":"الگوی استفاده مثل sich engagieren für+Akk یا null","preposition":"حرف اضافه با Kasus مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ خط نکات: declension/pattern/common mistake — با ▪ جدا کن","priority":{"score":3,"reason":"چرا مهمه"}}'
+    : '{"word":"word without article","corrected_from":"null or original word","article":"null","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs: past tense and past participle","reflexive":"null (rare in English)","separable":"null","register":"formal/informal/slang/null","frequency":"common/medium/rare","komposita":"null","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ lines of grammar notes with ▪","priority":{"score":3,"reason":"why important"}}';
 
   const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
   const p = 'ورودی: "'+q+'"\n'
@@ -3782,9 +3824,10 @@ async function searchWord(q){
    +'فارسی: معادل '+langLabel+' پیدا کن\n\n'
    +'JSON خالص:\n'+schema+'\n\n'
    +'قوانین:\n'
-   +(isDE ? '- principal_parts: فقط برای Verb، فقط ۲ شکل Präteritum و Perfekt\n' : '- principal_parts: only for irregular verbs, 3 forms\n')
+   +(isDE ? '- principal_parts: فقط برای Verb، ۲ شکل Präteritum و Perfekt\n- reflexive: فقط برای افعال بازتابی، case دقیق (akkusativ/dativ)\n- separable: true فقط اگه trennbar (مثل aufstehen, mitkommen)\n- komposita: فقط اگه اسم مرکبه، اجزا با +\n' : '- principal_parts: only for irregular verbs, 3 forms\n')
    +'- synonyms: حداکثر ۲ تا\n'
-   +'- examples: دقیقاً ۱ جمله\n'
+   +'- examples: دقیقاً ۱ جمله طبیعی\n'
+   +'- grammar_tip: ۲-۳ نکته دقیق با ▪ جداکننده: declension/pattern + اشتباه رایج + مشابه\n'
    +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
    +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
 
@@ -3849,15 +3892,29 @@ function renderWord(d){
     ).join('، ');
   } else synEl.style.display='none';
 
-  /* ─ Usage line: "* sich engagieren für + Akk" ─ */
+  /* ─ Reflexive + Separable badges ─ */
+  const refl = nul(d.reflexive)?'':d.reflexive.trim().toLowerCase();
+  const sep = d.separable===true||d.separable==='true';
+  const reg = nul(d.register)?'':d.register.trim().toLowerCase();
+  /* ─ Usage line: "* sich engagieren für + Akk" + tags ─ */
   const usEl = Q('#res-usage-line');
   const up = nul(d.usage_pattern)?'':d.usage_pattern.trim();
   const pre = nul(d.preposition)?'':d.preposition.trim();
   const usageText = up || pre;
-  if(usageText){
-    usEl.innerHTML = `<span>${usageText}</span>`;
+  const tagBadges=[];
+  if(refl==='akkusativ'||refl==='dativ'){tagBadges.push('<span class="wr-tag reflexive">REFLEXIV · '+(refl==='dativ'?'Dat':'Akk')+'</span>');}
+  if(sep)tagBadges.push('<span class="wr-tag separable">TRENNBAR</span>');
+  if(reg&&reg!=='null'&&reg!=='medium'&&reg!=='common')tagBadges.push('<span class="wr-tag register">'+reg.toUpperCase()+'</span>');
+  if(usageText||tagBadges.length){
+    usEl.innerHTML=(usageText?'<span>'+usageText+'</span>':'')+(tagBadges.length?'<span style="display:inline-flex;gap:4px;flex-wrap:wrap;margin-right:auto">'+tagBadges.join('')+'</span>':'');
     usEl.style.display='flex';
   } else usEl.style.display='none';
+  /* ─ Komposita (compound word parts) ─ */
+  const komp = nul(d.komposita)?'':d.komposita.trim();
+  let kompEl=Q('#res-komposita');
+  if(!kompEl){kompEl=document.createElement('div');kompEl.id='res-komposita';kompEl.style.cssText='font-size:11px;color:var(--ink3);margin-top:4px;direction:ltr;display:none;font-family:var(--serif)';usEl.parentElement.insertBefore(kompEl,usEl.nextSibling);}
+  if(komp&&komp.includes('+')){kompEl.innerHTML='🧩 '+komp.split('+').map(p=>'<span style="color:var(--accent)">'+p.trim()+'</span>').join(' <span style="opacity:.4">+</span> ');kompEl.style.display='block';}
+  else kompEl.style.display='none';
 
   /* ─ First example sentence ─ */
   const exEl = Q('#res-example');
@@ -3868,10 +3925,16 @@ function renderWord(d){
     exEl.style.display='';
   } else exEl.style.display='none';
 
-  /* ─ Grammar tip ─ */
+  /* ─ Grammar tip (supports ▪ bullets) ─ */
   const tipEl = Q('#res-tip-line');
-  if(!nul(d.grammar_tip)){ tipEl.textContent=d.grammar_tip; tipEl.style.display=''; }
-  else tipEl.style.display='none';
+  if(!nul(d.grammar_tip)){
+    const tip=d.grammar_tip.trim();
+    if(tip.includes('▪')){
+      const lines=tip.split('▪').map(s=>s.trim()).filter(Boolean);
+      tipEl.innerHTML=lines.map(l=>'<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--accent);font-weight:700;flex-shrink:0">▪</span><span>'+l+'</span></div>').join('');
+    }else tipEl.textContent=tip;
+    tipEl.style.display='';
+  } else tipEl.style.display='none';
 
   /* ─ Conjugation (verbs only) ─ */
   const conjEl=Q('#res-conj');const conjWrap=Q('#conj-wrap');
@@ -3929,8 +3992,8 @@ async function searchPhrase(q){
   setMsg('در حال تحلیل اصطلاح...','info');
   const esc = s => s.replace(/"/g,"'");
   const p = isDE
-    ? 'اصطلاح یا جمله آلمانی: "'+esc(q)+'"\nمعنی کامل رو به فارسی بده. اگه غلط نوشته شده فرم صحیح رو بده.\nفقط JSON:\n{"original":"'+esc(q)+'","corrected":"فرم صحیح اگه غلط بود وگرنه null","meaning_fa":"معنی کامل فارسی","synonym":"مترادف آلمانی یا null","similar":["عبارت مشابه ۱","عبارت مشابه ۲"],"example_de":"جمله نمونه کوتاه یا null","example_fa":"ترجمه فارسی مثال یا null","priority":{"score":3,"reason":"چرا مهمه"}}'
-    : 'English phrase: "'+esc(q)+'"\nExplain in Persian. If misspelled give the correct form.\nJSON only:\n{"original":"'+esc(q)+'","corrected":"correct form if misspelled else null","meaning_fa":"معنی کامل فارسی","synonym":"similar English phrase or null","similar":["similar phrase 1","similar phrase 2"],"example_de":"short example sentence or null","example_fa":"ترجمه فارسی مثال یا null","priority":{"score":3,"reason":"why it matters"}}';
+    ? 'اصطلاح یا جمله آلمانی: "'+esc(q)+'"\nتحلیل تخصصی کن. اگه غلط نوشته شده فرم صحیح رو بده.\nفقط JSON خالص:\n{\n  "original":"'+esc(q)+'",\n  "corrected":"فرم صحیح اگه غلط بود وگرنه null",\n  "phrase_type":"Redewendung/Sprichwort/Kollokation/Feste Wendung/Trennbare Verb/Modalverb/Satz/null — نوع دقیق",\n  "literal_fa":"ترجمه کلمه به کلمه (تحت‌اللفظی) یا null اگه ضروری نیست",\n  "meaning_fa":"معنی کاربردی و درست در فارسی — چند معنی با / جدا کن",\n  "when_to_use":"کی و کجا استفاده میشه — در چه موقعیت‌هایی مناسبه",\n  "register":"formal/informal/umgangssprache/literarisch — ثبت زبانی",\n  "grammar":"ساختار گرامری: چه Kasus دارن، ترتیب کلمات، یا نکته خاص — با ▪ جدا کن",\n  "synonym":"مترادف آلمانی یا null",\n  "similar":["۲ عبارت مشابه با تفاوت ظریف"],\n  "example_de":"جمله نمونه کامل و طبیعی",\n  "example_fa":"ترجمه طبیعی فارسی مثال",\n  "priority":{"score":3,"reason":"چرا مهمه"}\n}\nقوانین:\n- phrase_type دقیق باشه: Redewendung (اصطلاح)، Sprichwort (ضرب‌المثل)، Kollokation (همنشینی ثابت)، Feste Wendung (عبارت ثابت)\n- literal_fa فقط اگه اصطلاح تحت‌اللفظی نامفهومه\n- meaning_fa معنای کاربردی، نه ترجمه کلمه‌ای\n- when_to_use حتماً مثال موقعیتی بده\nفقط JSON.'
+    : 'English phrase: "'+esc(q)+'"\nExpert analysis. Correct if misspelled.\nJSON only:\n{\n  "original":"'+esc(q)+'",\n  "corrected":"correct form if misspelled else null",\n  "phrase_type":"Idiom/Proverb/Collocation/Fixed expression/Phrasal verb/null",\n  "literal_fa":"literal translation or null",\n  "meaning_fa":"functional meaning in Persian",\n  "when_to_use":"when and where to use",\n  "register":"formal/informal/slang/literary",\n  "grammar":"grammar structure notes with ▪",\n  "synonym":"similar phrase or null",\n  "similar":["2 similar phrases with subtle differences"],\n  "example_de":"natural example sentence",\n  "example_fa":"Persian translation",\n  "priority":{"score":3,"reason":"why"}\n}\nOnly JSON.';
 
   const raw=(await ai(p,500)).replace(/```json|```/g,'').trim();
   const pm=raw.match(/\{[\s\S]*\}/);
@@ -3964,6 +4027,46 @@ async function searchPhrase(q){
     phpEl.innerHTML='<span>'+icons[sc]+'</span><span>'+labels[sc]+' — '+(curPhrase.priority.reason||'')+'</span>';
     phpEl.style.display='flex';
   } else phpEl.style.display='none';
+
+  // phrase_type + register badges
+  let typeBadgesEl=Q('#ph-type-badges');
+  if(!typeBadgesEl){
+    typeBadgesEl=document.createElement('div');typeBadgesEl.id='ph-type-badges';
+    typeBadgesEl.style.cssText='display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;margin-bottom:6px';
+    phpEl.parentElement.insertBefore(typeBadgesEl,phpEl.nextSibling);
+  }
+  typeBadgesEl.innerHTML='';
+  if(curPhrase.phrase_type&&curPhrase.phrase_type!=='null'){
+    const typeMap={'Redewendung':{l:'اصطلاح',c:'#ffb347'},'Sprichwort':{l:'ضرب‌المثل',c:'#7b5cff'},'Kollokation':{l:'همنشینی',c:'#00a082'},'Feste Wendung':{l:'عبارت ثابت',c:'#60a5fa'},'Trennbare Verb':{l:'فعل جداشدنی',c:'#00a082'},'Modalverb':{l:'فعل کمکی',c:'#ffb347'},'Satz':{l:'جمله',c:'#9aa0a6'},'Idiom':{l:'Idiom',c:'#ffb347'},'Proverb':{l:'Proverb',c:'#7b5cff'}};
+    const m=typeMap[curPhrase.phrase_type]||{l:curPhrase.phrase_type,c:'#9aa0a6'};
+    typeBadgesEl.innerHTML+='<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;background:'+m.c+'22;color:'+m.c+';border:1px solid '+m.c+'44">'+m.l+'</span>';
+  }
+  if(curPhrase.register&&curPhrase.register!=='null'){
+    typeBadgesEl.innerHTML+='<span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.12)">'+curPhrase.register+'</span>';
+  }
+
+  // literal translation (for idioms)
+  let litEl=Q('#ph-literal');
+  if(!litEl){litEl=document.createElement('div');litEl.id='ph-literal';litEl.style.cssText='font-size:11px;color:rgba(255,255,255,.55);margin-top:6px;font-style:italic;padding-right:10px;border-right:2px solid rgba(255,255,255,.15)';typeBadgesEl.parentElement.insertBefore(litEl,typeBadgesEl.nextSibling);}
+  if(curPhrase.literal_fa&&curPhrase.literal_fa!=='null'){litEl.textContent='🔤 تحت‌اللفظی: '+curPhrase.literal_fa;litEl.style.display='block';}
+  else litEl.style.display='none';
+
+  // when to use
+  let whenEl=Q('#ph-when');
+  if(!whenEl){whenEl=document.createElement('div');whenEl.id='ph-when';whenEl.style.cssText='font-size:11px;color:rgba(255,255,255,.75);margin-top:8px;line-height:1.7;background:rgba(255,255,255,.06);padding:8px 10px;border-radius:8px';litEl.parentElement.insertBefore(whenEl,litEl.nextSibling);}
+  if(curPhrase.when_to_use&&curPhrase.when_to_use!=='null'){whenEl.innerHTML='💡 '+curPhrase.when_to_use;whenEl.style.display='block';}
+  else whenEl.style.display='none';
+
+  // grammar note
+  let gramEl=Q('#ph-gram');
+  if(!gramEl){gramEl=document.createElement('div');gramEl.id='ph-gram';gramEl.style.cssText='font-size:11px;color:rgba(255,255,255,.7);margin-top:8px;line-height:1.8';whenEl.parentElement.insertBefore(gramEl,whenEl.nextSibling);}
+  if(curPhrase.grammar&&curPhrase.grammar!=='null'){
+    const g=curPhrase.grammar.trim();
+    if(g.includes('▪')){
+      gramEl.innerHTML=g.split('▪').map(s=>s.trim()).filter(Boolean).map(l=>'<div style="display:flex;gap:5px"><span style="color:#ffb347">▪</span><span>'+l+'</span></div>').join('');
+    }else gramEl.textContent='📐 '+g;
+    gramEl.style.display='block';
+  }else gramEl.style.display='none';
 
   // synonym
   const synEl=Q('#ph-syn');
@@ -6639,7 +6742,12 @@ function updateDailyGoal(){
   const pct=Math.min(100,Math.round(count/DAILY_GOAL*100));
   const fill=Q('#dg-fill');if(fill){const c=113.1;fill.style.strokeDashoffset=c-(c*pct/100);}
   const pctEl=Q('#dg-pct');if(pctEl)pctEl.textContent=pct+'%';
-  const title=Q('#dg-title');if(title)title.innerHTML='هدف امروز: <b>'+count+'</b> از <b>'+DAILY_GOAL+'</b>';
+  const title=Q('#dg-title');if(title){
+    let msg='هدف: <b>'+count+'</b>/<b>'+DAILY_GOAL+'</b>';
+    if(count>=DAILY_GOAL)msg+=' 🎉';
+    else if(count>0)msg+=' — '+(DAILY_GOAL-count)+' تا مونده';
+    title.innerHTML=msg;
+  }
   const sub=Q('#dg-sub');
   if(sub){
     if(count>=DAILY_GOAL)sub.textContent='🎉 هدف امروز رو رسیدی!';
