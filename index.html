@@ -499,8 +499,8 @@ body.fsrs-mode .swipe-row{display:none}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s3) 0 var(--s2);animation:up .4s var(--ease) both;display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
-.hero-txt{flex:1;min-width:0}
+.hero{padding:var(--s3) 0 var(--s2);animation:up .4s var(--ease) both;position:relative;z-index:60}
+.hero-txt{padding-left:72px}
 .hero-eye{display:none}
 .hero h1{
   font-family:var(--sans);font-size:clamp(18px,4.5vw,22px);font-weight:700;
@@ -508,15 +508,18 @@ body.fsrs-mode .swipe-row{display:none}
 }
 .hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.6}
 .hero p{font-size:11px;color:var(--ink3);line-height:1.4}
-/* Inline lang chip in hero */
+/* Lang chip — pinned top-left of hero */
 .hero-lang{
-  display:inline-flex;align-items:center;gap:4px;
+  position:absolute;top:var(--s3);left:0;
+  display:inline-flex;align-items:center;gap:5px;
   background:var(--abl);color:var(--accent);border:none;
-  border-radius:20px;padding:5px 10px 5px 8px;
-  font-size:11px;font-weight:600;cursor:pointer;
-  font-family:var(--sans);transition:background .2s;flex-shrink:0;
+  border-radius:20px;padding:6px 10px 6px 10px;
+  font-size:11px;font-weight:700;cursor:pointer;
+  font-family:var(--sans);transition:all .2s;
+  line-height:1;
 }
 .hero-lang:hover{background:var(--bg2)}
+.hero-lang svg{opacity:.55;transition:transform .2s}
 
 /* ═══════════════════════════════════
    SEARCH
@@ -2419,19 +2422,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 
   <!-- HOME -->
   <div class="pane on" id="pane-home">
-    <div class="hero" style="position:relative">
+    <div class="hero">
+      <button class="hero-lang" onclick="langPopoverToggle(event)" id="home-lang-badge" title="زبان">
+        <span id="home-lang-label">آلمانی</span>
+        <span id="home-lang-flag" style="display:none"></span>
+        <span id="home-lang-sublabel" style="display:none"></span>
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <div class="hero-txt">
         <h1 id="hero-title">لغت یاد بگیر، <em>نه حفظ کنی</em></h1>
         <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
       </div>
-      <button class="hero-lang" onclick="langPopoverToggle(event)" id="home-lang-badge" title="زبان">
-        <span id="home-lang-flag">🇩🇪</span>
-        <span id="home-lang-label">DE</span>
-        <span id="home-lang-sublabel" style="display:none"></span>
-        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" style="opacity:.5" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
       <!-- Lang mini popover -->
-      <div id="lang-popover" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:999;min-width:180px;animation:popIn .18s var(--spring)">
+      <div id="lang-popover" style="display:none;position:absolute;top:calc(var(--s3) + 32px);left:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:9999;min-width:180px;animation:popIn .18s var(--spring)">
         <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
           <span style="font-size:16px">🇩🇪</span>
           <span>آلمانی</span>
@@ -3523,8 +3526,8 @@ function updateLangUI(){
   // Home badge
   const flag = document.getElementById('home-lang-flag');
   const label = document.getElementById('home-lang-label');
-  if(flag) flag.textContent = isDE ? '🇩🇪' : '🇬🇧';
-  if(label) label.textContent = isDE ? 'DE' : 'EN';
+  if(flag) flag.textContent = '';
+  if(label) label.textContent = isDE ? 'آلمانی' : 'انگلیسی';
   // Hero texts
   const heroLabel = document.getElementById('hero-label');
   const heroTitle = document.getElementById('hero-title');
