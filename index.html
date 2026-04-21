@@ -3995,13 +3995,34 @@ async function searchPhrase(q){
   setMsg('در حال تحلیل اصطلاح...','info');
   const esc = s => s.replace(/"/g,"'");
   const p = isDE
-    ? 'اصطلاح یا جمله آلمانی: "'+esc(q)+'"\nتحلیل تخصصی کن. اگه غلط نوشته شده فرم صحیح رو بده.\nفقط JSON خالص:\n{\n  "original":"'+esc(q)+'",\n  "corrected":"فرم صحیح اگه غلط بود وگرنه null",\n  "phrase_type":"Redewendung/Sprichwort/Kollokation/Feste Wendung/Trennbare Verb/Modalverb/Satz/null — نوع دقیق",\n  "literal_fa":"ترجمه کلمه به کلمه (تحت‌اللفظی) یا null اگه ضروری نیست",\n  "meaning_fa":"معنی کاربردی و درست در فارسی — چند معنی با / جدا کن",\n  "when_to_use":"کی و کجا استفاده میشه — در چه موقعیت‌هایی مناسبه",\n  "register":"formal/informal/umgangssprache/literarisch — ثبت زبانی",\n  "grammar":"ساختار گرامری: چه Kasus دارن، ترتیب کلمات، یا نکته خاص — با ▪ جدا کن",\n  "synonym":"مترادف آلمانی یا null",\n  "similar":["۲ عبارت مشابه با تفاوت ظریف"],\n  "example_de":"جمله نمونه کامل و طبیعی",\n  "example_fa":"ترجمه طبیعی فارسی مثال",\n  "priority":{"score":3,"reason":"چرا مهمه"}\n}\nقوانین:\n- phrase_type دقیق باشه: Redewendung (اصطلاح)، Sprichwort (ضرب‌المثل)، Kollokation (همنشینی ثابت)، Feste Wendung (عبارت ثابت)\n- literal_fa فقط اگه اصطلاح تحت‌اللفظی نامفهومه\n- meaning_fa معنای کاربردی، نه ترجمه کلمه‌ای\n- when_to_use حتماً مثال موقعیتی بده\nفقط JSON.'
-    : 'English phrase: "'+esc(q)+'"\nExpert analysis. Correct if misspelled.\nJSON only:\n{\n  "original":"'+esc(q)+'",\n  "corrected":"correct form if misspelled else null",\n  "phrase_type":"Idiom/Proverb/Collocation/Fixed expression/Phrasal verb/null",\n  "literal_fa":"literal translation or null",\n  "meaning_fa":"functional meaning in Persian",\n  "when_to_use":"when and where to use",\n  "register":"formal/informal/slang/literary",\n  "grammar":"grammar structure notes with ▪",\n  "synonym":"similar phrase or null",\n  "similar":["2 similar phrases with subtle differences"],\n  "example_de":"natural example sentence",\n  "example_fa":"Persian translation",\n  "priority":{"score":3,"reason":"why"}\n}\nOnly JSON.';
+    ? 'عبارت آلمانی: "'+esc(q)+'"\nتحلیل کن. اگه غلط نوشته، درست کن. اگه یه اصطلاح معروف نیست هم مشکلی نداره، معنی و گرامرش رو بگو.\nفقط JSON:\n{"original":"'+esc(q)+'","corrected":"فرم صحیح اگه غلط بود وگرنه null","phrase_type":"Redewendung/Sprichwort/Kollokation/Feste Wendung/Satz/null","literal_fa":"ترجمه تحت‌اللفظی یا null","meaning_fa":"معنی کاربردی فارسی","when_to_use":"کی استفاده میشه یا null","register":"formal/informal/null","grammar":"نکات گرامری با ▪ یا null","synonym":"مترادف یا null","similar":["یک تا دو عبارت مشابه"],"example_de":"جمله مثال","example_fa":"ترجمه مثال","priority":{"score":3,"reason":"چرا مهمه"}}\nفقط JSON خالص بده، بدون توضیح اضافه.'
+    : 'English phrase: "'+esc(q)+'"\nAnalyze. Correct if misspelled. Even if not a famous idiom, give meaning and grammar.\nJSON only:\n{"original":"'+esc(q)+'","corrected":"correct form or null","phrase_type":"Idiom/Proverb/Collocation/Fixed expression/Phrasal verb/null","literal_fa":"literal translation or null","meaning_fa":"functional meaning in Persian","when_to_use":"when to use or null","register":"formal/informal/null","grammar":"notes with ▪ or null","synonym":"similar or null","similar":["1-2 similar phrases"],"example_de":"example sentence","example_fa":"Persian translation","priority":{"score":3,"reason":"why"}}\nPure JSON only, no extra text.';
 
-  const raw=(await ai(p,500)).replace(/```json|```/g,'').trim();
-  const pm=raw.match(/\{[\s\S]*\}/);
-  if(!pm) throw new Error('parse error');
-  try{ curPhrase=JSON.parse(pm[0]); } catch(e){ throw new Error('parse error'); }
+  /* Retry up to 2 times if AI gives invalid JSON */
+  let curPhrase2=null;
+  for(let attempt=0; attempt<2; attempt++){
+    const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
+    /* Safer JSON extraction: find first { and match balanced braces */
+    let jsonStr=null;
+    const startIdx=raw.indexOf('{');
+    if(startIdx>=0){
+      let depth=0,inStr=false,escNext=false;
+      for(let i=startIdx;i<raw.length;i++){
+        const ch=raw[i];
+        if(escNext){escNext=false;continue;}
+        if(ch==='\\'){escNext=true;continue;}
+        if(ch==='"'){inStr=!inStr;continue;}
+        if(!inStr){
+          if(ch==='{')depth++;
+          else if(ch==='}'){depth--;if(depth===0){jsonStr=raw.slice(startIdx,i+1);break;}}
+        }
+      }
+    }
+    if(!jsonStr) continue;
+    try{ curPhrase2=JSON.parse(jsonStr); break; } catch(e){ continue; }
+  }
+  if(!curPhrase2) throw new Error('parse error');
+  curPhrase=curPhrase2;
 
   // اگه اصلاح شده، عنوان اصلی = فرم صحیح
   const hasCorrected = curPhrase.corrected && curPhrase.corrected!=='null' && curPhrase.corrected!==curPhrase.original;
