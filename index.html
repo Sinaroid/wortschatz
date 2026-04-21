@@ -2590,6 +2590,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       </div>
     </div>
 
+    <!-- Unsaved searches panel (auto-shown when items exist) -->
+    <div id="unsaved-panel">
+      <div class="uns-head">
+        <div class="uns-title">
+          <span>🔔 سرچ‌های ذخیره‌نشده</span>
+          <span class="uns-count" id="uns-count">0</span>
+        </div>
+        <button class="uns-clear" onclick="histClearUnsaved()">پاک همه</button>
+      </div>
+      <div class="uns-list" id="uns-list"></div>
+      <button onclick="histShowAll()" style="margin-top:8px;width:100%;padding:7px;background:transparent;border:1px dashed var(--bg3);border-radius:8px;color:var(--ink3);font-size:11px;font-family:var(--sans);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--bg3)';this.style.color='var(--ink3)'">📜 کل تاریخچه سرچ</button>
+    </div>
+
 <!-- Home empty state -->
     <div id="home-empty">
       <div style="text-align:center;padding:var(--s5) 0 var(--s3)">
@@ -3850,6 +3863,12 @@ async function searchWord(q){
     localStorage.setItem(ck,JSON.stringify(curWord));
   }catch(e){}
   renderWord(curWord);
+  /* Save to history + pulse add button */
+  try{
+    const deKey=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
+    if(typeof histAdd==='function')histAdd(q,'word',deKey,curWord.meaning_fa);
+    if(typeof pulseAddBtn==='function')pulseAddBtn('word');
+  }catch(e){}
 }
 
 function renderWord(d){
@@ -3988,6 +4007,8 @@ async function addWord(){
   if(navigator.onLine)dbAdd(w).catch(()=>{});
   /* Increment daily goal */
   if(typeof incrementDaily==='function')incrementDaily();
+  /* Mark history as saved */
+  if(typeof histMarkSaved==='function')histMarkSaved(key);
 }
 
 async function searchPhrase(q){
@@ -4120,6 +4141,12 @@ async function searchPhrase(q){
   btn.disabled=exists;btn.className='ph-add'+(exists?' done':'');
   Q('#ph-res').style.display='block';
   setTimeout(function(){Q('#ph-res').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+  /* Save to history + pulse add button (skip if already exists) */
+  try{
+    const deKey=curPhrase.corrected&&curPhrase.corrected!=='null'?curPhrase.corrected:curPhrase.original;
+    if(typeof histAdd==='function')histAdd(q,'phrase',deKey,curPhrase.meaning_fa);
+    if(!exists && typeof pulseAddBtn==='function')pulseAddBtn('phrase');
+  }catch(e){}
 }
 function rephrase(){
   if(window._phraseCorrection){
@@ -4138,6 +4165,8 @@ async function addPhrase(){
   const btn=Q('#ph-add');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='ph-add done';
   if(navigator.onLine)dbAdd(w).catch(()=>{});
   if(typeof incrementDaily==='function')incrementDaily();
+  /* Mark history as saved */
+  if(typeof histMarkSaved==='function')histMarkSaved(de);
 }
 
 /* ══════════════════════════════
@@ -6789,6 +6818,177 @@ function incrementDaily(){
 }
 // addWord and sesRate patches integrated directly into their functions
 setTimeout(updateDailyGoal,500);
+
+/* ═══════════════════════════════════════════════
+   SEARCH HISTORY + SAVE REMINDER SYSTEM
+═══════════════════════════════════════════════ */
+const HIST_KEY='ws_search_hist_v1';
+const HIST_MAX=50;
+
+function histLoad(){try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]');}catch(e){return [];}}
+function histSave(h){try{localStorage.setItem(HIST_KEY,JSON.stringify(h.slice(0,HIST_MAX)));}catch(e){}}
+
+/* Add a successful search to history. If it already exists, update timestamp. */
+function histAdd(q,type,de,fa,lang){
+  if(!q||!de)return;
+  const h=histLoad();
+  const deLow=(de||'').toLowerCase().trim();
+  /* Check if already exists — if saved in words list, mark as saved */
+  const alreadySaved=words.some(w=>w.de.toLowerCase()===deLow||w.de.toLowerCase().trim()===deLow);
+  const now=Date.now();
+  /* Remove duplicate if exists */
+  const filtered=h.filter(x=>(x.de||'').toLowerCase().trim()!==deLow);
+  filtered.unshift({q:q.trim(),type:type||'word',de,fa:fa||'',lang:lang||targetLang,ts:now,saved:alreadySaved});
+  histSave(filtered);
+  renderUnsavedPanel();
+  /* Smart toast: if 3+ unsaved in a row, nudge user */
+  const unsavedCount=filtered.filter(x=>!x.saved).length;
+  if(unsavedCount>=3 && unsavedCount%3===0){
+    setTimeout(()=>{
+      showToast('💡 '+unsavedCount+' سرچ ذخیره نشده — از پنل پایین اضافه کن',3500,'warn');
+    },1200);
+  }
+}
+
+/* Mark a history entry as saved (called from addWord/addPhrase) */
+function histMarkSaved(de){
+  if(!de)return;
+  const h=histLoad();
+  const deLow=de.toLowerCase().trim();
+  let changed=false;
+  h.forEach(x=>{if((x.de||'').toLowerCase().trim()===deLow&&!x.saved){x.saved=true;changed=true;}});
+  if(changed){histSave(h);renderUnsavedPanel();}
+}
+
+function histClearUnsaved(){
+  const h=histLoad().filter(x=>x.saved);
+  histSave(h);
+  renderUnsavedPanel();
+  showToast('پاک شد ✓',1500);
+}
+
+/* Render unsaved panel on home (top 5 items) */
+function renderUnsavedPanel(){
+  const panel=document.getElementById('unsaved-panel');
+  const listEl=document.getElementById('uns-list');
+  const countEl=document.getElementById('uns-count');
+  if(!panel||!listEl)return;
+  const h=histLoad();
+  /* Remove entries whose words are now in the saved list (auto-cleanup) */
+  let changed=false;
+  h.forEach(x=>{
+    if(!x.saved && words.some(w=>w.de.toLowerCase().trim()===(x.de||'').toLowerCase().trim())){
+      x.saved=true;changed=true;
+    }
+  });
+  if(changed)histSave(h);
+  const unsaved=h.filter(x=>!x.saved).slice(0,5);
+  if(unsaved.length===0){panel.classList.remove('show');return;}
+  panel.classList.add('show');
+  if(countEl)countEl.textContent=unsaved.length;
+  const fmtAgo=(ts)=>{
+    const d=Date.now()-ts;
+    if(d<60000)return 'الان';
+    if(d<3600000)return Math.floor(d/60000)+' دقیقه';
+    if(d<86400000)return Math.floor(d/3600000)+' ساعت';
+    return Math.floor(d/86400000)+' روز';
+  };
+  listEl.innerHTML=unsaved.map((x,i)=>
+    '<div class="uns-item">'
+    +'<div class="uns-item-word" title="'+(x.fa||'').replace(/"/g,'&quot;')+'">'+(x.de||x.q)+(x.fa?' <span style="color:var(--ink3);font-size:11px;font-family:var(--sans)">· '+x.fa.slice(0,30)+(x.fa.length>30?'…':'')+'</span>':'')+'</div>'
+    +'<span class="uns-item-time">'+fmtAgo(x.ts)+'</span>'
+    +'<span class="uns-item-add" onclick="histQuickAdd('+i+')" title="سرچ مجدد و افزودن">+</span>'
+    +'</div>'
+  ).join('');
+}
+
+/* Quick add — search the word again (result shows, user can add) */
+function histQuickAdd(idx){
+  const h=histLoad().filter(x=>!x.saved).slice(0,5);
+  const item=h[idx];
+  if(!item)return;
+  Q('#s-inp').value=item.q;
+  doSearch();
+  /* Scroll to top so user sees result */
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* Show full history modal */
+function histShowAll(){
+  const h=histLoad();
+  if(!h.length){showToast('تاریخچه خالیه',1800);return;}
+  const saved=h.filter(x=>x.saved).length;
+  const unsaved=h.length-saved;
+  const fmtAgo=(ts)=>{
+    const d=Date.now()-ts;
+    if(d<60000)return 'الان';
+    if(d<3600000)return Math.floor(d/60000)+' دقیقه';
+    if(d<86400000)return Math.floor(d/3600000)+' ساعت';
+    return Math.floor(d/86400000)+' روز';
+  };
+  const rows=h.map((x,i)=>
+    '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg2);border-radius:8px;margin-bottom:4px;font-family:var(--sans)">'
+    +'<span style="flex-shrink:0;font-size:12px">'+(x.saved?'✅':'○')+'</span>'
+    +'<div style="flex:1;min-width:0"><div style="font-family:var(--serif);font-size:13px;color:var(--ink);direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(x.de||x.q)+'</div>'
+    +(x.fa?'<div style="font-size:10px;color:var(--ink3);margin-top:1px">'+x.fa.slice(0,45)+(x.fa.length>45?'…':'')+'</div>':'')
+    +'</div>'
+    +'<span style="font-size:9px;color:var(--ink4);flex-shrink:0">'+fmtAgo(x.ts)+'</span>'
+    +(x.saved?'':'<button onclick="histQuickAddFromAll('+i+')" style="padding:3px 8px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:10px;cursor:pointer;flex-shrink:0">+</button>')
+    +'</div>'
+  ).join('');
+  const html='<div id="hist-modal" onclick="if(event.target===this)this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(4px);padding:12px">'
+    +'<div style="background:var(--card);border:1px solid var(--bg3);border-radius:16px;padding:16px;width:100%;max-width:420px;max-height:80vh;display:flex;flex-direction:column;direction:rtl">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+    +'<div style="font-size:14px;font-weight:700;color:var(--ink);font-family:var(--sans)">📜 تاریخچه سرچ <span style="font-size:10px;color:var(--ink3);font-weight:500">('+saved+' ذخیره · '+unsaved+' باز)</span></div>'
+    +'<button onclick="document.getElementById(\'hist-modal\').remove()" style="background:transparent;border:none;color:var(--ink3);font-size:16px;cursor:pointer;padding:4px">✕</button>'
+    +'</div>'
+    +'<div style="overflow-y:auto;flex:1;margin:0 -4px;padding:0 4px">'+rows+'</div>'
+    +'<button onclick="if(confirm(\'کل تاریخچه پاک شه؟\')){localStorage.removeItem(\''+HIST_KEY+'\');renderUnsavedPanel();document.getElementById(\'hist-modal\').remove();}" style="margin-top:10px;padding:8px;background:transparent;border:1px solid var(--bg3);border-radius:8px;color:var(--err);font-size:11px;font-family:var(--sans);cursor:pointer">🗑 پاک کل تاریخچه</button>'
+    +'</div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+window.histQuickAddFromAll=function(idx){
+  const h=histLoad();
+  const item=h[idx];
+  if(!item)return;
+  const m=document.getElementById('hist-modal');if(m)m.remove();
+  Q('#s-inp').value=item.q;
+  doSearch();
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+/* Pulse + Enter-to-save helpers */
+let _curResultType=null; // 'word' | 'phrase'
+function pulseAddBtn(type){
+  _curResultType=type;
+  const btn=type==='phrase'?document.getElementById('ph-add'):document.getElementById('add-btn');
+  if(!btn)return;
+  btn.classList.add('pulse');
+  /* stop pulsing after 6 seconds */
+  setTimeout(()=>{if(btn)btn.classList.remove('pulse');},6000);
+}
+/* Global Enter key → add current result if visible */
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  /* Skip if typing in an input/textarea */
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea'||e.target.isContentEditable)return;
+  /* Word result visible and add-btn not disabled? */
+  const resVisible=document.getElementById('res')?.style.display==='block';
+  const phVisible=document.getElementById('ph-res')?.style.display==='block';
+  if(resVisible){
+    const btn=document.getElementById('add-btn');
+    if(btn&&!btn.disabled){e.preventDefault();btn.click();}
+  }else if(phVisible){
+    const btn=document.getElementById('ph-add');
+    if(btn&&!btn.disabled){e.preventDefault();btn.click();}
+  }
+});
+
+/* Render panel initially (after words loaded) */
+setTimeout(renderUnsavedPanel,800);
+/* Re-render when home tab becomes visible */
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderUnsavedPanel();});
 
 /* ══ VERB CONJUGATION ══ */
 var _conjCache={};
