@@ -1103,11 +1103,56 @@ body.dark .drw-hero{background:linear-gradient(135deg,#2a3fd4 0%,#4a62f0 100%)}
 .sort-tabs{display:flex;gap:var(--s1);margin-bottom:var(--s4);background:var(--bg2);border:1px solid var(--bg3);border-radius:var(--r2);padding:3px;overflow-x:auto}
 .sort-tab{padding:7px 13px;border-radius:var(--r1);border:none;background:transparent;color:var(--ink3);font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0}
 .sort-tab.on{background:var(--card);color:var(--ink);box-shadow:var(--sh1)}
-.list-s-wrap{position:relative;margin-bottom:var(--s3)}
-.list-s{width:100%;padding:10px var(--s4) 10px 40px;border-radius:var(--r2);border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink);font-family:var(--sans);font-size:14px;outline:none;direction:rtl;transition:all .2s}
+/* New filter rows */
+.filt-row{display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filt-row::-webkit-scrollbar{display:none}
+.filt-chip{
+  display:inline-flex;align-items:center;gap:5px;flex-shrink:0;
+  padding:7px 12px;border:1.5px solid var(--bg3);border-radius:20px;
+  background:var(--card);color:var(--ink2);
+  font-family:var(--sans);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1;
+}
+.filt-chip.sm{padding:6px 11px;font-size:11px}
+.filt-chip b{
+  font-weight:700;font-size:10px;min-width:16px;text-align:center;
+  background:var(--bg2);color:var(--ink3);
+  padding:1px 6px;border-radius:10px;font-variant-numeric:tabular-nums;
+}
+.filt-chip:hover{border-color:var(--ink4);color:var(--ink)}
+.filt-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filt-chip.on b{background:rgba(255,255,255,.22);color:#fff}
+.filt-chip.zero{opacity:.4}
+.filt-summary{
+  display:none;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--abl);border:1px solid rgba(26,58,242,.15);
+  border-radius:var(--r2);padding:7px 12px;margin-bottom:10px;
+  font-family:var(--sans);font-size:11px;color:var(--accent);
+}
+.filt-summary.show{display:flex}
+.filt-summary button{
+  background:transparent;border:none;color:var(--accent);
+  font-family:var(--sans);font-size:11px;font-weight:700;cursor:pointer;
+  padding:2px 8px;border-radius:8px;transition:background .15s;
+}
+.filt-summary button:hover{background:rgba(26,58,242,.12)}
+/* List control row (search + sort) */
+.list-ctrl-row{display:flex;gap:8px;margin-bottom:var(--s3);align-items:stretch}
+.list-sort{
+  padding:10px 10px 10px 28px;border:1.5px solid var(--bg3);border-radius:var(--r2);
+  background:var(--bg2);color:var(--ink2);font-family:var(--sans);font-size:12px;font-weight:600;
+  cursor:pointer;outline:none;flex-shrink:0;appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 4l3 3 3-3' stroke='%236b7380' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:10px center;
+}
+.list-sort:focus{border-color:var(--accent);background-color:var(--card)}
+.list-s-wrap{position:relative}
+.list-s{width:100%;padding:10px 40px 10px 40px;border-radius:var(--r2);border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink);font-family:var(--sans);font-size:14px;outline:none;direction:rtl;transition:all .2s}
 .list-s:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 3px var(--aglow)}
-.list-s::placeholder{color:var(--ink4)}
+.list-s::placeholder{color:var(--ink4);font-size:12px}
 .list-s-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none}
+.list-s-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:none;background:var(--bg3);color:var(--ink2);border-radius:50%;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.list-s-clear:hover{background:var(--err);color:#fff}
 .word-row{display:flex;align-items:center;gap:var(--s2);padding:11px var(--s4);border-radius:var(--r2);border:1px solid var(--bg3);background:var(--card);margin-bottom:var(--s2);transition:all .15s}
 .word-row:hover{border-color:var(--bg4);background:var(--bg2)}
 .word-row.dup{border-color:rgba(168,72,0,.2);background:rgba(168,72,0,.03)}
@@ -2645,19 +2690,42 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         <button class="sfh-btn" onclick="markSourceDone()" id="sfh-done-btn">✓ تکمیل شد</button>
       </div>
     </div>
-    <div class="sort-tabs">
-      <button class="sort-tab on" id="st-new"   onclick="setSort('new')">جدیدترین</button>
-      <button class="sort-tab"    id="st-due"   onclick="setSort('due')">دیر شده</button>
-      <button class="sort-tab"    id="st-weak"  onclick="setSort('weak')">ضعیف‌ترین</button>
-      <button class="sort-tab"    id="st-best"  onclick="setSort('best')">بهترین</button>
-      <button class="sort-tab"    id="st-alpha" onclick="setSort('alpha')">الفبا</button>
+    <!-- Status filter row -->
+    <div class="filt-row" id="filt-status">
+      <button class="filt-chip on" data-status="all"       onclick="setStatusFilter('all')">همه <b id="ct-all">0</b></button>
+      <button class="filt-chip"    data-status="due"       onclick="setStatusFilter('due')">⏰ دیر شده <b id="ct-due">0</b></button>
+      <button class="filt-chip"    data-status="new"       onclick="setStatusFilter('new')">جدید <b id="ct-new">0</b></button>
+      <button class="filt-chip"    data-status="learning"  onclick="setStatusFilter('learning')">در حال <b id="ct-learning">0</b></button>
+      <button class="filt-chip"    data-status="mastered"  onclick="setStatusFilter('mastered')">✓ مسلط <b id="ct-mastered">0</b></button>
     </div>
-    <div class="list-s-wrap">
-      <svg class="list-s-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      <input class="list-s" id="list-q" placeholder="جستجو در لغات..." oninput="renderList()">
+    <!-- Type filter row -->
+    <div class="filt-row" id="filt-type">
+      <button class="filt-chip on sm" data-type="all"    onclick="setTypeFilter('all')">همه</button>
+      <button class="filt-chip sm"    data-type="word"   onclick="setTypeFilter('word')">📝 لغت</button>
+      <button class="filt-chip sm"    data-type="phrase" onclick="setTypeFilter('phrase')">💬 اصطلاح</button>
+    </div>
+    <!-- Active-filter summary -->
+    <div class="filt-summary" id="filt-summary">
+      <span id="filt-summary-txt">—</span>
+      <button onclick="clearAllFilters()">× پاک همه</button>
+    </div>
+    <!-- Search + Sort -->
+    <div class="list-ctrl-row">
+      <div class="list-s-wrap" style="flex:1">
+        <svg class="list-s-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="list-s" id="list-q" placeholder="جستجو — ä=a, ö=o قابل تبدیل" oninput="renderList()">
+        <button class="list-s-clear" id="list-s-clear" onclick="Q('#list-q').value='';renderList();" style="display:none">×</button>
+      </div>
+      <select class="list-sort" id="list-sort-sel" onchange="setSort(this.value)">
+        <option value="new">جدیدترین</option>
+        <option value="due">دیر شده اول</option>
+        <option value="weak">ضعیف‌ترین</option>
+        <option value="best">بهترین</option>
+        <option value="alpha">الفبا</option>
+      </select>
     </div>
     <div id="wlist"></div>
   </div>
@@ -4757,8 +4825,52 @@ function initSwipe(){
 ══════════════════════════════ */
 function setSort(s){
   listSort=s;
-  ['new','due','weak','best','alpha'].forEach(id=>Q('#st-'+id).classList.toggle('on',id===s));
+  /* Support both old sort-tabs (if still present) and new <select> */
+  ['new','due','weak','best','alpha'].forEach(id=>{const el=document.getElementById('st-'+id);if(el)el.classList.toggle('on',id===s);});
+  const sel=document.getElementById('list-sort-sel');if(sel&&sel.value!==s)sel.value=s;
   renderList();
+}
+/* Enhanced filters: status + type + source */
+let listStatusFilter='all'; /* all | new | due | learning | mastered */
+let listTypeFilter='all';   /* all | word | phrase */
+function setStatusFilter(s){
+  listStatusFilter=s;
+  document.querySelectorAll('#filt-status .filt-chip').forEach(el=>el.classList.toggle('on',el.dataset.status===s));
+  renderList();
+}
+function setTypeFilter(t){
+  listTypeFilter=t;
+  document.querySelectorAll('#filt-type .filt-chip').forEach(el=>el.classList.toggle('on',el.dataset.type===t));
+  renderList();
+}
+function clearAllFilters(){
+  listStatusFilter='all';listTypeFilter='all';listSrcFilter=null;
+  const qEl=document.getElementById('list-q');if(qEl)qEl.value='';
+  document.querySelectorAll('#filt-status .filt-chip').forEach(el=>el.classList.toggle('on',el.dataset.status==='all'));
+  document.querySelectorAll('#filt-type .filt-chip').forEach(el=>el.classList.toggle('on',el.dataset.type==='all'));
+  renderList();
+}
+/* German umlaut/diacritic normalizer for search */
+function _normalize(s){
+  return (s||'').toString().toLowerCase()
+    .replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u')
+    .replace(/ß/g,'ss').replace(/é|è|ê/g,'e').replace(/á|à|â/g,'a')
+    .replace(/ñ/g,'n').trim();
+}
+/* Status classifier for a word */
+function _wordStatus(w){
+  const now=Date.now();
+  if(!w.seen||w.seen===0)return 'new';
+  const nr=new Date(w.next_review||0).getTime();
+  if(nr<=now)return 'due';
+  if(w.seen>3 && (w.easiness||2.5)>=2.5 && (w.interval||0)>7)return 'mastered';
+  return 'learning';
+}
+/* Type classifier (phrase if multi-word or long) */
+function _wordType(w){
+  const de=(w.de||'').trim();
+  if(de.includes(' ')||de.length>24)return 'phrase';
+  return 'word';
 }
 let listSrcFilter=null; /* null = all, or source_id (string or '__none__' for untagged) */
 function setSrcFilter(id){
@@ -4880,20 +4992,73 @@ function renderList(){
   /* Render source chips + filter head */
   renderSrcChips();
   renderSrcFilterHead();
-  const q=(Q('#list-q')?.value||'').trim().toLowerCase();
+
+  /* ─ Update status filter counts (on ALL fw, before any filter) ─ */
+  const counts={all:fw.length,new:0,due:0,learning:0,mastered:0};
+  fw.forEach(w=>{const s=_wordStatus(w);if(counts[s]!==undefined)counts[s]++;});
+  ['all','new','due','learning','mastered'].forEach(k=>{
+    const el=document.getElementById('ct-'+k);if(el)el.textContent=counts[k];
+    const chip=document.querySelector('#filt-status .filt-chip[data-status="'+k+'"]');
+    if(chip)chip.classList.toggle('zero',counts[k]===0 && k!=='all');
+  });
+
+  const rawQ=(Q('#list-q')?.value||'').trim();
+  const q=_normalize(rawQ);
+  /* Show/hide clear button */
+  const clrBtn=document.getElementById('list-s-clear');
+  if(clrBtn)clrBtn.style.display=rawQ?'flex':'none';
+
   let sorted=[...fw];
   /* Apply source filter */
   if(listSrcFilter==='__none__')sorted=sorted.filter(w=>!w.source_id);
   else if(listSrcFilter)sorted=sorted.filter(w=>w.source_id===listSrcFilter);
+  /* Apply status filter */
+  if(listStatusFilter!=='all')sorted=sorted.filter(w=>_wordStatus(w)===listStatusFilter);
+  /* Apply type filter */
+  if(listTypeFilter!=='all')sorted=sorted.filter(w=>_wordType(w)===listTypeFilter);
+  /* Sort */
   if(listSort==='due')sorted=sorted.sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
-  else if(listSort==='weak')sorted=sorted.sort((a,b)=>a.score-b.score);
-  else if(listSort==='best')sorted=sorted.sort((a,b)=>b.score-a.score);
+  else if(listSort==='weak')sorted=sorted.sort((a,b)=>(a.score||0)-(b.score||0));
+  else if(listSort==='best')sorted=sorted.sort((a,b)=>(b.score||0)-(a.score||0));
   else if(listSort==='alpha')sorted=sorted.sort((a,b)=>a.de.localeCompare(b.de));
-  const filtered=q?sorted.filter(w=>w.de.toLowerCase().includes(q)||w.fa.includes(q)||(w.ex||'').toLowerCase().includes(q)):sorted;
-  Q('#list-count').textContent=filtered.length+' لغت';
-  if(!filtered.length){el.innerHTML=`<div style="text-align:center;padding:var(--s8);color:var(--ink3);font-size:14px">«${q}» پیدا نشد</div>`;return;}
 
-  function hl(t){return q?t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<span class="hl">$1</span>'):t;}
+  /* ─ Smart search: normalize umlauts, match de/fa/ex ─ */
+  const filtered=q?sorted.filter(w=>{
+    return _normalize(w.de).includes(q)||_normalize(w.fa).includes(q)||_normalize(w.ex||'').includes(q);
+  }):sorted;
+  Q('#list-count').textContent=filtered.length+' لغت';
+
+  /* ─ Active filter summary ─ */
+  const summary=document.getElementById('filt-summary');
+  const summaryTxt=document.getElementById('filt-summary-txt');
+  const activeParts=[];
+  if(listStatusFilter!=='all'){const lbl={new:'جدید',due:'دیر شده',learning:'در حال',mastered:'مسلط'}[listStatusFilter]||listStatusFilter;activeParts.push(lbl);}
+  if(listTypeFilter!=='all')activeParts.push(listTypeFilter==='word'?'لغت':'اصطلاح');
+  if(listSrcFilter==='__none__')activeParts.push('بدون منبع');
+  else if(listSrcFilter){const s=sources.find(x=>x.id===listSrcFilter);if(s)activeParts.push(s.name);}
+  if(rawQ)activeParts.push('«'+rawQ+'»');
+  if(summary&&summaryTxt){
+    if(activeParts.length>0){
+      summaryTxt.textContent='🔍 فیلتر: '+activeParts.join(' · ')+' — '+filtered.length+' نتیجه';
+      summary.classList.add('show');
+    }else summary.classList.remove('show');
+  }
+
+  if(!filtered.length){
+    const hint=activeParts.length?'<div style="font-size:11px;color:var(--ink4);margin-top:6px">فیلترها رو پاک کن یا عبارت دیگه‌ای امتحان کن</div>':'';
+    el.innerHTML=`<div style="text-align:center;padding:var(--s8) var(--s4);color:var(--ink3);font-size:14px"><div style="font-size:36px;margin-bottom:8px;opacity:.5">🔍</div>چیزی پیدا نشد${rawQ?' برای «'+rawQ+'»':''}${hint}</div>`;
+    return;
+  }
+
+  /* Highlight — needs to handle umlauts too */
+  function hl(t){
+    if(!q)return t;
+    /* Simple: wrap if normalized form matches */
+    const tn=_normalize(t);
+    const idx=tn.indexOf(q);
+    if(idx<0)return t;
+    return t.slice(0,idx)+'<span class="hl">'+t.slice(idx,idx+q.length)+'</span>'+t.slice(idx+q.length);
+  }
 
   function nextReviewLabel(w){
     if(!w.seen) return '<span class="wr-status new">جدید</span>';
