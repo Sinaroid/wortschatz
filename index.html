@@ -7065,13 +7065,9 @@ function listenNext(){
 }
 
 /* ══ AUDIO PRONUNCIATION ══ */
-/* ─ Speak word with best-available native voice ─
-   Order of attempts:
-   1. Google Translate TTS — neural, native-sounding, free (cloud MP3)
-   2. SpeechSynthesis with a hand-picked "good" voice
-   3. SpeechSynthesis with any matching-language voice (fallback)
-*/
-let _lastSpeakAudio=null;
+/* ─ Speak with best-available system voice ─
+   Keeps it simple: pick the highest-quality voice the
+   browser offers for the target language. */
 let _voicesList=[];
 function _loadVoices(){
   if(!window.speechSynthesis)return;
@@ -7088,76 +7084,30 @@ function _pickBestVoice(langCode){
   if(!matches.length)return null;
   const score=v=>{
     let s=0;const n=(v.name||'').toLowerCase();
-    /* Cloud voices (non-localService) generally have neural quality */
-    if(!v.localService)s+=100;
-    /* Known high-quality engines */
+    if(!v.localService)s+=100;          /* cloud voices — neural */
     if(n.includes('google'))s+=90;
     if(n.includes('online')||n.includes('neural')||n.includes('natural'))s+=70;
-    /* Microsoft neural voices (Edge on Windows) */
-    if(n.includes('katja')||n.includes('conrad')||n.includes('amala'))s+=60;
-    /* Apple high-quality voices */
-    if(n.includes('anna')||n.includes('markus')||n.includes('petra'))s+=50;
-    /* Exact lang match slightly preferred */
+    if(n.includes('katja')||n.includes('conrad')||n.includes('amala'))s+=60;  /* MS neural */
+    if(n.includes('anna')||n.includes('markus')||n.includes('petra'))s+=50;   /* Apple */
     if(v.lang===langCode)s+=10;
     return s;
   };
   matches.sort((a,b)=>score(b)-score(a));
   return matches[0];
 }
-async function speakWord(word){
-  if(!word)return;
-  /* Strip German article prefix — "der Arbeit" → "Arbeit" (article not pronounced uniquely) */
+function speakWord(word){
+  if(!word||!window.speechSynthesis)return;
+  /* Strip article prefix — "der Arbeit" → "Arbeit" */
   const clean=word.replace(/^(der|die|das|den|dem|des)\s+/i,'').replace(/^(the|a|an|el|la)\s+/i,'').trim();
   if(!clean)return;
-  const lang=targetLang==='en'?'en':'de';
-  const langCode=lang==='en'?'en-US':'de-DE';
-
-  /* Stop any previous playback */
-  try{window.speechSynthesis?.cancel();}catch(e){}
-  if(_lastSpeakAudio){try{_lastSpeakAudio.pause();_lastSpeakAudio.src='';}catch(e){}_lastSpeakAudio=null;}
-
-  /* ─ 1. Try Google Translate TTS (neural, native) ─
-     NOTE: don't set crossOrigin — <audio> can play cross-origin
-     media without CORS, but setting crossOrigin REQUIRES CORS
-     headers that Google doesn't send. */
-  try{
-    const url=`https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(clean)}`;
-    const audio=new Audio(url);
-    audio.playbackRate=0.95;
-    _lastSpeakAudio=audio;
-    /* Race: if play() rejects within 400ms, fall back to speechSynthesis */
-    const playPromise=audio.play();
-    if(playPromise!==undefined){
-      await Promise.race([
-        playPromise,
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),1500))
-      ]);
-    }
-    /* Wait for actual playback to start */
-    await new Promise((resolve,reject)=>{
-      const ok=()=>{audio.removeEventListener('playing',ok);audio.removeEventListener('error',fail);resolve();};
-      const fail=(e)=>{audio.removeEventListener('playing',ok);audio.removeEventListener('error',fail);reject(e);};
-      audio.addEventListener('playing',ok,{once:true});
-      audio.addEventListener('error',fail,{once:true});
-      /* If already playing, resolve */
-      if(!audio.paused&&audio.currentTime>0)resolve();
-      setTimeout(ok,200); /* assume success if no error after 200ms */
-    });
-    return;
-  }catch(e){
-    console.warn('[speakWord] Google TTS failed, using fallback:',e?.message||e);
-    /* Clean up failed audio */
-    if(_lastSpeakAudio){try{_lastSpeakAudio.pause();_lastSpeakAudio.src='';}catch(e){}_lastSpeakAudio=null;}
-  }
-
-  /* ─ 2. SpeechSynthesis with best voice ─ */
-  if(!window.speechSynthesis)return;
+  const langCode=targetLang==='en'?'en-US':'de-DE';
   const u=new SpeechSynthesisUtterance(clean);
   u.lang=langCode;
   u.rate=0.9;
   u.pitch=1.0;
   const voice=_pickBestVoice(langCode);
   if(voice)u.voice=voice;
+  window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 }
 // Skip flashcard rendering in non-flip modes (audio removed per user request)
