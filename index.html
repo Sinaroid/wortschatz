@@ -7065,11 +7065,82 @@ function listenNext(){
 }
 
 /* ══ AUDIO PRONUNCIATION ══ */
-function speakWord(word){
+/* ─ Speak word with best-available native voice ─
+   Order of attempts:
+   1. Google Translate TTS — neural, native-sounding, free (cloud MP3)
+   2. SpeechSynthesis with a hand-picked "good" voice
+   3. SpeechSynthesis with any matching-language voice (fallback)
+*/
+let _lastSpeakAudio=null;
+let _voicesList=[];
+function _loadVoices(){
+  if(!window.speechSynthesis)return;
+  _voicesList=window.speechSynthesis.getVoices()||[];
+}
+if(typeof window!=='undefined'&&window.speechSynthesis){
+  _loadVoices();
+  window.speechSynthesis.onvoiceschanged=_loadVoices;
+}
+function _pickBestVoice(langCode){
+  if(!_voicesList.length)_loadVoices();
+  const base=langCode.split('-')[0];
+  const matches=_voicesList.filter(v=>v.lang===langCode||v.lang.startsWith(base+'-')||v.lang===base);
+  if(!matches.length)return null;
+  const score=v=>{
+    let s=0;const n=(v.name||'').toLowerCase();
+    /* Cloud voices (non-localService) generally have neural quality */
+    if(!v.localService)s+=100;
+    /* Known high-quality engines */
+    if(n.includes('google'))s+=90;
+    if(n.includes('online')||n.includes('neural')||n.includes('natural'))s+=70;
+    /* Microsoft neural voices (Edge on Windows) */
+    if(n.includes('katja')||n.includes('conrad')||n.includes('amala'))s+=60;
+    /* Apple high-quality voices */
+    if(n.includes('anna')||n.includes('markus')||n.includes('petra'))s+=50;
+    /* Exact lang match slightly preferred */
+    if(v.lang===langCode)s+=10;
+    return s;
+  };
+  matches.sort((a,b)=>score(b)-score(a));
+  return matches[0];
+}
+async function speakWord(word){
   if(!word)return;
-  const u=new SpeechSynthesisUtterance(word);
-  u.lang=targetLang==='en'?'en-US':'de-DE';u.rate=0.85;
-  window.speechSynthesis?.cancel();window.speechSynthesis?.speak(u);
+  /* Strip German article prefix — "der Arbeit" → "Arbeit" (article not pronounced uniquely) */
+  const clean=word.replace(/^(der|die|das|den|dem|des)\s+/i,'').replace(/^(the|a|an|el|la)\s+/i,'').trim();
+  if(!clean)return;
+  const lang=targetLang==='en'?'en':'de';
+  const langCode=lang==='en'?'en-US':'de-DE';
+
+  /* Stop any previous playback */
+  try{window.speechSynthesis?.cancel();}catch(e){}
+  if(_lastSpeakAudio){try{_lastSpeakAudio.pause();_lastSpeakAudio.src='';}catch(e){}_lastSpeakAudio=null;}
+
+  /* ─ 1. Try Google Translate TTS (neural, native) ─ */
+  try{
+    const url=`https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(clean)}`;
+    const audio=new Audio(url);
+    audio.playbackRate=0.95;
+    audio.crossOrigin='anonymous';
+    const playPromise=audio.play();
+    if(playPromise!==undefined){
+      await playPromise.catch(err=>{throw err;});
+    }
+    _lastSpeakAudio=audio;
+    return;
+  }catch(e){
+    /* fall through to speechSynthesis */
+  }
+
+  /* ─ 2. SpeechSynthesis with best voice ─ */
+  if(!window.speechSynthesis)return;
+  const u=new SpeechSynthesisUtterance(clean);
+  u.lang=langCode;
+  u.rate=0.9;
+  u.pitch=1.0;
+  const voice=_pickBestVoice(langCode);
+  if(voice)u.voice=voice;
+  window.speechSynthesis.speak(u);
 }
 // Skip flashcard rendering in non-flip modes (audio removed per user request)
 const _origShowCard=showCard;
