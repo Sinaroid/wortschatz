@@ -3902,6 +3902,32 @@ function setMsg(t,cls){
   e.style.display='flex';
 }
 
+/* ─ Forbidden-script detector & cleaner ─
+   AI sometimes leaks Chinese/Japanese/Korean/Thai/etc. into Persian fields.
+   Detect them so we can retry; clean them as a last resort. */
+const _FORBIDDEN_RE = /[\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF\uAC00-\uD7AF\u0E00-\u0E7F\u0900-\u097F\u0B80-\u0BFF]/;
+function _hasForbiddenScript(obj){
+  try{
+    const str=JSON.stringify(obj);
+    return _FORBIDDEN_RE.test(str);
+  }catch(e){return false;}
+}
+function _cleanScripts(obj){
+  if(!obj||typeof obj!=='object')return;
+  for(const k in obj){
+    const v=obj[k];
+    if(typeof v==='string'){
+      obj[k]=v.replace(new RegExp(_FORBIDDEN_RE.source,'g'),'').replace(/\s+/g,' ').trim();
+    }else if(Array.isArray(v)){
+      v.forEach((item,i)=>{
+        if(typeof item==='string'){
+          v[i]=item.replace(new RegExp(_FORBIDDEN_RE.source,'g'),'').replace(/\s+/g,' ').trim();
+        }else if(typeof item==='object')_cleanScripts(item);
+      });
+    }else if(typeof v==='object')_cleanScripts(v);
+  }
+}
+
 async function searchWord(q){
   // normalize umlauts — همه جای کلمه
   if(targetLang==='de'){
@@ -3946,15 +3972,23 @@ async function searchWord(q){
    +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
    +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
 
-  // retry تا ۲ بار اگه parse fail شد
+  // retry تا ۲ بار اگه parse fail شد یا CJK/script غیرمجاز داشت
   let curWord2=null;
-  for(let attempt=0; attempt<2; attempt++){
-    const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
+  for(let attempt=0; attempt<3; attempt++){
+    const extraHint=attempt>0?'\n\n⚠️ IMPORTANT: Output MUST contain ONLY Persian (Farsi) for meanings/tips and German for examples. NO Chinese, Japanese, Korean, Thai, Hindi, Arabic, or any other scripts. Persian uses ا ب پ ت ث ج چ ح…':'';
+    const raw=(await ai(p+extraHint,900)).replace(/```json|```/g,'').trim();
     const jsonMatch=raw.match(/\{[\s\S]*\}/);
     if(!jsonMatch) continue;
-    try{ curWord2=JSON.parse(jsonMatch[0]); break; }catch(e){ continue; }
+    try{
+      const parsed=JSON.parse(jsonMatch[0]);
+      /* Reject if forbidden scripts detected */
+      if(_hasForbiddenScript(parsed)){curWord2=null;continue;}
+      curWord2=parsed;break;
+    }catch(e){continue;}
   }
   if(!curWord2) throw new Error('parse error');
+  /* Safety: strip any stray CJK chars that slipped through */
+  _cleanScripts(curWord2);
   curWord=curWord2;
   try{
     const keys=Object.keys(localStorage).filter(k=>k.startsWith('wc_'));
@@ -4130,10 +4164,11 @@ async function searchPhrase(q){
 
   /* Skip API call entirely if we have a cached result */
   if(!_fromCache){
-    /* Retry up to 2 times if AI gives invalid JSON */
+    /* Retry up to 3 times if AI gives invalid JSON or forbidden scripts */
     let curPhrase2=null;
-    for(let attempt=0; attempt<2; attempt++){
-      const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
+    for(let attempt=0; attempt<3; attempt++){
+      const extraHint=attempt>0?'\n\n⚠️ IMPORTANT: Output MUST contain ONLY Persian (Farsi) for meanings and German for examples. NO Chinese, Japanese, Korean, or other scripts.':'';
+      const raw=(await ai(p+extraHint,900)).replace(/```json|```/g,'').trim();
       /* Safer JSON extraction: find first { and match balanced braces */
       let jsonStr=null;
       const startIdx=raw.indexOf('{');
@@ -4151,9 +4186,14 @@ async function searchPhrase(q){
         }
       }
       if(!jsonStr) continue;
-      try{ curPhrase2=JSON.parse(jsonStr); break; } catch(e){ continue; }
+      try{
+        const parsed=JSON.parse(jsonStr);
+        if(_hasForbiddenScript(parsed)){curPhrase2=null;continue;}
+        curPhrase2=parsed;break;
+      }catch(e){continue;}
     }
     if(!curPhrase2) throw new Error('parse error');
+    _cleanScripts(curPhrase2);
     curPhrase=curPhrase2;
     /* Persist to cache (evict oldest if > 100 entries) */
     try{
