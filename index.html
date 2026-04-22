@@ -7065,50 +7065,11 @@ function listenNext(){
 }
 
 /* ══ AUDIO PRONUNCIATION ══ */
-/* ─ Speak with best-available system voice ─
-   Keeps it simple: pick the highest-quality voice the
-   browser offers for the target language. */
-let _voicesList=[];
-function _loadVoices(){
-  if(!window.speechSynthesis)return;
-  _voicesList=window.speechSynthesis.getVoices()||[];
-}
-if(typeof window!=='undefined'&&window.speechSynthesis){
-  _loadVoices();
-  window.speechSynthesis.onvoiceschanged=_loadVoices;
-}
-function _pickBestVoice(langCode){
-  if(!_voicesList.length)_loadVoices();
-  const base=langCode.split('-')[0];
-  const matches=_voicesList.filter(v=>v.lang===langCode||v.lang.startsWith(base+'-')||v.lang===base);
-  if(!matches.length)return null;
-  const score=v=>{
-    let s=0;const n=(v.name||'').toLowerCase();
-    if(!v.localService)s+=100;          /* cloud voices — neural */
-    if(n.includes('google'))s+=90;
-    if(n.includes('online')||n.includes('neural')||n.includes('natural'))s+=70;
-    if(n.includes('katja')||n.includes('conrad')||n.includes('amala'))s+=60;  /* MS neural */
-    if(n.includes('anna')||n.includes('markus')||n.includes('petra'))s+=50;   /* Apple */
-    if(v.lang===langCode)s+=10;
-    return s;
-  };
-  matches.sort((a,b)=>score(b)-score(a));
-  return matches[0];
-}
 function speakWord(word){
-  if(!word||!window.speechSynthesis)return;
-  /* Strip article prefix — "der Arbeit" → "Arbeit" */
-  const clean=word.replace(/^(der|die|das|den|dem|des)\s+/i,'').replace(/^(the|a|an|el|la)\s+/i,'').trim();
-  if(!clean)return;
-  const langCode=targetLang==='en'?'en-US':'de-DE';
-  const u=new SpeechSynthesisUtterance(clean);
-  u.lang=langCode;
-  u.rate=0.9;
-  u.pitch=1.0;
-  const voice=_pickBestVoice(langCode);
-  if(voice)u.voice=voice;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(u);
+  if(!word)return;
+  const u=new SpeechSynthesisUtterance(word);
+  u.lang=targetLang==='en'?'en-US':'de-DE';u.rate=0.85;
+  window.speechSynthesis?.cancel();window.speechSynthesis?.speak(u);
 }
 // Skip flashcard rendering in non-flip modes (audio removed per user request)
 const _origShowCard=showCard;
