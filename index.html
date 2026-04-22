@@ -7116,20 +7116,38 @@ async function speakWord(word){
   try{window.speechSynthesis?.cancel();}catch(e){}
   if(_lastSpeakAudio){try{_lastSpeakAudio.pause();_lastSpeakAudio.src='';}catch(e){}_lastSpeakAudio=null;}
 
-  /* ─ 1. Try Google Translate TTS (neural, native) ─ */
+  /* ─ 1. Try Google Translate TTS (neural, native) ─
+     NOTE: don't set crossOrigin — <audio> can play cross-origin
+     media without CORS, but setting crossOrigin REQUIRES CORS
+     headers that Google doesn't send. */
   try{
     const url=`https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(clean)}`;
     const audio=new Audio(url);
     audio.playbackRate=0.95;
-    audio.crossOrigin='anonymous';
+    _lastSpeakAudio=audio;
+    /* Race: if play() rejects within 400ms, fall back to speechSynthesis */
     const playPromise=audio.play();
     if(playPromise!==undefined){
-      await playPromise.catch(err=>{throw err;});
+      await Promise.race([
+        playPromise,
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),1500))
+      ]);
     }
-    _lastSpeakAudio=audio;
+    /* Wait for actual playback to start */
+    await new Promise((resolve,reject)=>{
+      const ok=()=>{audio.removeEventListener('playing',ok);audio.removeEventListener('error',fail);resolve();};
+      const fail=(e)=>{audio.removeEventListener('playing',ok);audio.removeEventListener('error',fail);reject(e);};
+      audio.addEventListener('playing',ok,{once:true});
+      audio.addEventListener('error',fail,{once:true});
+      /* If already playing, resolve */
+      if(!audio.paused&&audio.currentTime>0)resolve();
+      setTimeout(ok,200); /* assume success if no error after 200ms */
+    });
     return;
   }catch(e){
-    /* fall through to speechSynthesis */
+    console.warn('[speakWord] Google TTS failed, using fallback:',e?.message||e);
+    /* Clean up failed audio */
+    if(_lastSpeakAudio){try{_lastSpeakAudio.pause();_lastSpeakAudio.src='';}catch(e){}_lastSpeakAudio=null;}
   }
 
   /* ─ 2. SpeechSynthesis with best voice ─ */
