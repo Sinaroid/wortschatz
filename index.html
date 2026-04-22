@@ -2985,6 +2985,9 @@ function tagWordWithSource(w){
 
 let acSel=-1, editIdx=-1, listSort='new';
 let sesDeck=[], sesI=0, sesGood=0, sesBad=0, sesRepN=0;
+/* Learning steps: words that need ONE more correct review in this session
+   before being scheduled away. Initialized on session start for new+weak words. */
+let sesPending=new Set();
 let sesRepeat=new Set();
 let currentUser=null;
 let userProUntil=null;
@@ -4472,13 +4475,13 @@ function getDeckStats(deck){
 function sesOpenSmart(){
   if(!words.length){ showToast('هنوز لغتی اضافه نکردی!',2800,'warn'); return; }
   sesDeck = buildSmartDeck();
-  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
+  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();sesPending=new Set();
   showIntro();
 }
 function sesOpenDue(){
   if(!words.length) return;
   sesDeck = buildSmartDeck();
-  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
+  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();sesPending=new Set();
   showIntro();
 }
 function sesOpen(){
@@ -4487,7 +4490,7 @@ function sesOpen(){
   const now=new Date();
   const all=[...fw].sort((a,b)=>new Date(a.next_review||0)-new Date(b.next_review||0));
   sesDeck=all.map(w=>({...w,_type:new Date(w.next_review||0)<=now?'due':w.seen===0?'new':w.score<0?'weak':'rev'}));
-  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
+  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();sesPending=new Set();
   startSession();
 }
 let introSrcFilter=null; /* null=all, source_id, or '__none__' */
@@ -4597,6 +4600,15 @@ function startSession(){
   Q('#ses-body').style.display='flex';
   Q('#session').classList.add('open');
   document.body.style.overflow='hidden';
+  /* Mark new + weak words for one reinforcement loop this session.
+     When user hits "good" on these, they requeue at end of deck instead
+     of graduating immediately. */
+  sesPending=new Set();
+  sesDeck.forEach(w=>{
+    const isNew=!w.seen||w.seen===0;
+    const isWeak=(w.score||0)<0;
+    if(isNew||isWeak||w._type==='new'||w._type==='weak')sesPending.add(w.de);
+  });
   showCard();
 }
 
@@ -4620,7 +4632,7 @@ function sesRestart(){
   Q('#ses-end').style.display='none';
   // rebuild deck از نو
   sesDeck = buildSmartDeck();
-  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();
+  sesI=0; sesGood=0; sesBad=0; sesRepN=0; sesRepeat=new Set();sesPending=new Set();
   if(!sesDeck.length){ showToast('همه لغت‌ها رو مرور کردی 🎉'); sesClose(true); return; }
   startSession();
 }
@@ -4751,6 +4763,15 @@ async function sesRate(ratingOrGood){
   /* Convert binary good/bad to 4-level rating: false=1 (Again), true=3 (Good) */
   const rating = (typeof ratingOrGood==='boolean') ? (ratingOrGood?3:1) : ratingOrGood;
   const good = rating>=2;
+  /* Snapshot FSRS state BEFORE update — so we can revert if this is a
+     pending learning-step word (good → push to end of deck, re-rate later) */
+  if(o && good && sesPending.has(w.de)){
+    o._preStep={
+      stability:o.stability,difficulty:o.difficulty,interval:o.interval,
+      easiness:o.easiness,next_review:o.next_review,reviewed_at:o.reviewed_at,
+      score:o.score,seen:o.seen
+    };
+  }
   if(o){
     fsrsMigrate(o);
     const now=new Date();
@@ -4784,6 +4805,29 @@ async function sesRate(ratingOrGood){
     sesDeck.splice(insertAt, 0, {...w, _type: w._type});
     sesRepN++;
     const n = Q('#again-n'); if(n){ n.textContent = sesRepN; n.classList.add('show'); }
+  }
+
+  /* Learning step: on "good" for new/weak words, push to END of deck
+     for one more reinforcement pass this session. Don't FSRS-update yet —
+     it'll update properly when the word is rated again at end of deck. */
+  if(good && sesPending.has(w.de)){
+    sesPending.delete(w.de);
+    /* Revert FSRS update that sesRate just wrote — we'll redo it on the
+       second encounter. Save state before, restore here. */
+    if(o && o._preStep){
+      Object.assign(o,o._preStep);
+      delete o._preStep;
+      saveCache();if(navigator.onLine)dbUpd(o).catch(()=>{});
+    }
+    /* Push to end of deck (if not already there) */
+    if(!sesDeck.slice(sesI+1).some(x=>x.de===w.de)){
+      sesDeck.push({...w,_type:w._type,_relearn:true});
+    }
+    sesGood++;sesI++;
+    if(typeof incrementDaily==='function')incrementDaily();
+    if(sesMode==='flip')showCard();
+    showToast('یه بار دیگه آخر deck میبینیش 👀',1500);
+    return;
   }
 
   if(good) sesGood++; else sesBad++;
@@ -4975,7 +5019,7 @@ function sesOpenSourceFilter(){
   const fw=filteredWords().filter(w=>w.source_id===listSrcFilter);
   if(!fw.length){showToast('لغتی برای مرور نیست');return;}
   sesDeck=fw.slice(0,20).map(w=>({...w,_type:w.seen===0?'new':'rev'}));
-  sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();
+  sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();sesPending=new Set();
   if(typeof showIntro==='function')showIntro();
   else if(typeof startSession==='function')startSession();
 }
@@ -6538,7 +6582,7 @@ function introPickMode(mode){
     const weak=getWeakWords();
     if(!weak.length){showToast('کلمه ضعیفی نداری! 💪');return;}
     sesDeck=weak.slice(0,10).map(w=>({...w,_type:'weak'}));
-    sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();
+    sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();sesPending=new Set();
     mode='flip';
   }
   sesMode=mode;
@@ -7326,7 +7370,7 @@ function showWeakWords(){
   const weak=getWeakWords();
   if(!weak.length){showToast('هیچ کلمه ضعیفی نداری! 💪');return;}
   sesDeck=weak.slice(0,10).map(w=>({...w,_type:'weak'}));
-  sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();
+  sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();sesPending=new Set();
   startSession();
 }
 
