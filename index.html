@@ -4114,35 +4114,54 @@ async function searchPhrase(q){
   const isDE = targetLang === 'de';
   setMsg('در حال تحلیل اصطلاح...','info');
   const esc = s => s.replace(/"/g,"'");
+
+  /* ─ Local cache lookup (same pattern as searchWord) ─
+     Key = pc_<lang>_<normalized phrase>. Hit → skip Claude call entirely. */
+  const pck='pc_'+targetLang+'_'+q.trim().toLowerCase().replace(/\s+/g,' ');
+  const pcached=localStorage.getItem(pck);
+  let _fromCache=false;
+  if(pcached){
+    try{curPhrase=JSON.parse(pcached);_fromCache=true;}
+    catch(e){localStorage.removeItem(pck);}
+  }
   const p = isDE
     ? 'عبارت آلمانی: "'+esc(q)+'"\nتحلیل کن. اگه غلط نوشته، درست کن. اگه یه اصطلاح معروف نیست هم مشکلی نداره، معنی و گرامرش رو بگو.\nفقط JSON:\n{"original":"'+esc(q)+'","corrected":"فرم صحیح اگه غلط بود وگرنه null","phrase_type":"Redewendung/Sprichwort/Kollokation/Feste Wendung/Satz/null","literal_fa":"ترجمه تحت‌اللفظی یا null","meaning_fa":"معنی کاربردی فارسی","when_to_use":"کی استفاده میشه یا null","register":"formal/informal/null","grammar":"نکات گرامری با ▪ یا null","synonym":"مترادف یا null","similar":["یک تا دو عبارت مشابه"],"example_de":"جمله مثال","example_fa":"ترجمه مثال","priority":{"score":3,"reason":"چرا مهمه"}}\nفقط JSON خالص بده، بدون توضیح اضافه.'
     : 'English phrase: "'+esc(q)+'"\nAnalyze. Correct if misspelled. Even if not a famous idiom, give meaning and grammar.\nJSON only:\n{"original":"'+esc(q)+'","corrected":"correct form or null","phrase_type":"Idiom/Proverb/Collocation/Fixed expression/Phrasal verb/null","literal_fa":"literal translation or null","meaning_fa":"functional meaning in Persian","when_to_use":"when to use or null","register":"formal/informal/null","grammar":"notes with ▪ or null","synonym":"similar or null","similar":["1-2 similar phrases"],"example_de":"example sentence","example_fa":"Persian translation","priority":{"score":3,"reason":"why"}}\nPure JSON only, no extra text.';
 
-  /* Retry up to 2 times if AI gives invalid JSON */
-  let curPhrase2=null;
-  for(let attempt=0; attempt<2; attempt++){
-    const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
-    /* Safer JSON extraction: find first { and match balanced braces */
-    let jsonStr=null;
-    const startIdx=raw.indexOf('{');
-    if(startIdx>=0){
-      let depth=0,inStr=false,escNext=false;
-      for(let i=startIdx;i<raw.length;i++){
-        const ch=raw[i];
-        if(escNext){escNext=false;continue;}
-        if(ch==='\\'){escNext=true;continue;}
-        if(ch==='"'){inStr=!inStr;continue;}
-        if(!inStr){
-          if(ch==='{')depth++;
-          else if(ch==='}'){depth--;if(depth===0){jsonStr=raw.slice(startIdx,i+1);break;}}
+  /* Skip API call entirely if we have a cached result */
+  if(!_fromCache){
+    /* Retry up to 2 times if AI gives invalid JSON */
+    let curPhrase2=null;
+    for(let attempt=0; attempt<2; attempt++){
+      const raw=(await ai(p,900)).replace(/```json|```/g,'').trim();
+      /* Safer JSON extraction: find first { and match balanced braces */
+      let jsonStr=null;
+      const startIdx=raw.indexOf('{');
+      if(startIdx>=0){
+        let depth=0,inStr=false,escNext=false;
+        for(let i=startIdx;i<raw.length;i++){
+          const ch=raw[i];
+          if(escNext){escNext=false;continue;}
+          if(ch==='\\'){escNext=true;continue;}
+          if(ch==='"'){inStr=!inStr;continue;}
+          if(!inStr){
+            if(ch==='{')depth++;
+            else if(ch==='}'){depth--;if(depth===0){jsonStr=raw.slice(startIdx,i+1);break;}}
+          }
         }
       }
+      if(!jsonStr) continue;
+      try{ curPhrase2=JSON.parse(jsonStr); break; } catch(e){ continue; }
     }
-    if(!jsonStr) continue;
-    try{ curPhrase2=JSON.parse(jsonStr); break; } catch(e){ continue; }
+    if(!curPhrase2) throw new Error('parse error');
+    curPhrase=curPhrase2;
+    /* Persist to cache (evict oldest if > 100 entries) */
+    try{
+      const keys=Object.keys(localStorage).filter(k=>k.startsWith('pc_'));
+      if(keys.length>100)localStorage.removeItem(keys[0]);
+      localStorage.setItem(pck,JSON.stringify(curPhrase));
+    }catch(e){}
   }
-  if(!curPhrase2) throw new Error('parse error');
-  curPhrase=curPhrase2;
 
   // اگه اصلاح شده، عنوان اصلی = فرم صحیح
   const hasCorrected = curPhrase.corrected && curPhrase.corrected!=='null' && curPhrase.corrected!==curPhrase.original;
