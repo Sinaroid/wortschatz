@@ -1655,13 +1655,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .mi-cu-cats{display:flex;flex-direction:column;gap:5px}
 .mi-cu-cat{
   display:flex;align-items:center;gap:10px;
-  padding:9px 10px;background:var(--bg2);border-radius:10px;
+  padding:10px 12px;background:var(--bg2);border-radius:10px;
   cursor:pointer;transition:all .15s;font-family:var(--sans);
-  border:1.5px solid transparent;
+  border:1.5px solid transparent;user-select:none;
 }
 .mi-cu-cat:hover{background:var(--bg3)}
-.mi-cu-cat input[type="checkbox"]{
-  width:16px;height:16px;accent-color:var(--accent);cursor:pointer;margin:0;flex-shrink:0;
+.mi-cu-cat:active{transform:scale(.99)}
+/* Custom check badge */
+.mi-cu-cat-check{
+  width:20px;height:20px;border-radius:6px;
+  border:1.5px solid var(--bg3);background:var(--card);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;color:transparent;
+  transition:all .15s;flex-shrink:0;
 }
 .mi-cu-cat-ic{font-size:15px;line-height:1;flex-shrink:0}
 .mi-cu-cat-name{flex:1;font-size:12px;font-weight:600;color:var(--ink2)}
@@ -1670,10 +1676,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
   background:var(--card);color:var(--ink3);border:1px solid var(--bg3);
   min-width:24px;text-align:center;font-variant-numeric:tabular-nums;
 }
-.mi-cu-cat input:checked ~ .mi-cu-cat-count{background:var(--abl);color:var(--accent);border-color:rgba(26,58,242,.2)}
-/* When the cat label has a checked input, highlight the whole row */
-.mi-cu-cat:has(input:checked){background:var(--abl);border-color:rgba(26,58,242,.2)}
-.mi-cu-cat:has(input:checked) .mi-cu-cat-name{color:var(--ink)}
+/* On state — whole row accent, check filled */
+.mi-cu-cat.on{background:var(--abl);border-color:rgba(26,58,242,.25)}
+.mi-cu-cat.on .mi-cu-cat-name{color:var(--ink)}
+.mi-cu-cat.on .mi-cu-cat-check{background:var(--accent);border-color:var(--accent);color:#fff}
+.mi-cu-cat.on .mi-cu-cat-count{background:var(--card);color:var(--accent);border-color:rgba(26,58,242,.25)}
 .mi-cu-foot{
   display:flex;align-items:center;justify-content:space-between;
   margin-top:10px;padding-top:10px;border-top:1px solid var(--bg3);
@@ -2494,45 +2501,45 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="mi-cu-section">
         <div class="mi-cu-label">حجم سشن</div>
         <div class="mi-cu-pills" id="mi-cu-sizes">
-          <button data-size="5">۵</button>
-          <button data-size="10" class="on">۱۰</button>
-          <button data-size="20">۲۰</button>
-          <button data-size="50">۵۰</button>
-          <button data-size="0">همه</button>
+          <button type="button" data-size="5"  onclick="introCustomSetSize(5,this)">۵</button>
+          <button type="button" data-size="10" class="on" onclick="introCustomSetSize(10,this)">۱۰</button>
+          <button type="button" data-size="20" onclick="introCustomSetSize(20,this)">۲۰</button>
+          <button type="button" data-size="50" onclick="introCustomSetSize(50,this)">۵۰</button>
+          <button type="button" data-size="0"  onclick="introCustomSetSize(0,this)">همه</button>
         </div>
       </div>
       <div class="mi-cu-section">
-        <div class="mi-cu-label">کدوم دسته‌ها؟</div>
+        <div class="mi-cu-label">کدوم دسته‌ها؟ <span style="opacity:.5;font-weight:500;letter-spacing:0;text-transform:none">(برای انتخاب کلیک کن)</span></div>
         <div class="mi-cu-cats" id="mi-cu-cats">
-          <label class="mi-cu-cat" data-cat="due">
-            <input type="checkbox" checked>
+          <div class="mi-cu-cat on" data-cat="due" onclick="introCustomToggleCat('due',this)">
+            <span class="mi-cu-cat-check">✓</span>
             <span class="mi-cu-cat-ic">⏰</span>
             <span class="mi-cu-cat-name">دیر شده</span>
             <span class="mi-cu-cat-count" id="cu-ct-due">0</span>
-          </label>
-          <label class="mi-cu-cat" data-cat="weak">
-            <input type="checkbox" checked>
+          </div>
+          <div class="mi-cu-cat on" data-cat="weak" onclick="introCustomToggleCat('weak',this)">
+            <span class="mi-cu-cat-check">✓</span>
             <span class="mi-cu-cat-ic">🔥</span>
             <span class="mi-cu-cat-name">ضعیف</span>
             <span class="mi-cu-cat-count" id="cu-ct-weak">0</span>
-          </label>
-          <label class="mi-cu-cat" data-cat="new">
-            <input type="checkbox" checked>
+          </div>
+          <div class="mi-cu-cat on" data-cat="new" onclick="introCustomToggleCat('new',this)">
+            <span class="mi-cu-cat-check">✓</span>
             <span class="mi-cu-cat-ic">✨</span>
             <span class="mi-cu-cat-name">جدید</span>
             <span class="mi-cu-cat-count" id="cu-ct-new">0</span>
-          </label>
-          <label class="mi-cu-cat" data-cat="rev">
-            <input type="checkbox">
+          </div>
+          <div class="mi-cu-cat" data-cat="rev" onclick="introCustomToggleCat('rev',this)">
+            <span class="mi-cu-cat-check">✓</span>
             <span class="mi-cu-cat-ic">🔁</span>
             <span class="mi-cu-cat-name">مرور شده</span>
             <span class="mi-cu-cat-count" id="cu-ct-rev">0</span>
-          </label>
+          </div>
         </div>
       </div>
       <div class="mi-cu-foot">
         <span id="mi-cu-selected">۰ کارت انتخاب شده</span>
-        <button onclick="introCustomReset()">بازنشانی</button>
+        <button type="button" onclick="introCustomReset()">بازنشانی</button>
       </div>
     </div>
   </div>
@@ -6847,8 +6854,10 @@ function introPickMode(mode){
     sesDeck=weak.slice(0,10).map(w=>({...w,_type:'weak'}));
     sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();sesPending=new Set();
     mode='flip';
-  }else if(introCustom.open){
-    /* Custom deck takes over — replace sesDeck with user's selection */
+  }else if(introCustom.customized){
+    /* Custom deck takes over — replace sesDeck with user's selection.
+       Works whether the panel is currently open or closed — as long as
+       user has touched any control, their settings apply. */
     const custom=_introBuildCustomDeck();
     if(!custom.length){showToast('هیچ کارتی با این تنظیمات پیدا نشد',2500,'warn');return;}
     sesDeck=custom;
@@ -6871,6 +6880,7 @@ function introPickMode(mode){
 ═══════════════════════════════════════════════ */
 let introCustom={
   open:false,
+  customized:false,  /* set to true on any user change — triggers use of custom deck */
   size:10,           /* 5 / 10 / 20 / 50 / 0=all */
   cats:{due:true,weak:true,new:true,rev:false}
 };
@@ -6917,11 +6927,12 @@ function _introUpdateCustomSummary(){
   const sel=Q('#mi-cu-selected');if(sel)sel.textContent=n+' کارت انتخاب شده';
   const sum=Q('#mi-custom-summary');
   if(sum){
-    if(!introCustom.open)sum.textContent='۱۰ کارت · خودکار هوشمند';
-    else{
-      const sizeLbl=introCustom.size===0?'همه':introCustom.size;
+    if(!introCustom.customized){
+      sum.textContent='خودکار هوشمند · ۱۰ کارت';
+    }else{
+      const sizeLbl=introCustom.size===0?'همه':introCustom.size+' کارت';
       const catCount=Object.values(introCustom.cats).filter(Boolean).length;
-      sum.textContent=n+' کارت · '+catCount+' دسته · '+sizeLbl;
+      sum.textContent='✓ سفارشی · '+sizeLbl+' · '+catCount+' دسته';
     }
   }
 }
@@ -6939,35 +6950,31 @@ function introCustomToggle(){
     _introUpdateCustomSummary();
   }
 }
+function introCustomSetSize(n,btn){
+  introCustom.size=n;
+  introCustom.customized=true;
+  const pills=document.querySelectorAll('#mi-cu-sizes button');
+  pills.forEach(b=>b.classList.toggle('on',b===btn));
+  _introUpdateCustomSummary();
+}
+function introCustomToggleCat(cat,el){
+  introCustom.cats[cat]=!introCustom.cats[cat];
+  introCustom.customized=true;
+  el.classList.toggle('on',introCustom.cats[cat]);
+  _introUpdateCustomSummary();
+}
 function introCustomReset(){
   introCustom.size=10;
   introCustom.cats={due:true,weak:true,new:true,rev:false};
+  introCustom.customized=false;
   /* Reflect in UI */
   document.querySelectorAll('#mi-cu-sizes button').forEach(b=>b.classList.toggle('on',+b.dataset.size===10));
-  document.querySelectorAll('#mi-cu-cats .mi-cu-cat').forEach(c=>{
-    const inp=c.querySelector('input');
-    if(inp)inp.checked=!!introCustom.cats[c.dataset.cat];
+  document.querySelectorAll('#mi-cu-cats .mi-cu-cat').forEach(el=>{
+    el.classList.toggle('on',!!introCustom.cats[el.dataset.cat]);
   });
   _introUpdateCustomSummary();
+  showToast('بازنشانی شد ✓',1500);
 }
-/* Wire UI events once DOM is ready */
-setTimeout(()=>{
-  document.querySelectorAll('#mi-cu-sizes button').forEach(b=>{
-    b.addEventListener('click',()=>{
-      introCustom.size=+b.dataset.size;
-      document.querySelectorAll('#mi-cu-sizes button').forEach(x=>x.classList.toggle('on',x===b));
-      _introUpdateCustomSummary();
-    });
-  });
-  document.querySelectorAll('#mi-cu-cats .mi-cu-cat').forEach(c=>{
-    const inp=c.querySelector('input');
-    if(!inp)return;
-    inp.addEventListener('change',()=>{
-      introCustom.cats[c.dataset.cat]=inp.checked;
-      _introUpdateCustomSummary();
-    });
-  });
-},400);
 
 function _showModeBody(mode){
   ['flip-body','quiz-body','listen-body','speed-body','match-body','fill-body','survival-body'].forEach(id=>{
