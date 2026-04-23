@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Wortschatz">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,500&family=Vazirmatn:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* IRANYekan via Google Fonts fallback */
 </style>
@@ -19,15 +19,19 @@
    DESIGN TOKENS
 ═══════════════════════════════════ */
 :root{
-  --bg:#f5f4f0; --bg2:#eaeae4; --bg3:#d8d8d0; --bg4:#c2c2b8;
-  --card:#ffffff; --ink:#0f0f0e; --ink2:#4a4a42; --ink3:#8a8a80; --ink4:#b8b8ae;
-  --accent:#1a3af2; --accent2:#3d5af5;
-  --abl:rgba(26,58,242,.09); --aglow:rgba(26,58,242,.18);
-  --ok:#126e35; --okbg:rgba(18,110,53,.08);
-  --err:#cc2020; --errbg:rgba(204,32,32,.07);
-  --warn:#a84800; --warnbg:rgba(168,72,0,.07);
+  /* Warmer cream palette — editorial feel */
+  --bg:#faf9f6; --bg2:#f3f1ec; --bg3:#e9e6df; --bg4:#d8d4c9;
+  --card:#ffffff; --ink:#161616; --ink2:#5a5a5a; --ink3:#8a8a80; --ink4:#b8b8ae;
+  --accent:#2347e5; --accent2:#3d5af5;
+  --abl:#e8ecff; --aglow:rgba(35,71,229,.16);
+  --hair:#e9e6df;  /* hair-thin border — warm */
+  --hair2:#efece5;
+  --ok:#15803d; --okbg:rgba(21,128,61,.08);
+  --err:#b91c1c; --errbg:rgba(185,28,28,.07);
+  --warn:#c2410c; --warnbg:rgba(194,65,12,.07);
   --serif:'Fraunces',Georgia,serif;
   --sans:'Vazirmatn',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
   --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;
   --r1:4px;--r2:10px;--r3:14px;--r4:20px;--r5:28px;--r6:40px;
   --sh1:0 1px 2px rgba(0,0,0,.04),0 3px 8px rgba(0,0,0,.05);
@@ -65,6 +69,8 @@ body{
   transition:background .3s var(--ease),color .3s var(--ease);
   overflow-x:hidden;
   font-weight:400;
+  font-feature-settings:"ss01","cv11";
+  line-height:1.5;
   line-height:1.6;
 }
 button,input{font-family:var(--sans)}
@@ -537,11 +543,13 @@ body.fsrs-mode .swipe-row{display:none}
 .hero-txt{padding-left:72px}
 .hero-eye{display:none}
 .hero h1{
-  font-family:var(--sans);font-size:clamp(18px,4.5vw,22px);font-weight:700;
-  color:var(--ink);line-height:1.25;letter-spacing:0;margin-bottom:2px;
+  font-family:var(--sans);font-size:clamp(20px,5vw,26px);font-weight:700;
+  color:var(--ink);line-height:1.25;letter-spacing:-0.02em;margin-bottom:4px;
 }
-.hero h1 em{font-style:normal;font-weight:300;font-family:var(--sans);opacity:.6}
-.hero p{font-size:11px;color:var(--ink3);line-height:1.4}
+.hero h1 em{font-style:normal;font-weight:500;font-family:var(--sans);color:var(--ink3);opacity:.8}
+.hero p{font-size:12px;color:var(--ink3);line-height:1.45}
+/* Greeting label above h1 */
+.hero-greet{font-size:12px;color:var(--ink3);margin-bottom:4px;font-weight:500}
 /* Lang chip — pinned top-left of hero */
 .hero-lang{
   position:absolute;top:var(--s3);left:0;
@@ -790,61 +798,86 @@ body.fsrs-mode .swipe-row{display:none}
 /* ═══════════════════════════════════
    STATS CARD
 ═══════════════════════════════════ */
+/* ═══ TODAY CARD — editorial hero ═══ */
 .sum-card{
-  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
-  padding:12px 14px;margin-top:var(--s3);margin-bottom:0;box-shadow:var(--sh1);
+  background:var(--card);border:1px solid var(--hair);border-radius:16px;
+  margin-top:var(--s3);margin-bottom:0;
+  box-shadow:0 1px 0 rgba(22,22,22,.04),0 12px 28px -18px rgba(22,22,22,.12);
   display:none;animation:up .35s .15s var(--ease) both;overflow:hidden;position:relative;
+  padding:0;
 }
 .sum-card.show{display:block}
 
-/* top row: goal ring + title + streak all inline */
-.sum-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.sum-top .dg-ring{margin:0;flex-shrink:0}
+/* Top — big number + CTA */
+.sum-top{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;padding:20px 20px 16px;flex-wrap:wrap;
+}
 .sum-top-body{flex:1;min-width:0}
-.sum-title{
-  font-size:12px;font-weight:600;color:var(--ink);font-family:var(--sans);
-  display:flex;align-items:center;gap:6px;line-height:1.2;
+/* Chip row */
+.sum-chips{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sum-today-chip{
+  font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;
+  background:var(--abl);color:var(--accent);letter-spacing:.02em;
 }
-.sum-streak{
-  font-size:10px;font-weight:700;color:var(--warn);
-  background:var(--warnbg);border-radius:10px;padding:1px 7px;
-}
-.sum-subgoal{font-size:10px;color:var(--ink3);margin-top:2px;line-height:1.3}
-.sum-subgoal b{color:var(--ink2);font-weight:700}
-
-/* inline stats — compact chips */
-.sum-nums{
-  display:flex;gap:6px;margin-bottom:10px;
-}
-.sum-nb{
-  flex:1;background:var(--bg2);border:1px solid var(--bg3);
-  border-radius:var(--r2);padding:6px 8px;
-  text-align:center;transition:background .15s;
-}
-.sum-nb:hover{background:var(--bg3)}
-.sum-n{
-  font-size:16px;font-weight:700;color:var(--ink);
-  line-height:1;margin-bottom:2px;
+.sum-weekday{font-size:12px;color:var(--ink3);font-weight:500}
+/* Big number line */
+.sum-today-row{display:flex;align-items:baseline;gap:10px;margin-top:4px}
+.sum-today-n{
+  font-size:34px;font-weight:700;color:var(--ink);
+  letter-spacing:-0.02em;line-height:1;font-family:var(--mono);
   font-variant-numeric:tabular-nums;
 }
-.sum-nb.ok .sum-n{color:var(--ok)}
-.sum-nb.warn .sum-n{color:var(--accent)}
-.sum-l{font-size:9px;color:var(--ink3);font-weight:400;letter-spacing:.2px}
-
-/* action buttons — compact */
-.sum-acts{display:flex;gap:6px}
+.sum-today-lbl{font-size:14px;color:var(--ink2);font-weight:500}
+.sum-today-sub{font-size:11px;color:var(--ink3);margin-top:4px;font-family:var(--mono)}
+/* Ring — kept small top-corner */
+.sum-top .dg-ring{margin:0;flex-shrink:0;display:none}
+/* Streak chip — absolute top-left corner */
+.sum-streak-badge{
+  position:absolute;top:14px;left:14px;
+  font-size:10px;font-weight:700;color:var(--warn);
+  background:var(--warnbg);border-radius:999px;padding:3px 9px;
+  display:inline-flex;align-items:center;gap:4px;line-height:1;
+  font-family:var(--sans);
+}
+/* Primary CTA button */
 .sum-review{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:var(--s2);
-  padding:9px var(--s3);border-radius:var(--r2);background:var(--accent);color:#fff;
-  border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 20px;border-radius:12px;background:var(--accent);color:#fff;
+  border:none;font-family:var(--sans);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .18s;flex-shrink:0;
 }
-.sum-review:hover{background:var(--accent2);transform:translateY(-1px)}
+.sum-review:hover{background:color-mix(in oklab,var(--accent) 90%,black);transform:translateY(-1px)}
+/* Bottom — 3-col stats grid with dividers */
+.sum-nums{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  background:var(--bg2);border-top:1px solid var(--hair);
+  margin:0;padding:0;gap:0;
+}
+.sum-nb{
+  padding:14px 10px;text-align:right;
+  border-right:1px solid var(--hair);
+  display:flex;flex-direction:column;gap:2px;
+  background:transparent;border-radius:0;border-left:none;border-top:none;border-bottom:none;
+}
+.sum-nb:first-child{border-right:none}
+.sum-nb:hover{background:var(--bg3)}
+.sum-n{
+  font-size:22px;font-weight:600;color:var(--ink);
+  line-height:1;
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+  letter-spacing:-0.01em;
+}
+.sum-nb.ok .sum-n{color:var(--ok)}
+.sum-nb.warn .sum-n{color:var(--warn)}
+.sum-l{font-size:11px;color:var(--ink3);font-weight:400;letter-spacing:0}
+/* Extra "همه" button — small, below */
+.sum-acts{display:none} /* legacy holder hidden */
 .sum-all{
-  padding:9px 12px;border-radius:var(--r2);border:1px solid var(--bg3);
-  background:var(--bg2);color:var(--ink2);font-size:12px;font-weight:500;
-  cursor:pointer;transition:all .18s;font-family:var(--sans);white-space:nowrap;
+  position:absolute;top:14px;left:auto;right:14px;display:none;
 }
-.sum-all:hover{background:var(--bg3);color:var(--ink)}
+/* Legacy elements kept hidden for compatibility */
+.sum-subgoal{display:none}
 
 /* ═══════════════════════════════════
    REMINDER
@@ -1805,9 +1838,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 /* Score */
 .sv-score-wrap{display:flex;flex-direction:column;align-items:center}
 .sv-score{
-  font-size:38px;font-weight:900;color:var(--ink);
+  font-size:38px;font-weight:700;color:var(--ink);
   font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-1.5px;
-  font-family:var(--sans);
+  font-family:var(--mono);
 }
 .sv-score.pop{animation:scorePop .4s var(--spring)}
 @keyframes scorePop{0%{transform:scale(1)}50%{transform:scale(1.15);color:var(--ok)}100%{transform:scale(1)}}
@@ -1939,10 +1972,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .sv-go-icon{font-size:64px;margin-bottom:12px;animation:goIcon .6s var(--spring)}
 @keyframes goIcon{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
 .sv-go-score{
-  font-size:72px;font-weight:900;color:var(--accent);
+  font-size:72px;font-weight:700;color:var(--accent);
   margin-bottom:4px;line-height:1;letter-spacing:-3px;
-  font-variant-numeric:tabular-nums;font-family:var(--sans);
-  text-shadow:0 4px 20px rgba(26,58,242,.25);
+  font-variant-numeric:tabular-nums;font-family:var(--mono);
+  text-shadow:0 4px 20px rgba(35,71,229,.25);
 }
 .sv-go-label{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:var(--s4)}
 .sv-go-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:var(--s4)}
@@ -2756,6 +2789,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="hero-txt">
+        <div class="hero-greet" id="hero-greet">سلام 👋</div>
         <h1 id="hero-title">لغت یاد بگیر، <em>نه حفظ کنی</em></h1>
         <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
       </div>
@@ -2886,19 +2920,33 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
     </div>
 
-    <!-- Stats card -->
+    <!-- Today card — editorial hero -->
     <div class="sum-card" id="sum-card">
+      <span class="sum-streak-badge">🔥 <span id="sn-streak">0</span> <span style="opacity:.7;font-weight:500">روز</span></span>
       <div class="sum-top">
-        <div class="dg-ring"><svg width="36" height="36" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct" style="font-size:9px">0%</div></div>
         <div class="sum-top-body">
-          <div class="sum-title">پیشرفت تو <span class="sum-streak">🔥 <span id="sn-streak">0</span></span></div>
-          <div class="sum-subgoal" id="dg-title">هدف: <b>0</b>/<b>5</b></div>
+          <div class="sum-chips">
+            <span class="sum-today-chip">امروز</span>
+            <span class="sum-weekday" id="sum-weekday">—</span>
+          </div>
+          <div class="sum-today-row">
+            <span class="sum-today-n" id="sn-due">0</span>
+            <span class="sum-today-lbl">کارت برای مرور</span>
+          </div>
+          <div class="sum-today-sub" id="sum-time-est">—</div>
+          <!-- Hidden legacy: keep IDs so other code still works -->
+          <div class="dg-ring" style="display:none"><svg width="36" height="36" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct" style="font-size:9px">0%</div></div>
+          <div class="sum-subgoal" id="dg-title" style="display:none">هدف: <b>0</b>/<b>5</b></div>
         </div>
+        <button class="sum-review" onclick="sesOpenSmart()" aria-label="شروع جلسه مرور">
+          <span id="review-lbl">شروع مرور</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M10 3l-4 4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
       <div class="sum-nums">
         <div class="sum-nb">
           <div class="sum-n" id="sn-total">0</div>
-          <div class="sum-l">کل</div>
+          <div class="sum-l">کل واژگان</div>
           <div id="sn-lang-split" style="display:none"></div>
         </div>
         <div class="sum-nb ok">
@@ -2906,13 +2954,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
           <div class="sum-l">یاد گرفتم</div>
         </div>
         <div class="sum-nb warn" id="sn-due-wrap">
-          <div class="sum-n" id="sn-due">0</div>
-          <div class="sum-l">مرور</div>
+          <div class="sum-n" id="sn-due-stat">0</div>
+          <div class="sum-l">در حال یادگیری</div>
         </div>
-      </div>
-      <div class="sum-acts">
-        <button class="sum-review" onclick="sesOpenSmart()" aria-label="شروع جلسه مرور"><span id="review-lbl">شروع مرور</span> →</button>
-        <button class="sum-all" onclick="sesOpen()" aria-label="مرور همه لغات">همه</button>
       </div>
     </div>
 
@@ -4037,11 +4081,35 @@ function updateStats(){
     }
   }
   Q('#sn-learned').textContent=learned.length;
-  // due count
+  // due count (big number on top)
   const dueEl=Q('#sn-due');
   const dueWrap=Q('#sn-due-wrap');
   if(dueEl) dueEl.textContent=due.length;
+  /* Bottom stat column: words being learned (seen > 0, not yet mastered) */
+  const learningCount=fw.filter(w=>w.seen>0&&(w.interval||0)<=3).length;
+  const dueStatEl=Q('#sn-due-stat');
+  if(dueStatEl)dueStatEl.textContent=learningCount;
   if(dueWrap) dueWrap.classList.toggle('warn', due.length>0);
+  // Weekday + time estimate in Persian
+  try{
+    const wdEl=Q('#sum-weekday');
+    if(wdEl)wdEl.textContent=new Date().toLocaleDateString('fa-IR',{weekday:'long'});
+  }catch(e){}
+  const teEl=Q('#sum-time-est');
+  if(teEl){
+    const mins=Math.max(1,Math.ceil(due.length*0.6));
+    const newN=fw.filter(w=>w.seen===0).length;
+    teEl.textContent=due.length>0
+      ? `حدود ${mins} دقیقه • ${due.length} تکرار، ${Math.min(newN,10)} جدید`
+      : newN>0?`${newN} کلمه جدید آماده یادگیری`:'امروز دیر شده نداری — آفرین 🎉';
+  }
+  // Time-based greeting
+  const greetEl=Q('#hero-greet');
+  if(greetEl){
+    const h=new Date().getHours();
+    const g=h<5?'شب بخیر 🌙':h<12?'صبح بخیر ☀️':h<17?'وقت بخیر 🧠':h<21?'عصر بخیر 🌤':'شب بخیر 🌙';
+    greetEl.textContent=g;
+  }
   // streak
   const rl=JSON.parse(localStorage.getItem('ws_rlog_'+uid())||'{}');
   const ol=JSON.parse(localStorage.getItem('ws_olog_'+uid())||'{}');
