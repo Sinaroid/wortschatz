@@ -1619,6 +1619,73 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .mi-title{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:var(--s1)}
 .mi-sub{font-size:13px;color:var(--ink2);line-height:1.7}
 .mi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 var(--s5) var(--s5);max-width:460px;margin:0 auto;width:100%}
+/* ═══ Custom deck builder panel ═══ */
+#mi-custom-toggle{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--card);border:1.5px solid var(--bg3);border-radius:12px;
+  padding:10px 14px;cursor:pointer;transition:all .15s;
+  font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink);
+}
+#mi-custom-toggle:hover{border-color:var(--accent);background:var(--abl)}
+#mi-custom-toggle #mi-custom-summary{flex:1;text-align:center;color:var(--ink3);font-weight:500;font-size:11px}
+#mi-custom-toggle #mi-custom-chev{transition:transform .2s;color:var(--ink3);font-size:14px}
+#mi-custom-toggle.open{background:var(--abl);border-color:var(--accent);color:var(--accent)}
+#mi-custom-toggle.open #mi-custom-chev{transform:rotate(180deg);color:var(--accent)}
+#mi-custom-panel{
+  margin-top:8px;padding:14px;background:var(--card);
+  border:1.5px solid var(--accent);border-radius:12px;
+  animation:customSlide .22s ease;
+}
+@keyframes customSlide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.mi-cu-section{margin-bottom:12px}
+.mi-cu-section:last-child{margin-bottom:0}
+.mi-cu-label{
+  font-size:10px;font-weight:700;color:var(--ink3);
+  letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px;
+}
+.mi-cu-pills{display:flex;gap:5px}
+.mi-cu-pills button{
+  flex:1;padding:7px 0;border:1.5px solid var(--bg3);border-radius:10px;
+  background:var(--bg2);color:var(--ink2);
+  font-family:var(--sans);font-size:12px;font-weight:700;cursor:pointer;
+  transition:all .15s;
+}
+.mi-cu-pills button:hover{border-color:var(--ink4);color:var(--ink)}
+.mi-cu-pills button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mi-cu-cats{display:flex;flex-direction:column;gap:5px}
+.mi-cu-cat{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;background:var(--bg2);border-radius:10px;
+  cursor:pointer;transition:all .15s;font-family:var(--sans);
+  border:1.5px solid transparent;
+}
+.mi-cu-cat:hover{background:var(--bg3)}
+.mi-cu-cat input[type="checkbox"]{
+  width:16px;height:16px;accent-color:var(--accent);cursor:pointer;margin:0;flex-shrink:0;
+}
+.mi-cu-cat-ic{font-size:15px;line-height:1;flex-shrink:0}
+.mi-cu-cat-name{flex:1;font-size:12px;font-weight:600;color:var(--ink2)}
+.mi-cu-cat-count{
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;
+  background:var(--card);color:var(--ink3);border:1px solid var(--bg3);
+  min-width:24px;text-align:center;font-variant-numeric:tabular-nums;
+}
+.mi-cu-cat input:checked ~ .mi-cu-cat-count{background:var(--abl);color:var(--accent);border-color:rgba(26,58,242,.2)}
+/* When the cat label has a checked input, highlight the whole row */
+.mi-cu-cat:has(input:checked){background:var(--abl);border-color:rgba(26,58,242,.2)}
+.mi-cu-cat:has(input:checked) .mi-cu-cat-name{color:var(--ink)}
+.mi-cu-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:10px;padding-top:10px;border-top:1px solid var(--bg3);
+  font-family:var(--sans);
+}
+.mi-cu-foot>span{font-size:12px;font-weight:700;color:var(--accent)}
+.mi-cu-foot button{
+  background:transparent;border:none;color:var(--ink3);
+  font-family:var(--sans);font-size:11px;font-weight:600;cursor:pointer;
+  padding:4px 10px;border-radius:8px;transition:all .15s;
+}
+.mi-cu-foot button:hover{background:var(--bg2);color:var(--ink)}
 .mi-card{
   display:flex;flex-direction:column;align-items:center;gap:6px;
   padding:20px 12px 16px;background:var(--card);
@@ -2414,6 +2481,60 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
   <div id="mi-src-filter" style="padding:0 var(--s5) var(--s3)">
     <div style="font-size:10px;font-weight:600;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;text-align:center">از کدوم منبع؟</div>
     <div class="src-chips" id="mi-src-chips" style="justify-content:center;flex-wrap:wrap"></div>
+  </div>
+
+  <!-- Custom deck builder (collapsible) -->
+  <div id="mi-custom-wrap" style="padding:0 var(--s5) var(--s3);max-width:460px;margin:0 auto;width:100%">
+    <button id="mi-custom-toggle" onclick="introCustomToggle()">
+      <span>⚙ تنظیم سشن</span>
+      <span id="mi-custom-summary">۱۰ کارت · خودکار هوشمند</span>
+      <span id="mi-custom-chev">▾</span>
+    </button>
+    <div id="mi-custom-panel" style="display:none">
+      <div class="mi-cu-section">
+        <div class="mi-cu-label">حجم سشن</div>
+        <div class="mi-cu-pills" id="mi-cu-sizes">
+          <button data-size="5">۵</button>
+          <button data-size="10" class="on">۱۰</button>
+          <button data-size="20">۲۰</button>
+          <button data-size="50">۵۰</button>
+          <button data-size="0">همه</button>
+        </div>
+      </div>
+      <div class="mi-cu-section">
+        <div class="mi-cu-label">کدوم دسته‌ها؟</div>
+        <div class="mi-cu-cats" id="mi-cu-cats">
+          <label class="mi-cu-cat" data-cat="due">
+            <input type="checkbox" checked>
+            <span class="mi-cu-cat-ic">⏰</span>
+            <span class="mi-cu-cat-name">دیر شده</span>
+            <span class="mi-cu-cat-count" id="cu-ct-due">0</span>
+          </label>
+          <label class="mi-cu-cat" data-cat="weak">
+            <input type="checkbox" checked>
+            <span class="mi-cu-cat-ic">🔥</span>
+            <span class="mi-cu-cat-name">ضعیف</span>
+            <span class="mi-cu-cat-count" id="cu-ct-weak">0</span>
+          </label>
+          <label class="mi-cu-cat" data-cat="new">
+            <input type="checkbox" checked>
+            <span class="mi-cu-cat-ic">✨</span>
+            <span class="mi-cu-cat-name">جدید</span>
+            <span class="mi-cu-cat-count" id="cu-ct-new">0</span>
+          </label>
+          <label class="mi-cu-cat" data-cat="rev">
+            <input type="checkbox">
+            <span class="mi-cu-cat-ic">🔁</span>
+            <span class="mi-cu-cat-name">مرور شده</span>
+            <span class="mi-cu-cat-count" id="cu-ct-rev">0</span>
+          </label>
+        </div>
+      </div>
+      <div class="mi-cu-foot">
+        <span id="mi-cu-selected">۰ کارت انتخاب شده</span>
+        <button onclick="introCustomReset()">بازنشانی</button>
+      </div>
+    </div>
   </div>
   <div class="mi-grid">
     <div class="mi-card" onclick="introPickMode('flip')" style="grid-column:1/-1">
@@ -4628,6 +4749,8 @@ function showIntro(){
   Q('#intro-emoji').textContent=h<12?'☀️':h<17?'🧠':h<21?'🌤':'🌙';
   Q('#intro-title').textContent=greet;
   _renderIntroStats();
+  /* Update custom deck counts/summary */
+  if(typeof _introUpdateCustomCounts==='function')_introUpdateCustomCounts();
   intro.style.display='flex';
   intro.classList.add('open');
 }
@@ -6724,6 +6847,12 @@ function introPickMode(mode){
     sesDeck=weak.slice(0,10).map(w=>({...w,_type:'weak'}));
     sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();sesPending=new Set();
     mode='flip';
+  }else if(introCustom.open){
+    /* Custom deck takes over — replace sesDeck with user's selection */
+    const custom=_introBuildCustomDeck();
+    if(!custom.length){showToast('هیچ کارتی با این تنظیمات پیدا نشد',2500,'warn');return;}
+    sesDeck=custom;
+    sesI=0;sesGood=0;sesBad=0;sesRepN=0;sesRepeat=new Set();sesPending=new Set();
   }
   sesMode=mode;
   Q('#ses-intro').style.display='none';Q('#ses-intro').classList.remove('open');
@@ -6736,6 +6865,109 @@ function introPickMode(mode){
   else if(mode==='listen')showListen();
   else if(mode==='survival')startSurvival();
 }
+
+/* ═══════════════════════════════════════════════
+   CUSTOM DECK BUILDER
+═══════════════════════════════════════════════ */
+let introCustom={
+  open:false,
+  size:10,           /* 5 / 10 / 20 / 50 / 0=all */
+  cats:{due:true,weak:true,new:true,rev:false}
+};
+function _introCategorize(){
+  const now=Date.now();
+  const fw=filteredWords();
+  const cats={due:[],weak:[],new:[],rev:[]};
+  fw.forEach(w=>{
+    if(!w.seen||w.seen===0){cats.new.push(w);return;}
+    const nr=w.next_review?new Date(w.next_review).getTime():0;
+    const isDue=!nr||nr<=now;
+    const isWeak=(w.score||0)<0||(w.easiness||2.5)<2.0;
+    if(isDue)cats.due.push(w);
+    else if(isWeak)cats.weak.push(w);
+    else cats.rev.push(w);
+  });
+  return cats;
+}
+function _introUpdateCustomCounts(){
+  const cats=_introCategorize();
+  ['due','weak','new','rev'].forEach(k=>{
+    const el=Q('#cu-ct-'+k);if(el)el.textContent=cats[k].length;
+  });
+  _introUpdateCustomSummary();
+}
+function _introBuildCustomDeck(){
+  const cats=_introCategorize();
+  /* Priority: due → weak → new → rev (within each, shuffle a bit) */
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+  let pool=[];
+  if(introCustom.cats.due)pool=pool.concat(cats.due);
+  if(introCustom.cats.weak)pool=pool.concat(shuffle(cats.weak));
+  if(introCustom.cats.new)pool=pool.concat(shuffle(cats.new));
+  if(introCustom.cats.rev)pool=pool.concat(shuffle(cats.rev));
+  /* Dedupe */
+  const seen=new Set();const out=[];
+  for(const w of pool){if(seen.has(w.de))continue;seen.add(w.de);out.push({...w,_type:''});}
+  /* Size limit */
+  if(introCustom.size>0)return out.slice(0,introCustom.size);
+  return out;
+}
+function _introUpdateCustomSummary(){
+  const n=_introBuildCustomDeck().length;
+  const sel=Q('#mi-cu-selected');if(sel)sel.textContent=n+' کارت انتخاب شده';
+  const sum=Q('#mi-custom-summary');
+  if(sum){
+    if(!introCustom.open)sum.textContent='۱۰ کارت · خودکار هوشمند';
+    else{
+      const sizeLbl=introCustom.size===0?'همه':introCustom.size;
+      const catCount=Object.values(introCustom.cats).filter(Boolean).length;
+      sum.textContent=n+' کارت · '+catCount+' دسته · '+sizeLbl;
+    }
+  }
+}
+function introCustomToggle(){
+  introCustom.open=!introCustom.open;
+  const panel=Q('#mi-custom-panel');
+  const btn=Q('#mi-custom-toggle');
+  if(introCustom.open){
+    panel.style.display='block';
+    btn.classList.add('open');
+    _introUpdateCustomCounts();
+  }else{
+    panel.style.display='none';
+    btn.classList.remove('open');
+    _introUpdateCustomSummary();
+  }
+}
+function introCustomReset(){
+  introCustom.size=10;
+  introCustom.cats={due:true,weak:true,new:true,rev:false};
+  /* Reflect in UI */
+  document.querySelectorAll('#mi-cu-sizes button').forEach(b=>b.classList.toggle('on',+b.dataset.size===10));
+  document.querySelectorAll('#mi-cu-cats .mi-cu-cat').forEach(c=>{
+    const inp=c.querySelector('input');
+    if(inp)inp.checked=!!introCustom.cats[c.dataset.cat];
+  });
+  _introUpdateCustomSummary();
+}
+/* Wire UI events once DOM is ready */
+setTimeout(()=>{
+  document.querySelectorAll('#mi-cu-sizes button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      introCustom.size=+b.dataset.size;
+      document.querySelectorAll('#mi-cu-sizes button').forEach(x=>x.classList.toggle('on',x===b));
+      _introUpdateCustomSummary();
+    });
+  });
+  document.querySelectorAll('#mi-cu-cats .mi-cu-cat').forEach(c=>{
+    const inp=c.querySelector('input');
+    if(!inp)return;
+    inp.addEventListener('change',()=>{
+      introCustom.cats[c.dataset.cat]=inp.checked;
+      _introUpdateCustomSummary();
+    });
+  });
+},400);
 
 function _showModeBody(mode){
   ['flip-body','quiz-body','listen-body','speed-body','match-body','fill-body','survival-body'].forEach(id=>{
