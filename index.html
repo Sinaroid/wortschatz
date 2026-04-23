@@ -1707,63 +1707,177 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
    WORD SURVIVAL GAME
 ═══════════════════════════════════ */
 #survival-body{display:none;flex-direction:column;align-items:center;flex:1;width:100%;padding:var(--s3) var(--s4);gap:0}
-.sv-hud{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;margin-bottom:var(--s4)}
-.sv-hearts{display:flex;gap:4px;font-size:20px}
-.sv-hearts .heart{transition:all .2s}
-.sv-hearts .heart.lost{opacity:.2;transform:scale(.8)}
-.sv-score-wrap{text-align:left}
-.sv-score{font-size:24px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
-.sv-streak{font-size:11px;font-weight:700;color:var(--accent);opacity:0;transition:opacity .15s;margin-top:2px}
-.sv-streak.show{opacity:1}
-.sv-prompt{text-align:center;margin-bottom:var(--s3)}
-.sv-meaning{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:var(--s1)}
-.sv-hint{font-size:11px;color:var(--ink3)}
-.sv-word-display{display:flex;gap:4px;justify-content:center;margin-bottom:var(--s3);min-height:48px;flex-wrap:wrap;direction:ltr}
+/* ═══ WORD SURVIVAL — gamified ═══ */
+#survival-body{position:relative;overflow:hidden}
+#survival-body::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at top,rgba(26,58,242,.04) 0%,transparent 60%);
+}
+#survival-body>*{position:relative;z-index:1}
+
+.sv-hud{
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  width:100%;max-width:440px;margin-bottom:12px;gap:12px;
+}
+.sv-hud-left,.sv-hud-right{display:flex;flex-direction:column;gap:6px}
+.sv-hud-right{align-items:flex-end}
+.sv-hud-center{display:flex;flex-direction:column;align-items:center;gap:2px}
+/* Hearts */
+.sv-hearts{display:flex;gap:3px;font-size:20px;line-height:1}
+.sv-hearts .heart{transition:all .35s var(--spring);filter:drop-shadow(0 2px 4px rgba(204,32,32,.3))}
+.sv-hearts .heart.lost{opacity:.18;transform:scale(.75) rotate(-20deg);filter:grayscale(1)}
+@keyframes heartBreak{0%{transform:scale(1)}30%{transform:scale(1.3)}60%{transform:scale(.6) rotate(-25deg)}100%{transform:scale(.75) rotate(-20deg);opacity:.18}}
+.sv-hearts .heart.breaking{animation:heartBreak .5s forwards}
+/* Score */
+.sv-score-wrap{display:flex;flex-direction:column;align-items:center}
+.sv-score{
+  font-size:38px;font-weight:900;color:var(--ink);
+  font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-1.5px;
+  font-family:var(--sans);
+}
+.sv-score.pop{animation:scorePop .4s var(--spring)}
+@keyframes scorePop{0%{transform:scale(1)}50%{transform:scale(1.15);color:var(--ok)}100%{transform:scale(1)}}
+.sv-score-label{font-size:9px;font-weight:700;color:var(--ink4);letter-spacing:1.5px;margin-top:-2px}
+/* Streak / combo */
+.sv-streak{
+  font-size:12px;font-weight:800;color:var(--warn);
+  padding:3px 10px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(255,140,0,.15),rgba(255,60,0,.1));
+  border:1px solid rgba(255,140,0,.3);
+  opacity:0;transition:all .2s var(--spring);transform:scale(.8);
+  white-space:nowrap;line-height:1;
+}
+.sv-streak.show{opacity:1;transform:scale(1);animation:streakGlow 1.4s ease infinite}
+@keyframes streakGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,140,0,.3)}50%{box-shadow:0 0 0 6px rgba(255,140,0,0)}}
+/* Level + XP */
+.sv-level{
+  font-size:10px;font-weight:800;padding:3px 10px;border-radius:12px;
+  background:var(--abl);color:var(--accent);transition:all .3s;
+  letter-spacing:.5px;line-height:1;white-space:nowrap;
+  border:1px solid rgba(26,58,242,.2);
+}
+.sv-level.l2{background:rgba(18,110,53,.1);color:var(--ok);border-color:rgba(18,110,53,.25)}
+.sv-level.l3{background:rgba(168,72,0,.12);color:var(--warn);border-color:rgba(168,72,0,.25)}
+.sv-level.l4{background:rgba(204,32,32,.12);color:var(--err);border-color:rgba(204,32,32,.25)}
+.sv-level.l5{background:linear-gradient(135deg,rgba(26,58,242,.18),rgba(120,80,255,.18));color:#7b5cff;border-color:rgba(120,80,255,.3)}
+/* XP progress bar */
+.sv-xp{
+  width:100%;max-width:440px;height:4px;background:var(--bg2);
+  border-radius:3px;overflow:hidden;margin-bottom:14px;
+  border:1px solid var(--bg3);
+}
+.sv-xp-fill{
+  height:100%;background:linear-gradient(90deg,var(--accent),#7b5cff);
+  border-radius:3px;transition:width .5s var(--spring);width:0%;
+  box-shadow:0 0 8px rgba(26,58,242,.4);
+}
+/* Meaning prompt — big card */
+.sv-prompt{
+  text-align:center;margin-bottom:16px;width:100%;max-width:440px;
+  padding:14px 16px;background:var(--card);border:1.5px solid var(--bg3);
+  border-radius:14px;box-shadow:0 2px 10px -4px rgba(0,0,0,.08);
+  position:relative;
+}
+.sv-prompt::before{
+  content:'?';position:absolute;top:-10px;right:14px;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;font-family:var(--sans);
+  box-shadow:0 2px 6px rgba(26,58,242,.35);
+}
+.sv-meaning{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px;line-height:1.3}
+.sv-hint{font-size:10px;color:var(--ink3);letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+/* Word display — letters */
+.sv-word-display{
+  display:flex;gap:5px;justify-content:center;margin-bottom:14px;
+  min-height:52px;flex-wrap:wrap;direction:ltr;
+}
 .sv-letter{
-  width:36px;height:44px;display:flex;align-items:center;justify-content:center;
-  font-family:var(--serif);font-size:22px;font-weight:600;
-  border:2px solid var(--bg3);border-radius:var(--r2);
+  width:38px;height:48px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:24px;font-weight:700;
+  border:2px solid var(--bg3);border-radius:10px;
   background:var(--card);color:var(--ink);
-  transition:all .15s;
+  transition:all .18s var(--spring);
+  box-shadow:0 2px 4px -2px rgba(0,0,0,.05);
 }
-.sv-letter.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--abl)}
-.sv-letter.correct{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
-.sv-letter.wrong{border-color:var(--err);background:var(--errbg);color:var(--err);animation:shake .3s ease}
-.sv-letter.empty{border-style:dashed;color:transparent}
-.sv-timer{width:100%;max-width:400px;height:5px;background:var(--bg3);border-radius:3px;margin-bottom:var(--s4);overflow:hidden}
-.sv-timer-fill{height:100%;border-radius:3px;transition:width .1s linear;background:var(--ok)}
-.sv-timer-fill.warn{background:var(--warn)}
-.sv-timer-fill.danger{background:var(--err)}
-.sv-keyboard{display:flex;flex-direction:column;gap:5px;width:100%;max-width:400px;direction:ltr}
-.sv-kb-row{display:flex;gap:4px;justify-content:center}
+.sv-letter.active{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--aglow),0 2px 8px -2px rgba(26,58,242,.3);
+  animation:letterPulse 1.2s ease infinite;
+}
+@keyframes letterPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.sv-letter.correct{
+  border-color:var(--ok);background:var(--okbg);color:var(--ok);
+  animation:letterPop .35s var(--spring);
+  box-shadow:0 4px 12px -4px rgba(18,110,53,.35);
+}
+@keyframes letterPop{0%{transform:scale(1)}40%{transform:scale(1.15) translateY(-4px)}100%{transform:scale(1)}}
+.sv-letter.wrong{
+  border-color:var(--err);background:var(--errbg);color:var(--err);
+  animation:shake .35s ease;
+}
+.sv-letter.empty{border-style:dashed;color:transparent;background:var(--bg2)}
+.sv-letter.hint{color:var(--ink3)!important;border-style:solid!important;border-color:var(--bg3)!important;background:var(--bg2)!important}
+/* Timer — thicker, dramatic */
+.sv-timer{
+  width:100%;max-width:440px;height:8px;background:var(--bg2);
+  border-radius:4px;margin-bottom:16px;overflow:hidden;
+  border:1px solid var(--bg3);position:relative;
+}
+.sv-timer-fill{
+  height:100%;border-radius:3px;transition:width .1s linear;
+  background:linear-gradient(90deg,#22c55e,#10b981);
+  box-shadow:0 0 10px rgba(16,185,129,.5);
+}
+.sv-timer-fill.warn{background:linear-gradient(90deg,#f59e0b,#ef6c00);box-shadow:0 0 10px rgba(245,158,11,.6)}
+.sv-timer-fill.danger{background:linear-gradient(90deg,#ef4444,#dc2626);box-shadow:0 0 12px rgba(239,68,68,.7);animation:dangerPulse .5s ease infinite}
+@keyframes dangerPulse{0%,100%{opacity:1}50%{opacity:.6}}
+/* Keyboard */
+.sv-keyboard{display:flex;flex-direction:column;gap:6px;width:100%;max-width:440px;direction:ltr}
+.sv-kb-row{display:flex;gap:5px;justify-content:center}
 .sv-key{
-  min-width:30px;height:40px;display:flex;align-items:center;justify-content:center;
-  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r2);
-  font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;
-  transition:all .1s;font-family:var(--serif);
-  padding:0 2px;flex:1;max-width:42px;
+  min-width:32px;height:44px;display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1.5px solid var(--bg3);border-radius:10px;
+  font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;
+  transition:all .12s var(--spring);font-family:var(--serif);
+  padding:0 2px;flex:1;max-width:44px;
+  box-shadow:0 2px 3px -1px rgba(0,0,0,.06);
 }
-.sv-key:hover{background:var(--bg2);border-color:var(--accent)}
-.sv-key:active{transform:scale(.95);background:var(--abl)}
-.sv-key.special{background:var(--abl);color:var(--accent);border-color:rgba(26,58,242,.2);font-size:13px}
-.sv-key.wide{flex:1.5;max-width:60px;font-size:12px}
+.sv-key:hover{background:var(--abl);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 8px -2px rgba(26,58,242,.2)}
+.sv-key:active{transform:translateY(0) scale(.92);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.sv-key.special{background:linear-gradient(135deg,var(--abl),rgba(120,80,255,.08));color:var(--accent);border-color:rgba(26,58,242,.25);font-size:14px;font-weight:800}
+.sv-key.wide{flex:1.5;max-width:66px;font-size:13px;font-family:var(--sans);font-weight:800}
 .sv-key.used-correct{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
-.sv-key.used-wrong{background:var(--errbg);border-color:var(--err);color:var(--err);opacity:.5}
-/* Game over */
-.sv-gameover{text-align:center;padding:var(--s8);animation:up .4s var(--spring)}
-.sv-go-score{font-size:56px;font-weight:700;color:var(--accent);margin-bottom:var(--s1)}
-.sv-go-label{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:var(--s3)}
-.sv-go-best{font-size:13px;color:var(--ink3);margin-bottom:var(--s1)}
+.sv-key.used-wrong{background:var(--errbg);border-color:var(--err);color:var(--err);opacity:.45}
+.sv-key.wide[data-key='✓']{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sv-key.wide[data-key='✓']:hover{background:var(--accent2);border-color:var(--accent2)}
+/* Correct flash — big green badge */
+.sv-correct-flash{
+  font-size:18px;color:var(--ok);font-weight:900;text-align:center;
+  min-height:28px;margin-bottom:var(--s2);letter-spacing:.3px;
+  display:flex;align-items:center;justify-content:center;
+}
+.sv-correct-flash:not(:empty){animation:flashSlide .4s var(--spring)}
+@keyframes flashSlide{0%{opacity:0;transform:translateY(-8px)}100%{opacity:1;transform:translateY(0)}}
+/* Game over screen */
+.sv-gameover{text-align:center;padding:var(--s6) var(--s4);animation:up .5s var(--spring);width:100%;max-width:440px}
+.sv-go-icon{font-size:64px;margin-bottom:12px;animation:goIcon .6s var(--spring)}
+@keyframes goIcon{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+.sv-go-score{
+  font-size:72px;font-weight:900;color:var(--accent);
+  margin-bottom:4px;line-height:1;letter-spacing:-3px;
+  font-variant-numeric:tabular-nums;font-family:var(--sans);
+  text-shadow:0 4px 20px rgba(26,58,242,.25);
+}
+.sv-go-label{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:var(--s4)}
+.sv-go-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:var(--s4)}
+.sv-go-stat{background:var(--card);border:1px solid var(--bg3);border-radius:12px;padding:12px 6px}
+.sv-go-stat-n{font-size:22px;font-weight:800;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;margin-bottom:3px}
+.sv-go-stat-l{font-size:9px;color:var(--ink3);letter-spacing:1px;font-weight:700}
+.sv-go-best{font-size:12px;color:var(--ink3)}
 .sv-go-words{font-size:12px;color:var(--ink3)}
-.sv-go-btns{display:flex;gap:var(--s3);justify-content:center;margin-top:var(--s6)}
-/* Correct word flash */
-.sv-correct-flash{font-size:14px;color:var(--ok);font-weight:600;text-align:center;min-height:24px;margin-bottom:var(--s2)}
-/* Level badge */
-.sv-level{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--abl);color:var(--accent);transition:all .3s}
-.sv-level.l2{background:rgba(34,168,85,.1);color:var(--ok)}
-.sv-level.l3{background:rgba(168,72,0,.1);color:var(--warn)}
-.sv-level.l4{background:rgba(204,32,32,.1);color:var(--err)}
-.sv-level.l5{background:linear-gradient(135deg,rgba(26,58,242,.15),rgba(120,80,255,.15));color:#7b5cff}
+.sv-go-btns{display:flex;gap:8px;justify-content:center;margin-top:var(--s5)}
 /* Screen shake */
 @keyframes screenShake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
 .sv-shake{animation:screenShake .4s ease}
@@ -6833,7 +6947,18 @@ function startSurvival(){
   svDeck=[...sesDeck].sort(()=>Math.random()-.5);
   if(svDeck.length<3){showToast('حداقل ۳ لغت لازمه');sesClose(true);return;}
   /* Always rebuild HTML in case it was replaced by game over screen */
-  Q('#survival-body').innerHTML='<div class="sv-hud"><div class="sv-hearts" id="sv-hearts"></div><div class="sv-score-wrap"><div class="sv-score" id="sv-score">0</div><div class="sv-streak" id="sv-streak"></div></div></div><div class="sv-prompt"><div class="sv-meaning" id="sv-meaning"></div><div class="sv-hint" id="sv-type-hint"></div></div><div class="sv-word-display" id="sv-word-display"></div><div class="sv-correct-flash" id="sv-flash"></div><div class="sv-timer"><div class="sv-timer-fill" id="sv-timer-fill"></div></div><div class="sv-keyboard" id="sv-keyboard"></div>';
+  Q('#survival-body').innerHTML=
+    '<div class="sv-hud">'
+    +'<div class="sv-hud-left"><div class="sv-hearts" id="sv-hearts"></div><div class="sv-level" id="sv-level">Lv.1</div></div>'
+    +'<div class="sv-hud-center sv-score-wrap"><div class="sv-score" id="sv-score">0</div><div class="sv-score-label">امتیاز</div></div>'
+    +'<div class="sv-hud-right"><div class="sv-streak" id="sv-streak">🔥 ×2</div></div>'
+    +'</div>'
+    +'<div class="sv-xp"><div class="sv-xp-fill" id="sv-xp-fill"></div></div>'
+    +'<div class="sv-prompt"><div class="sv-meaning" id="sv-meaning"></div><div class="sv-hint" id="sv-type-hint"></div></div>'
+    +'<div class="sv-word-display" id="sv-word-display"></div>'
+    +'<div class="sv-correct-flash" id="sv-flash"></div>'
+    +'<div class="sv-timer"><div class="sv-timer-fill" id="sv-timer-fill"></div></div>'
+    +'<div class="sv-keyboard" id="sv-keyboard"></div>';
   Q('#sv-score').textContent='0';
   Q('#sv-streak').classList.remove('show');
   _svRenderHearts();
@@ -6842,22 +6967,38 @@ function startSurvival(){
   _svNextWord();
 }
 function _svUpdateLevel(){
-  svLevel=Math.min(5,1+Math.floor(svWordsCorrect/5));
-  const hud=Q('#sv-score')?.parentElement?.parentElement;
-  if(!hud)return;
-  let lvl=hud.querySelector('.sv-level');
-  if(!lvl){lvl=document.createElement('div');lvl.className='sv-level';hud.insertBefore(lvl,hud.firstChild);}
-  lvl.textContent='Lv.'+svLevel;
-  lvl.className='sv-level'+(svLevel>=2?' l'+svLevel:'');
+  const newLevel=Math.min(5,1+Math.floor(svWordsCorrect/5));
+  svLevel=newLevel;
+  const lvl=Q('#sv-level');
+  if(lvl){
+    lvl.textContent='Lv.'+svLevel;
+    lvl.className='sv-level'+(svLevel>=2?' l'+svLevel:'');
+  }
+  /* XP progress: fills up to next level */
+  const xp=Q('#sv-xp-fill');
+  if(xp){
+    const inLevel=svWordsCorrect%5;
+    const pct=(inLevel/5)*100;
+    xp.style.width=(svLevel>=5?100:pct)+'%';
+  }
 }
 
-function _svRenderHearts(){
+function _svRenderHearts(animate){
   const h=Q('#sv-hearts');
+  const prevLost=h?h.querySelectorAll('.heart.lost').length:0;
   h.innerHTML='';
   for(let i=0;i<3;i++){
     const s=document.createElement('span');
-    s.className='heart'+(i>=svLives?' lost':'');
     s.textContent='❤️';
+    if(i>=svLives){
+      s.className='heart lost';
+      /* Animate the just-lost heart */
+      if(animate && i===svLives && prevLost<(3-svLives)){
+        s.className='heart breaking';
+      }
+    }else{
+      s.className='heart';
+    }
     h.appendChild(s);
   }
 }
@@ -6965,9 +7106,11 @@ function _svSubmit(){
     const mult=svStreak>=10?4:svStreak>=5?3:svStreak>=3?2:1;
     const pts=10*mult;
     svScore+=pts;
-    Q('#sv-score').textContent=svScore;
-    if(mult>1){Q('#sv-streak').textContent='🔥×'+mult;Q('#sv-streak').classList.add('show');}
-    Q('#sv-flash').textContent='✓ +'+pts;Q('#sv-flash').style.color='var(--ok)';
+    const scEl=Q('#sv-score');
+    scEl.textContent=svScore;
+    scEl.classList.remove('pop');void scEl.offsetWidth;scEl.classList.add('pop');
+    if(mult>1){Q('#sv-streak').textContent='🔥 ×'+mult+' · '+svStreak;Q('#sv-streak').classList.add('show');}
+    Q('#sv-flash').textContent='+'+pts+(mult>1?'  🔥×'+mult:'');Q('#sv-flash').style.color='var(--ok)';
     /* Green pulse effect */
     const body=Q('#survival-body');body.classList.add('sv-pulse');setTimeout(()=>body.classList.remove('sv-pulse'),500);
     /* Mark all letters correct */
@@ -6988,7 +7131,7 @@ function _svSubmit(){
     svLives--;svStreak=0;
     svHistory.push({word:w.de,fa:w.fa,correct:false});
     Q('#sv-streak').classList.remove('show');
-    _svRenderHearts();
+    _svRenderHearts(true);
     const body=Q('#survival-body');body.classList.add('sv-shake');setTimeout(()=>body.classList.remove('sv-shake'),400);
     Q('#sv-flash').textContent='✗ '+w.de;Q('#sv-flash').style.color='var(--err)';
     /* Show correct word */
@@ -7021,7 +7164,7 @@ function _svTimeout(){
   svLives--;svStreak=0;
   svHistory.push({word:w.de,fa:w.fa,correct:false});
   Q('#sv-streak').classList.remove('show');
-  _svRenderHearts();
+  _svRenderHearts(true);
   const body=Q('#survival-body');body.classList.add('sv-shake');setTimeout(()=>body.classList.remove('sv-shake'),400);
   Q('#sv-flash').textContent='⏱ '+w.de;Q('#sv-flash').style.color='var(--warn)';
   const d=Q('#sv-word-display');d.innerHTML='';
@@ -7038,16 +7181,32 @@ function _svGameOver(){
   const best=parseInt(localStorage.getItem('ws_sv_best')||'0');
   const isNew=svScore>best;
   if(isNew)localStorage.setItem('ws_sv_best',String(svScore));
+  const accuracy=svHistory.length?Math.round(svWordsCorrect/svHistory.length*100):0;
   /* Build word history list */
   let histHtml='';
   if(svHistory.length){
-    histHtml='<div style="width:100%;max-width:300px;margin-top:16px;text-align:right"><div style="font-size:10px;font-weight:700;color:var(--ink3);margin-bottom:8px;letter-spacing:1px">کلمات این دور</div>';
+    histHtml='<div style="width:100%;margin-top:12px;max-height:180px;overflow-y:auto;background:var(--card);border:1px solid var(--bg3);border-radius:12px;padding:8px"><div style="font-size:9px;font-weight:800;color:var(--ink3);margin-bottom:6px;letter-spacing:1.5px;padding:0 4px;text-align:right">📖 مرور کلمات</div>';
     svHistory.forEach(h=>{
-      histHtml+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bg2);direction:ltr"><span style="font-size:14px">'+(h.correct?'✅':'❌')+'</span><span style="font-family:var(--serif);font-size:13px;font-weight:600;color:var(--ink);flex:1">'+h.word+'</span><span style="font-size:11px;color:var(--ink3)">'+h.fa+'</span></div>';
+      histHtml+='<div style="display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;direction:ltr;'+(h.correct?'':'background:var(--errbg)')+'"><span style="font-size:13px;flex-shrink:0">'+(h.correct?'✅':'❌')+'</span><span style="font-family:var(--serif);font-size:13px;font-weight:700;color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+h.word+'</span><span style="font-size:10px;color:var(--ink3);flex-shrink:0;max-width:120px;overflow:hidden;text-overflow:ellipsis">'+h.fa+'</span></div>';
     });
     histHtml+='</div>';
   }
-  Q('#survival-body').innerHTML='<div class="sv-gameover"><div style="font-size:48px;margin-bottom:8px">'+(isNew?'🏆':'💀')+'</div><div class="sv-go-score">'+svScore+'</div><div class="sv-go-label">'+(isNew?'رکورد جدید!':'امتیاز نهایی')+'</div><div class="sv-go-best">🏅 بهترین: '+Math.max(svScore,best)+' · Level '+svLevel+'</div><div class="sv-go-words">'+svWordsCorrect+' درست از '+svHistory.length+'</div>'+histHtml+'<div class="sv-go-btns"><button class="btn btn-p" onclick="_svRestart()">دوباره 🔄</button><button class="btn" onclick="sesClose(true)">بستن</button></div></div>';
+  Q('#survival-body').innerHTML=
+    '<div class="sv-gameover">'
+    +'<div class="sv-go-icon">'+(isNew?'🏆':svScore>best/2?'🎯':'💀')+'</div>'
+    +'<div class="sv-go-score">'+svScore+'</div>'
+    +'<div class="sv-go-label">'+(isNew?'✨ رکورد جدید!':'پایان بازی')+'</div>'
+    +'<div class="sv-go-stats">'
+    +'<div class="sv-go-stat"><div class="sv-go-stat-n">'+svWordsCorrect+'</div><div class="sv-go-stat-l">درست</div></div>'
+    +'<div class="sv-go-stat"><div class="sv-go-stat-n">'+accuracy+'%</div><div class="sv-go-stat-l">دقت</div></div>'
+    +'<div class="sv-go-stat"><div class="sv-go-stat-n">Lv.'+svLevel+'</div><div class="sv-go-stat-l">سطح</div></div>'
+    +'</div>'
+    +'<div class="sv-go-best">🏅 بهترین رکورد: <b style="color:var(--accent)">'+Math.max(svScore,best)+'</b></div>'
+    +histHtml
+    +'<div class="sv-go-btns"><button class="btn btn-p" onclick="_svRestart()">🔄 دوباره</button><button class="btn" onclick="sesClose(true)">بستن</button></div>'
+    +'</div>';
+  /* Fire confetti on new record */
+  if(isNew&&typeof confetti==='function'){setTimeout(confetti,300);}
 }
 
 function _svRestart(){startSurvival();}
