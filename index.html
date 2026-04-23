@@ -351,133 +351,156 @@ body.offline .topbar{top:36px}
 /* Survival/quiz/listen need full width + scrollable */
 #survival-body,#quiz-body,#listen-body,#fill-body{justify-content:flex-start!important;padding-top:var(--s4)}
 /* Flip body needs to be flex column for proper card+swipe layout */
-#flip-body{display:flex;flex-direction:column;align-items:center;gap:var(--s3);width:100%;max-width:460px}
-/* ═══ FLASHCARD — CLEAN ═══ */
+#flip-body{display:flex;flex-direction:column;align-items:center;gap:var(--s4);width:100%;max-width:460px}
+/* ═══ FLASHCARD — REDESIGNED ═══ */
 .card-scene{
   width:100%;max-width:440px;cursor:pointer;user-select:none;
   perspective:1400px;
 }
 .card-wrap{
   position:relative;transition:transform .55s cubic-bezier(.4,0,.2,1);
-  transform-style:preserve-3d;width:100%;min-height:240px;
+  transform-style:preserve-3d;width:100%;min-height:280px;
 }
 .card-wrap.flip{transform:rotateY(180deg)}
 .card-face{
   position:absolute;inset:0;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  border-radius:var(--r4);border:1px solid var(--bg3);
-  padding:var(--s5);
+  border-radius:20px;border:1px solid var(--bg3);
+  padding:28px 24px 64px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:var(--s3);box-shadow:var(--sh2);background:var(--card);
+  gap:var(--s3);background:var(--card);
+  box-shadow:0 10px 40px -12px rgba(0,0,0,.12),0 2px 6px -2px rgba(0,0,0,.05);
 }
-.card-back{transform:rotateY(180deg)}
-/* Type badge floating top */
+.card-front{background:linear-gradient(170deg,var(--card) 0%,var(--card) 60%,var(--bg2) 100%)}
+.card-back{transform:rotateY(180deg);background:linear-gradient(170deg,var(--card) 0%,var(--abl) 100%)}
+
+/* Type badge — top corner, subtle */
 .c-type{
   position:absolute;top:14px;right:14px;
-  font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  padding:3px 9px;border-radius:20px;
+  font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;
   background:var(--bg2);color:var(--ink3);border:1px solid var(--bg3);
-  display:none;
+  display:none;backdrop-filter:blur(8px);
 }
 .c-type.show{display:inline-block}
-.c-type.due{background:rgba(204,32,32,.08);color:var(--err);border-color:rgba(204,32,32,.15)}
-.c-type.new{background:var(--abl);color:var(--accent);border-color:rgba(26,58,242,.15)}
-.c-type.weak{background:rgba(168,72,0,.08);color:var(--warn);border-color:rgba(168,72,0,.15)}
-/* Hints */
-.c-hint{
-  font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink4);
-  display:flex;align-items:center;gap:5px;font-weight:600;
+.c-type.due{background:rgba(204,32,32,.1);color:var(--err);border-color:rgba(204,32,32,.2)}
+.c-type.new{background:rgba(26,58,242,.1);color:var(--accent);border-color:rgba(26,58,242,.2)}
+.c-type.weak{background:rgba(168,72,0,.1);color:var(--warn);border-color:rgba(168,72,0,.2)}
+
+/* Hint label (on back) */
+.c-hint{display:none}
+.card-back .c-hint{
+  display:flex;align-items:center;gap:6px;
+  font-size:9px;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--accent);font-weight:700;opacity:.7;
+  margin-bottom:4px;
 }
-.c-hint::before{content:'';display:inline-block;width:14px;height:1px;background:currentColor;opacity:.3}
-.c-hint::after{content:'';display:inline-block;width:14px;height:1px;background:currentColor;opacity:.3}
-/* Word + meaning */
+.card-back .c-hint::before,.card-back .c-hint::after{
+  content:'';display:inline-block;width:18px;height:1px;
+  background:currentColor;opacity:.4;
+}
+
+/* Word — hero on front */
 .c-word{
-  font-family:var(--serif);font-size:clamp(30px,7vw,42px);font-weight:600;
-  color:var(--ink);direction:ltr;line-height:1.1;letter-spacing:-1px;text-align:center;
+  font-family:var(--serif);font-size:clamp(32px,7.5vw,46px);font-weight:600;
+  color:var(--ink);direction:ltr;line-height:1.15;letter-spacing:-1.2px;text-align:center;
+  word-break:break-word;hyphens:auto;
 }
+
+/* Speak button — pinned bottom of front */
 .c-speak{
-  position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
-  width:42px;height:42px;border-radius:50%;
-  background:var(--bg2);border:1.5px solid var(--bg3);color:var(--ink2);
-  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all .18s;z-index:2;
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  width:44px;height:44px;border-radius:50%;
+  background:var(--card);border:1.5px solid var(--bg3);color:var(--ink3);
+  font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s var(--spring);z-index:2;
+  box-shadow:0 2px 10px -2px rgba(0,0,0,.1);
 }
-.c-speak:hover{background:var(--abl);border-color:var(--accent);color:var(--accent);transform:translateX(-50%) scale(1.08)}
-.c-speak:active{transform:translateX(-50%) scale(.94)}
+.c-speak:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateX(-50%) scale(1.1)}
+.c-speak:active{transform:translateX(-50%) scale(.92)}
+
+/* Meaning — hero on back */
 .c-mean{
-  font-size:clamp(20px,5vw,26px);font-weight:600;color:var(--accent);
-  text-align:center;line-height:1.3;
+  font-size:clamp(22px,5.5vw,28px);font-weight:700;color:var(--accent);
+  text-align:center;line-height:1.35;letter-spacing:-.3px;
 }
+
+/* Example sentence on back */
 .c-sent{
-  font-family:var(--serif);font-style:italic;font-size:13px;
-  color:var(--ink3);text-align:center;direction:ltr;max-width:320px;line-height:1.7;
-  padding:8px 12px;background:var(--bg);border-radius:var(--r2);
-  border-right:2px solid var(--abl);margin-top:4px;
+  font-family:var(--serif);font-style:italic;font-size:14px;
+  color:var(--ink2);text-align:center;direction:ltr;max-width:340px;line-height:1.75;
+  padding:12px 16px;background:rgba(255,255,255,.4);border-radius:12px;
+  border:1px dashed var(--bg3);margin-top:8px;
 }
+.dark .c-sent{background:rgba(0,0,0,.15)}
 .c-sent:empty{display:none}
-/* Swipe hint with icons */
-.swipe-row{
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:10px;color:var(--ink4);font-weight:600;
-  width:100%;max-width:440px;padding:0 var(--s2);letter-spacing:.3px;
-}
-/* Action buttons — uniform 56px */
+.c-sent::before{content:'"';opacity:.35;margin-left:3px;font-size:18px;font-family:var(--serif)}
+.c-sent::after{content:'"';opacity:.35;margin-right:3px;font-size:18px;font-family:var(--serif)}
+
+/* Swipe hint row — removed (buttons already speak for themselves) */
+.swipe-row{display:none}
+
+/* ═══ ACTION BUTTONS — unified 60px height ═══ */
 .ses-acts{
-  display:flex;gap:var(--s2);width:100%;max-width:440px;flex-shrink:0;
-  align-items:stretch;
+  display:flex;gap:10px;width:100%;max-width:440px;flex-shrink:0;align-items:stretch;
 }
 .sa{
-  flex:1;height:56px;padding:0 var(--s3);border-radius:var(--r3);
+  flex:1;height:60px;padding:0 var(--s3);border-radius:16px;
   border:1.5px solid var(--bg3);background:var(--card);
   font-size:13px;font-weight:700;cursor:pointer;
-  transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;
-  font-family:var(--sans);position:relative;
+  transition:all .2s var(--spring);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-family:var(--sans);position:relative;line-height:1.2;
 }
-.sa:active{transform:scale(.97)}
-.sa-ic{font-size:18px;line-height:1;transition:transform .2s var(--spring)}
-.sa-next{font-size:9px;color:var(--ink4);font-weight:500;position:absolute;bottom:5px;left:50%;transform:translateX(-50%)}
+.sa:active{transform:scale(.96)}
+.sa-ic{font-size:20px;line-height:1;transition:transform .2s var(--spring)}
+.sa-lbl{font-size:11px;font-weight:600;letter-spacing:.2px}
+.sa-next{font-size:9px;color:var(--ink4);font-weight:500;letter-spacing:.2px}
 .sa.bad{color:var(--err)}
-.sa.bad:hover{border-color:var(--err);background:var(--errbg)}
-.sa.bad:hover .sa-ic{transform:scale(1.2) rotate(-8deg)}
+.sa.bad:hover{border-color:var(--err);background:var(--errbg);box-shadow:0 4px 12px -4px rgba(204,32,32,.25)}
+.sa.bad:hover .sa-ic{transform:scale(1.25) rotate(-10deg)}
 .sa.good{color:var(--ok)}
-.sa.good:hover{border-color:var(--ok);background:var(--okbg)}
-.sa.good:hover .sa-ic{transform:scale(1.2) rotate(8deg)}
-.flip-btn{
-  width:56px;height:56px;flex:none;border-radius:var(--r3);
-  border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink3);font-size:20px;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;
-}
-.flip-btn:hover{background:var(--abl);color:var(--accent);border-color:var(--abl)}
-.flip-btn:active{transform:scale(.95) rotate(180deg)}
+.sa.good:hover{border-color:var(--ok);background:var(--okbg);box-shadow:0 4px 12px -4px rgba(18,110,53,.25)}
+.sa.good:hover .sa-ic{transform:scale(1.25) rotate(10deg)}
 
-/* ═══ FSRS 4-button rating ═══ */
+/* Flip button — same height, square, centered */
+.flip-btn{
+  width:60px;height:60px;flex:none;border-radius:16px;
+  border:1.5px solid var(--bg3);background:var(--bg2);color:var(--ink3);font-size:22px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:all .25s var(--spring);
+}
+.flip-btn:hover{background:var(--abl);color:var(--accent);border-color:var(--accent)}
+.flip-btn:active{transform:rotate(180deg) scale(.95)}
+
+/* ═══ FSRS 4-button rating — coordinated with 2-btn style ═══ */
 .fsrs-acts{
-  display:none;gap:6px;width:100%;max-width:440px;flex-shrink:0;
+  display:none;gap:8px;width:100%;max-width:440px;flex-shrink:0;
   grid-template-columns:repeat(4,1fr);
 }
 .fsrs-acts.show{display:grid}
 .ses-acts.hidden{display:none}
 .fs-btn{
-  height:60px;padding:6px 4px;border-radius:var(--r3);
+  height:64px;padding:8px 4px;border-radius:16px;
   border:1.5px solid var(--bg3);background:var(--card);
   font-family:var(--sans);cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  transition:all .15s;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  transition:all .2s var(--spring);position:relative;
 }
 .fs-btn:active{transform:scale(.96)}
-.fs-btn-ic{font-size:18px;line-height:1}
+.fs-btn-ic{font-size:18px;line-height:1;transition:transform .2s}
+.fs-btn:hover .fs-btn-ic{transform:scale(1.15)}
 .fs-btn-lbl{font-size:11px;font-weight:700}
-.fs-btn-int{font-size:9px;opacity:.65;font-variant-numeric:tabular-nums;margin-top:1px}
+.fs-btn-int{font-size:9px;opacity:.6;font-variant-numeric:tabular-nums;margin-top:1px}
 .fs-btn.again{color:var(--err)}
-.fs-btn.again:hover{border-color:var(--err);background:var(--errbg)}
+.fs-btn.again:hover{border-color:var(--err);background:var(--errbg);box-shadow:0 4px 12px -4px rgba(204,32,32,.2)}
 .fs-btn.hard{color:var(--warn)}
-.fs-btn.hard:hover{border-color:var(--warn);background:var(--warnbg)}
+.fs-btn.hard:hover{border-color:var(--warn);background:var(--warnbg);box-shadow:0 4px 12px -4px rgba(168,72,0,.2)}
 .fs-btn.good{color:var(--ok)}
-.fs-btn.good:hover{border-color:var(--ok);background:var(--okbg)}
+.fs-btn.good:hover{border-color:var(--ok);background:var(--okbg);box-shadow:0 4px 12px -4px rgba(18,110,53,.2)}
 .fs-btn.easy{color:var(--accent)}
-.fs-btn.easy:hover{border-color:var(--accent);background:var(--abl)}
+.fs-btn.easy:hover{border-color:var(--accent);background:var(--abl);box-shadow:0 4px 12px -4px rgba(26,58,242,.2)}
 
-/* Hide swipe hint when 4-button mode active */
 body.fsrs-mode .swipe-row{display:none}
 .ses-end{
   flex:1;display:none;flex-direction:column;align-items:center;
@@ -2380,7 +2403,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         <div class="card-wrap" id="card-wrap">
           <div class="card-face card-front">
             <span class="c-type" id="c-type"></span>
-            <span class="c-hint">برای معنی کلیک کن</span>
             <span class="c-word" id="ses-word"></span>
             <button class="c-speak" onclick="event.stopPropagation();const w=sesDeck[sesI];if(w)speakWord(w.de)" title="تلفظ" aria-label="تلفظ">🔊</button>
           </div>
@@ -2391,19 +2413,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
           </div>
         </div>
       </div>
-      <div class="swipe-row">
-        <span>✗ بلد نبودم</span>
-        <span>↺ برگردون</span>
-        <span>بلد بودم ✓</span>
-      </div>
     </div><!-- /flip-body -->
     <div class="ses-acts" id="ses-acts-2btn">
       <button class="sa bad" onclick="sesRate(false)" aria-label="بلد نبودم">
-        <span class="sa-ic">✗</span><span>بلد نبودم</span>
+        <span class="sa-ic">✗</span><span class="sa-lbl">بلد نبودم</span>
       </button>
       <button class="flip-btn" onclick="sesFlip()" aria-label="برگرداندن کارت">↺</button>
       <button class="sa good" onclick="sesRate(true)" aria-label="بلد بودم">
-        <span class="sa-ic">✓</span><span>بلد بودم</span>
+        <span class="sa-ic">✓</span><span class="sa-lbl">بلد بودم</span>
       </button>
     </div>
     <div class="fsrs-acts" id="ses-acts-4btn">
