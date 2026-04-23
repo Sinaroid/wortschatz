@@ -445,17 +445,19 @@ body.offline .topbar{top:36px}
   display:flex;gap:10px;width:100%;max-width:440px;flex-shrink:0;align-items:stretch;
 }
 .sa{
-  flex:1;height:60px;padding:0 var(--s3);border-radius:16px;
+  flex:1;height:68px;padding:8px 10px;border-radius:16px;
   border:1.5px solid var(--bg3);background:var(--card);
-  font-size:13px;font-weight:700;cursor:pointer;
+  cursor:pointer;
   transition:all .2s var(--spring);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
   font-family:var(--sans);position:relative;line-height:1.2;
 }
 .sa:active{transform:scale(.96)}
-.sa-ic{font-size:20px;line-height:1;transition:transform .2s var(--spring)}
-.sa-lbl{font-size:11px;font-weight:600;letter-spacing:.2px}
-.sa-next{font-size:9px;color:var(--ink4);font-weight:500;letter-spacing:.2px}
+.sa-ic{font-size:22px;line-height:1;transition:transform .2s var(--spring);margin-bottom:2px}
+.sa-lbl{font-size:13px;font-weight:700;letter-spacing:.2px;line-height:1.1}
+.sa-next{font-size:10px;font-weight:500;letter-spacing:.3px;opacity:.65;margin-top:2px;font-family:var(--sans)}
+.sa.bad .sa-next{color:var(--err)}
+.sa.good .sa-next{color:var(--ok)}
 .sa.bad{color:var(--err)}
 .sa.bad:hover{border-color:var(--err);background:var(--errbg);box-shadow:0 4px 12px -4px rgba(204,32,32,.25)}
 .sa.bad:hover .sa-ic{transform:scale(1.25) rotate(-10deg)}
@@ -2415,30 +2417,33 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       </div>
     </div><!-- /flip-body -->
     <div class="ses-acts" id="ses-acts-2btn">
-      <button class="sa bad" onclick="sesRate(false)" aria-label="بلد نبودم">
-        <span class="sa-ic">✗</span><span class="sa-lbl">بلد نبودم</span>
+      <button class="sa bad" onclick="sesRate(false)" aria-label="دوباره">
+        <span class="sa-ic">↻</span>
+        <span class="sa-lbl">دوباره</span>
+        <span class="sa-next" id="sa-int-bad">&lt;۱ دقیقه</span>
       </button>
-      <button class="flip-btn" onclick="sesFlip()" aria-label="برگرداندن کارت">↺</button>
       <button class="sa good" onclick="sesRate(true)" aria-label="بلد بودم">
-        <span class="sa-ic">✓</span><span class="sa-lbl">بلد بودم</span>
+        <span class="sa-ic">✓</span>
+        <span class="sa-lbl">بلد بودم</span>
+        <span class="sa-next" id="sa-int-good">—</span>
       </button>
     </div>
     <div class="fsrs-acts" id="ses-acts-4btn">
-      <button class="fs-btn again" onclick="sesRate(1)" aria-label="فراموش کردم">
-        <span class="fs-btn-ic">✗</span><span class="fs-btn-lbl">فراموش</span>
-        <span class="fs-btn-int" id="fs-int-1">&lt;1m</span>
+      <button class="fs-btn again" onclick="sesRate(1)" aria-label="دوباره نشون بده">
+        <span class="fs-btn-ic">↻</span><span class="fs-btn-lbl">دوباره</span>
+        <span class="fs-btn-int" id="fs-int-1">—</span>
       </button>
       <button class="fs-btn hard" onclick="sesRate(2)" aria-label="سخت بود">
-        <span class="fs-btn-ic">😓</span><span class="fs-btn-lbl">سخت</span>
-        <span class="fs-btn-int" id="fs-int-2">1d</span>
+        <span class="fs-btn-ic">💭</span><span class="fs-btn-lbl">سخت</span>
+        <span class="fs-btn-int" id="fs-int-2">—</span>
       </button>
-      <button class="fs-btn good" onclick="sesRate(3)" aria-label="خوب">
-        <span class="fs-btn-ic">✓</span><span class="fs-btn-lbl">خوب</span>
-        <span class="fs-btn-int" id="fs-int-3">3d</span>
+      <button class="fs-btn good" onclick="sesRate(3)" aria-label="بلد بودم">
+        <span class="fs-btn-ic">✓</span><span class="fs-btn-lbl">بلد بودم</span>
+        <span class="fs-btn-int" id="fs-int-3">—</span>
       </button>
       <button class="fs-btn easy" onclick="sesRate(4)" aria-label="راحت بود">
         <span class="fs-btn-ic">⚡</span><span class="fs-btn-lbl">راحت</span>
-        <span class="fs-btn-int" id="fs-int-4">7d</span>
+        <span class="fs-btn-int" id="fs-int-4">—</span>
       </button>
     </div>
   </div>
@@ -4663,6 +4668,8 @@ function showCard(){
   const nextD = o ? Math.max(1, Math.round((o.interval||1)*(o.easiness||2.5))) : 1;
   const _sn=Q('#ses-next');if(_sn)_sn.textContent = nextD > 1 ? nextD+' روز' : 'فردا';
   const _an=Q('#again-n'); if(_an) _an.classList.remove('show');
+  /* Update interval hints on action buttons (both 2-btn and 4-btn) */
+  if(typeof _updateFsrsIntervals==='function')_updateFsrsIntervals();
 }
 
 function sesFlip(){
@@ -4682,7 +4689,16 @@ function sesFlip(){
     }
   }
 }
-/* Preview next interval for each rating */
+/* Persian interval label */
+function _fmtInterval(days){
+  if(days<1)return 'امروز';
+  if(days===1)return 'فردا';
+  if(days<7)return days+' روز';
+  if(days<30)return Math.round(days/7)+' هفته';
+  if(days<365)return Math.round(days/30)+' ماه';
+  return Math.round(days/365)+' سال';
+}
+/* Preview next interval for each rating + update 2-button hints */
 function _updateFsrsIntervals(){
   const w=sesDeck[sesI];if(!w)return;
   const o=words.find(x=>x.de===w.de);if(!o)return;
@@ -4691,6 +4707,7 @@ function _updateFsrsIntervals(){
   const elapsed=Math.max((now-last)/86400000,0);
   const r=fsrsRetrievability(elapsed,o.stability);
   const isFirst=o.seen===0||!o.reviewed_at;
+  const isPending=typeof sesPending!=='undefined'&&sesPending.has(w.de);
   for(let rating=1;rating<=4;rating++){
     let newS;
     if(isFirst)newS=fsrsInitStability(rating);
@@ -4699,8 +4716,25 @@ function _updateFsrsIntervals(){
       newS=fsrsNextStability(o.stability,d,r,rating);
     }
     const days=fsrsInterval(newS);
-    const label=days<1?'<1d':days<30?days+'d':days<365?Math.round(days/30)+'m':Math.round(days/365)+'y';
+    const label=_fmtInterval(days);
     const el=Q('#fs-int-'+rating);if(el)el.textContent=label;
+  }
+  /* 2-button mode hints */
+  const bad=Q('#sa-int-bad');
+  const good=Q('#sa-int-good');
+  if(bad)bad.textContent='الان دوباره';
+  if(good){
+    if(isPending){
+      good.textContent='آخر deck';
+    }else{
+      let newS;
+      if(isFirst)newS=fsrsInitStability(3);
+      else{
+        const d=fsrsNextDifficulty(o.difficulty,3);
+        newS=fsrsNextStability(o.stability,d,r,3);
+      }
+      good.textContent=_fmtInterval(fsrsInterval(newS));
+    }
   }
 }
 
