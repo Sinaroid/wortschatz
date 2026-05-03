@@ -2,8 +2,6 @@
 // POST /api/stars → sends invoice to user via Telegram
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
-const SB_URL = process.env.SUPABASE_URL
-const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 // Pro = 250 Stars (~$5)
 const STARS_PRICE = 250
@@ -21,6 +19,10 @@ module.exports = async function handler(req, res) {
 
   const userId = req.headers['x-user-id'] || req.body?.user_id
   const tgChatId = req.body?.tg_chat_id
+
+  if (!BOT_TOKEN) {
+    return res.status(500).json({ error: 'TELEGRAM_BOT_TOKEN not configured' })
+  }
 
   if (!tgChatId) {
     return res.status(400).json({ error: 'tg_chat_id required' })
@@ -57,7 +59,7 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'Failed to send invoice', detail: invoiceData.description })
     }
 
-    return res.status(200).json({ ok: true, message_id: invoiceData.result.message_id })
+    return res.status(200).json({ ok: true, message_id: invoiceData.result.message_id, user_id: userId || null })
   } catch (err) {
     console.error('Stars API error:', err)
     return res.status(500).json({ error: 'Internal error' })
