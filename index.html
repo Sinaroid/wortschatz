@@ -4278,6 +4278,18 @@ async function searchWord(q){
    +(isDE ? '- principal_parts: فقط برای Verb، ۲ شکل Präteritum و Perfekt\n- reflexive: فقط برای افعال بازتابی، case دقیق (akkusativ/dativ)\n- separable: true فقط اگه trennbar (مثل aufstehen, mitkommen)\n- komposita: فقط اگه اسم مرکبه، اجزا با +\n' : '- principal_parts: only for irregular verbs, 3 forms\n')
    +'- synonyms: حداکثر ۲ تا\n'
    +'- examples: دقیقاً ۱ جمله طبیعی\n'
+   +'- فرمت خروجی UI باید دقیقا این قالب را پوشش بدهد:\n'
+   +'  1) برای فعل: Verb – Präteritum – Perfekt\n'
+   +'  2) خط بعد: معنی فارسی\n'
+   +'  3) خط بعد: Synonym: Verb (معنی فارسی)\n'
+   +'  4) خط بعد: + Struktur\n'
+   +'  5) خط بعد: Satz\n'
+   +'  و اگر Phrase بود:\n'
+   +'  1) Phrase\n'
+   +'  2) معنی فارسی\n'
+   +'  3) Synonym: Phrase (معنی)\n'
+   +'  4) + Struktur\n'
+   +'  5) Satz\n'
    +'- grammar_tip: ۲-۳ نکته دقیق با ▪ جداکننده: declension/pattern + اشتباه رایج + مشابه\n'
    +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
    +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
@@ -4385,7 +4397,7 @@ function renderWord(d){
   const exEl = Q('#res-example');
   const exs = d.examples||[];
   if(exs.length && exs[0].de){
-    exEl.innerHTML = exs[0].de
+    exEl.innerHTML = '<div style="font-size:11px;opacity:.7;margin-bottom:4px">Satz</div>'+exs[0].de
       +(exs[0].fa?`<span class="ex-tr">${exs[0].fa}</span>`:'');
     exEl.style.display='';
   } else exEl.style.display='none';
@@ -4469,7 +4481,7 @@ async function searchPhrase(q){
     catch(e){localStorage.removeItem(pck);}
   }
   const p = isDE
-    ? 'عبارت آلمانی: "'+esc(q)+'"\nتحلیل کن. اگه غلط نوشته، درست کن. اگه یه اصطلاح معروف نیست هم مشکلی نداره، معنی و گرامرش رو بگو.\nفقط JSON:\n{"original":"'+esc(q)+'","corrected":"فرم صحیح اگه غلط بود وگرنه null","phrase_type":"Redewendung/Sprichwort/Kollokation/Feste Wendung/Satz/null","literal_fa":"ترجمه تحت‌اللفظی یا null","meaning_fa":"معنی کاربردی فارسی","when_to_use":"کی استفاده میشه یا null","register":"formal/informal/null","grammar":"نکات گرامری با ▪ یا null","synonym":"مترادف یا null","similar":["یک تا دو عبارت مشابه"],"example_de":"جمله مثال","example_fa":"ترجمه مثال","priority":{"score":3,"reason":"چرا مهمه"}}\nفقط JSON خالص بده، بدون توضیح اضافه.'
+    ? 'عبارت آلمانی: "'+esc(q)+'"\nتحلیل کن. اگه غلط نوشته، درست کن. اگه یه اصطلاح معروف نیست هم مشکلی نداره، معنی و گرامرش رو بگو.\nفقط JSON:\n{"original":"'+esc(q)+'","corrected":"فرم صحیح اگه غلط بود وگرنه null","phrase_type":"Redewendung/Sprichwort/Kollokation/Feste Wendung/Satz/null","literal_fa":"ترجمه تحت‌اللفظی یا null","meaning_fa":"معنی کاربردی فارسی","when_to_use":"کی استفاده میشه یا null","register":"formal/informal/null","grammar":"Struktur: نکات گرامری با ▪ یا null","synonym":"مترادف یا null","similar":["یک تا دو عبارت مشابه"],"example_de":"Satz: جمله مثال","example_fa":"ترجمه مثال","priority":{"score":3,"reason":"چرا مهمه"}}\nقالب نمایش باید: Phrase / معنی فارسی / Synonym: Phrase (معنی) / + Struktur / Satz\nفقط JSON خالص بده، بدون توضیح اضافه.'
     : 'English phrase: "'+esc(q)+'"\nAnalyze. Correct if misspelled. Even if not a famous idiom, give meaning and grammar.\nJSON only:\n{"original":"'+esc(q)+'","corrected":"correct form or null","phrase_type":"Idiom/Proverb/Collocation/Fixed expression/Phrasal verb/null","literal_fa":"literal translation or null","meaning_fa":"functional meaning in Persian","when_to_use":"when to use or null","register":"formal/informal/null","grammar":"notes with ▪ or null","synonym":"similar or null","similar":["1-2 similar phrases"],"example_de":"example sentence","example_fa":"Persian translation","priority":{"score":3,"reason":"why"}}\nPure JSON only, no extra text.';
 
   /* Skip API call entirely if we have a cached result */

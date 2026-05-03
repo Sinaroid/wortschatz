@@ -22,6 +22,9 @@ export default async function handler(req, res) {
     let proUntil;
     if (customDate) {
       proUntil = new Date(customDate);
+      if (Number.isNaN(proUntil.getTime())) {
+        return res.status(400).json({ error: 'invalid customDate' });
+      }
       proUntil.setHours(23, 59, 59, 0);
     } else {
       const { data: profile } = await sb.from('profiles').select('pro_until').eq('id', userId).single();
