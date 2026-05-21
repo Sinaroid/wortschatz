@@ -539,29 +539,30 @@ body.fsrs-mode .swipe-row{display:none}
 /* ═══════════════════════════════════
    HOME — HERO
 ═══════════════════════════════════ */
-.hero{padding:var(--s3) 0 var(--s2);animation:up .4s var(--ease) both;position:relative;z-index:60}
-.hero-txt{padding-left:72px}
+.hero{padding:var(--s3) 0 var(--s2);position:relative;z-index:60}
+.hero-txt{display:none}
 .hero-eye{display:none}
-.hero h1{
-  font-family:var(--sans);font-size:clamp(20px,5vw,26px);font-weight:700;
-  color:var(--ink);line-height:1.25;letter-spacing:-0.02em;margin-bottom:4px;
-}
-.hero h1 em{font-style:normal;font-weight:500;font-family:var(--sans);color:var(--ink3);opacity:.8}
-.hero p{font-size:12px;color:var(--ink3);line-height:1.45}
-/* Greeting label above h1 */
-.hero-greet{font-size:12px;color:var(--ink3);margin-bottom:4px;font-weight:500}
-/* Lang chip — pinned top-left of hero */
+.hero h1{display:none}
+.hero p{display:none}
+.hero-greet{display:none}
+/* Lang chip */
 .hero-lang{
-  position:absolute;top:var(--s3);left:0;
   display:inline-flex;align-items:center;gap:5px;
   background:var(--abl);color:var(--accent);border:none;
-  border-radius:20px;padding:6px 10px 6px 10px;
+  border-radius:20px;padding:6px 10px;
   font-size:11px;font-weight:700;cursor:pointer;
   font-family:var(--sans);transition:all .2s;
   line-height:1;
 }
 .hero-lang:hover{background:var(--bg2)}
 .hero-lang svg{opacity:.55;transition:transform .2s}
+
+/* Center search when no result */
+#pane-home{justify-content:center}
+#pane-home.has-result{justify-content:flex-start}
+#pane-home .hero{order:-1;align-self:flex-end;position:static;padding:0 0 var(--s3)}
+#pane-home.has-result .hero{margin-bottom:0}
+.search-anchor{width:100%}
 
 /* ═══════════════════════════════════
    SEARCH
@@ -637,135 +638,67 @@ body.fsrs-mode .swipe-row{display:none}
 .search-tip.show{display:block}
 
 /* ═══════════════════════════════════
-   WORD RESULT CARD
+   WORD RESULT CARD — clean
 ═══════════════════════════════════ */
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .res{
-  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r4);
-  overflow:hidden;display:none;box-shadow:var(--sh1);
-  margin-bottom:var(--s4);animation:up .28s var(--spring);
+  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
+  display:none;box-shadow:var(--sh1);
+  margin-top:var(--s4);margin-bottom:var(--s4);
+  animation:slideUp .28s var(--ease);
+  padding:var(--s5);
 }
-
-/* fix notice */
 .res-fix{
   display:none;font-size:11px;color:var(--ink3);
-  background:var(--bg2);border-bottom:1px solid var(--bg3);
-  padding:5px var(--s5);direction:rtl;
+  margin-bottom:var(--s3);padding:5px 10px;
+  background:var(--bg2);border-radius:var(--r1);direction:rtl;
 }
 .res-fix.show{display:block}
-
-/* ─ word block ─ */
-.res-word-block{padding:var(--s5) var(--s5) var(--s3)}
-.res-art-word{display:flex;align-items:baseline;gap:8px}
-.res-art{
-  font-size:13px;font-weight:700;color:var(--accent);
-  font-family:var(--sans);flex-shrink:0;margin-bottom:4px;
+.res-head-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s3)}
+.res-title{
+  font-family:var(--serif);font-size:clamp(22px,5.5vw,30px);font-weight:600;
+  color:var(--ink);line-height:1.15;letter-spacing:-.5px;direction:ltr;text-align:left;flex:1;
 }
-.res-word{
-  font-family:var(--serif);font-size:clamp(28px,6.5vw,38px);font-weight:600;
-  color:var(--ink);line-height:1;letter-spacing:-1px;direction:ltr;
+.res-speak{
+  width:34px;height:34px;border-radius:10px;border:1px solid var(--bg3);
+  background:var(--bg2);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;flex-shrink:0;transition:all .15s;margin-right:8px;
 }
-.res-principal{
-  font-family:var(--serif);font-style:italic;font-size:13px;
-  color:var(--ink3);direction:ltr;line-height:1.5;margin-top:4px;
-}
-.res-plural{
-  font-size:12px;color:var(--ink4);direction:ltr;margin-top:3px;
-}
-
-/* ─ divider ─ */
-.res-divider{height:1px;background:var(--bg2)}
-
-/* ─ info block ─ */
-.res-info-block{padding:var(--s4) var(--s5) var(--s3)}
+.res-speak:hover{border-color:var(--accent);background:var(--abl)}
 .res-meaning{
-  font-size:19px;font-weight:600;color:var(--ink);
-  line-height:1.3;margin-bottom:var(--s3);
-  direction:rtl;
+  font-size:18px;font-weight:600;color:var(--ink);
+  line-height:1.35;margin-bottom:var(--s2);
+  direction:rtl;text-align:right;
 }
 .res-synonym{
-  font-size:13px;color:var(--ink2);
-  margin-bottom:var(--s2);line-height:1.5;
+  font-size:13px;color:var(--ink3);
+  margin-bottom:var(--s4);line-height:1.5;
   direction:ltr;text-align:left;
 }
-.res-synonym .syn-lbl{color:var(--ink3);font-family:var(--sans)}
 .res-synonym .syn-word{
-  font-family:var(--serif);font-style:italic;color:var(--ink);
-  cursor:pointer;border-bottom:1px dashed var(--bg4);
-  transition:border-color .15s;
+  font-family:var(--serif);font-style:italic;color:var(--ink2);
+  cursor:pointer;border-bottom:1px dashed var(--bg4);transition:border-color .15s;
 }
 .res-synonym .syn-word:hover{border-color:var(--accent);color:var(--accent)}
 .res-synonym .syn-fa{color:var(--ink3);font-size:12px}
 
-.res-usage-line{
-  font-size:13px;line-height:1.55;margin-bottom:var(--s3);
-  direction:ltr;text-align:left;
-  display:flex;align-items:flex-start;gap:5px;
+/* ─ collocations block ─ */
+.res-collos{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--bg2);padding-top:var(--s3);margin-top:var(--s1)}
+.coll-item{padding:var(--s2) 0;border-bottom:1px solid var(--bg2)}
+.coll-item:last-child{border-bottom:none}
+.coll-phrase{
+  font-family:var(--serif);font-size:14px;color:var(--ink2);
+  direction:ltr;text-align:left;line-height:1.4;font-weight:500;
 }
-.res-usage-line::before{
-  content:'*';color:var(--accent);font-weight:800;font-size:16px;
-  flex-shrink:0;line-height:1.2;
-}
-
-.res-example{
-  font-family:var(--serif);font-style:italic;font-size:14px;
-  color:var(--ink);direction:ltr;text-align:left;
-  line-height:1.7;padding:var(--s3) var(--s4);
-  background:var(--bg2);border-radius:var(--r2);
-  border-right:none;border-left:none;
-  border-top:1px solid var(--bg3);
-  margin-top:var(--s2);
-}
-.res-example .ex-tr{
-  display:block;font-style:normal;font-family:var(--sans);
-  font-size:12px;color:var(--ink3);margin-top:5px;
-  direction:rtl;text-align:right;
-  opacity:.85;
+.coll-example{
+  font-family:var(--serif);font-style:italic;font-size:12px;
+  color:var(--ink3);direction:ltr;text-align:left;
+  line-height:1.6;margin-top:2px;
 }
 
-.res-tip-line{
-  font-size:12px;color:var(--ink2);line-height:1.7;
-  margin-top:var(--s3);padding:var(--s3) var(--s4) var(--s3) 34px;
-  background:var(--bg2);border-radius:var(--r2);
-  position:relative;direction:rtl;border:1px solid var(--bg3);
-}
-.res-tip-line::before{
-  content:'💡';position:absolute;right:auto;left:10px;top:50%;
-  transform:translateY(-50%);font-size:13px;line-height:1;
-}
-
-/* ─ footer ─ */
-.res-footer{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:var(--s3) var(--s5);background:var(--bg2);
-}
-.res-footer-left{display:flex;gap:var(--s2);align-items:center}
-.res-badge{
-  font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;
-}
-.res-badge.level{background:var(--abl);color:var(--accent)}
-.res-badge.type{background:var(--bg3);color:var(--ink3)}
-.res-priority{
-  display:none;align-items:center;gap:4px;font-size:11px;font-weight:600;
-  padding:3px 10px;border-radius:20px;border:1px solid;
-}
-.res-priority.show{display:flex}
-.res-priority.p5{background:rgba(204,32,32,.07);border-color:rgba(204,32,32,.2);color:var(--err)}
-.res-priority.p4{background:rgba(168,72,0,.07);border-color:rgba(168,72,0,.2);color:var(--warn)}
-.res-priority.p3{background:var(--abl);border-color:rgba(26,58,242,.15);color:var(--accent)}
-.res-priority.p2,.res-priority.p1{display:none}
-
-/* ─ add button ─ */
-.res-add-wrap{padding:var(--s3) var(--s5) var(--s5)}
-.add-btn{
-  width:100%;padding:12px;border-radius:var(--r2);
-  background:var(--accent);color:#fff;border:none;font-family:var(--sans);
-  font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;
-  display:flex;align-items:center;justify-content:center;gap:var(--s2);
-}
-.add-btn:hover{background:var(--accent2);box-shadow:0 3px 12px var(--aglow)}
-.add-btn:active{transform:scale(.98)}
-.add-btn:disabled{opacity:.4;cursor:default;box-shadow:none}
-.add-btn.done{background:var(--ok)}
+/* ─ auto-added toast ─ */
+.res-added-note{font-size:11px;color:var(--ok);margin-top:var(--s3);text-align:center;display:none}
+.res-added-note.show{display:block}
 
 
 /* ═══════════════════════════════════
@@ -2781,123 +2714,76 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 
   <!-- HOME -->
   <div class="pane on" id="pane-home">
-    <div class="hero">
-      <button class="hero-lang" onclick="langPopoverToggle(event)" id="home-lang-badge" title="زبان">
-        <span id="home-lang-label">آلمانی</span>
-        <span id="home-lang-flag" style="display:none"></span>
-        <span id="home-lang-sublabel" style="display:none"></span>
-        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="hero-txt">
-        <div class="hero-greet" id="hero-greet">سلام 👋</div>
-        <h1 id="hero-title">لغت یاد بگیر، <em>نه حفظ کنی</em></h1>
-        <p id="hero-sub">فارسی، آلمانی یا انگلیسی — سرچ کن</p>
-      </div>
-      <!-- Lang mini popover -->
-      <div id="lang-popover" style="display:none;position:absolute;top:calc(var(--s3) + 32px);left:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:9999;min-width:180px;animation:popIn .18s var(--spring)">
-        <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇩🇪</span>
-          <span>آلمانی</span>
-          <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+    <div class="search-anchor">
+      <div class="hero" style="display:flex;align-items:center;justify-content:space-between;padding:0 0 var(--s3)">
+        <button class="hero-lang" onclick="langPopoverToggle(event)" id="home-lang-badge" title="زبان">
+          <span id="home-lang-label">آلمانی</span>
+          <span id="home-lang-flag" style="display:none"></span>
+          <span id="home-lang-sublabel" style="display:none"></span>
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" id="lang-badge-chevron"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:16px">🇬🇧</span>
-          <span>انگلیسی</span>
-          <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+        <!-- Lang mini popover -->
+        <div id="lang-popover" style="display:none;position:absolute;top:calc(var(--s3) + 32px);right:auto;left:0;background:var(--card);border:1px solid var(--bg3);border-radius:14px;box-shadow:var(--sh3);padding:6px;z-index:9999;min-width:180px;animation:popIn .18s var(--spring)">
+          <button onclick="langPopoverPick('de')" id="pop-de" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size:16px">🇩🇪</span><span>آلمانی</span>
+            <span id="pop-de-check" style="margin-right:auto;color:var(--accent);font-size:14px">✓</span>
+          </button>
+          <button onclick="langPopoverPick('en')" id="pop-en" style="width:100%;display:flex;align-items:center;gap:8px;padding:9px 12px;border:none;border-radius:10px;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);transition:background .15s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size:16px">🇬🇧</span><span>انگلیسی</span>
+            <span id="pop-en-check" style="margin-right:auto;color:var(--accent);font-size:14px;visibility:hidden">✓</span>
+          </button>
+        </div>
+        <div id="free-banner" style="display:none"></div>
+      </div>
+
+      <div class="s-wrap">
+        <input class="s-field" id="s-inp"
+          placeholder="لغت یا عبارت آلمانی / فارسی..."
+          oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
+        <div class="ac-drop" id="ac-drop"></div>
+        <button class="s-btn" id="s-btn" onclick="doSearch()" aria-label="جستجو">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
+      <div class="s-msg" id="s-msg"></div>
     </div>
 
-    <div id="free-banner" style="display:none"></div>
-    <div class="s-wrap">
-      <input class="s-field" id="s-inp"
-        placeholder="مثلاً: Kündigungsfrist  یا  قرارداد کار..."
-        oninput="acInput()" onkeydown="acKey(event)" autocomplete="off">
-      <div class="ac-drop" id="ac-drop"></div>
-      <button class="s-btn" id="s-btn" onclick="doSearch()" aria-label="جستجو">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2L13 7L8 12M13 7H1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </div>
-    <div class="search-tip" id="search-tip">💡 یه لغت سرچ کن — مثلاً <strong>Arbeit</strong> یا <strong>کار</strong></div>
-    <div class="s-msg" id="s-msg"></div>
-
-    <!-- Word result -->
+    <!-- Word result — clean format -->
     <div class="res" id="res">
       <div class="res-fix" id="res-fix"></div>
-
-      <!-- اسم لغت -->
-      <div class="res-word-block">
-        <div class="res-art-word" style="display:flex;align-items:center;gap:8px">
-          <span class="res-art" id="res-art"></span>
-          <span class="res-word" id="res-word"></span>
-          <button onclick="speakWord(curWord?.word||Q('#res-word')?.textContent||'')" style="width:32px;height:32px;border:1px solid var(--bg3);border-radius:8px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);transition:all .15s;flex-shrink:0" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--bg3)';this.style.color='var(--ink3)'" title="تلفظ">🔊</button>
-        </div>
-        <div class="res-principal" id="res-principal"></div>
-        <div class="res-plural" id="res-plural"></div>
+      <div class="res-head-row">
+        <div class="res-title" id="res-title"></div>
+        <button class="res-speak" id="res-speak" title="تلفظ">🔊</button>
       </div>
-
-      <div class="res-divider"></div>
-
-      <!-- معنی و اطلاعات -->
-      <div class="res-info-block">
-        <div class="res-meaning" id="res-meaning"></div>
-        <div class="res-synonym" id="res-synonym"></div>
-        <div class="res-usage-line" id="res-usage-line"></div>
-        <div class="res-example" id="res-example"></div>
-        <div class="res-tip-line" id="res-tip-line"></div>
-        <!-- Conjugation (for verbs) -->
-        <div id="res-conj" style="display:none">
-          <span class="conj-toggle" onclick="showConjugation(curWord?.word||'')">📝 صرف فعل ▾</span>
-          <div class="conj-wrap" id="conj-wrap"></div>
-        </div>
-      </div>
-
-      <div class="res-divider"></div>
-
-      <!-- badges + priority -->
-      <div class="res-footer">
-        <div class="res-footer-left">
-          <span class="res-badge level" id="res-level"></span>
-          <span class="res-badge type" id="res-type"></span>
-        </div>
-        <div class="res-priority" id="res-priority"></div>
-      </div>
-
-      <div class="res-add-wrap">
-        <button class="add-btn" id="add-btn" onclick="addWord()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن به لیست
-        </button>
-      </div>
+      <div class="res-meaning" id="res-meaning"></div>
+      <div class="res-synonym" id="res-synonym"></div>
+      <div class="res-collos" id="res-collos"></div>
+      <div class="res-added-note" id="res-added-note">✓ به لیست اضافه شد</div>
+      <!-- hidden IDs kept for JS compatibility -->
+      <div id="res-conj" style="display:none"><div class="conj-wrap" id="conj-wrap"></div></div>
     </div>
 
     <!-- Phrase result -->
     <div class="ph-res" id="ph-res">
       <div class="ph-top">
-        <!-- correction banner -->
         <div id="ph-correction" style="display:none">
-          <span style="opacity:.8">غلط املایی داشتی — اصلاح شد:</span> <span id="ph-corrected" style="font-weight:700;direction:ltr;cursor:pointer" onclick="rephrase()"></span>
+          <span style="opacity:.8">غلط املایی داشتی — اصلاح شد:</span>
+          <span id="ph-corrected" style="font-weight:700;direction:ltr;cursor:pointer" onclick="rephrase()"></span>
         </div>
         <div class="ph-orig" id="ph-orig"></div>
         <div class="ph-meaning" id="ph-meaning"></div>
         <div class="ph-priority" id="ph-priority" style="display:none"></div>
-        <!-- similar phrases -->
         <div id="ph-similar" style="display:none;margin-top:8px">
-          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:5px">عبارات مشابه:</div>
           <div id="ph-similar-chips" style="display:flex;flex-wrap:wrap;gap:5px"></div>
         </div>
         <span class="ph-syn" id="ph-syn"></span>
-        <!-- example -->
         <div id="ph-example" style="display:none;margin-top:8px;background:rgba(255,255,255,.08);border-radius:8px;padding:8px 10px">
           <div id="ph-ex-de" style="font-size:12px;color:rgba(255,255,255,.85);direction:ltr;text-align:left;font-style:italic"></div>
           <div id="ph-ex-fa" style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px"></div>
         </div>
       </div>
-      <div class="ph-body">
-        <button class="ph-add" id="ph-add" onclick="addPhrase()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن کل اصطلاح به لیست
-        </button>
+      <div class="ph-body" style="padding:var(--s4) var(--s6) var(--s3)">
+        <div id="ph-added-note" style="display:none;font-size:12px;color:var(--ok);text-align:center">✓ به لیست اضافه شد</div>
       </div>
     </div>
 
@@ -2925,50 +2811,33 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         <button class="btn-ic" onclick="exportAnki()" title="خروجی Anki" style="width:auto;padding:0 10px;font-size:11px;font-weight:600;height:28px;border-radius:8px">Anki ↓</button>
       </div>
     </div>
-    <!-- Unified filter row: status chips + source chips, horizontally scrollable -->
+    <!-- Simple filter row -->
     <div class="filt-row" id="filt-status">
-      <button class="filt-chip on" data-status="all"       onclick="setStatusFilter('all')">همه <b id="ct-all">0</b></button>
-      <button class="filt-chip"    data-status="due"       onclick="setStatusFilter('due')">⏰ دیر شده <b id="ct-due">0</b></button>
-      <button class="filt-chip"    data-status="new"       onclick="setStatusFilter('new')">جدید <b id="ct-new">0</b></button>
-      <button class="filt-chip"    data-status="learning"  onclick="setStatusFilter('learning')">در حال <b id="ct-learning">0</b></button>
-      <button class="filt-chip"    data-status="mastered"  onclick="setStatusFilter('mastered')">✓ مسلط <b id="ct-mastered">0</b></button>
-      <button class="filt-chip"    data-status="today"     onclick="setStatusFilter('today')">📅 امروز <b id="ct-today">0</b></button>
-      <span class="filt-divider"></span>
-      <span id="src-chips-inline"></span>
-      <button class="filt-chip sm" id="more-filt-btn" onclick="toggleMoreFilters()" title="فیلترهای بیشتر">⚙</button>
+      <button class="filt-chip on" data-status="all"   onclick="setStatusFilter('all')">همه <b id="ct-all">0</b></button>
+      <button class="filt-chip"    data-status="today" onclick="setStatusFilter('today')">📅 امروز <b id="ct-today">0</b></button>
+      <!-- hidden counts for JS compatibility -->
+      <b id="ct-due" style="display:none">0</b><b id="ct-new" style="display:none">0</b>
+      <b id="ct-learning" style="display:none">0</b><b id="ct-mastered" style="display:none">0</b>
     </div>
-    <!-- Collapsible extra filters -->
-    <div class="filt-row more-filters" id="filt-type" style="display:none">
-      <span style="font-size:10px;color:var(--ink3);align-self:center;padding:0 8px;font-family:var(--sans)">نوع:</span>
-      <button class="filt-chip on sm" data-type="all"    onclick="setTypeFilter('all')">همه</button>
-      <button class="filt-chip sm"    data-type="word"   onclick="setTypeFilter('word')">📝 لغت</button>
-      <button class="filt-chip sm"    data-type="phrase" onclick="setTypeFilter('phrase')">💬 اصطلاح</button>
-    </div>
-    <!-- Active-filter summary -->
-    <div class="filt-summary" id="filt-summary">
-      <span id="filt-summary-txt">—</span>
-      <button onclick="clearAllFilters()">× پاک همه</button>
-    </div>
-    <!-- Hidden legacy elements (kept for JS refs) -->
+    <!-- Hidden legacy elements -->
     <div class="src-chips" id="src-chips" style="display:none"></div>
+    <div id="src-chips-inline" style="display:none"></div>
     <div id="src-filter-head" style="display:none"></div>
+    <div id="filt-type" style="display:none"></div>
+    <div id="filt-summary" style="display:none"><span id="filt-summary-txt"></span></div>
     <div class="due-banner" id="due-banner" style="display:none"><div id="due-chips"></div></div>
-    <!-- Search + Sort -->
+    <!-- Search -->
     <div class="list-ctrl-row">
       <div class="list-s-wrap" style="flex:1">
         <svg class="list-s-ic" width="14" height="14" viewBox="0 0 14 14" fill="none">
           <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
           <path d="M10 10l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        <input class="list-s" id="list-q" placeholder="جستجو — ä=a, ö=o قابل تبدیل" oninput="renderList()">
+        <input class="list-s" id="list-q" placeholder="جستجو در لیست..." oninput="renderList()">
         <button class="list-s-clear" id="list-s-clear" onclick="Q('#list-q').value='';renderList();" style="display:none">×</button>
       </div>
-      <select class="list-sort" id="list-sort-sel" onchange="setSort(this.value)">
+      <select class="list-sort" id="list-sort-sel" onchange="setSort(this.value)" style="display:none">
         <option value="new">جدیدترین</option>
-        <option value="due">دیر شده اول</option>
-        <option value="weak">ضعیف‌ترین</option>
-        <option value="best">بهترین</option>
-        <option value="alpha">الفبا</option>
       </select>
     </div>
     <div id="wlist"></div>
@@ -4087,21 +3956,26 @@ async function doSearch(){
   const q=Q('#s-inp').value.trim();if(!q)return;
   if(!navigator.onLine){setMsg('📡 آفلاین — اتصال اینترنت نداری','err');return;}
   acClose();
-  Q('#search-tip').classList.remove('show');
+  Q('#search-tip')?.classList.remove('show');
   const btn=Q('#s-btn');btn.disabled=true;btn.classList.add('busy');
   setMsg('در حال جستجو...','info');
   Q('#res').style.display='none';Q('#ph-res').style.display='none';
+  Q('#pane-home').classList.remove('has-result');
   try{
-    if(detectMode(q)==='word') await searchWord(q);
+    const mode=detectMode(q);
+    if(mode==='word') await searchWord(q);
     else await searchPhrase(q);
     setMsg('','');Q('#s-inp').value='';
+    /* Auto-add to list */
+    if(mode==='word') autoAddWord();
+    else autoAddPhrase();
     // لاگ کردن سرچ
     if(currentUser && navigator.onLine){
       sb.from('search_logs').insert({
         user_id:currentUser.id,
         query:q,
         lang:targetLang,
-        result_type:detectMode(q)
+        result_type:mode
       }).then(()=>{}).catch(()=>{});
     }
   }catch(e){
@@ -4189,7 +4063,7 @@ async function searchWord(q){
 
   const isDE = targetLang === 'de';
   const schema = isDE
-    ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","reflexive":"akkusativ/dativ/null — فقط برای Verb: اگه sich + Akk → akkusativ، اگه sich + Dat → dativ، وگرنه null","separable":"true/false/null — فقط برای Verb: trennbar یا untrennbar","register":"formal/informal/umgangssprache/null — ثبت زبانی","frequency":"common/medium/rare — روزمرگی","komposita":"اگه کلمه مرکبه اجزاش با + مثل Arbeits+platz، وگرنه null","usage_pattern":"الگوی استفاده مثل sich engagieren für+Akk یا null","preposition":"حرف اضافه با Kasus مثل auf+Akk یا null","rektion":"الگوی Rektion مثل: +Akk / +Dat / +Gen یا null","collocations":["عبارت مهم مثل großen Wert auf etwas legen"],"patterns":["الگوی مهم مثل gelten als یا sich interessieren für + Akk"],"synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ خط نکات: declension/pattern/common mistake — با ▪ جدا کن","priority":{"score":3,"reason":"چرا مهمه"}}'
+    ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","reflexive":"akkusativ/dativ/null — فقط برای Verb: اگه sich + Akk → akkusativ، اگه sich + Dat → dativ، وگرنه null","separable":"true/false/null — فقط برای Verb: trennbar یا untrennbar","register":"formal/informal/umgangssprache/null — ثبت زبانی","frequency":"common/medium/rare — روزمرگی","komposita":"اگه کلمه مرکبه اجزاش با + مثل Arbeits+platz، وگرنه null","usage_pattern":"الگوی استفاده مثل sich engagieren für+Akk یا null","preposition":"حرف اضافه با Kasus مثل auf+Akk یا null","rektion":"الگوی Rektion مثل: +Akk / +Dat / +Gen یا null","collocations":[{"phrase":"عبارت مهم مثل einen Chip einbauen","example":"In das Gerät wurde ein neuer Chip eingebaut."}],"patterns":[{"phrase":"الگوی مهم مثل gelten als + Nom","example":"جمله مثال"}],"synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ خط نکات: declension/pattern/common mistake — با ▪ جدا کن","priority":{"score":3,"reason":"چرا مهمه"}}'
     : '{"word":"word without article","corrected_from":"null or original word","article":"null","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs: past tense and past participle","reflexive":"null (rare in English)","separable":"null","register":"formal/informal/slang/null","frequency":"common/medium/rare","komposita":"null","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","rektion":null,"collocations":[],"patterns":[],"synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ lines of grammar notes with ▪","priority":{"score":3,"reason":"why important"}}';
 
   const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
@@ -4199,7 +4073,7 @@ async function searchWord(q){
    +'فارسی: معادل '+langLabel+' پیدا کن\n\n'
    +'JSON خالص:\n'+schema+'\n\n'
    +'قوانین:\n'
-   +(isDE ? '- سطح هدف: B2-C1 — دقیق و سیستماتیک باش\n- principal_parts: فقط برای Verb، ۲ شکل Präteritum و Perfekt\n- reflexive: فقط برای افعال بازتابی، case دقیق (akkusativ/dativ)\n- separable: true فقط اگه trennbar (مثل aufstehen, mitkommen)\n- komposita: فقط اگه اسم مرکبه، اجزا با +\n- rektion: برای Verb و Adjektiv همیشه Rektion بنویس (مثل +Akk یا auf+Akk یا +Dat) — برای Nomen معمولاً null\n- collocations: ۳-۵ عبارت مهم که این لغت در آن‌ها به کار میره (آرایه رشته)\n- patterns: الگوهای مهم جمله مثل "gelten als", "sich interessieren für + Akk" (آرایه رشته)\n' : '- principal_parts: only for irregular verbs, 3 forms\n- rektion: null for English\n- collocations: 3-5 important collocations (array of strings)\n- patterns: important usage patterns (array of strings)\n')
+   +(isDE ? '- سطح هدف: B2-C1 — دقیق و سیستماتیک باش\n- principal_parts: فقط برای Verb، ۲ شکل Präteritum و Perfekt\n- reflexive: فقط برای افعال بازتابی، case دقیق (akkusativ/dativ)\n- separable: true فقط اگه trennbar (مثل aufstehen, mitkommen)\n- komposita: فقط اگه اسم مرکبه، اجزا با +\n- rektion: برای Verb و Adjektiv همیشه Rektion بنویس (مثل +Akk یا auf+Akk یا +Dat) — برای Nomen معمولاً null\n- collocations: آرایه‌ای از ۲-۳ شیء {phrase, example} — phrase: عبارت مهم، example: یه جمله کاربردی با اون عبارت\n- patterns: آرایه‌ای از ۱-۲ شیء {phrase, example} برای الگوهای مهم (مثل gelten als, sich interessieren für + Akk)\n' : '- principal_parts: only for irregular verbs, 3 forms\n- rektion: null for English\n- collocations: array of 2-3 objects {phrase, example}\n- patterns: array of 1-2 important pattern objects {phrase, example}\n')
    +'- synonyms: حداکثر ۲ تا\n'
    +'- examples: دقیقاً ۱ جمله طبیعی\n'
    +'- grammar_tip: ۲-۳ نکته دقیق با ▪ جداکننده: declension/pattern + اشتباه رایج + مشابه\n'
@@ -4240,6 +4114,7 @@ async function searchWord(q){
 
 function renderWord(d){
   const nul = v => !v||v==='null'||v==='—'||!String(v).trim();
+  const esc2 = s => String(s||'').replace(/'/g,"\\'");
 
   /* ─ Fix notice ─ */
   const fix=Q('#res-fix');
@@ -4247,138 +4122,63 @@ function renderWord(d){
     {fix.textContent='تصحیح از: '+d.corrected_from;fix.classList.add('show');}
   else fix.classList.remove('show');
 
-  /* ─ Article + Word ─ */
+  /* ─ Title: Word (art) or Word – Prät – Perf ─ */
   const art = nul(d.article)?'':d.article;
-  const artEl = Q('#res-art');
-  artEl.textContent = art;
-  artEl.style.display = art ? '' : 'none';
-  Q('#res-word').textContent = d.word;
-
-  /* ─ Principal parts (Verb) ─
-     format: engagieren – engagierte sich – hat sich engagiert  */
   const pp = nul(d.principal_parts)?'':d.principal_parts.trim();
-  const ppEl = Q('#res-principal');
-  if(pp){ ppEl.textContent = d.word+' – '+pp; ppEl.style.display=''; }
-  else   ppEl.style.display='none';
+  let titleText;
+  if(pp) titleText = d.word + ' – ' + pp;
+  else if(art) titleText = d.word + ' (' + art + ')';
+  else titleText = d.word;
+  const titleEl=Q('#res-title');if(titleEl)titleEl.textContent=titleText;
 
-  /* ─ Plural (Nomen) ─ */
-  const plEl = Q('#res-plural');
-  if(!nul(d.plural)){ plEl.textContent = 'Pl: '+d.plural; plEl.style.display=''; }
-  else plEl.style.display='none';
+  /* ─ Speak button ─ */
+  const spk=Q('#res-speak');if(spk)spk.onclick=()=>speakWord(d.word||'');
 
   /* ─ Meaning ─ */
-  Q('#res-meaning').textContent = d.meaning_fa||'';
+  const meanEl=Q('#res-meaning');if(meanEl)meanEl.textContent=d.meaning_fa||'';
 
-  /* ─ Synonym line ─ */
-  const synEl = Q('#res-synonym');
-  const rawSyns = d.synonyms||[];
-  const syns = rawSyns.map(s=>typeof s==='object'?s:{de:s,fa:''}).filter(s=>s.de&&s.de!=='null');
-  if(syns.length){
-    synEl.style.display='';
-    synEl.innerHTML = '<span class="syn-lbl">Synonym: </span>' + syns.map(s=>
-      `<span class="syn-word" onclick="qs('${esc(s.de)}')">${s.de}</span>`+
-      (s.fa?` <span class="syn-fa">(${s.fa})</span>`:'')
-    ).join('، ');
-  } else synEl.style.display='none';
-
-  /* ─ Reflexive + Separable badges ─ */
-  const refl = nul(d.reflexive)?'':d.reflexive.trim().toLowerCase();
-  const sep = d.separable===true||d.separable==='true';
-  const reg = nul(d.register)?'':d.register.trim().toLowerCase();
-  /* ─ Usage line: "* sich engagieren für + Akk" + tags ─ */
-  const usEl = Q('#res-usage-line');
-  const up = nul(d.usage_pattern)?'':d.usage_pattern.trim();
-  const pre = nul(d.preposition)?'':d.preposition.trim();
-  const usageText = up || pre;
-  const tagBadges=[];
-  if(refl==='akkusativ'||refl==='dativ'){tagBadges.push('<span class="wr-tag reflexive">REFLEXIV · '+(refl==='dativ'?'Dat':'Akk')+'</span>');}
-  if(sep)tagBadges.push('<span class="wr-tag separable">TRENNBAR</span>');
-  if(reg&&reg!=='null'&&reg!=='medium'&&reg!=='common')tagBadges.push('<span class="wr-tag register">'+reg.toUpperCase()+'</span>');
-  if(usageText||tagBadges.length){
-    usEl.innerHTML=(usageText?'<span>'+usageText+'</span>':'')+(tagBadges.length?'<span style="display:inline-flex;gap:4px;flex-wrap:wrap;margin-right:auto">'+tagBadges.join('')+'</span>':'');
-    usEl.style.display='flex';
-  } else usEl.style.display='none';
-  /* ─ Komposita (compound word parts) ─ */
-  const komp = nul(d.komposita)?'':d.komposita.trim();
-  let kompEl=Q('#res-komposita');
-  if(!kompEl){kompEl=document.createElement('div');kompEl.id='res-komposita';kompEl.style.cssText='font-size:11px;color:var(--ink3);margin-top:4px;direction:ltr;display:none;font-family:var(--serif)';usEl.parentElement.insertBefore(kompEl,usEl.nextSibling);}
-  if(komp&&komp.includes('+')){kompEl.innerHTML='🧩 '+komp.split('+').map(p=>'<span style="color:var(--accent)">'+p.trim()+'</span>').join(' <span style="opacity:.4">+</span> ');kompEl.style.display='block';}
-  else kompEl.style.display='none';
-
-  /* ─ Rektion + Patterns + Collocations ─ */
-  let rpcEl=Q('#res-rektion-block');
-  if(!rpcEl){
-    rpcEl=document.createElement('div');
-    rpcEl.id='res-rektion-block';
-    rpcEl.style.cssText='margin-top:10px;display:none';
-    const exEl2=Q('#res-example');
-    if(exEl2&&exEl2.parentElement)exEl2.parentElement.insertBefore(rpcEl,exEl2);
-  }
-  const rektStr=nul(d.rektion)?'':d.rektion.trim();
-  const patternsArr=Array.isArray(d.patterns)&&d.patterns.length?d.patterns:[];
-  const colloArr=Array.isArray(d.collocations)&&d.collocations.length?d.collocations:[];
-  if(rektStr||patternsArr.length||colloArr.length){
-    let html2='';
-    if(rektStr)html2+='<div style="font-size:12px;font-family:var(--mono,monospace);color:var(--accent);direction:ltr;text-align:left;margin-bottom:4px">'+rektStr+'</div>';
-    if(patternsArr.length)html2+=patternsArr.map(p=>'<div style="font-size:12px;font-family:var(--mono,monospace);color:var(--ink2);direction:ltr;text-align:left;padding:2px 0">+ '+p+'</div>').join('');
-    if(colloArr.length)html2+='<div style="margin-top:4px">'+colloArr.map(c=>'<div style="font-size:11px;color:var(--ink3);direction:ltr;text-align:left;padding:1px 0">▸ '+c+'</div>').join('')+'</div>';
-    rpcEl.innerHTML=html2;
-    rpcEl.style.display='block';
-  }else rpcEl.style.display='none';
-
-  /* ─ First example sentence ─ */
-  const exEl = Q('#res-example');
-  const exs = d.examples||[];
-  if(exs.length && exs[0].de){
-    exEl.innerHTML = '<div style="font-size:11px;opacity:.7;margin-bottom:4px">Satz</div>'+exs[0].de
-      +(exs[0].fa?`<span class="ex-tr">${exs[0].fa}</span>`:'');
-    exEl.style.display='';
-  } else exEl.style.display='none';
-
-  /* ─ Grammar tip (supports ▪ bullets) ─ */
-  const tipEl = Q('#res-tip-line');
-  if(!nul(d.grammar_tip)){
-    const tip=d.grammar_tip.trim();
-    if(tip.includes('▪')){
-      const lines=tip.split('▪').map(s=>s.trim()).filter(Boolean);
-      tipEl.innerHTML=lines.map(l=>'<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:3px"><span style="color:var(--accent);font-weight:700;flex-shrink:0">▪</span><span>'+l+'</span></div>').join('');
-    }else tipEl.textContent=tip;
-    tipEl.style.display='';
-  } else tipEl.style.display='none';
-
-  /* ─ Conjugation (verbs only) ─ */
-  const conjEl=Q('#res-conj');const conjWrap=Q('#conj-wrap');
-  if(conjEl){
-    if(d.type&&d.type.toLowerCase()==='verb'){conjEl.style.display='';if(conjWrap)conjWrap.classList.remove('open');}
-    else conjEl.style.display='none';
+  /* ─ Synonym ─ */
+  const synEl=Q('#res-synonym');
+  const rawSyns=d.synonyms||[];
+  const syns=rawSyns.map(s=>typeof s==='object'?s:{de:s,fa:''}).filter(s=>s.de&&s.de!=='null');
+  if(synEl){
+    if(syns.length){
+      synEl.style.display='';
+      synEl.innerHTML='Synonym: '+syns.map(s=>
+        `<span class="syn-word" onclick="qs('${esc2(s.de)}')">${s.de}</span>`+
+        (s.fa?` <span class="syn-fa">(${s.fa})</span>`:'')
+      ).join('، ');
+    } else synEl.style.display='none';
   }
 
-  /* ─ Badges ─ */
-  const lvlEl=Q('#res-level'),typEl=Q('#res-type');
-  if(d.level){lvlEl.textContent=d.level;lvlEl.style.display='';}else lvlEl.style.display='none';
-  if(d.type){typEl.textContent=d.type;typEl.style.display='';}else typEl.style.display='none';
+  /* ─ Collocations with examples ─ */
+  const collosEl=Q('#res-collos');
+  if(collosEl){
+    const colloArr=Array.isArray(d.collocations)?d.collocations:[];
+    const patternsArr=Array.isArray(d.patterns)?d.patterns:[];
+    /* merge: patterns first, then collocations */
+    const allItems=[];
+    patternsArr.forEach(p=>{ if(typeof p==='string'&&p) allItems.push({phrase:p,example:''}); else if(p&&p.phrase) allItems.push(p); });
+    colloArr.forEach(c=>{ if(typeof c==='string'&&c) allItems.push({phrase:c,example:''}); else if(c&&c.phrase) allItems.push(c); });
+    if(allItems.length){
+      collosEl.innerHTML=allItems.map(item=>`<div class="coll-item"><div class="coll-phrase">${item.phrase||''}</div>${item.example?`<div class="coll-example">${item.example}</div>`:''}</div>`).join('');
+      collosEl.style.display='';
+    } else {
+      /* fallback: show single example if no collocations */
+      const exs=d.examples||[];
+      if(exs.length&&exs[0].de){
+        collosEl.innerHTML=`<div class="coll-item"><div class="coll-example" style="font-style:italic">${exs[0].de}</div></div>`;
+        collosEl.style.display='';
+      } else collosEl.style.display='none';
+    }
+  }
 
-  /* ─ Priority ─ */
-  const prEl=Q('#res-priority');
-  if(d.priority&&d.priority.score>=3){
-    const sc=d.priority.score;
-    const icons={5:'🔴',4:'🟠',3:'🔵'};
-    const labels={5:'حتماً یاد بگیر',4:'خیلی مهم',3:'مهم'};
-    prEl.className='res-priority show p'+sc;
-    prEl.textContent=icons[sc]+' '+labels[sc];
-  } else { prEl.className='res-priority'; }
-
-  /* ─ Add button ─ */
-  const key=(art?art+' ':'')+d.word;
-  const exists=words.some(w=>w.de.toLowerCase()===key.toLowerCase());
-  const btn=Q('#add-btn');
-  btn.innerHTML=exists
-    ?'<span>✓</span> قبلاً اضافه شده'
-    :'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به لیست';
-  btn.disabled=exists; btn.className='add-btn'+(exists?' done':'');
-
-  Q('#res').style.display='block';
-  setTimeout(()=>Q('#res').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+  /* ─ Show result ─ */
+  const resEl=Q('#res');
+  resEl.style.display='block';
+  Q('#pane-home').classList.add('has-result');
+  const noteEl=Q('#res-added-note');if(noteEl)noteEl.classList.remove('show');
+  setTimeout(()=>resEl.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
 }
 function qs(w){Q('#s-inp').value=w;doSearch();}
 
@@ -4388,15 +4188,32 @@ async function addWord(){
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
   const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString(),created_at:new Date().toISOString(),rektion:curWord.rektion||null,collocations:curWord.collocations||[],patterns:curWord.patterns||[]};
-  /* Auto-tag with active source */
   if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
-  const btn=Q('#add-btn');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='add-btn done';
   if(navigator.onLine)dbAdd(w).catch(()=>{});
-  /* Increment daily goal */
   if(typeof incrementDaily==='function')incrementDaily();
-  /* Mark history as saved */
   if(typeof histMarkSaved==='function')histMarkSaved(key);
+}
+
+function autoAddWord(){
+  if(!curWord)return;
+  if(!canAddMore())return; /* silently skip if limit reached */
+  const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
+  const alreadyExists=words.some(w=>w.de.toLowerCase()===key.toLowerCase());
+  if(!alreadyExists){
+    addWord();
+    const noteEl=Q('#res-added-note');if(noteEl)noteEl.classList.add('show');
+  }
+}
+
+function autoAddPhrase(){
+  if(!curPhrase)return;
+  if(!canAddMore())return;
+  const hasCorrected=curPhrase.corrected&&curPhrase.corrected!=='null';
+  const key=hasCorrected?curPhrase.corrected:curPhrase.original;
+  if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
+  addPhrase();
+  const noteEl=Q('#ph-added-note');if(noteEl)noteEl.style.display='block';
 }
 
 async function searchPhrase(q){
