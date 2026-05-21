@@ -3233,38 +3233,58 @@ function showToast(msg,dur=2800,type=''){
 function setSdot(s){const d=Q('#sync-dot');if(d)d.className='sync-dot'+(s==='ok'?' ok':s==='busy'?' busy':'');}
 
 async function dbLoad(){
-  const c=localStorage.getItem('ws_cache_'+uid());
+  const cacheKey='ws_cache_'+uid();
+  const c=localStorage.getItem(cacheKey);
   if(c){try{words=JSON.parse(c);updateBadges();updateStats();}catch(e){}}
   if(!navigator.onLine){setSdot('');return;}
   setSdot('busy');
   try{
     const{data,error}=await sb.from('words').select('*').order('created_at',{ascending:true});
     if(error)throw error;
-    words=(data||[]).map(r=>({
-      id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',
-      score:r.score||0,seen:r.seen||0,
-      interval:r.interval||1,easiness:r.easiness||2.5,
-      next_review:r.next_review||new Date().toISOString(),
-      reviewed_at:r.reviewed_at||null,
-      created_at:r.created_at||null,
-      lang:r.lang||'de',
-      source_id:r.source_id||null
-    }));
+    const rows=data||[];
+    const dbById=Object.fromEntries(rows.map(r=>[r.id,r]));
+    const dbByDe=Object.fromEntries(rows.map(r=>[r.de?.toLowerCase(),r]));
+    /* Enrich local words with DB data (IDs + review scores) */
+    words=words.map(lw=>{
+      const dbW=lw.id?dbById[lw.id]:dbByDe[lw.de?.toLowerCase()];
+      if(!dbW)return lw;
+      return {...lw, id:dbW.id, score:dbW.score??lw.score, seen:dbW.seen??lw.seen,
+        interval:dbW.interval??lw.interval, easiness:dbW.easiness??lw.easiness,
+        next_review:dbW.next_review||lw.next_review,
+        reviewed_at:dbW.reviewed_at||lw.reviewed_at,
+        created_at:dbW.created_at||lw.created_at};
+    });
+    /* Add words from DB not in local cache (added from another device) */
+    rows.forEach(dbW=>{
+      if(!words.some(lw=>lw.de?.toLowerCase()===dbW.de?.toLowerCase())){
+        words.push({id:dbW.id,de:dbW.de,fa:dbW.fa,ex:dbW.ex||'',
+          score:dbW.score||0,seen:dbW.seen||0,interval:dbW.interval||1,
+          easiness:dbW.easiness||2.5,next_review:dbW.next_review||new Date().toISOString(),
+          reviewed_at:dbW.reviewed_at||null,created_at:dbW.created_at||null,
+          lang:dbW.lang||'de',source_id:dbW.source_id||null});
+      }
+    });
+    /* Retry uploading local-only words */
+    words.filter(lw=>!lw.id).forEach(lw=>{ dbAdd(lw).catch(()=>{}); });
     saveCache();updateBadges();updateStats();
     setSdot('ok');
-  }catch(e){setSdot('');console.error(e);}
+  }catch(e){setSdot('err');console.error('dbLoad error:',e?.message||e);}
 }
 
 async function dbAdd(w){
+  if(!currentUser)return;
   try{
     const{data,error}=await sb.from('words').insert({
-      user_id:uid(),de:w.de,fa:w.fa,ex:w.ex||'',
+      user_id:currentUser.id,de:w.de,fa:w.fa,ex:w.ex||'',
       score:0,seen:0,interval:1,easiness:2.5,
       next_review:new Date().toISOString()
     }).select().single();
     if(error)throw error;
-    if(data)w.id=data.id;
-  }catch(e){console.error(e);}
+    if(data){w.id=data.id;saveCache();}
+  }catch(e){
+    console.error('dbAdd failed:',e?.message||e);
+    showToast('⚠ ذخیره در ابر ناموفق: '+((e?.message||'').slice(0,40)||'خطا'),3000,'warn');
+  }
 }
 
 async function dbUpd(w){
