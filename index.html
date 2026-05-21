@@ -3184,9 +3184,10 @@ function showToast(msg,dur=2800,type=''){
 function setSdot(s){const d=Q('#sync-dot');if(d)d.className='sync-dot'+(s==='ok'?' ok':s==='busy'?' busy':'');}
 
 async function dbLoad(){
-  const c=localStorage.getItem('ws_cache_'+uid());
-  let localWords=[];
-  if(c){try{localWords=JSON.parse(c);words=localWords;updateBadges();updateStats();}catch(e){}}
+  /* Step 1: Restore from localStorage immediately so UI is populated */
+  const cacheKey='ws_cache_'+uid();
+  const c=localStorage.getItem(cacheKey);
+  if(c){try{words=JSON.parse(c);updateBadges();updateStats();}catch(e){}}
   if(!navigator.onLine){setSdot('');return;}
   setSdot('busy');
   try{
@@ -3202,21 +3203,30 @@ async function dbLoad(){
       lang:r.lang||'de',
       source_id:r.source_id||null
     }));
-    /* Build lookup from local cache to re-attach rich metadata */
-    const localByDe=Object.fromEntries(localWords.map(lw=>[lw.de?.toLowerCase(),lw]));
+
+    /* Step 2: Read CURRENT words (may have been updated during the async fetch above) */
+    const currentWords=[...words];
+    const currentByDe=Object.fromEntries(currentWords.map(w=>[w.de?.toLowerCase(),w]));
     const dbIds=new Set(dbWords.map(w=>w.id));
-    /* Merge: DB words get rich metadata re-attached from local cache */
-    words=dbWords.map(w=>{
-      const lw=localByDe[w.de?.toLowerCase()];
-      return lw?{...w,rektion:lw.rektion||null,collocations:lw.collocations||[],patterns:lw.patterns||[],synonyms:lw.synonyms||[],article:lw.article||null,principal_parts:lw.principal_parts||null}:w;
+
+    /* Step 3: Build merged list — DB is authoritative for review fields,
+       local object is authoritative for rich metadata (collocations, etc.) */
+    words=dbWords.map(dbW=>{
+      const local=currentByDe[dbW.de?.toLowerCase()];
+      return local
+        ? {...dbW, rektion:local.rektion||null, collocations:local.collocations||[], patterns:local.patterns||[], synonyms:local.synonyms||[], article:local.article||null, principal_parts:local.principal_parts||null}
+        : dbW;
     });
-    /* Restore any local-only words not yet confirmed in Supabase */
-    localWords.filter(lw=>!lw.id||!dbIds.has(lw.id)).forEach(lw=>{
+
+    /* Step 4: Re-add any local-only words (not yet in DB, or added during fetch) */
+    currentWords.forEach(lw=>{
       if(!words.some(w=>w.de?.toLowerCase()===lw.de?.toLowerCase())){
         words.unshift(lw);
-        if(navigator.onLine)dbAdd(lw).catch(()=>{});
+        /* Retry upload if it never made it to DB */
+        if(!lw.id && navigator.onLine) dbAdd(lw).catch(()=>{});
       }
     });
+
     saveCache();updateBadges();updateStats();
     setSdot('ok');
   }catch(e){setSdot('');console.error(e);}
@@ -3230,7 +3240,7 @@ async function dbAdd(w){
       next_review:new Date().toISOString()
     }).select().single();
     if(error)throw error;
-    if(data)w.id=data.id;
+    if(data){w.id=data.id;saveCache();}/* persist the assigned id immediately */
   }catch(e){console.error(e);}
 }
 
