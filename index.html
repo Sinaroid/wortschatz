@@ -4421,8 +4421,10 @@ async function searchPhrase(q){
 
   const exists=words.some(function(w){return w.de===curPhrase.original;});
   const btn=Q('#ph-add');
-  btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن کل اصطلاح';
-  btn.disabled=exists;btn.className='ph-add'+(exists?' done':'');
+  if(btn){
+    btn.innerHTML=exists?'<span>✓</span> قبلاً اضافه شده':'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن کل اصطلاح';
+    btn.disabled=exists;btn.className='ph-add'+(exists?' done':'');
+  }
   Q('#ph-res').style.display='block';
   setTimeout(function(){Q('#ph-res').scrollIntoView({behavior:'smooth',block:'nearest'});},50);
   /* Save to history + pulse add button (skip if already exists) */
@@ -4446,7 +4448,7 @@ async function addPhrase(){
   const w={de,fa:curPhrase.meaning_fa,ex:curPhrase.example_de&&curPhrase.example_de!=='null'?curPhrase.example_de:'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString(),created_at:new Date().toISOString()};
   if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
-  const btn=Q('#ph-add');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='ph-add done';
+  const btn=Q('#ph-add');if(btn){btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='ph-add done';}
   if(navigator.onLine)dbAdd(w).catch(()=>{});
   if(typeof incrementDaily==='function')incrementDaily();
   /* Mark history as saved */
