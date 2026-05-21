@@ -2808,14 +2808,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       </div>
     </div>
 
-    <div id="src-banner" style="display:none">
-      <span class="src-banner-icon" id="src-banner-icon">📕</span>
-      <div class="src-banner-text">
-        <span id="src-banner-name">—</span>
-        <span class="stats" id="src-banner-stats"></span>
-      </div>
-      <button class="src-banner-act" onclick="changeSource()" aria-label="تغییر منبع">تغییر ↻</button>
-    </div>
     <div id="free-banner" style="display:none"></div>
     <div class="s-wrap">
       <input class="s-field" id="s-inp"
@@ -2874,7 +2866,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="res-add-wrap">
         <button class="add-btn" id="add-btn" onclick="addWord()">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن به فلش‌کارت‌ها
+          افزودن به لیست
         </button>
       </div>
     </div>
@@ -2904,68 +2896,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="ph-body">
         <button class="ph-add" id="ph-add" onclick="addPhrase()">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن کل اصطلاح به فلش‌کارت‌ها
+          افزودن کل اصطلاح به لیست
         </button>
       </div>
     </div>
 
-    <!-- Hidden legacy elements (kept for JS refs) -->
-    <div class="reminder" id="reminder" style="display:none">
-      <div class="rem-head">
-        <div><div class="rem-title" id="rem-title">وقت مرور! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
-        <button class="rem-x" onclick="remDismiss()">✕</button>
-      </div>
-      <div class="rem-chips" id="rem-chips"></div>
-      <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
-    </div>
-    <div class="sum-card" id="sum-card" style="display:none">
-      <span class="sum-streak-badge">🔥 <span id="sn-streak">0</span> <span style="opacity:.7;font-weight:500">روز</span></span>
-      <div class="sum-top">
-        <div class="sum-top-body">
-          <div class="sum-chips">
-            <span class="sum-today-chip">امروز</span>
-            <span class="sum-weekday" id="sum-weekday">—</span>
-          </div>
-          <div class="sum-today-row">
-            <span class="sum-today-n" id="sn-due">0</span>
-            <span class="sum-today-lbl">کارت برای مرور</span>
-          </div>
-          <div class="sum-today-sub" id="sum-time-est">—</div>
-          <div class="dg-ring" style="display:none"><svg width="36" height="36" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct" style="font-size:9px">0%</div></div>
-          <div class="sum-subgoal" id="dg-title" style="display:none">هدف: <b>0</b>/<b>5</b></div>
-        </div>
-        <button class="sum-review" onclick="sesOpenSmart()" aria-label="شروع جلسه مرور">
-          <span id="review-lbl">شروع مرور</span>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M10 3l-4 4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-      <div class="sum-nums">
-        <div class="sum-nb">
-          <div class="sum-n" id="sn-total">0</div>
-          <div class="sum-l">کل واژگان</div>
-          <div id="sn-lang-split" style="display:none"></div>
-        </div>
-        <div class="sum-nb ok">
-          <div class="sum-n" id="sn-learned">0</div>
-          <div class="sum-l">یاد گرفتم</div>
-        </div>
-        <div class="sum-nb warn" id="sn-due-wrap">
-          <div class="sum-n" id="sn-due-stat">0</div>
-          <div class="sum-l">در حال یادگیری</div>
-        </div>
-      </div>
-    </div>
-    <div id="unsaved-panel" style="display:none">
-      <div class="uns-head">
-        <div class="uns-title">
-          <span>🔔 سرچ‌های ذخیره‌نشده</span>
-          <span class="uns-count" id="uns-count">0</span>
-        </div>
-        <button class="uns-clear" onclick="histClearUnsaved()">پاک همه</button>
-      </div>
-      <div class="uns-list" id="uns-list"></div>
-      <button onclick="histShowAll()" style="margin-top:8px;width:100%;padding:7px;background:transparent;border:1px dashed var(--bg3);border-radius:8px;color:var(--ink3);font-size:11px;font-family:var(--sans);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--bg3)';this.style.color='var(--ink3)'">📜 کل تاریخچه سرچ</button>
-    </div>
 
 <!-- Home empty state -->
     <div id="home-empty">
@@ -2985,7 +2920,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
   <div class="pane" id="pane-list">
     <div class="list-topbar">
       <div class="list-title">لیست لغات</div>
-      <span class="list-count" id="list-count"></span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="list-count" id="list-count"></span>
+        <button class="btn-ic" onclick="exportAnki()" title="خروجی Anki" style="width:auto;padding:0 10px;font-size:11px;font-weight:600;height:28px;border-radius:8px">Anki ↓</button>
+      </div>
     </div>
     <!-- Unified filter row: status chips + source chips, horizontally scrollable -->
     <div class="filt-row" id="filt-status">
@@ -2994,6 +2932,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <button class="filt-chip"    data-status="new"       onclick="setStatusFilter('new')">جدید <b id="ct-new">0</b></button>
       <button class="filt-chip"    data-status="learning"  onclick="setStatusFilter('learning')">در حال <b id="ct-learning">0</b></button>
       <button class="filt-chip"    data-status="mastered"  onclick="setStatusFilter('mastered')">✓ مسلط <b id="ct-mastered">0</b></button>
+      <button class="filt-chip"    data-status="today"     onclick="setStatusFilter('today')">📅 امروز <b id="ct-today">0</b></button>
       <span class="filt-divider"></span>
       <span id="src-chips-inline"></span>
       <button class="filt-chip sm" id="more-filt-btn" onclick="toggleMoreFilters()" title="فیلترهای بیشتر">⚙</button>
@@ -4052,7 +3991,7 @@ function updateStats(){
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
   const learned=fw.filter(w=>w.seen>0&&w.interval>3);
-  Q('#sn-total').textContent=fw.length;
+  const snTotal=Q('#sn-total');if(snTotal)snTotal.textContent=fw.length;
   // Lang split
   const splitEl=Q('#sn-lang-split');
   if(splitEl && words.length > 0){
@@ -4065,7 +4004,7 @@ function updateStats(){
       splitEl.style.display='none';
     }
   }
-  Q('#sn-learned').textContent=learned.length;
+  const snLearned=Q('#sn-learned');if(snLearned)snLearned.textContent=learned.length;
   // due count (big number on top)
   const dueEl=Q('#sn-due');
   const dueWrap=Q('#sn-due-wrap');
@@ -4250,8 +4189,8 @@ async function searchWord(q){
 
   const isDE = targetLang === 'de';
   const schema = isDE
-    ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","reflexive":"akkusativ/dativ/null — فقط برای Verb: اگه sich + Akk → akkusativ، اگه sich + Dat → dativ، وگرنه null","separable":"true/false/null — فقط برای Verb: trennbar یا untrennbar",  "register":"formal/informal/umgangssprache/null — ثبت زبانی",  "frequency":"common/medium/rare — روزمرگی","komposita":"اگه کلمه مرکبه اجزاش با + مثل Arbeits+platz، وگرنه null","usage_pattern":"الگوی استفاده مثل sich engagieren für+Akk یا null","preposition":"حرف اضافه با Kasus مثل auf+Akk یا null","synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ خط نکات: declension/pattern/common mistake — با ▪ جدا کن","priority":{"score":3,"reason":"چرا مهمه"}}'
-    : '{"word":"word without article","corrected_from":"null or original word","article":"null","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs: past tense and past participle","reflexive":"null (rare in English)","separable":"null","register":"formal/informal/slang/null","frequency":"common/medium/rare","komposita":"null","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ lines of grammar notes with ▪","priority":{"score":3,"reason":"why important"}}';
+    ? '{"word":"لغت بدون حرف تعریف","corrected_from":"null یا لغت اصلی","article":"der/die/das یا null","plural":"جمع یا null","type":"Nomen/Verb/Adjektiv/Adverb/Redewendung","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"فقط برای Verb: شکل Präteritum و Perfekt مثل engagierte sich – hat sich engagiert","reflexive":"akkusativ/dativ/null — فقط برای Verb: اگه sich + Akk → akkusativ، اگه sich + Dat → dativ، وگرنه null","separable":"true/false/null — فقط برای Verb: trennbar یا untrennbar","register":"formal/informal/umgangssprache/null — ثبت زبانی","frequency":"common/medium/rare — روزمرگی","komposita":"اگه کلمه مرکبه اجزاش با + مثل Arbeits+platz، وگرنه null","usage_pattern":"الگوی استفاده مثل sich engagieren für+Akk یا null","preposition":"حرف اضافه با Kasus مثل auf+Akk یا null","rektion":"الگوی Rektion مثل: +Akk / +Dat / +Gen یا null","collocations":["عبارت مهم مثل großen Wert auf etwas legen"],"patterns":["الگوی مهم مثل gelten als یا sich interessieren für + Akk"],"synonyms":[{"de":"مترادف","fa":"معنی فارسی مترادف"}],"antonyms":["متضاد"],"examples":[{"de":"یه جمله کاربردی","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ خط نکات: declension/pattern/common mistake — با ▪ جدا کن","priority":{"score":3,"reason":"چرا مهمه"}}'
+    : '{"word":"word without article","corrected_from":"null or original word","article":"null","plural":"plural form or null","type":"Noun/Verb/Adjective/Adverb/Phrase","level":"A1/A2/B1/B2/C1/C2","meaning_fa":"معنی فارسی — اگر چند معنی با / جدا کن","principal_parts":"for irregular Verbs: past tense and past participle","reflexive":"null (rare in English)","separable":"null","register":"formal/informal/slang/null","frequency":"common/medium/rare","komposita":"null","usage_pattern":"usage pattern e.g. depend on or null","preposition":"preposition e.g. on/in/at or null","rektion":null,"collocations":[],"patterns":[],"synonyms":[{"de":"synonym","fa":"معنی فارسی مترادف"}],"antonyms":["antonym"],"examples":[{"de":"a natural example sentence","fa":"ترجمه فارسی"}],"grammar_tip":"۲-۳ lines of grammar notes with ▪","priority":{"score":3,"reason":"why important"}}';
 
   const langLabel = isDE ? 'آلمانی' : 'انگلیسی';
   const p = 'ورودی: "'+q+'"\n'
@@ -4260,21 +4199,9 @@ async function searchWord(q){
    +'فارسی: معادل '+langLabel+' پیدا کن\n\n'
    +'JSON خالص:\n'+schema+'\n\n'
    +'قوانین:\n'
-   +(isDE ? '- principal_parts: فقط برای Verb، ۲ شکل Präteritum و Perfekt\n- reflexive: فقط برای افعال بازتابی، case دقیق (akkusativ/dativ)\n- separable: true فقط اگه trennbar (مثل aufstehen, mitkommen)\n- komposita: فقط اگه اسم مرکبه، اجزا با +\n' : '- principal_parts: only for irregular verbs, 3 forms\n')
+   +(isDE ? '- سطح هدف: B2-C1 — دقیق و سیستماتیک باش\n- principal_parts: فقط برای Verb، ۲ شکل Präteritum و Perfekt\n- reflexive: فقط برای افعال بازتابی، case دقیق (akkusativ/dativ)\n- separable: true فقط اگه trennbar (مثل aufstehen, mitkommen)\n- komposita: فقط اگه اسم مرکبه، اجزا با +\n- rektion: برای Verb و Adjektiv همیشه Rektion بنویس (مثل +Akk یا auf+Akk یا +Dat) — برای Nomen معمولاً null\n- collocations: ۳-۵ عبارت مهم که این لغت در آن‌ها به کار میره (آرایه رشته)\n- patterns: الگوهای مهم جمله مثل "gelten als", "sich interessieren für + Akk" (آرایه رشته)\n' : '- principal_parts: only for irregular verbs, 3 forms\n- rektion: null for English\n- collocations: 3-5 important collocations (array of strings)\n- patterns: important usage patterns (array of strings)\n')
    +'- synonyms: حداکثر ۲ تا\n'
    +'- examples: دقیقاً ۱ جمله طبیعی\n'
-   +'- فرمت خروجی UI باید دقیقا این قالب را پوشش بدهد:\n'
-   +'  1) برای فعل: Verb – Präteritum – Perfekt\n'
-   +'  2) خط بعد: معنی فارسی\n'
-   +'  3) خط بعد: Synonym: Verb (معنی فارسی)\n'
-   +'  4) خط بعد: + Struktur\n'
-   +'  5) خط بعد: Satz\n'
-   +'  و اگر Phrase بود:\n'
-   +'  1) Phrase\n'
-   +'  2) معنی فارسی\n'
-   +'  3) Synonym: Phrase (معنی)\n'
-   +'  4) + Struktur\n'
-   +'  5) Satz\n'
    +'- grammar_tip: ۲-۳ نکته دقیق با ▪ جداکننده: declension/pattern + اشتباه رایج + مشابه\n'
    +'- priority.score: 5=روزمره، 4=خیلی مهم، 3=مهم، 2=متوسط، 1=نادر\n'
    +'فقط JSON. هیچ توضیح اضافه‌ای نده.';
@@ -4378,6 +4305,27 @@ function renderWord(d){
   if(komp&&komp.includes('+')){kompEl.innerHTML='🧩 '+komp.split('+').map(p=>'<span style="color:var(--accent)">'+p.trim()+'</span>').join(' <span style="opacity:.4">+</span> ');kompEl.style.display='block';}
   else kompEl.style.display='none';
 
+  /* ─ Rektion + Patterns + Collocations ─ */
+  let rpcEl=Q('#res-rektion-block');
+  if(!rpcEl){
+    rpcEl=document.createElement('div');
+    rpcEl.id='res-rektion-block';
+    rpcEl.style.cssText='margin-top:10px;display:none';
+    const exEl2=Q('#res-example');
+    if(exEl2&&exEl2.parentElement)exEl2.parentElement.insertBefore(rpcEl,exEl2);
+  }
+  const rektStr=nul(d.rektion)?'':d.rektion.trim();
+  const patternsArr=Array.isArray(d.patterns)&&d.patterns.length?d.patterns:[];
+  const colloArr=Array.isArray(d.collocations)&&d.collocations.length?d.collocations:[];
+  if(rektStr||patternsArr.length||colloArr.length){
+    let html2='';
+    if(rektStr)html2+='<div style="font-size:12px;font-family:var(--mono,monospace);color:var(--accent);direction:ltr;text-align:left;margin-bottom:4px">'+rektStr+'</div>';
+    if(patternsArr.length)html2+=patternsArr.map(p=>'<div style="font-size:12px;font-family:var(--mono,monospace);color:var(--ink2);direction:ltr;text-align:left;padding:2px 0">+ '+p+'</div>').join('');
+    if(colloArr.length)html2+='<div style="margin-top:4px">'+colloArr.map(c=>'<div style="font-size:11px;color:var(--ink3);direction:ltr;text-align:left;padding:1px 0">▸ '+c+'</div>').join('')+'</div>';
+    rpcEl.innerHTML=html2;
+    rpcEl.style.display='block';
+  }else rpcEl.style.display='none';
+
   /* ─ First example sentence ─ */
   const exEl = Q('#res-example');
   const exs = d.examples||[];
@@ -4426,7 +4374,7 @@ function renderWord(d){
   const btn=Q('#add-btn');
   btn.innerHTML=exists
     ?'<span>✓</span> قبلاً اضافه شده'
-    :'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به فلش‌کارت‌ها';
+    :'<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> افزودن به لیست';
   btn.disabled=exists; btn.className='add-btn'+(exists?' done':'');
 
   Q('#res').style.display='block';
@@ -4439,7 +4387,7 @@ async function addWord(){
   if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
-  const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString(),created_at:new Date().toISOString()};
+  const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString(),created_at:new Date().toISOString(),rektion:curWord.rektion||null,collocations:curWord.collocations||[],patterns:curWord.patterns||[]};
   /* Auto-tag with active source */
   if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
@@ -4691,12 +4639,12 @@ function checkReminder(){
     {title:`💪 ${due.length} لغت آماده مروره`,sub:`streak رو حفظ کن!`},
   ];
   const msg=msgs[Math.floor(Math.random()*msgs.length)];
-  Q('#rem-title').textContent=msg.title;
-  Q('#rem-sub').textContent=msg.sub;
-  Q('#rem-chips').innerHTML=due.slice(0,5).map(w=>`<span class="rem-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`).join('');
-  Q('#reminder').classList.add('show');
+  const remTitle=Q('#rem-title');if(remTitle)remTitle.textContent=msg.title;
+  const remSub=Q('#rem-sub');if(remSub)remSub.textContent=msg.sub;
+  const remChips=Q('#rem-chips');if(remChips)remChips.innerHTML=due.slice(0,5).map(w=>`<span class="rem-chip" onclick="qs('${esc(w.de)}')">${w.de}</span>`).join('');
+  const remEl=Q('#reminder');if(remEl)remEl.classList.add('show');
 }
-function remDismiss(){localStorage.setItem('ws_rem_d',new Date().toISOString());Q('#reminder').classList.remove('show');}
+function remDismiss(){localStorage.setItem('ws_rem_d',new Date().toISOString());const remEl=Q('#reminder');if(remEl)remEl.classList.remove('show');}
 function remStart(){remDismiss();sesOpenDue();}
 setInterval(checkReminder,60000);
 
@@ -5422,6 +5370,27 @@ function renderSrcFilterHead(){
   head.classList.add('show');
 }
 
+function exportAnki(){
+  const ws=words.filter(w=>w.de&&w.fa);
+  if(!ws.length){showToast('لغتی برای export نیست');return;}
+  const lines=ws.map(w=>{
+    const front=w.de;
+    let back=w.fa;
+    if(w.rektion)back+='\n'+w.rektion;
+    if(w.patterns&&w.patterns.length)back+='\n'+(Array.isArray(w.patterns)?w.patterns:w.patterns.split(',')).map(p=>'+ '+p.trim()).join('\n');
+    if(w.collocations&&w.collocations.length)back+='\n'+(Array.isArray(w.collocations)?w.collocations:w.collocations.split(',')).map(c=>c.trim()).join('\n');
+    if(w.ex)back+='\n---\n'+w.ex;
+    return front+'\t'+back.replace(/\t/g,' ');
+  });
+  const content='#separator:tab\n#html:false\n#notetype:Basic\n'+lines.join('\n');
+  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='wortschatz_anki.txt';
+  a.click();URL.revokeObjectURL(url);
+  showToast('✓ فایل Anki دانلود شد — '+ws.length+' لغت',2800);
+}
+
 function renderList(){
   const el=Q('#wlist');
   const fw=filteredWords();
@@ -5464,9 +5433,14 @@ function renderList(){
   renderSrcChips();
 
   /* ─ Update status filter counts (on ALL fw, before any filter) ─ */
-  const counts={all:fw.length,new:0,due:0,learning:0,mastered:0};
-  fw.forEach(w=>{const s=_wordStatus(w);if(counts[s]!==undefined)counts[s]++;});
-  ['all','new','due','learning','mastered'].forEach(k=>{
+  const _td=_today();
+  const counts={all:fw.length,new:0,due:0,learning:0,mastered:0,today:0};
+  fw.forEach(w=>{
+    const s=_wordStatus(w);
+    if(counts[s]!==undefined)counts[s]++;
+    if((w.created_at||'').startsWith(_td))counts.today++;
+  });
+  ['all','new','due','learning','mastered','today'].forEach(k=>{
     const el=document.getElementById('ct-'+k);if(el)el.textContent=counts[k];
     const chip=document.querySelector('#filt-status .filt-chip[data-status="'+k+'"]');
     if(chip)chip.classList.toggle('zero',counts[k]===0 && k!=='all');
@@ -5483,7 +5457,8 @@ function renderList(){
   if(listSrcFilter==='__none__')sorted=sorted.filter(w=>!w.source_id);
   else if(listSrcFilter)sorted=sorted.filter(w=>w.source_id===listSrcFilter);
   /* Apply status filter */
-  if(listStatusFilter!=='all')sorted=sorted.filter(w=>_wordStatus(w)===listStatusFilter);
+  if(listStatusFilter==='today')sorted=sorted.filter(w=>(w.created_at||'').startsWith(_td));
+  else if(listStatusFilter!=='all')sorted=sorted.filter(w=>_wordStatus(w)===listStatusFilter);
   /* Apply type filter */
   if(listTypeFilter!=='all')sorted=sorted.filter(w=>_wordType(w)===listTypeFilter);
   /* Sort */
@@ -5508,7 +5483,7 @@ function renderList(){
   const summary=document.getElementById('filt-summary');
   const summaryTxt=document.getElementById('filt-summary-txt');
   const activeParts=[];
-  if(listStatusFilter!=='all'){const lbl={new:'جدید',due:'دیر شده',learning:'در حال',mastered:'مسلط'}[listStatusFilter]||listStatusFilter;activeParts.push(lbl);}
+  if(listStatusFilter!=='all'){const lbl={new:'جدید',due:'دیر شده',learning:'در حال',mastered:'مسلط',today:'امروز'}[listStatusFilter]||listStatusFilter;activeParts.push(lbl);}
   if(listTypeFilter!=='all')activeParts.push(listTypeFilter==='word'?'لغت':'اصطلاح');
   if(listSrcFilter==='__none__')activeParts.push('بدون منبع');
   else if(listSrcFilter){const s=sources.find(x=>x.id===listSrcFilter);if(s)activeParts.push(s.name);}
