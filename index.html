@@ -638,41 +638,48 @@ body.fsrs-mode .swipe-row{display:none}
 .search-tip.show{display:block}
 
 /* ═══════════════════════════════════
-   WORD RESULT CARD — clean
+   WORD RESULT CARD — sectioned
 ═══════════════════════════════════ */
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .res{
   background:var(--card);border:1px solid var(--bg3);border-radius:var(--r3);
-  display:none;box-shadow:var(--sh1);
+  display:none;box-shadow:var(--sh1);overflow:hidden;
   margin-top:var(--s4);margin-bottom:var(--s4);
   animation:slideUp .28s var(--ease);
-  padding:var(--s5);
 }
+/* correction notice */
 .res-fix{
   display:none;font-size:11px;color:var(--ink3);
-  margin-bottom:var(--s3);padding:5px 10px;
-  background:var(--bg2);border-radius:var(--r1);direction:rtl;
+  background:var(--bg2);border-bottom:1px solid var(--bg3);
+  padding:6px 18px;direction:rtl;
 }
 .res-fix.show{display:block}
-.res-head-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s3)}
+
+/* — Section 1: Title — */
+.res-head-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid var(--bg3);
+}
 .res-title{
-  font-family:var(--serif);font-size:clamp(22px,5.5vw,30px);font-weight:600;
-  color:var(--ink);line-height:1.15;letter-spacing:-.5px;direction:ltr;text-align:left;flex:1;
+  font-family:var(--serif);font-size:clamp(20px,5vw,26px);font-weight:600;
+  color:var(--ink);line-height:1.2;letter-spacing:-.5px;
+  direction:ltr;text-align:left;flex:1;
 }
 .res-speak{
-  width:34px;height:34px;border-radius:10px;border:1px solid var(--bg3);
+  width:32px;height:32px;border-radius:8px;border:1px solid var(--bg3);
   background:var(--bg2);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:16px;flex-shrink:0;transition:all .15s;margin-right:8px;
+  cursor:pointer;font-size:14px;flex-shrink:0;transition:all .15s;
 }
 .res-speak:hover{border-color:var(--accent);background:var(--abl)}
+
+/* — Section 2: Meaning + Synonym — */
+.res-meaning-section{padding:14px 18px;border-bottom:1px solid var(--bg3)}
 .res-meaning{
-  font-size:18px;font-weight:600;color:var(--ink);
-  line-height:1.35;margin-bottom:var(--s2);
-  direction:rtl;text-align:right;
+  font-size:17px;font-weight:600;color:var(--ink);
+  line-height:1.35;margin-bottom:5px;direction:rtl;text-align:right;
 }
 .res-synonym{
-  font-size:13px;color:var(--ink3);
-  margin-bottom:var(--s4);line-height:1.5;
+  font-size:12px;color:var(--ink3);line-height:1.5;
   direction:ltr;text-align:left;
 }
 .res-synonym .syn-word{
@@ -680,25 +687,47 @@ body.fsrs-mode .swipe-row{display:none}
   cursor:pointer;border-bottom:1px dashed var(--bg4);transition:border-color .15s;
 }
 .res-synonym .syn-word:hover{border-color:var(--accent);color:var(--accent)}
-.res-synonym .syn-fa{color:var(--ink3);font-size:12px}
+.res-synonym .syn-fa{color:var(--ink3);font-size:11px}
 
-/* ─ collocations block ─ */
-.res-collos{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--bg2);padding-top:var(--s3);margin-top:var(--s1)}
-.coll-item{padding:var(--s2) 0;border-bottom:1px solid var(--bg2)}
+/* — Section 3: Collocations — */
+.res-collos{display:flex;flex-direction:column}
+.coll-item{
+  padding:10px 18px;
+  border-bottom:1px solid var(--bg2);
+}
 .coll-item:last-child{border-bottom:none}
 .coll-phrase{
-  font-family:var(--serif);font-size:14px;color:var(--ink2);
-  direction:ltr;text-align:left;line-height:1.4;font-weight:500;
+  font-family:var(--serif);font-size:13.5px;font-weight:500;
+  color:var(--ink2);direction:ltr;text-align:left;line-height:1.45;
 }
 .coll-example{
-  font-family:var(--serif);font-style:italic;font-size:12px;
+  font-family:var(--serif);font-style:italic;font-size:11.5px;
   color:var(--ink3);direction:ltr;text-align:left;
   line-height:1.6;margin-top:2px;
 }
 
-/* ─ auto-added toast ─ */
-.res-added-note{font-size:11px;color:var(--ok);margin-top:var(--s3);text-align:center;display:none}
+/* auto-added note */
+.res-added-note{
+  font-size:11px;color:var(--ok);padding:8px 18px;
+  text-align:center;background:var(--okbg);display:none;
+}
 .res-added-note.show{display:block}
+
+/* Anki picker */
+.anki-picker-wrap{position:relative}
+#anki-picker{
+  position:absolute;top:calc(100% + 6px);left:0;
+  background:var(--card);border:1px solid var(--bg3);border-radius:var(--r2);
+  box-shadow:var(--sh3);padding:4px;z-index:200;min-width:190px;
+  animation:popIn .15s var(--spring);
+}
+.anki-opt{
+  width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;
+  border:none;border-radius:8px;background:transparent;cursor:pointer;
+  font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink);
+  text-align:right;transition:background .12s;
+}
+.anki-opt:hover{background:var(--bg2)}
 
 
 /* ═══════════════════════════════════
@@ -2748,18 +2777,23 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="s-msg" id="s-msg"></div>
     </div>
 
-    <!-- Word result — clean format -->
+    <!-- Word result — sectioned card -->
     <div class="res" id="res">
       <div class="res-fix" id="res-fix"></div>
+      <!-- Section 1: word title + speak -->
       <div class="res-head-row">
         <div class="res-title" id="res-title"></div>
         <button class="res-speak" id="res-speak" title="تلفظ">🔊</button>
       </div>
-      <div class="res-meaning" id="res-meaning"></div>
-      <div class="res-synonym" id="res-synonym"></div>
+      <!-- Section 2: meaning + synonym -->
+      <div class="res-meaning-section">
+        <div class="res-meaning" id="res-meaning"></div>
+        <div class="res-synonym" id="res-synonym"></div>
+      </div>
+      <!-- Section 3: collocations + examples -->
       <div class="res-collos" id="res-collos"></div>
+      <!-- Auto-add notice -->
       <div class="res-added-note" id="res-added-note">✓ به لیست اضافه شد</div>
-      <!-- hidden IDs kept for JS compatibility -->
       <div id="res-conj" style="display:none"><div class="conj-wrap" id="conj-wrap"></div></div>
     </div>
 
@@ -2808,7 +2842,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="list-title">لیست لغات</div>
       <div style="display:flex;align-items:center;gap:6px">
         <span class="list-count" id="list-count"></span>
-        <button class="btn-ic" onclick="exportAnki()" title="خروجی Anki" style="width:auto;padding:0 10px;font-size:11px;font-weight:600;height:28px;border-radius:8px">Anki ↓</button>
+        <div class="anki-picker-wrap">
+          <button class="btn-ic" onclick="ankiPickerToggle(event)" title="خروجی Anki" style="width:auto;padding:0 10px;font-size:11px;font-weight:600;height:28px;border-radius:8px">Anki ↓</button>
+          <div id="anki-picker" style="display:none">
+            <div style="font-size:10px;color:var(--ink3);padding:4px 10px 2px;font-weight:700;letter-spacing:.5px">بازه export:</div>
+            <button class="anki-opt" onclick="exportAnki('new')"><span>✨</span> جدید <span style="font-size:10px;color:var(--ink3)">(export نشده)</span></button>
+            <button class="anki-opt" onclick="exportAnki('today')"><span>📅</span> امروز</button>
+            <button class="anki-opt" onclick="exportAnki('week')"><span>📆</span> این هفته</button>
+            <button class="anki-opt" onclick="exportAnki('all')"><span>📦</span> همه</button>
+            <div style="border-top:1px solid var(--bg2);margin:4px 0"></div>
+            <button class="anki-opt" onclick="resetAnkiExported()" style="color:var(--ink3);font-size:11px"><span>↺</span> پاک کردن حافظه</button>
+          </div>
+        </div>
       </div>
     </div>
     <!-- Simple filter row -->
@@ -5187,15 +5232,57 @@ function renderSrcFilterHead(){
   head.classList.add('show');
 }
 
-function exportAnki(){
-  const ws=words.filter(w=>w.de&&w.fa);
+/* ── Anki export helpers ── */
+function ankiPickerToggle(e){
+  e.stopPropagation();
+  const p=Q('#anki-picker');
+  const isOpen=p.style.display!=='none';
+  p.style.display=isOpen?'none':'block';
+  if(!isOpen) setTimeout(()=>document.addEventListener('click',()=>{p.style.display='none';},{once:true}),0);
+}
+function _getAnkiExported(){try{return new Set(JSON.parse(localStorage.getItem('ws_anki_exp')||'[]'));}catch(e){return new Set();}}
+function _saveAnkiExported(s){try{localStorage.setItem('ws_anki_exp',JSON.stringify([...s]));}catch(e){}}
+function resetAnkiExported(){
+  localStorage.removeItem('ws_anki_exp');
+  Q('#anki-picker').style.display='none';
+  showToast('↺ حافظه export پاک شد',2200);
+}
+
+function exportAnki(filter){
+  Q('#anki-picker').style.display='none';
+  const exported=_getAnkiExported();
+  const today=_today();
+  const weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
+
+  let ws=words.filter(w=>w.de&&w.fa);
+  const filterLabel={new:'جدید (export نشده)',today:'امروز',week:'این هفته',all:'همه'}[filter]||'';
+
+  if(filter==='new'){
+    ws=ws.filter(w=>!exported.has(w.de));
+    if(!ws.length){showToast('✓ همه لغات قبلاً export شدن',2500);return;}
+  }else if(filter==='today'){
+    ws=ws.filter(w=>(w.created_at||'').startsWith(today));
+    if(!ws.length){showToast('امروز لغتی اضافه نشده',2200);return;}
+  }else if(filter==='week'){
+    ws=ws.filter(w=>w.created_at&&new Date(w.created_at)>=weekAgo);
+    if(!ws.length){showToast('این هفته لغتی اضافه نشده',2200);return;}
+  }
+
   if(!ws.length){showToast('لغتی برای export نیست');return;}
+
   const lines=ws.map(w=>{
     const front=w.de;
     let back=w.fa;
-    if(w.rektion)back+='\n'+w.rektion;
-    if(w.patterns&&w.patterns.length)back+='\n'+(Array.isArray(w.patterns)?w.patterns:w.patterns.split(',')).map(p=>'+ '+p.trim()).join('\n');
-    if(w.collocations&&w.collocations.length)back+='\n'+(Array.isArray(w.collocations)?w.collocations:w.collocations.split(',')).map(c=>c.trim()).join('\n');
+    const pats=Array.isArray(w.patterns)?w.patterns:[];
+    const collos=Array.isArray(w.collocations)?w.collocations:[];
+    const allItems=[...pats,...collos];
+    if(allItems.length){
+      back+='\n'+allItems.map(c=>{
+        const ph=typeof c==='object'?c.phrase:c;
+        const ex=typeof c==='object'?c.example:'';
+        return ph+(ex?'\n'+ex:'');
+      }).join('\n');
+    }
     if(w.ex)back+='\n---\n'+w.ex;
     return front+'\t'+back.replace(/\t/g,' ');
   });
@@ -5203,9 +5290,13 @@ function exportAnki(){
   const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download='wortschatz_anki.txt';
+  a.href=url;a.download='wortschatz_anki_'+filter+'.txt';
   a.click();URL.revokeObjectURL(url);
-  showToast('✓ فایل Anki دانلود شد — '+ws.length+' لغت',2800);
+
+  /* Mark as exported */
+  ws.forEach(w=>exported.add(w.de));
+  _saveAnkiExported(exported);
+  showToast('✓ '+ws.length+' لغت '+filterLabel+' export شد',2800);
 }
 
 function renderList(){
