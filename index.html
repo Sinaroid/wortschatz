@@ -2931,27 +2931,56 @@ function wordDetail(idx){
   const diff = Math.round((nr-now)/(1000*60*60*24));
   const nextStr = !w.seen?'هنوز مرور نشده':diff<=0?'دیر شده':diff===1?'فردا':diff+' روز دیگه';
   const level = Math.min(5,Math.max(0,w.seen||0));
-  const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
+  const dots = Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${i<level?'var(--accent)':'var(--bg3)'};margin:0 2px"></span>`).join('');
+  const nul = v=>!v||v==='null'||v==='—';
 
-  const html = `<div style="text-align:right">
-    <div style="font-family:var(--serif);font-size:28px;font-weight:700;color:var(--ink);direction:ltr;text-align:left;margin-bottom:4px">${w.de}</div>
-    <div style="font-size:16px;color:var(--ink2);margin-bottom:var(--s4)">${w.fa}</div>
-    ${w.ex?`<div style="background:var(--bg2);border-radius:var(--r2);padding:var(--s3) var(--s4);margin-bottom:var(--s4)">
-      <div style="font-size:13px;font-style:italic;color:var(--ink2);direction:ltr;text-align:left">${w.ex}</div>
-    </div>`:''}
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">پیشرفت</span>
-      <div>${dots}</div>
+  /* Synonyms */
+  const syns=(w.synonyms||[]).filter(s=>{const d=typeof s==='object'?s.de:s;return d&&d!=='null';});
+  const synHtml=syns.length?`<div style="font-size:12.5px;color:var(--ink3);direction:ltr;text-align:left;margin-top:4px">Synonym: `+syns.map(s=>{
+    const de=typeof s==='object'?s.de:s;const fa=typeof s==='object'?s.fa:'';
+    return `<span style="font-family:var(--serif);font-style:italic;color:var(--ink2);cursor:pointer" onclick="qs('${de.replace(/'/g,"\\'")}');Q('#word-detail-modal').classList.remove('open')">${de}</span>`+(fa?` <span style="color:var(--ink3)">(${fa})</span>`:'');
+  }).join(' · ')+'</div>':'';
+
+  /* Rektion */
+  const rekHtml=!nul(w.rektion)?`<div style="font-size:12px;color:var(--accent);font-weight:600;margin-top:4px;direction:ltr;text-align:left">⊕ ${w.rektion}</div>`:'';
+
+  /* Collocations + patterns */
+  const colloArr=Array.isArray(w.collocations)?w.collocations:[];
+  const patArr=Array.isArray(w.patterns)?w.patterns:[];
+  const allItems=[...patArr,...colloArr].filter(c=>{const p=typeof c==='object'?c.phrase:c;return p&&p!=='null';});
+  const colloHtml=allItems.length?`<div style="height:1px;background:var(--bg3);margin:12px 0"></div>`+allItems.map(c=>{
+    const phrase=typeof c==='object'?c.phrase:c;
+    const ex=typeof c==='object'?c.example:'';
+    return `<div style="position:relative;padding-left:13px;margin-bottom:9px">
+      <span style="position:absolute;left:0;top:0;color:var(--ink3);font-size:14px;line-height:1.35">•</span>
+      <div style="font-family:var(--serif);font-size:13px;font-weight:600;color:var(--ink);direction:ltr;text-align:left;line-height:1.4">${phrase}</div>
+      ${ex?`<div style="font-family:var(--serif);font-style:italic;font-size:11.5px;color:var(--ink3);direction:ltr;text-align:left;line-height:1.5;margin-top:1px">${ex}</div>`:''}
+    </div>`;
+  }).join(''):'';
+
+  /* Example (if no collocations) */
+  const exHtml=(!allItems.length&&w.ex)?`<div style="background:var(--bg2);border-radius:var(--r2);padding:10px 12px;margin-top:10px"><div style="font-size:12.5px;font-style:italic;color:var(--ink2);direction:ltr;text-align:left">${w.ex}</div></div>`:'';
+
+  const html=`<div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+      <div style="font-family:var(--serif);font-size:24px;font-weight:700;color:var(--ink);direction:ltr;text-align:left;line-height:1.2;flex:1">${w.de}</div>
+      <button style="background:none;border:none;font-size:18px;cursor:pointer;padding:0;margin-top:2px" onclick="speakWord('${(w.de||'').replace(/'/g,"\\'")}')">🔊</button>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">مرور بعدی</span>
-      <span style="font-size:12px;font-weight:600;color:var(--ink)">${nextStr}</span>
+    <div style="font-size:16px;font-weight:600;color:var(--ink);direction:rtl;text-align:right;margin-bottom:3px">${w.fa}</div>
+    ${rekHtml}${synHtml}${colloHtml}${exHtml}
+    <div style="height:1px;background:var(--bg3);margin:14px 0"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:11px;color:var(--ink3)">پیشرفت</span><div>${dots}</div>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--s3) 0;border-top:1px solid var(--bg3)">
-      <span style="font-size:12px;color:var(--ink3)">تعداد مرور</span>
-      <span style="font-size:12px;font-weight:600;color:var(--ink)">${w.seen||0} بار</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:11px;color:var(--ink3)">مرور بعدی</span>
+      <span style="font-size:11px;font-weight:600;color:var(--ink)">${nextStr}</span>
     </div>
-    <div style="display:flex;gap:var(--s2);margin-top:var(--s5)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <span style="font-size:11px;color:var(--ink3)">تعداد مرور</span>
+      <span style="font-size:11px;font-weight:600;color:var(--ink)">${w.seen||0} بار</span>
+    </div>
+    <div style="display:flex;gap:8px">
       <button class="btn btn-p" style="flex:1" onclick="editOpen(${idx});Q('#word-detail-modal').classList.remove('open')">ویرایش</button>
       <button class="btn" onclick="Q('#word-detail-modal').classList.remove('open')">بستن</button>
     </div>
@@ -3156,13 +3185,14 @@ function setSdot(s){const d=Q('#sync-dot');if(d)d.className='sync-dot'+(s==='ok'
 
 async function dbLoad(){
   const c=localStorage.getItem('ws_cache_'+uid());
-  if(c){try{words=JSON.parse(c);updateBadges();updateStats();}catch(e){}}
+  let localWords=[];
+  if(c){try{localWords=JSON.parse(c);words=localWords;updateBadges();updateStats();}catch(e){}}
   if(!navigator.onLine){setSdot('');return;}
   setSdot('busy');
   try{
     const{data,error}=await sb.from('words').select('*').order('created_at',{ascending:true});
     if(error)throw error;
-    words=(data||[]).map(r=>({
+    const dbWords=(data||[]).map(r=>({
       id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',
       score:r.score||0,seen:r.seen||0,
       interval:r.interval||1,easiness:r.easiness||2.5,
@@ -3172,6 +3202,21 @@ async function dbLoad(){
       lang:r.lang||'de',
       source_id:r.source_id||null
     }));
+    /* Build lookup from local cache to re-attach rich metadata */
+    const localByDe=Object.fromEntries(localWords.map(lw=>[lw.de?.toLowerCase(),lw]));
+    const dbIds=new Set(dbWords.map(w=>w.id));
+    /* Merge: DB words get rich metadata re-attached from local cache */
+    words=dbWords.map(w=>{
+      const lw=localByDe[w.de?.toLowerCase()];
+      return lw?{...w,rektion:lw.rektion||null,collocations:lw.collocations||[],patterns:lw.patterns||[],synonyms:lw.synonyms||[],article:lw.article||null,principal_parts:lw.principal_parts||null}:w;
+    });
+    /* Restore any local-only words not yet confirmed in Supabase */
+    localWords.filter(lw=>!lw.id||!dbIds.has(lw.id)).forEach(lw=>{
+      if(!words.some(w=>w.de?.toLowerCase()===lw.de?.toLowerCase())){
+        words.unshift(lw);
+        if(navigator.onLine)dbAdd(lw).catch(()=>{});
+      }
+    });
     saveCache();updateBadges();updateStats();
     setSdot('ok');
   }catch(e){setSdot('');console.error(e);}
@@ -4246,7 +4291,7 @@ async function addWord(){
   if(!canAddMore()){showToast('سقف '+FREE_LIMIT+' لغت رایگان — ارتقا به Pro');showUpgrade();return;}
   const key=(curWord.article&&curWord.article!=='null'&&curWord.article!=='—'?curWord.article+' ':'')+curWord.word;
   if(words.some(w=>w.de.toLowerCase()===key.toLowerCase()))return;
-  const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString(),created_at:new Date().toISOString(),rektion:curWord.rektion||null,collocations:curWord.collocations||[],patterns:curWord.patterns||[]};
+  const w={de:key,fa:curWord.meaning_fa,ex:curWord.examples?.[0]?.de||'',lang:targetLang,score:0,seen:0,interval:1,easiness:2.5,next_review:new Date().toISOString(),created_at:new Date().toISOString(),rektion:curWord.rektion||null,collocations:curWord.collocations||[],patterns:curWord.patterns||[],synonyms:curWord.synonyms||[],article:curWord.article||null,principal_parts:curWord.principal_parts||null};
   if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
   if(navigator.onLine)dbAdd(w).catch(()=>{});
