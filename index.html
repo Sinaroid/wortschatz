@@ -2808,8 +2808,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       </div>
     </div>
 
-    <!-- Active source banner -->
-    <div id="src-banner">
+    <div id="src-banner" style="display:none">
       <span class="src-banner-icon" id="src-banner-icon">📕</span>
       <div class="src-banner-text">
         <span id="src-banner-name">—</span>
@@ -2910,8 +2909,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       </div>
     </div>
 
-    <!-- Reminder -->
-    <div class="reminder" id="reminder">
+    <!-- Hidden legacy elements (kept for JS refs) -->
+    <div class="reminder" id="reminder" style="display:none">
       <div class="rem-head">
         <div><div class="rem-title" id="rem-title">وقت مرور! 🌙</div><div class="rem-sub" id="rem-sub"></div></div>
         <button class="rem-x" onclick="remDismiss()">✕</button>
@@ -2919,9 +2918,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <div class="rem-chips" id="rem-chips"></div>
       <button class="rem-btn" onclick="remStart()">شروع مرور ←</button>
     </div>
-
-    <!-- Today card — editorial hero -->
-    <div class="sum-card" id="sum-card">
+    <div class="sum-card" id="sum-card" style="display:none">
       <span class="sum-streak-badge">🔥 <span id="sn-streak">0</span> <span style="opacity:.7;font-weight:500">روز</span></span>
       <div class="sum-top">
         <div class="sum-top-body">
@@ -2934,7 +2931,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
             <span class="sum-today-lbl">کارت برای مرور</span>
           </div>
           <div class="sum-today-sub" id="sum-time-est">—</div>
-          <!-- Hidden legacy: keep IDs so other code still works -->
           <div class="dg-ring" style="display:none"><svg width="36" height="36" viewBox="0 0 44 44"><circle class="ring-bg2" cx="22" cy="22" r="18" stroke-dasharray="113.1"/><circle class="ring-fg" id="dg-fill" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><div class="dg-pct" id="dg-pct" style="font-size:9px">0%</div></div>
           <div class="sum-subgoal" id="dg-title" style="display:none">هدف: <b>0</b>/<b>5</b></div>
         </div>
@@ -2959,9 +2955,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         </div>
       </div>
     </div>
-
-    <!-- Unsaved searches panel (auto-shown when items exist) -->
-    <div id="unsaved-panel">
+    <div id="unsaved-panel" style="display:none">
       <div class="uns-head">
         <div class="uns-title">
           <span>🔔 سرچ‌های ذخیره‌نشده</span>
@@ -3056,14 +3050,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
       <path d="M7 18v-6h6v6" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
     </svg>
     <span class="nav-label">خانه</span>
-  </button>
-  <button class="nav-item" id="t-cards" onclick="sesOpenSmart()" aria-label="مرور کارت‌ها">
-    <div class="nav-dot" id="nd-cards"></div>
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <rect x="3" y="6" width="14" height="11" rx="2.5" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M6 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <span class="nav-label">کارت‌ها</span>
   </button>
   <button class="nav-item" id="t-list" onclick="go('list')" aria-label="لیست لغات">
     <div class="nav-dot" id="nd-list"></div>
@@ -4038,13 +4024,12 @@ function go(t){
     const tab=Q('#t-'+id);
     if(tab) tab.classList.toggle('on',id===t);
   });
-  Q('#t-cards').classList.remove('on');
   window.scrollTo({top:0,behavior:'smooth'});
   if(t==='list') renderList();
 }
 function updateBadges(){
   const has=filteredWords().length>0;
-  ['cards','list'].forEach(id=>{
+  ['list'].forEach(id=>{
     const el=Q('#t-'+id);
     if(el) el.classList.toggle('lit',has);
   });
@@ -4058,11 +4043,11 @@ function updateStats(){
   const homeEmpty=Q('#home-empty');
   const fw=filteredWords();
   if(!fw.length){
-    card.classList.remove('show');
+    if(card) card.classList.remove('show');
     if(homeEmpty) homeEmpty.classList.add('show');
     return;
   }
-  card.classList.add('show');
+  if(card) card.classList.add('show');
   if(homeEmpty) homeEmpty.classList.remove('show');
   const now=new Date();
   const due=fw.filter(w=>new Date(w.next_review||0)<=now);
