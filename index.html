@@ -3236,7 +3236,6 @@ async function dbLoad(){
   const cacheKey='ws_cache_'+uid();
   const c=localStorage.getItem(cacheKey);
   if(c){try{words=JSON.parse(c);updateBadges();updateStats();}catch(e){}}
-  if(!navigator.onLine){setSdot('');return;}
   setSdot('busy');
   try{
     const{data,error}=await sb.from('words').select('*').order('created_at',{ascending:true});
@@ -4412,7 +4411,7 @@ async function addWord(){
   if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
   const btn=Q('#add-btn');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='add-btn done';
-  if(navigator.onLine)dbAdd(w).catch(()=>{});
+  dbAdd(w).catch(()=>{});
   /* Increment daily goal */
   if(typeof incrementDaily==='function')incrementDaily();
   /* Mark history as saved */
@@ -4596,7 +4595,7 @@ async function addPhrase(){
   if(typeof tagWordWithSource==='function')tagWordWithSource(w);
   words.unshift(w);updateBadges();updateStats();saveCache();
   const btn=Q('#ph-add');btn.innerHTML='<span>✓</span> اضافه شد!';btn.disabled=true;btn.className='ph-add done';
-  if(navigator.onLine)dbAdd(w).catch(()=>{});
+  dbAdd(w).catch(()=>{});
   if(typeof incrementDaily==='function')incrementDaily();
   /* Mark history as saved */
   if(typeof histMarkSaved==='function')histMarkSaved(de);
@@ -5098,7 +5097,7 @@ async function sesRate(ratingOrGood){
     const next=new Date();next.setDate(next.getDate()+o.interval);
     o.next_review=next.toISOString();o.reviewed_at=now.toISOString();
     o.score+=good?1:-1;o.seen++;
-    logReview();saveCache();if(navigator.onLine)dbUpd(o).catch(()=>{});
+    logReview();saveCache();dbUpd(o).catch(()=>{});
   }
 
   if(!good && !sesRepeat.has(w.de)){
@@ -5120,7 +5119,7 @@ async function sesRate(ratingOrGood){
     if(o && o._preStep){
       Object.assign(o,o._preStep);
       delete o._preStep;
-      saveCache();if(navigator.onLine)dbUpd(o).catch(()=>{});
+      saveCache();dbUpd(o).catch(()=>{});
     }
     /* Push to end of deck (if not already there) */
     if(!sesDeck.slice(sesI+1).some(x=>x.de===w.de)){
@@ -5616,7 +5615,7 @@ function renderList(){
 }
 async function delWord(i){
   const w=words[i];words.splice(i,1);updateBadges();saveCache();renderList();updateStats();
-  if(navigator.onLine)dbDel(w.id).catch(()=>{});
+  dbDel(w.id).catch(()=>{});
 }
 function editOpen(i){
   editIdx=i;const w=words[i];
@@ -5630,7 +5629,7 @@ async function editSave(){
   const dup=words.find((w,i)=>i!==editIdx&&w.de.toLowerCase()===de.toLowerCase());
   if(dup){Q('#ed-err').textContent='این لغت قبلاً هست';return;}
   const w=words[editIdx];w.de=de;w.fa=fa;w.ex=ex;
-  saveCache();if(navigator.onLine)dbUpd(w).catch(()=>{});
+  saveCache();dbUpd(w).catch(()=>{});
   editClose();renderList();
 }
 
