@@ -3237,21 +3237,24 @@ function setSdot(s){
   d.className='sync-dot'+(s==='ok'?' ok':s==='busy'?' busy':s==='err'?' err':'');
 }
 
-/* Step 1 – show localStorage words immediately.
-   Step 2 – fetch from DB, merge, then save back.
-   Words added locally but not yet in DB are retried on every load. */
+// ═══════════════════════════════════════════
+//  SUPABASE SYNC
+//  Phase 1: show localStorage instantly
+//  Phase 2: fetch DB → merge → save back
+// ═══════════════════════════════════════════
 async function dbLoad(){
   const uid_=currentUser?.id;
-
-  // Always show local words instantly
   const cacheKey='ws_cache_'+(uid_||'anon');
-  const raw=localStorage.getItem(cacheKey);
-  if(raw){try{words=JSON.parse(raw);updateBadges();updateStats();renderList();}catch(e){words=[];}}
 
-  // Need auth to talk to DB
+  // Phase 1 — instant local display
+  try{const raw=localStorage.getItem(cacheKey);if(raw)words=JSON.parse(raw);}catch(e){words=[];}
+  updateBadges();updateStats();
+  try{renderList();}catch(_){}
+
   if(!uid_){setSdot('');return;}
-
   setSdot('busy');
+
+  // Phase 2 — fetch from Supabase
   try{
     const{data,error}=await sb.from('words')
       .select('*')
@@ -3259,29 +3262,29 @@ async function dbLoad(){
     if(error)throw error;
 
     const rows=data||[];
-    const byId=new Map(rows.map(r=>[r.id,r]));
-    const byDe=new Map(rows.map(r=>[r.de?.toLowerCase(),r]));
+    const dbById=new Map(rows.map(r=>[r.id,r]));
+    const dbByDe=new Map(rows.map(r=>[r.de?.toLowerCase(),r]));
 
-    // Enrich local words with DB data (IDs + review scores).
-    // Local words without a DB match are kept as-is (pending sync).
+    // Enrich local words with DB state (keep local-only fields like lang/rektion)
     words=words.map(w=>{
-      const db=(w.id&&byId.get(w.id))||byDe.get(w.de?.toLowerCase());
-      if(!db)return w;
-      return{...w,id:db.id,score:db.score??w.score,seen:db.seen??w.seen,
-        interval:db.interval??w.interval,easiness:db.easiness??w.easiness,
-        next_review:db.next_review||w.next_review,
-        reviewed_at:db.reviewed_at||w.reviewed_at,
-        created_at:db.created_at||w.created_at};
+      const row=(w.id&&dbById.get(w.id))||dbByDe.get(w.de?.toLowerCase());
+      if(!row)return w;
+      return{...w,id:row.id,
+        score:row.score??w.score,seen:row.seen??w.seen,
+        interval:row.interval??w.interval,easiness:row.easiness??w.easiness,
+        next_review:row.next_review||w.next_review,
+        reviewed_at:row.reviewed_at||w.reviewed_at,
+        created_at:row.created_at||w.created_at};
     });
 
-    // Pull in words saved from another device
-    for(const r of rows){
-      if(!words.some(w=>w.de?.toLowerCase()===r.de?.toLowerCase())){
-        words.push({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',
-          score:r.score||0,seen:r.seen||0,interval:r.interval||1,
-          easiness:r.easiness||2.5,
-          next_review:r.next_review||new Date().toISOString(),
-          reviewed_at:r.reviewed_at||null,created_at:r.created_at||null});
+    // Add words from other devices not in local cache
+    for(const row of rows){
+      if(!words.some(w=>w.de?.toLowerCase()===row.de?.toLowerCase())){
+        words.push({id:row.id,de:row.de,fa:row.fa||'',ex:row.ex||'',
+          score:row.score||0,seen:row.seen||0,
+          interval:row.interval||1,easiness:row.easiness||2.5,
+          next_review:row.next_review||new Date().toISOString(),
+          reviewed_at:row.reviewed_at||null,created_at:row.created_at||null});
       }
     }
 
@@ -3289,34 +3292,31 @@ async function dbLoad(){
     setSdot('ok');
     try{renderList();}catch(_){}
 
-    // Retry any words that never made it to DB
-    words.filter(w=>!w.id).forEach(w=>dbAdd(w).catch(()=>{}));
+    // Push any words that never made it to DB
+    words.filter(w=>!w.id).forEach(w=>dbAdd(w).catch(e=>console.error('[dbAdd-retry]',e?.message||e)));
 
   }catch(e){
     setSdot('err');
-    console.error('dbLoad error:',e?.message||e);
+    console.error('[dbLoad]',e?.message||e);
     showToast('⚠ خطا در بارگذاری از ابر — لغات محلی نمایش داده می‌شن',3000,'warn');
   }
 }
 
-/* Insert a word into Supabase. Called after word is already in localStorage.
-   On success: assigns the DB id so the word is tracked.
-   On failure: shows a toast so the user knows sync failed. */
 async function dbAdd(w){
-  if(!currentUser?.id)return; // no auth — will retry on next dbLoad
-  if(w.id)return;             // already synced
+  if(!currentUser?.id||w.id)return;
   try{
     const{data,error}=await sb.from('words').insert({
       user_id:currentUser.id,
-      de:w.de,fa:w.fa,ex:w.ex||'',
-      score:0,seen:0,interval:1,easiness:2.5,
-      next_review:new Date().toISOString()
+      de:w.de,fa:w.fa||'',ex:w.ex||'',
+      score:w.score||0,seen:w.seen||0,
+      interval:w.interval||1,easiness:w.easiness||2.5,
+      next_review:w.next_review||new Date().toISOString()
     }).select('id').single();
     if(error)throw error;
     if(data?.id){w.id=data.id;saveCache();}
   }catch(e){
-    console.error('dbAdd error:',e?.message||e);
-    showToast('⚠ ذخیره در ابر ناموفق: '+((e?.message||'').slice(0,40)||'خطا'),3000,'warn');
+    console.error('[dbAdd]',e?.message||e);
+    showToast('⚠ ذخیره در ابر ناموفق: '+((e?.message||'').slice(0,60)||'خطا'),4000,'warn');
   }
 }
 
@@ -3328,17 +3328,19 @@ async function dbUpd(w){
       easiness:w.easiness,next_review:w.next_review,
       reviewed_at:w.reviewed_at
     }).eq('id',w.id);
-  }catch(e){}
+  }catch(e){console.error('[dbUpd]',e?.message||e);}
 }
 
 async function dbDel(id){
   if(!id)return;
-  try{await sb.from('words').delete().eq('id',id);}catch(e){}
+  try{await sb.from('words').delete().eq('id',id);}
+  catch(e){console.error('[dbDel]',e?.message||e);}
 }
 
 async function dbClear(){
   if(!currentUser?.id)return;
-  try{await sb.from('words').delete().eq('user_id',currentUser.id);}catch(e){}
+  try{await sb.from('words').delete().eq('user_id',currentUser.id);}
+  catch(e){console.error('[dbClear]',e?.message||e);}
 }
 
 async function loadProfile(){
