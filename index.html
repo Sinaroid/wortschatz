@@ -3202,8 +3202,7 @@ async function dbLoad(){
   setSdot('busy');
   try{
     const{data,error}=await sb.from('words')
-      .select('id,de,fa,ex,score,seen,interval,easiness,next_review,reviewed_at,created_at')
-      .eq('user_id',uid_)
+      .select('*')
       .order('created_at',{ascending:true});
     if(error)throw error;
 
@@ -3234,8 +3233,9 @@ async function dbLoad(){
       }
     }
 
-    saveCache();updateBadges();updateStats();renderList();
+    saveCache();updateBadges();updateStats();
     setSdot('ok');
+    try{renderList();}catch(_){}
 
     // Retry any words that never made it to DB
     words.filter(w=>!w.id).forEach(w=>dbAdd(w).catch(()=>{}));
