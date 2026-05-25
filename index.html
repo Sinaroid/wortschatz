@@ -756,7 +756,7 @@ body.fsrs-mode .swipe-row{display:none}
 .res-priority.p2,.res-priority.p1{display:none}
 
 /* ─ add button ─ */
-.res-add-wrap{padding:var(--s3) var(--s5) var(--s5)}
+.res-add-wrap{padding:var(--s3) var(--s5);border-bottom:1px solid var(--bg3)}
 .add-btn{
   width:100%;padding:12px;border-radius:var(--r2);
   background:var(--accent);color:#fff;border:none;font-family:var(--sans);
@@ -2826,6 +2826,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
     <div class="res" id="res">
       <div class="res-fix" id="res-fix"></div>
 
+      <div class="res-add-wrap">
+        <button class="add-btn" id="add-btn" onclick="addWord()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          افزودن به لیست
+        </button>
+      </div>
+
       <!-- اسم لغت -->
       <div class="res-word-block">
         <div class="res-art-word" style="display:flex;align-items:center;gap:8px">
@@ -2864,12 +2871,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
         <div class="res-priority" id="res-priority"></div>
       </div>
 
-      <div class="res-add-wrap">
-        <button class="add-btn" id="add-btn" onclick="addWord()">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          افزودن به لیست
-        </button>
-      </div>
     </div>
 
     <!-- Phrase result -->
