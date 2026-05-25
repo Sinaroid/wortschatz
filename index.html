@@ -4064,7 +4064,7 @@ function updateStats(){
   if(!ol[today]){ol[today]=1;localStorage.setItem('ws_olog_'+uid(),JSON.stringify(ol));}
   let s=0;const dd=new Date();
   while(all[dd.toDateString()]&&s<365){s++;dd.setDate(dd.getDate()-1);}
-  Q('#sn-streak').textContent=s;
+  const snStreak=Q('#sn-streak');if(snStreak)snStreak.textContent=s;
   // dots
   const dn=['ی','د','س','چ','پ','ج','ش'];
   const dotsEl=Q('#sum-dots');
