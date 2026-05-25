@@ -125,6 +125,7 @@ body.offline .topbar{top:36px}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--bg4);transition:all .3s}
 .sync-dot.ok{background:var(--ok)}
 .sync-dot.busy{background:var(--accent);animation:pulse .9s infinite}
+.sync-dot.err{background:var(--err)}
 .btn-ic{
   width:32px;height:32px;border-radius:10px;border:1px solid var(--bg3);
   background:var(--bg2);display:flex;align-items:center;justify-content:center;
@@ -3000,7 +3001,7 @@ function wordDetail(idx){
    CONFIG
 ══════════════════════════════ */
 const SB_URL='https://ekogfglcsftpwmithxbi.supabase.co';
-const SB_KEY='sb_publishable_S6XmIDmzzUgsKZNeTw2bAA_A8mzZmta';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrb2dmZ2xjc2Z0cHdtaXRoeGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NzMwNTYsImV4cCI6MjA4OTE0OTA1Nn0.l_cGd6h6Z4FhrZivVhRgZS4IyGjdDLJ_EgSsN4SkkoE';
 
 // Supabase client (via CDN)
 const { createClient } = window.supabase;
@@ -3179,71 +3180,87 @@ function showToast(msg,dur=2800,type=''){
 }
 
 /* ══════════════════════════════
-   SUPABASE (supabase-js v2)
+   SUPABASE SYNC  (clean rebuild)
 ══════════════════════════════ */
-function setSdot(s){const d=Q('#sync-dot');if(d)d.className='sync-dot'+(s==='ok'?' ok':s==='busy'?' busy':'');}
+function setSdot(s){
+  const d=Q('#sync-dot');
+  if(!d)return;
+  d.className='sync-dot'+(s==='ok'?' ok':s==='busy'?' busy':s==='err'?' err':'');
+}
 
 async function dbLoad(){
-  /* localStorage is the primary source of truth.
-     Supabase is used to enrich words (assign IDs, sync review scores)
-     and to pull words added on other devices.
-     We NEVER remove a local word just because it isn't in Supabase yet. */
-  const cacheKey='ws_cache_'+uid();
-  const c=localStorage.getItem(cacheKey);
-  if(c){try{words=JSON.parse(c);updateBadges();updateStats();renderList();}catch(e){}}
+  const uid_=currentUser?.id;
+
+  // Always show local words instantly
+  const cacheKey='ws_cache_'+(uid_||'anon');
+  const raw=localStorage.getItem(cacheKey);
+  if(raw){try{words=JSON.parse(raw);updateBadges();updateStats();renderList();}catch(e){words=[];}}
+
+  // Need auth to talk to DB
+  if(!uid_){setSdot('');return;}
+
   setSdot('busy');
   try{
-    const{data,error}=await sb.from('words').select('*').order('created_at',{ascending:true});
+    const{data,error}=await sb.from('words')
+      .select('id,de,fa,ex,score,seen,interval,easiness,next_review,reviewed_at,created_at')
+      .eq('user_id',uid_)
+      .order('created_at',{ascending:true});
     if(error)throw error;
+
     const rows=data||[];
-    const dbById=Object.fromEntries(rows.map(r=>[r.id,r]));
-    const dbByDe=Object.fromEntries(rows.map(r=>[r.de?.toLowerCase(),r]));
+    const byId=new Map(rows.map(r=>[r.id,r]));
+    const byDe=new Map(rows.map(r=>[r.de?.toLowerCase(),r]));
 
-    /* Enrich local words with DB data (IDs + review scores) */
-    words=words.map(lw=>{
-      const dbW=lw.id?dbById[lw.id]:dbByDe[lw.de?.toLowerCase()];
-      if(!dbW)return lw; /* not in DB yet — keep local copy intact */
-      /* DB wins for review/scheduling fields; local wins for rich metadata */
-      return {...lw, id:dbW.id, score:dbW.score??lw.score, seen:dbW.seen??lw.seen,
-        interval:dbW.interval??lw.interval, easiness:dbW.easiness??lw.easiness,
-        next_review:dbW.next_review||lw.next_review,
-        reviewed_at:dbW.reviewed_at||lw.reviewed_at,
-        created_at:dbW.created_at||lw.created_at};
+    // Enrich local words with DB data (IDs + review scores).
+    // Local words without a DB match are kept as-is (pending sync).
+    words=words.map(w=>{
+      const db=(w.id&&byId.get(w.id))||byDe.get(w.de?.toLowerCase());
+      if(!db)return w;
+      return{...w,id:db.id,score:db.score??w.score,seen:db.seen??w.seen,
+        interval:db.interval??w.interval,easiness:db.easiness??w.easiness,
+        next_review:db.next_review||w.next_review,
+        reviewed_at:db.reviewed_at||w.reviewed_at,
+        created_at:db.created_at||w.created_at};
     });
 
-    /* Add words from DB that aren't in local cache (added from another device) */
-    rows.forEach(dbW=>{
-      if(!words.some(lw=>lw.de?.toLowerCase()===dbW.de?.toLowerCase())){
-        words.push({id:dbW.id,de:dbW.de,fa:dbW.fa,ex:dbW.ex||'',
-          score:dbW.score||0,seen:dbW.seen||0,interval:dbW.interval||1,
-          easiness:dbW.easiness||2.5,next_review:dbW.next_review||new Date().toISOString(),
-          reviewed_at:dbW.reviewed_at||null,created_at:dbW.created_at||null,
-          lang:dbW.lang||'de',source_id:dbW.source_id||null});
+    // Pull in words saved from another device
+    for(const r of rows){
+      if(!words.some(w=>w.de?.toLowerCase()===r.de?.toLowerCase())){
+        words.push({id:r.id,de:r.de,fa:r.fa,ex:r.ex||'',
+          score:r.score||0,seen:r.seen||0,interval:r.interval||1,
+          easiness:r.easiness||2.5,
+          next_review:r.next_review||new Date().toISOString(),
+          reviewed_at:r.reviewed_at||null,created_at:r.created_at||null});
       }
-    });
-
-    /* Retry uploading any local-only words that never reached DB */
-    words.filter(lw=>!lw.id).forEach(lw=>{
-      dbAdd(lw).catch(()=>{});
-    });
+    }
 
     saveCache();updateBadges();updateStats();renderList();
     setSdot('ok');
-  }catch(e){setSdot('');console.error(e);}
+
+    // Retry any words that never made it to DB
+    words.filter(w=>!w.id).forEach(w=>dbAdd(w).catch(()=>{}));
+
+  }catch(e){
+    setSdot('err');
+    console.error('dbLoad error:',e?.message||e);
+    showToast('⚠ خطا در بارگذاری از ابر — لغات محلی نمایش داده می‌شن',3000,'warn');
+  }
 }
 
 async function dbAdd(w){
-  if(!currentUser)return;
+  if(!currentUser?.id)return;
+  if(w.id)return;
   try{
     const{data,error}=await sb.from('words').insert({
-      user_id:currentUser.id,de:w.de,fa:w.fa,ex:w.ex||'',
+      user_id:currentUser.id,
+      de:w.de,fa:w.fa,ex:w.ex||'',
       score:0,seen:0,interval:1,easiness:2.5,
       next_review:new Date().toISOString()
-    }).select().single();
+    }).select('id').single();
     if(error)throw error;
-    if(data){w.id=data.id;saveCache();}
+    if(data?.id){w.id=data.id;saveCache();}
   }catch(e){
-    console.error('dbAdd failed:',e?.message||e);
+    console.error('dbAdd error:',e?.message||e);
     showToast('⚠ ذخیره در ابر ناموفق: '+((e?.message||'').slice(0,40)||'خطا'),3000,'warn');
   }
 }
@@ -3265,7 +3282,8 @@ async function dbDel(id){
 }
 
 async function dbClear(){
-  try{await sb.from('words').delete().eq('user_id',uid());}catch(e){}
+  if(!currentUser?.id)return;
+  try{await sb.from('words').delete().eq('user_id',currentUser.id);}catch(e){}
 }
 
 async function loadProfile(){
